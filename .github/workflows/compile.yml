@@ -1,0 +1,48 @@
+name: Compile LaTeX
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile:
+    name: Compile notes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install LaTeX
+        run: |
+            sudo apt update
+            sudo apt install -y latexmk texlive texlive-science texlive-latex-extra
+
+      - name: Compile
+        run: |
+            shopt -s globstar
+            work_dir=$(pwd)
+            mkdir /tmp/compiled
+
+            for f in **/[!_]*.tex; do
+                f_dir=$(dirname $f);
+                f_base=$(basename $f);
+                f_nameonly="${f_base%.*}";
+
+                cd ${f_dir};
+                latexmk -pdf -jobname=${f_nameonly} ${f_base};
+                mkdir -p /tmp/compiled/${f_dir}
+                mv ${f_nameonly}.pdf /tmp/compiled/${f_dir}/.
+                cd $work_dir;
+            done
+             
+
+      - name: Move to pdfs branch
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: pdfs
+          FOLDER: /tmp/compiled
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "🤖 It's hard to work with you"
