@@ -1,0 +1,51 @@
+\documentclass[11pt]{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\usepackage{hyperref}
+\usepackage[nameinlink]{cleveref}
+\usepackage[all]{hypcap} % Links hyperref to object top and not caption
+\usepackage[inline]{enumitem}
+\usepackage{marginnote}
+
+\title{Statistical and Mathematical Methods for Artificial Intelligence}
+\date{2023 -- 2024}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black,
+    linktoc=all
+}
+
+\setlist[description]{labelindent=\parindent}   % Indents `description`
+
+\newtheorem{example}{Example}[section]
+
+
+\begin{document}
+
+    \makeatletter
+    \begin{titlepage}
+        \centering
+        \vspace*{\fill}
+        \huge
+        \textbf{\@title}
+        \vspace*{\fill}
+
+        \Large
+        Academic Year \@date\\
+        Alma Mater Studiorum $\cdot$ University of Bologna
+        \vspace*{1cm}
+    \end{titlepage}
+    \makeatother
+    \pagenumbering{roman}
+    \tableofcontents
+    \newpage
+    \pagenumbering{arabic}
+
+    \input{sections/finite_numbers.tex}
+
+\end{document}
