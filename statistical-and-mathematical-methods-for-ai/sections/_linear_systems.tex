@@ -1,0 +1,187 @@
+\section{Linear systems}
+
+A linear system:
+\begin{equation*}
+    \begin{cases}
+        a_{1,1}x_1 + a_{1,2}x_2 + \dots + a_{1,n}x_n = b_1\\
+        a_{2,1}x_1 + a_{2,2}x_2 + \dots + a_{2,n}x_n = b_2\\
+        \hspace*{7em} \vdots \\
+        a_{m,1}x_1 + a_{m,2}x_2 + \dots + a_{m,n}x_n = b_m\\
+    \end{cases}
+\end{equation*}
+can be represented as:
+\[ \matr{A}\vec{x} = \vec{b} \]
+where:
+\[
+    \matr{A} = 
+    \begin{pmatrix}
+        a_{1,1} & a_{1, 2} & \hdots & a_{1,n} \\
+        a_{2,1} & a_{2, 2} & \hdots & a_{2,n} \\
+        \vdots  & \vdots   & \ddots & \vdots  \\
+        a_{m,1} & a_{m, 2} & \hdots & a_{m,n}
+    \end{pmatrix} \in \mathbb{R}^{m \times n}
+    \hspace*{2em}
+    %
+    \vec{x} = 
+    \begin{pmatrix}
+        x_1 \\
+        x_2 \\ 
+        \vdots \\
+        x_n
+    \end{pmatrix} \in \mathbb{R}^n
+    \hspace*{2em}
+    %
+    \vec{b} = 
+    \begin{pmatrix}
+        b_1 \\
+        b_2 \\ 
+        \vdots \\
+        b_m
+    \end{pmatrix} \in \mathbb{R}^m
+\]
+    
+
+
+\subsection{Square linear systems}
+\marginnote{Square linear system}
+A square linear system $\matr{A}\vec{x} = \vec{b}$ with $\matr{A} \in \mathbb{R}^{n \times n}$ and $\vec{x}, \vec{b} \in \mathbb{R}^n$
+has an unique solution iff one of the following conditions is satisfied:
+\begin{enumerate}
+    \item $\matr{A}$ is non-singular (invertible)
+    \item $\text{rank}(\matr{A}) = n$ (full rank)
+    \item $\matr{A}\vec{x}$ admits only the solution $\vec{x} = \nullvec$
+\end{enumerate}
+
+The solution can be algebraically determined as \marginnote{Algebraic solution to linear systems}
+\[ \matr{A}\vec{x} = \vec{b} \iff \vec{x} = \matr{A}^{-1}\vec{b} \]
+However this approach requires to compute the inverse of a matrix, which has a time complexity of $O(n^3)$.
+
+
+
+\subsection{Direct methods}
+\marginnote{Direct methods}
+Direct methods compute the solution of a linear system in a finite number of steps.
+Compared to iterative methods, they are more precise but more expensive.
+
+The most common approach consists in factorizing the matrix $\matr{A}$.
+
+\subsubsection{Gaussian factorization}
+\marginnote{Gaussian factorization\\(LU decomposition)}
+Given a square linear system $\matr{A}\vec{x} = \vec{b}$, 
+the matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is factorized into $\matr{A} = \matr{L}\matr{U}$ such that:
+\begin{itemize}
+    \item $\matr{L} \in \mathbb{R}^{n \times n}$ is a lower triangular matrix
+    \item $\matr{U} \in \mathbb{R}^{n \times n}$ is an upper triangular matrix
+\end{itemize}
+%
+As directly solving a system with a triangular matrix has complexity $O(n^2)$ (forward or backward substitutions), 
+the system can be decomposed to:
+\begin{equation}
+    \begin{split}
+        \matr{A}\vec{x} = \vec{b} & \iff \matr{LU}\vec{x} = \vec{b} \\
+            & \iff \vec{y} = \matr{U}\vec{x} \text{ \& } \matr{L}\vec{y} = \vec{b}
+    \end{split}
+\end{equation}
+To find the solution, it is sufficient to solve in order:
+\begin{enumerate}
+    \item $\matr{L}\vec{y} = \vec{b}$ (solved w.r.t. $\vec{y}$)
+    \item $\vec{y} = \matr{U}\vec{x}$ (solved w.r.t. $\vec{x}$)
+\end{enumerate}
+
+The overall complexity is $O(\frac{n^3}{3}) + 2 \cdot O(n^2) = O(\frac{n^3}{3})$
+
+\subsubsection{Gaussian factorization with pivoting}
+\marginnote{Gaussian factorization with pivoting}
+During the computation of $\matr{A} = \matr{L}\matr{U}$ 
+(using Gaussian elimination\footnote{\url{https://en.wikipedia.org/wiki/LU\_decomposition\#Using\_Gaussian\_elimination}}), 
+a division by 0 may occur.
+A method to prevent this problem (and to lower the algorithmic error) is to change the order of the rows of $\matr{A}$ before decomposing it.
+This is achieved by using a permutation matrix $\matr{P}$, which is obtained as a permutation of the identity matrix.
+
+The permuted system becomes $\matr{P}\matr{A}\vec{x} = \matr{P}\vec{b}$ and the factorization is obtained as $\matr{P}\matr{A} = \matr{L}\matr{U}$.
+The system can be decomposed to:
+\begin{equation}
+    \begin{split}
+        \matr{P}\matr{A}\vec{x} = \matr{P}\vec{b} & \iff \matr{L}\matr{U}\vec{x} = \matr{P}\vec{b} \\
+            & \iff \vec{y} = \matr{U}\vec{x} \text{ \& } \matr{L}\vec{y} = \matr{P}\vec{b}
+    \end{split}
+\end{equation}
+
+An alternative formulation (which is what \texttt{SciPy} uses) 
+is defined as:
+\[\matr{A} = \matr{P}\matr{L}\matr{U} \iff \matr{P}^T\matr{A} = \matr{L}\matr{U} \]
+It must be noted that $\matr{P}$ is orthogonal, so $\matr{P}^T = \matr{P}^{-1}$.
+The solution to the system ($\matr{P}^T\matr{A}\vec{x} = \matr{P}^T\vec{b}$) can be found as above.
+
+
+
+\subsection{Iterative methods}
+\marginnote{Iterative methods}
+Iterative methods solve a linear system by computing a sequence that converges to the exact solution.
+Compared to direct methods, they are less precise but computationally faster and more adapt for large systems. 
+
+The overall idea is to build a sequence of vectors $\vec{x}_k$ 
+that converges to the exact solution $\vec{x}^*$:
+\[ \lim_{k \rightarrow \infty} \vec{x}_k = \vec{x}^* \]
+Generally, the first vector $\vec{x}_0$ is given (or guessed). Subsequent vectors are computed w.r.t. the previous iteration 
+as $\vec{x}_k = g(\vec{x}_{k-1})$.
+
+The two most common families of iterative methods are:
+\begin{description}
+    \item[Stationary methods] \marginnote{Stationary methods}
+        compute the sequence as:
+        \[ \vec{x}_k = \matr{B}\vec{x}_{k-1} + \vec{d} \]
+        where $\matr{B}$ is called iteration matrix and $\vec{d}$ is computed from the $\vec{b}$ vector of the system.
+        The time complexity per iteration $O(n^2)$.
+    
+    \item[Gradient-like methods] \marginnote{Gradient-like methods}
+        have the form:
+        \[ \vec{x}_k = \vec{x}_{k-1} + \alpha_{k-1}\vec{p}_{k-1} \]
+        where $\alpha_{k-1} \in \mathbb{R}$ and the vector $\vec{p}_{k-1}$ is called direction.
+\end{description}
+
+\subsubsection{Stopping criteria}
+\marginnote{Stopping criteria}
+One ore more stopping criteria are needed to determine when to truncate the sequence (as it is theoretically infinite).
+The most common approaches are:
+\begin{description}
+    \item[Residual based]
+        The algorithm is terminated when the current solution is close enough to the exact solution.
+        The residual at iteration $k$ is computed as $\vec{r}_k = \vec{b} - \matr{A}\vec{x}_k$.
+        Given a tolerance $\varepsilon$, the algorithm stops when:
+        \begin{itemize}
+            \item $\Vert \vec{r}_k \Vert \leq \varepsilon$
+            \item $\frac{\Vert \vec{r}_k \Vert}{\Vert \vec{b} \Vert} \leq \varepsilon$
+        \end{itemize}
+
+    \item[Update based] 
+        The algorithm is terminated when the change between iterations is very small.
+        Given a tolerance $\tau$, the algorithm stops when:
+        \[ \Vert \vec{x}_{k} - \vec{x}_{k-1} \Vert \leq \tau \]
+\end{description}
+Obviously, as the sequence is truncated, a truncation error is introduced when using iterative methods.
+
+
+
+\subsection{Condition number}
+Inherent error causes inaccuracies during the resolution of a system.
+This problem is independent from the algorithm and is estimated using exact arithmetic.
+
+Given a system $\matr{A}\vec{x} = \vec{b}$, we perturbate $\matr{A}$ and/or $\vec{b}$ and study the inherited error.
+For instance, if we perturbate $\vec{b}$, we obtain the following system:
+\[ \matr{A}\tilde{\vec{x}} = (\vec{b} + \Delta\vec{b}) \]
+After finding $\tilde{\vec{x}}$, we can compute the inherited error as $\Delta\vec{x} = \tilde{\vec{x}} - \vec{x}$.
+
+By comparing $\left\Vert \frac{\Delta\vec{x}}{\vec{x}} \right\Vert$ and $\left\Vert \frac{\Delta\vec{b}}{\vec{b}} \right\Vert$, 
+we can compute the error introduced by the perturbation.
+It can be shown that the distance is:
+\[ 
+    \left\Vert \frac{\Delta\vec{x}}{\vec{x}} \right\Vert \leq 
+    \Vert \matr{A} \Vert \cdot \Vert \matr{A}^{-1} \Vert \cdot \left\Vert \frac{\Delta\vec{b}}{\vec{b}} \right\Vert 
+\]
+Finally, we can define the \textbf{condition number} of a matrix $\matr{A}$ as: \marginnote{Condition number}
+\[ K(\matr{A}) = \Vert \matr{A} \Vert \cdot \Vert \matr{A}^{-1} \Vert \]
+
+A system is \textbf{ill-conditioned} if $K(\matr{A})$ is large \marginnote{Ill-conditioned}
+(i.e. small perturbation on the input causes large changes in the output).
+Otherwise it is \textbf{well-conditioned}. \marginnote{Well-conditioned}
