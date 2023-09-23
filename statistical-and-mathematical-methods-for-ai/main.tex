@@ -1,6 +1,6 @@
 \documentclass[11pt]{article}
-\usepackage[margin=3cm]{geometry}
-\usepackage{graphicx}
+\usepackage[margin=3cm, lmargin=2cm, rmargin=4cm]{geometry}
+\usepackage{graphicx, xcolor}
 \usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
 \usepackage{hyperref}
 \usepackage[nameinlink]{cleveref}
@@ -21,8 +21,16 @@
 }
 
 \setlist[description]{labelindent=\parindent}   % Indents `description`
+\renewcommand*{\marginfont}{\color{gray}\footnotesize}
 
 \newtheorem{example}{Example}[section]
+\newtheoremstyle{definition}{}{}{}{}{\bfseries}{.}{ }{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+\theoremstyle{definition}
+\newtheorem*{definition}{Def}
+
+\newcommand{\ubar}[1]{\text{\b{$#1$}}}
+\renewcommand{\vec}[1]{\text{\textbf{#1}}}
+\newcommand{\nullvec}[0]{\bar{\vec{0}}}
 
 
 \begin{document}
@@ -47,5 +55,10 @@
     \pagenumbering{arabic}
 
     \input{sections/_finite_numbers.tex}
+    \newpage
+    \input{sections/_linear_algebra.tex}
+    \newpage
+    \input{sections/_linear_systems.tex}
+
 
 \end{document}

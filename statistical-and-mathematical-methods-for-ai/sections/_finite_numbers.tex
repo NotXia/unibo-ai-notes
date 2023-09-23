@@ -5,16 +5,16 @@
 \subsection{Sources of error}
 
 \begin{description}
-    \item[Measure error] 
+    \item[Measure error] \marginnote{Measure error}
         Precision of the measurement instrument.
 
-    \item[Arithmetic error] 
+    \item[Arithmetic error] \marginnote{Arithmetic error}
         Propagation of rounding errors in each step of an algorithm.
 
-    \item[Truncation error] 
+    \item[Truncation error] \marginnote{Truncation error}
         Approximating an infinite procedure into a finite number of iterations.
 
-    \item[Inherent error] 
+    \item[Inherent error] \marginnote{Inherent error}
         Caused by the finite representation of the data (floating-point).
         \begin{figure}[h]
             \centering
@@ -31,13 +31,15 @@ Let $x$ be a value and $\hat{x}$ its approximation. Then:
 \begin{description}
     \item[Absolute error] 
         \begin{equation}
-            E_{a} = \hat{x} - x
-        \end{equation}
+            E_{a} = \hat{x} - x 
+            \marginnote{Absolute error}
+        \end{equation} 
         Note that, out of context, the absolute error is meaningless.
     \item[Relative error] 
         \begin{equation}
-            E_{a} = \frac{\hat{x} - x}{x}
-        \end{equation}
+            E_{a} = \frac{\hat{x} - x}{x} 
+            \marginnote{Relative error}
+        \end{equation} 
 \end{description}
 
 
@@ -56,17 +58,16 @@ where:
     \item starting from an index $i$, not all $d_j$ ($j \geq i$) are equal to $\beta-1$
 \end{itemize}
 %
-\Cref{eq:finnum_b_representation} can be represented using the normalized scientific notation as:
+\Cref{eq:finnum_b_representation} can be represented using the normalized scientific notation as: \marginnote{Normalized scientific notation}
 \begin{equation}
     x = \pm (0.d_1d_2\dots) \beta^p
 \end{equation}
-where $0.d_1d_2\dots$ is the \textbf{mantissa} and $\beta^p$ the \textbf{exponent}.
+where $0.d_1d_2\dots$ is the \textbf{mantissa} and $\beta^p$ the \textbf{exponent}. \marginnote{Mantissa\\Exponent}
 
 
 
 \subsection{Floating-point}
-
-A floating-point system $\mathcal{F}(\beta, t, L, U)$ is defined by the parameters:
+A floating-point system $\mathcal{F}(\beta, t, L, U)$ is defined by the parameters: \marginnote{Floating-point}
 \begin{itemize}
     \item $\beta$: base
     \item $t$: precision (number of digits in the mantissa)
@@ -109,6 +110,7 @@ Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the representation 
     \item[Approximation] 
         if $p \in [L, U]$ but $d_i$ may not be 0 for $i>t$. 
         In this case, the representation is obtained by truncating or rounding the value.
+        \marginnote{Truncation\\Rounding}
 
     \item[Underflow] 
         if $p < L$. In this case, the values is approximated as 0.
@@ -119,7 +121,7 @@ Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the representation 
 
 
 \subsubsection{Machine precision}
-Machine precision $\varepsilon_{\text{mach}}$ determines the accuracy of a floating-point system.
+Machine precision $\varepsilon_{\text{mach}}$ determines the accuracy of a floating-point system. \marginnote{Machine precision}
 Depending on the approximation approach, machine precision can be computes as:
 \begin{description}
     \item[Truncation] $\varepsilon_{\text{mach}} = \beta^{1-t}$
@@ -144,7 +146,7 @@ In alternative, $\varepsilon_{\text{mach}}$ can be defined as the smallest repre
 \subsubsection{IEEE standard}
 IEEE 754 defines two floating-point formats:
 \begin{description}
-    \item[Single precision] Stored in 32 bits. Represents the system $\mathcal{F}(2, 24, -128, 127)$.
+    \item[Single precision] Stored in 32 bits. Represents the system $\mathcal{F}(2, 24, -128, 127)$. \marginnote{float32}
         \begin{center}
             \small
             \begin{tabular}{|c|c|c|}
@@ -154,7 +156,7 @@ IEEE 754 defines two floating-point formats:
             \end{tabular}
         \end{center}
 
-    \item[Double precision] Stored in 64 bits. Represents the system $\mathcal{F}(2, 53, -1024, 1023)$.
+    \item[Double precision] Stored in 64 bits. Represents the system $\mathcal{F}(2, 53, -1024, 1023)$. \marginnote{float64}
         \begin{center}
             \small
             \begin{tabular}{|c|c|c|}
@@ -187,6 +189,7 @@ A floating-point operation causes a small rounding error:
 \end{equation}
 %
 Although, some operations may be subject to the \textbf{cancellation} problem which causes information loss.
+\marginnote{Cancellation}
 \begin{example}
     Given $x = 1$ and $y = 1 \cdot 10^{-16}$, we want to compute $x + y$ in $\mathcal{F}(10, 16, U, L)$.\\
     \begin{equation*}
