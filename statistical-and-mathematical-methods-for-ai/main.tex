@@ -1,5 +1,5 @@
-\documentclass[11pt]{article}
-\usepackage[margin=3cm, lmargin=2cm, rmargin=4cm, marginparwidth=3cm]{geometry}
+\documentclass[11pt]{scrreprt}
+\usepackage{geometry}
 \usepackage{graphicx, xcolor}
 \usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm}
 \usepackage{hyperref}
@@ -7,20 +7,16 @@
 \usepackage[all]{hypcap} % Links hyperref to object top and not caption
 \usepackage[inline]{enumitem}
 \usepackage{marginnote}
+\usepackage[bottom]{footmisc}
 
-\title{Statistical and Mathematical Methods for Artificial Intelligence}
-\date{2023 -- 2024}
+\geometry{ margin=3cm, lmargin=2cm, rmargin=4cm, marginparwidth=3cm }
+\hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
 
-\hypersetup{
-    colorlinks,
-    citecolor=black,
-    filecolor=black,
-    linkcolor=black,
-    urlcolor=black,
-    linktoc=all
+\NewDocumentEnvironment{descriptionlist}{}{%
+  \begin{description}[labelindent=1em]
+}{
+  \end{description}%
 }
-
-\setlist[description]{labelindent=1em}   % Indents `description`
 \setlength{\parindent}{0pt}
 \renewcommand*{\marginfont}{\color{gray}\footnotesize}
 
@@ -35,6 +31,10 @@
 \newcommand{\nullvec}[0]{\bar{\vec{0}}}
 \newcommand{\matr}[1]{{\bm{#1}}}
 
+
+
+\title{Statistical and Mathematical Methods for Artificial Intelligence}
+\date{2023 -- 2024}
 
 \begin{document}
 \newgeometry{margin=3cm}

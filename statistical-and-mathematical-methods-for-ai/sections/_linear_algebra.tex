@@ -1,7 +1,7 @@
-\section{Linear algebra}
+\chapter{Linear algebra}
 
 
-\subsection{Vector space}
+\section{Vector space}
 
 A \textbf{vector space} over $\mathbb{R}$ is a nonempty set $V$, whose elements are called vectors, with two operations: 
 \marginnote{Vector space}
@@ -28,7 +28,7 @@ A subset $U \subseteq V$ of a vector space $V$, is a \textbf{subspace} iff $U$ i
 \marginnote{Subspace}
 
 
-\subsubsection{Basis}
+\subsection{Basis}
 \marginnote{Basis}
 Let $V$ be a vector space of dimension $n$.
 A basis $\beta = \{ \vec{v}_1, \dots, \vec{v}_n \}$ of $V$ is a set of $n$ linearly independent vectors of $V$.\\ 
@@ -41,7 +41,7 @@ The canonical basis of a vector space is a basis where each vector represents a 
     The canonical basis $\beta$ of $\mathbb{R}^3$ is $\beta = \{ (1, 0, 0), (0, 1, 0), (0, 0, 1) \}$
 \end{example}
 
-\subsubsection{Dot product}
+\subsection{Dot product}
 The dot product of two vectors in $\vec{x}, \vec{y} \in \mathbb{R}^n$ is defined as: \marginnote{Dot product}
 \begin{equation*}
     \left\langle \vec{x}, \vec{y} \right\rangle =
@@ -49,7 +49,7 @@ The dot product of two vectors in $\vec{x}, \vec{y} \in \mathbb{R}^n$ is defined
 \end{equation*}
 
 
-\subsection{Matrix}
+\section{Matrix}
 
 This is a {\tiny(very formal definition of)} matrix: \marginnote{Matrix}
 \begin{equation*}
@@ -62,14 +62,14 @@ This is a {\tiny(very formal definition of)} matrix: \marginnote{Matrix}
     \end{pmatrix}
 \end{equation*}
 
-\subsubsection{Invertible matrix}
+\subsection{Invertible matrix}
 A matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is invertible (non-singular) if: \marginnote{Non-singular matrix}
 \begin{equation*}
     \exists \matr{B} \in \mathbb{R}^{n \times n}: \matr{AB} = \matr{BA} = \matr{I}
 \end{equation*}
 where $\matr{I}$ is the identity matrix. $\matr{B}$ is denoted as $\matr{A}^{-1}$.
 
-\subsubsection{Kernel}
+\subsection{Kernel}
 The null space (kernel) of a matrix $\matr{A} \in \mathbb{R}^{m \times n}$ is a subspace such that: \marginnote{Kernel}
 \begin{equation*}
     \text{Ker}(\matr{A}) = \{ \vec{x} \in \mathbb{R}^n : \matr{A}\vec{x} = \nullvec \}
@@ -79,15 +79,15 @@ The null space (kernel) of a matrix $\matr{A} \in \mathbb{R}^{m \times n}$ is a 
     A square matrix $\matr{A}$ with $\text{\normalfont Ker}(\matr{A}) = \{\nullvec\}$ is non singular.
 \end{theorem}
 
-\subsubsection{Similar matrices} \marginnote{Similar matrices}
+\subsection{Similar matrices} \marginnote{Similar matrices}
 Two matrices $\matr{A}$ and $\matr{D}$ are \textbf{similar} if there exists an invertible matrix $\matr{P}$ such that:
 \[ \matr{D} = \matr{P}^{-1} \matr{A} \matr{P} \]
 
 
 
-\subsection{Norms}
+\section{Norms}
 
-\subsubsection{Vector norms}
+\subsection{Vector norms}
 The norm of a vector is a function: \marginnote{Vector norm}
 \begin{equation*}
     \Vert \cdot \Vert: \mathbb{R}^n \rightarrow \mathbb{R}
@@ -122,7 +122,7 @@ In some cases, unbalanced results may be given when comparing different norms.
 \end{example}
 
 
-\subsubsection{Matrix norms}
+\subsection{Matrix norms}
 The norm of a matrix is a function: \marginnote{Matrix norm}
 \begin{equation*}
     \Vert \cdot \Vert: \mathbb{R}^{m \times n} \rightarrow \mathbb{R}
@@ -148,7 +148,7 @@ Common norms are:
 
 
 
-\subsection{Symmetric, positive definite matrices}
+\section{Symmetric, positive definite matrices}
 
 \begin{description}
     \item[Symmetric matrix] \marginnote{Symmetric matrix}
@@ -176,7 +176,7 @@ Common norms are:
 
 
 
-\subsection{Orthogonality}
+\section{Orthogonality}
 \begin{description}
     \item[Angle between vectors] \marginnote{Angle between vectors}
         The angle $\omega$ between two vectors $\vec{x}$ and $\vec{y}$ can be obtained from:
@@ -239,7 +239,7 @@ Common norms are:
 
 
 
-\subsection{Projections}
+\section{Projections}
 Projections are methods to map high-dimensional data into a lower-dimensional space 
 while minimizing the compression loss.\\
 \marginnote{Orthogonal projection}
@@ -250,7 +250,7 @@ In other words, applying $\pi$ multiple times gives the same result (i.e. idempo
 $\pi$ can be expressed as a transformation matrix $\matr{P}_\pi$ such that:
 \[ \matr{P}_\pi^2 = \matr{P}_\pi \] 
 
-\subsubsection{Projection onto general subspaces} \marginnote{Projection onto subspace basis}
+\subsection{Projection onto general subspaces} \marginnote{Projection onto subspace basis}
 To project a vector $\vec{x} \in \mathbb{R}^n$ into a lower-dimensional subspace $U \subseteq \mathbb{R}^n$,
 it is possible to use the basis of $U$.\\
 %
@@ -263,7 +263,7 @@ and is found by minimizing the distance between $\pi_U(\vec{x})$ and $\vec{x}$.
 
 
 
-\subsection{Eigenvectors and eigenvalues}
+\section{Eigenvectors and eigenvalues}
 
 Given a square matrix $\matr{A} \in \mathbb{R}^{n \times n}$, 
 $\lambda \in \mathbb{C}$ is an eigenvalue of $\matr{A}$ \marginnote{Eigenvalue}
@@ -328,7 +328,7 @@ we can prove that $\forall c \in \mathbb{R} \smallsetminus \{0\}:$ $c\vec{x}$ is
 \end{theorem}
 
 
-\subsubsection{Diagonalizability}
+\subsection{Diagonalizability}
 \marginnote{Diagonalizable matrix}
 A matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is diagonalizable if it is similar to a diagonal matrix $\matr{D} \in \mathbb{R}^{n \times n}$:
 \[ \exists \matr{P} \in \mathbb{R}^{n \times n} \text{ s.t. } \matr{P} \text{ invertible and } \matr{D} = \matr{P}^{-1}\matr{A}\matr{P} \]

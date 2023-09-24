@@ -1,8 +1,8 @@
-\section{Finite numbers}
+\chapter{Finite numbers}
 
 
 
-\subsection{Sources of error}
+\section{Sources of error}
 
 \begin{description}
     \item[Measure error] \marginnote{Measure error}
@@ -25,10 +25,10 @@
 
 
 
-\subsection{Error measurement}
+\section{Error measurement}
 
 Let $x$ be a value and $\hat{x}$ its approximation. Then:
-\begin{description}
+\begin{descriptionlist}
     \item[Absolute error] 
         \begin{equation}
             E_{a} = \hat{x} - x 
@@ -40,11 +40,11 @@ Let $x$ be a value and $\hat{x}$ its approximation. Then:
             E_{a} = \frac{\hat{x} - x}{x} 
             \marginnote{Relative error}
         \end{equation} 
-\end{description}
+\end{descriptionlist}
 
 
 
-\subsection{Representation in base \texorpdfstring{$\beta$}{B}}
+\section{Representation in base \texorpdfstring{$\beta$}{B}}
 
 Let $\beta \in \mathbb{N}_{> 1}$ be the base.
 Each $x \in \mathbb{R} \smallsetminus \{0\}$ can be uniquely represented as:
@@ -66,7 +66,7 @@ where $0.d_1d_2\dots$ is the \textbf{mantissa} and $\beta^p$ the \textbf{exponen
 
 
 
-\subsection{Floating-point}
+\section{Floating-point}
 A floating-point system $\mathcal{F}(\beta, t, L, U)$ is defined by the parameters: \marginnote{Floating-point}
 \begin{itemize}
     \item $\beta$: base
@@ -86,7 +86,7 @@ Each $x \in \mathcal{F}(\beta, t, L, U)$ can be represented in its normalized fo
 \end{example}
 
 
-\subsubsection{Numbers distribution}
+\subsection{Numbers distribution}
 Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the total amount of representable numbers is:
 \begin{equation*}
     2(\beta-1) \beta^{t-1} (U-L+1)+1
@@ -101,9 +101,9 @@ It must be noted that there is an underflow area around 0.
 \end{figure}
 
 
-\subsubsection{Numbers representation}
+\subsection{Numbers representation}
 Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the representation of $x \in \mathbb{R}$ can result in:
-\begin{description}
+\begin{descriptionlist}
     \item[Exact representation] 
         if $p \in [L, U]$ and $d_i=0$ for $i>t$.
 
@@ -117,16 +117,16 @@ Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the representation 
 
     \item[Overflow] 
         if $p > U$. In this case, an exception is usually raised.
-\end{description}
+\end{descriptionlist}
 
 
-\subsubsection{Machine precision}
+\subsection{Machine precision}
 Machine precision $\varepsilon_{\text{mach}}$ determines the accuracy of a floating-point system. \marginnote{Machine precision}
 Depending on the approximation approach, machine precision can be computes as:
-\begin{description}
+\begin{descriptionlist}
     \item[Truncation] $\varepsilon_{\text{mach}} = \beta^{1-t}$
     \item[Rounding] $\varepsilon_{\text{mach}} = \frac{1}{2}\beta^{1-t}$
-\end{description}
+\end{descriptionlist}
 Therefore, rounding results in more accurate representations.
 
 $\varepsilon_{\text{mach}}$ is the smallest distance among the representable numbers (\Cref{fig:finnum_eps}).
@@ -143,9 +143,9 @@ In alternative, $\varepsilon_{\text{mach}}$ can be defined as the smallest repre
 \end{equation*}
 
 
-\subsubsection{IEEE standard}
+\subsection{IEEE standard}
 IEEE 754 defines two floating-point formats:
-\begin{description}
+\begin{descriptionlist}
     \item[Single precision] Stored in 32 bits. Represents the system $\mathcal{F}(2, 24, -128, 127)$. \marginnote{float32}
         \begin{center}
             \small
@@ -165,12 +165,12 @@ IEEE 754 defines two floating-point formats:
                 \hline
             \end{tabular}
         \end{center}
-\end{description}
+\end{descriptionlist}
 As the first digit of the mantissa is always 1, it does not need to be stored.
 Moreover, special configurations are reserved to represent \texttt{Inf} and \texttt{NaN}.
 
 
-\subsubsection{Floating-point arithmetic}
+\subsection{Floating-point arithmetic}
 Let:
 \begin{itemize}
     \item $+: \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$ be a real numbers operation.

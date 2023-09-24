@@ -1,4 +1,4 @@
-\section{Linear systems}
+\chapter{Linear systems}
 
 A linear system:
 \begin{equation*}
@@ -42,7 +42,7 @@ where:
     
 
 
-\subsection{Square linear systems}
+\section{Square linear systems}
 \marginnote{Square linear system}
 A square linear system $\matr{A}\vec{x} = \vec{b}$ with $\matr{A} \in \mathbb{R}^{n \times n}$ and $\vec{x}, \vec{b} \in \mathbb{R}^n$
 has an unique solution iff one of the following conditions is satisfied:
@@ -58,14 +58,14 @@ However this approach requires to compute the inverse of a matrix, which has a t
 
 
 
-\subsection{Direct methods}
+\section{Direct methods}
 \marginnote{Direct methods}
 Direct methods compute the solution of a linear system in a finite number of steps.
 Compared to iterative methods, they are more precise but more expensive.
 
 The most common approach consists in factorizing the matrix $\matr{A}$.
 
-\subsubsection{Gaussian factorization}
+\subsection{Gaussian factorization}
 \marginnote{Gaussian factorization\\(LU decomposition)}
 Given a square linear system $\matr{A}\vec{x} = \vec{b}$, 
 the matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is factorized into $\matr{A} = \matr{L}\matr{U}$ such that:
@@ -90,7 +90,7 @@ To find the solution, it is sufficient to solve in order:
 
 The overall complexity is $O(\frac{n^3}{3}) + 2 \cdot O(n^2) = O(\frac{n^3}{3})$
 
-\subsubsection{Gaussian factorization with pivoting}
+\subsection{Gaussian factorization with pivoting}
 \marginnote{Gaussian factorization with pivoting}
 During the computation of $\matr{A} = \matr{L}\matr{U}$ 
 (using Gaussian elimination\footnote{\url{https://en.wikipedia.org/wiki/LU\_decomposition\#Using\_Gaussian\_elimination}}), 
@@ -115,7 +115,7 @@ The solution to the system ($\matr{P}^T\matr{A}\vec{x} = \matr{P}^T\vec{b}$) can
 
 
 
-\subsection{Iterative methods}
+\section{Iterative methods}
 \marginnote{Iterative methods}
 Iterative methods solve a linear system by computing a sequence that converges to the exact solution.
 Compared to direct methods, they are less precise but computationally faster and more adapt for large systems. 
@@ -127,7 +127,7 @@ Generally, the first vector $\vec{x}_0$ is given (or guessed). Subsequent vector
 as $\vec{x}_k = g(\vec{x}_{k-1})$.
 
 The two most common families of iterative methods are:
-\begin{description}
+\begin{descriptionlist}
     \item[Stationary methods] \marginnote{Stationary methods}
         compute the sequence as:
         \[ \vec{x}_k = \matr{B}\vec{x}_{k-1} + \vec{d} \]
@@ -138,13 +138,13 @@ The two most common families of iterative methods are:
         have the form:
         \[ \vec{x}_k = \vec{x}_{k-1} + \alpha_{k-1}\vec{p}_{k-1} \]
         where $\alpha_{k-1} \in \mathbb{R}$ and the vector $\vec{p}_{k-1}$ is called direction.
-\end{description}
+\end{descriptionlist}
 
-\subsubsection{Stopping criteria}
+\subsection{Stopping criteria}
 \marginnote{Stopping criteria}
 One ore more stopping criteria are needed to determine when to truncate the sequence (as it is theoretically infinite).
 The most common approaches are:
-\begin{description}
+\begin{descriptionlist}
     \item[Residual based]
         The algorithm is terminated when the current solution is close enough to the exact solution.
         The residual at iteration $k$ is computed as $\vec{r}_k = \vec{b} - \matr{A}\vec{x}_k$.
@@ -158,12 +158,12 @@ The most common approaches are:
         The algorithm is terminated when the change between iterations is very small.
         Given a tolerance $\tau$, the algorithm stops when:
         \[ \Vert \vec{x}_{k} - \vec{x}_{k-1} \Vert \leq \tau \]
-\end{description}
+\end{descriptionlist}
 Obviously, as the sequence is truncated, a truncation error is introduced when using iterative methods.
 
 
 
-\subsection{Condition number}
+\section{Condition number}
 Inherent error causes inaccuracies during the resolution of a system.
 This problem is independent from the algorithm and is estimated using exact arithmetic.
 
