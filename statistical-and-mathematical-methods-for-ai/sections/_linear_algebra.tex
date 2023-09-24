@@ -16,7 +16,8 @@ A vector space has the following properties:
     \item Addition is commutative and associative
     \item A null vector exists: $\exists \nullvec \in V$ s.t. $\forall \vec{u} \in V: \nullvec + \vec{u} = \vec{u} + \nullvec = \vec{u}$
     \item An identity element for scalar multiplication exists: $\forall \vec{u} \in V: 1\vec{u} = \vec{u}$
-    \item Each vector has its opposite: $\forall \vec{u} \in V, \exists \vec{a} \in V: \vec{a} + \vec{u} = \vec{u} + \vec{a} = \nullvec$   
+    \item Each vector has its opposite: $\forall \vec{u} \in V, \exists \vec{a} \in V: \vec{a} + \vec{u} = \vec{u} + \vec{a} = \nullvec$.\\
+        $\vec{a}$ is denoted as $-\vec{u}$.
     \item Distributive properties:
         \[ \forall \alpha \in \mathbb{R}, \forall \vec{u}, \vec{w} \in V: \alpha(\vec{u} + \vec{w}) = \alpha \vec{u} + \alpha \vec{w} \]
         \[ \forall \alpha, \beta \in \mathbb{R}, \forall \vec{u} \in V: (\alpha + \beta)\vec{u} = \alpha \vec{u} + \beta \vec{u} \]
@@ -24,7 +25,7 @@ A vector space has the following properties:
         \[ \forall \alpha, \beta \in \mathbb{R}, \forall \vec{u} \in V: (\alpha \beta)\vec{u} = \alpha (\beta \vec{u}) \]
 \end{enumerate}
 %
-A subset $U \subseteq V$ of a vector space $V$, is a \textbf{subspace} iff $U$ is a vector space.
+A subset $U \subseteq V$ of a vector space $V$ is a \textbf{subspace} iff $U$ is a vector space.
 \marginnote{Subspace}
 
 
@@ -95,7 +96,7 @@ The norm of a vector is a function: \marginnote{Vector norm}
 such that for each $\lambda \in \mathbb{R}$ and $\vec{x}, \vec{y} \in \mathbb{R}^n$:
 \begin{itemize}
     \item $\Vert \vec{x} \Vert \geq 0$
-    \item $\Vert \vec{x} \Vert = 0 \iff \vec{x} = 0$
+    \item $\Vert \vec{x} \Vert = 0 \iff \vec{x} = \nullvec$
     \item $\Vert \lambda \vec{x} \Vert = \vert \lambda \vert \cdot \Vert \vec{x} \Vert$
     \item $\Vert \vec{x} + \vec{y} \Vert \leq \Vert \vec{x} \Vert + \Vert \vec{y} \Vert$
 \end{itemize}
@@ -110,7 +111,7 @@ Common norms are:
 \end{descriptionlist}
 %
 In general, different norms tend to maintain the same proportion.
-In some cases, unbalanced results may be given when comparing different norms.
+In some cases, unbalanced results may be obtained when comparing different norms.
 \begin{example}
     Let $\vec{x} = (1, 1000)$ and $\vec{y} = (999, 1000)$. Their norms are:
     \begin{center}
@@ -130,7 +131,7 @@ The norm of a matrix is a function: \marginnote{Matrix norm}
 such that for each $\lambda \in \mathbb{R}$ and $\matr{A}, \matr{B} \in \mathbb{R}^{m \times n}$:
 \begin{itemize}
     \item $\Vert \matr{A} \Vert \geq 0$
-    \item $\Vert \matr{A} \Vert = 0 \iff \matr{A} = \bar{0}$
+    \item $\Vert \matr{A} \Vert = 0 \iff \matr{A} = \matr{0}$
     \item $\Vert \lambda \matr{A} \Vert = \vert \lambda \vert \cdot \Vert \matr{A} \Vert$
     \item $\Vert \matr{A} + \matr{B} \Vert \leq \Vert \matr{A} \Vert + \Vert \matr{B} \Vert$
 \end{itemize}
@@ -141,7 +142,7 @@ Common norms are:
         $\Vert \matr{A} \Vert_2 = \sqrt{ \rho(\matr{A}^T\matr{A}) }$,\\
         where $\rho(\matr{X})$ is the largest absolute value of the eigenvalues of $\matr{X}$ (spectral radius).
     
-    \item[1-norm] $\Vert \matr{A} \Vert_1 = \max_{1 \leq j \leq n} \sum_{i=1}^{m} \vert a_{i,j} \vert$
+    \item[1-norm] $\Vert \matr{A} \Vert_1 = \max_{1 \leq j \leq n} \sum_{i=1}^{m} \vert a_{i,j} \vert$ (i.e. max sum of the columns in absolute value)
     
     \item[Frobenius norm] $\Vert \matr{A} \Vert_F = \sqrt{ \sum_{i=1}^{m} \sum_{j=1}^{n} a_{i,j}^2 }$
 \end{descriptionlist}
@@ -210,12 +211,12 @@ Common norms are:
         \end{enumerate}
 
     \item[Orthogonal basis] \marginnote{Orthogonal basis}
-        Given an $n$-dimensional vector space $V$ and a basis $\beta = \{ \vec{b}_1, \dots, \vec{b}_n \}$ of $V$.
+        Given a $n$-dimensional vector space $V$ and a basis $\beta = \{ \vec{b}_1, \dots, \vec{b}_n \}$ of $V$.
         $\beta$ is an orthogonal basis if:
         \[ \vec{b}_i \perp \vec{b}_j \text{ for } i \neq j \text{ (i.e.} \left\langle \vec{b}_i, \vec{b}_j \right\rangle = 0 \text{)} \]
 
     \item[Orthonormal basis] \marginnote{Orthonormal basis}
-        Given an $n$-dimensional vector space $V$ and an orthogonal basis $\beta = \{ \vec{b}_1, \dots, \vec{b}_n \}$ of $V$.
+        Given a $n$-dimensional vector space $V$ and an orthogonal basis $\beta = \{ \vec{b}_1, \dots, \vec{b}_n \}$ of $V$.
         $\beta$ is an orthonormal basis if:
         \[ \Vert \vec{b}_i \Vert_2 = 1 \text{ (or} \left\langle \vec{b}_i, \vec{b}_i \right\rangle = 1 \text{)} \]
     
@@ -267,7 +268,7 @@ and is found by minimizing the distance between $\pi_U(\vec{x})$ and $\vec{x}$.
 
 Given a square matrix $\matr{A} \in \mathbb{R}^{n \times n}$, 
 $\lambda \in \mathbb{C}$ is an eigenvalue of $\matr{A}$ \marginnote{Eigenvalue}
-with corresponding eigenvector $\vec{x} \in \mathbb{R}^n \smallsetminus \{ \nullvec \}$ if \marginnote{Eigenvector}
+with corresponding eigenvector $\vec{x} \in \mathbb{R}^n \smallsetminus \{ \nullvec \}$ if: \marginnote{Eigenvector}
 \[ \matr{A}\vec{x} = \lambda\vec{x} \]
 
 It is equivalent to say that:
@@ -295,7 +296,7 @@ we can prove that $\forall c \in \mathbb{R} \smallsetminus \{0\}:$ $c\vec{x}$ is
 
 \begin{description}
     \item[Eigenspace] \marginnote{Eigenspace}
-        Set of all the eigenvectors of $\matr{A} \in \mathbb{R}^{n \times n}$ associated to an eigenvalues $\lambda$.
+        Set of all the eigenvectors of $\matr{A} \in \mathbb{R}^{n \times n}$ associated to an eigenvalue $\lambda$.
         This set is a subspace of $\mathbb{R}^n$.
     
     \item[Eigenspectrum] \marginnote{Eigenspectrum}
@@ -306,7 +307,7 @@ we can prove that $\forall c \in \mathbb{R} \smallsetminus \{0\}:$ $c\vec{x}$ is
 \begin{description}
     \item[Geometric multiplicity] \marginnote{Geometric multiplicity}
         Given an eigenvalue $\lambda$ of a matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
-        The geometric multiplicity of $\lambda$ is the number of linearly independent eigenvectors associated with $\lambda$.
+        The geometric multiplicity of $\lambda$ is the number of linearly independent eigenvectors associated to $\lambda$.
 \end{description}
 
 

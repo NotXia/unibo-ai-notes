@@ -12,7 +12,7 @@
         Propagation of rounding errors in each step of an algorithm.
 
     \item[Truncation error] \marginnote{Truncation error}
-        Approximating an infinite procedure into a finite number of iterations.
+        Approximating an infinite procedure to a finite number of iterations.
 
     \item[Inherent error] \marginnote{Inherent error}
         Caused by the finite representation of the data (floating-point).
@@ -30,16 +30,16 @@
 Let $x$ be a value and $\hat{x}$ its approximation. Then:
 \begin{descriptionlist}
     \item[Absolute error] 
-        \begin{equation}
+        \[
             E_{a} = \hat{x} - x 
             \marginnote{Absolute error}
-        \end{equation} 
+        \] 
         Note that, out of context, the absolute error is meaningless.
     \item[Relative error] 
-        \begin{equation}
+        \[
             E_{a} = \frac{\hat{x} - x}{x} 
             \marginnote{Relative error}
-        \end{equation} 
+        \] 
 \end{descriptionlist}
 
 
@@ -48,9 +48,9 @@ Let $x$ be a value and $\hat{x}$ its approximation. Then:
 
 Let $\beta \in \mathbb{N}_{> 1}$ be the base.
 Each $x \in \mathbb{R} \smallsetminus \{0\}$ can be uniquely represented as:
-\begin{equation} \label{eq:finnum_b_representation}
-    x = \texttt{sign}(x) \cdot (d_1\beta^{-1} + d_2\beta^{-2} + \dots d_n\beta^{-n})\beta^p
-\end{equation}
+\[ \label{eq:finnum_b_representation}
+    x = \texttt{sign}(x) \cdot (d_1\beta^{-1} + d_2\beta^{-2} + \dots + d_n\beta^{-n})\beta^p
+\]
 where:
 \begin{itemize}
     \item $0 \leq d_i \leq \beta-1$
@@ -59,9 +59,9 @@ where:
 \end{itemize}
 %
 \Cref{eq:finnum_b_representation} can be represented using the normalized scientific notation as: \marginnote{Normalized scientific notation}
-\begin{equation}
+\[
     x = \pm (0.d_1d_2\dots) \beta^p
-\end{equation}
+\]
 where $0.d_1d_2\dots$ is the \textbf{mantissa} and $\beta^p$ the \textbf{exponent}. \marginnote{Mantissa\\Exponent}
 
 
@@ -73,11 +73,13 @@ A floating-point system $\mathcal{F}(\beta, t, L, U)$ is defined by the paramete
     \item $t$: precision (number of digits in the mantissa)
     \item $[L, U]$: range of the exponent
 \end{itemize}
-%
+
 Each $x \in \mathcal{F}(\beta, t, L, U)$ can be represented in its normalized form:
 \begin{eqnarray}
     x = \pm (0.d_1d_2 \dots d_t) \beta^p & L \leq p \leq U
 \end{eqnarray}
+We denote with $\texttt{fl}(x)$ the representation of $x \in \mathbb{R}$ in a given floating-point system.
+
 \begin{example}
     In $\mathcal{F}(10, 5, -3, 3)$, $x=12.\bar{3}$ is represented as:
     \begin{equation*}
@@ -101,21 +103,20 @@ It must be noted that there is an underflow area around 0.
 \end{figure}
 
 
-\subsection{Numbers representation}
+\subsection{Number representation}
 Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the representation of $x \in \mathbb{R}$ can result in:
 \begin{descriptionlist}
     \item[Exact representation] 
         if $p \in [L, U]$ and $d_i=0$ for $i>t$.
 
-    \item[Approximation] 
+    \item[Approximation] \marginnote{Truncation\\Rounding}
         if $p \in [L, U]$ but $d_i$ may not be 0 for $i>t$. 
         In this case, the representation is obtained by truncating or rounding the value.
-        \marginnote{Truncation\\Rounding}
 
-    \item[Underflow] 
-        if $p < L$. In this case, the values is approximated as 0.
+    \item[Underflow] \marginnote{Underflow}
+        if $p < L$. In this case, the value is approximated to 0.
 
-    \item[Overflow] 
+    \item[Overflow] \marginnote{Overflow}
         if $p > U$. In this case, an exception is usually raised.
 \end{descriptionlist}
 
@@ -179,16 +180,17 @@ Let:
 %
 To compute $x \oplus y$, a machine:
 \begin{enumerate}
-    \item Calculates $x + y$ in a high precision register (still approximated, but more precise than the storing system)
+    \item Calculates $x + y$ in a high precision register 
+        (still approximated, but more precise than the floating-point system used to store the result)
     \item Stores the result as $\texttt{fl}(x + y)$
 \end{enumerate}
 
 A floating-point operation causes a small rounding error:
-\begin{equation}
+\[
     \left\vert \frac{(x \oplus y) - (x + y)}{x+y} \right\vert < \varepsilon_{\text{mach}}
-\end{equation}
+\]
 %
-Although, some operations may be subject to the \textbf{cancellation} problem which causes information loss.
+However, some operations may be subject to the \textbf{cancellation} problem which causes information loss.
 \marginnote{Cancellation}
 \begin{example}
     Given $x = 1$ and $y = 1 \cdot 10^{-16}$, we want to compute $x + y$ in $\mathcal{F}(10, 16, U, L)$.\\
