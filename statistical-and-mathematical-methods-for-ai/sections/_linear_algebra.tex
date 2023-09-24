@@ -31,7 +31,7 @@ A subset $U \subseteq V$ of a vector space $V$, is a \textbf{subspace} iff $U$ i
 \subsubsection{Basis}
 \marginnote{Basis}
 Let $V$ be a vector space of dimension $n$.
-A basis $\beta = \{ \vec{v}_1, \dots, \vec{v}_n \}$ of $V$ is a set of $n$ linear independent vectors of $V$.\\ 
+A basis $\beta = \{ \vec{v}_1, \dots, \vec{v}_n \}$ of $V$ is a set of $n$ linearly independent vectors of $V$.\\ 
 Each element of $V$ can be represented as a linear combination of the vectors in the basis $\beta$:
 \[ \forall \vec{w} \in V: \vec{w} = \lambda_1\vec{v}_1 + \dots + \lambda_n\vec{v}_n \text{ where } \lambda_i \in \mathbb{R} \]
 %
@@ -79,6 +79,10 @@ The null space (kernel) of a matrix $\matr{A} \in \mathbb{R}^{m \times n}$ is a 
     A square matrix $\matr{A}$ with $\text{\normalfont Ker}(\matr{A}) = \{\nullvec\}$ is non singular.
 \end{theorem}
 
+\subsubsection{Similar matrices} \marginnote{Similar matrices}
+Two matrices $\matr{A}$ and $\matr{D}$ are \textbf{similar} if there exists an invertible matrix $\matr{P}$ such that:
+\[ \matr{D} = \matr{P}^{-1} \matr{A} \matr{P} \]
+
 
 
 \subsection{Norms}
@@ -97,13 +101,13 @@ such that for each $\lambda \in \mathbb{R}$ and $\vec{x}, \vec{y} \in \mathbb{R}
 \end{itemize}
 %
 Common norms are:
-\begin{description}
+\begin{descriptionlist}
     \item[2-norm] $\Vert \vec{x} \Vert_2 = \sqrt{ \sum_{i=1}^{n} x_i^2 }$
     
     \item[1-norm] $\Vert \vec{x} \Vert_1 = \sum_{i=1}^{n} \vert x_i \vert$
     
     \item[$\infty$-norm] $\Vert \vec{x} \Vert_{\infty} = \max_{1 \leq i \leq n} \vert x_i \vert$
-\end{description}
+\end{descriptionlist}
 %
 In general, different norms tend to maintain the same proportion.
 In some cases, unbalanced results may be given when comparing different norms.
@@ -132,7 +136,7 @@ such that for each $\lambda \in \mathbb{R}$ and $\matr{A}, \matr{B} \in \mathbb{
 \end{itemize}
 %
 Common norms are:
-\begin{description}
+\begin{descriptionlist}
     \item[2-norm] 
         $\Vert \matr{A} \Vert_2 = \sqrt{ \rho(\matr{A}^T\matr{A}) }$,\\
         where $\rho(\matr{X})$ is the largest absolute value of the eigenvalues of $\matr{X}$ (spectral radius).
@@ -140,7 +144,7 @@ Common norms are:
     \item[1-norm] $\Vert \matr{A} \Vert_1 = \max_{1 \leq j \leq n} \sum_{i=1}^{m} \vert a_{i,j} \vert$
     
     \item[Frobenius norm] $\Vert \matr{A} \Vert_F = \sqrt{ \sum_{i=1}^{m} \sum_{j=1}^{n} a_{i,j}^2 }$
-\end{description}
+\end{descriptionlist}
 
 
 
@@ -168,10 +172,6 @@ Common norms are:
                 Which implies that $\matr{A}$ is non-singular (\Cref{th:kernel_invertible}).
             \item The diagonal elements of $\matr{A}$ are all positive.
         \end{enumerate}
-        \begin{theorem}
-            If the eigenvalues of a symmetric matrix $\matr{B} \in \mathbb{R}^{n \times n}$ are all positive.
-            Then $\matr{B}$ is positive definite.
-        \end{theorem}
 \end{description}
 
 
@@ -250,7 +250,7 @@ In other words, applying $\pi$ multiple times gives the same result (i.e. idempo
 $\pi$ can be expressed as a transformation matrix $\matr{P}_\pi$ such that:
 \[ \matr{P}_\pi^2 = \matr{P}_\pi \] 
 
-\subsubsection{Projection onto general subspaces}
+\subsubsection{Projection onto general subspaces} \marginnote{Projection onto subspace basis}
 To project a vector $\vec{x} \in \mathbb{R}^n$ into a lower-dimensional subspace $U \subseteq \mathbb{R}^n$,
 it is possible to use the basis of $U$.\\
 %
@@ -260,3 +260,92 @@ A projection $\pi_U(\vec{x})$ represents $\vec{x}$ as a linear combination of th
 \[ \pi_U(\vec{x}) = \sum_{i=1}^{m} \lambda_i \vec{b}_i = \matr{B}\vec{\lambda} \]
 where $\vec{\lambda} = (\lambda_1, \dots, \lambda_m)^T \in \mathbb{R}^{m}$ are the new coordinates of $\vec{x}$ 
 and is found by minimizing the distance between $\pi_U(\vec{x})$ and $\vec{x}$.
+
+
+
+\subsection{Eigenvectors and eigenvalues}
+
+Given a square matrix $\matr{A} \in \mathbb{R}^{n \times n}$, 
+$\lambda \in \mathbb{C}$ is an eigenvalue of $\matr{A}$ \marginnote{Eigenvalue}
+with corresponding eigenvector $\vec{x} \in \mathbb{R}^n \smallsetminus \{ \nullvec \}$ if \marginnote{Eigenvector}
+\[ \matr{A}\vec{x} = \lambda\vec{x} \]
+
+It is equivalent to say that:
+\begin{itemize}
+    \item $\lambda$ is an eigenvalue of $\matr{A} \in \mathbb{R}^{n \times n}$
+    \item $\exists \vec{x} \in \mathbb{R}^n \smallsetminus \{ \nullvec \}$ s.t. $\matr{A}\vec{x} = \lambda\vec{x}$ \\
+        Equivalently the system $(\matr{A} - \lambda \matr{I}_n)\vec{x} = \nullvec$ is non-trivial ($\vec{x} \neq \nullvec$).
+    \item $\text{rank}(\matr{A} - \lambda \matr{I}_n) < n$
+    \item $\det(\matr{A} - \lambda \matr{I}_n) = 0$ (i.e. $(\matr{A} - \lambda \matr{I}_n)$ is singular {\footnotesize(i.e. not invertible)})
+\end{itemize}
+
+Note that eigenvectors are not unique.
+Given an eigenvector $\vec{x}$ of $\matr{A}$ with eigenvalue $\lambda$, 
+we can prove that $\forall c \in \mathbb{R} \smallsetminus \{0\}:$ $c\vec{x}$ is an eigenvector of $\matr{A}$:
+\[ \matr{A}(c\vec{x}) = c(\matr{A}\vec{x}) = c\lambda\vec{x} = \lambda(c\vec{x}) \]
+
+% \begin{theorem}
+%     The eigenvalues of a symmetric matrix $\matr{A} \in \mathbb{R}^{n \times n}$ are all in $\mathbb{R}$.
+% \end{theorem}
+
+\begin{theorem} \marginnote{Eigenvalues and positive definiteness}
+    $\matr{A} \in \mathbb{R}^{n \times n}$ is symmetric positive definite $\iff$
+    its eigenvalues are all positive.
+\end{theorem}
+
+\begin{description}
+    \item[Eigenspace] \marginnote{Eigenspace}
+        Set of all the eigenvectors of $\matr{A} \in \mathbb{R}^{n \times n}$ associated to an eigenvalues $\lambda$.
+        This set is a subspace of $\mathbb{R}^n$.
+    
+    \item[Eigenspectrum] \marginnote{Eigenspectrum}
+        Set of all eigenvalues of $\matr{A} \in \mathbb{R}^{n \times n}$.
+\end{description}
+
+
+\begin{description}
+    \item[Geometric multiplicity] \marginnote{Geometric multiplicity}
+        Given an eigenvalue $\lambda$ of a matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
+        The geometric multiplicity of $\lambda$ is the number of linearly independent eigenvectors associated with $\lambda$.
+\end{description}
+
+
+\begin{theorem} \marginnote{Linearly independent eigenvectors}
+    Given a matrix $\matr{A} \in \mathbb{R}^{n \times n}$. 
+    If its $n$ eigenvectors $\vec{x}_1, \dots, \vec{x}_n$ are associated to distinct eigenvalues, 
+    then $\vec{x}_1, \dots, \vec{x}_n$ are linearly independent (i.e. they form a basis of $\mathbb{R}^n$).
+
+    \begin{descriptionlist}
+        \item[Defective matrix] \marginnote{Defective matrix}
+            A matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is defective if it has less than $n$ linearly independent eigenvectors.
+    \end{descriptionlist}
+\end{theorem}
+
+
+\begin{theorem}[Spectral theorem] \marginnote{Spectral theorem}
+    Given a symmetric matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
+    Its eigenvectors form a orthonormal basis and its eigenvalues are all in $\mathbb{R}$.
+\end{theorem}
+
+
+\subsubsection{Diagonalizability}
+\marginnote{Diagonalizable matrix}
+A matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is diagonalizable if it is similar to a diagonal matrix $\matr{D} \in \mathbb{R}^{n \times n}$:
+\[ \exists \matr{P} \in \mathbb{R}^{n \times n} \text{ s.t. } \matr{P} \text{ invertible and } \matr{D} = \matr{P}^{-1}\matr{A}\matr{P} \]
+
+\begin{theorem}
+    Similar matrices have the same eigenvalues.
+\end{theorem}
+
+\begin{theorem}[Eigendecomposition] \marginnote{Eigendecomposition}
+    Given a matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
+    If the eigenvectors of $\matr{A}$ form a basis of $\mathbb{R}^n$,
+    then $\matr{A} \in \mathbb{R}^{n \times n}$ can be decomposed into:
+    \[ \matr{A} = \matr{P}\matr{D}\matr{P}^{-1} \]
+    where $\matr{P} \in \mathbb{R}^{n \times n}$ contains the eigenvectors of $\matr{A}$ as its columns and 
+    $\matr{D}$ is a diagonal matrix whose diagonal contains the eigenvalues of $\matr{A}$.
+\end{theorem}
+
+\begin{theorem} \marginnote{Symmetric matrix diagonalizability}
+    A symmetric matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is always diagonalizable.
+\end{theorem}
