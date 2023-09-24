@@ -21,10 +21,13 @@ jobs:
 
       - name: Compile
         run: |
-            shopt -s globstar
-            work_dir=$(pwd)
             mkdir /tmp/compiled
 
+            cp README.md /tmp/compiled
+
+            shopt -s globstar
+            cd src
+            work_dir=$(pwd)
             for f in **/[!_]*.tex; do
                 f_dir=$(dirname $f);
                 f_base=$(basename $f);
@@ -36,7 +39,6 @@ jobs:
                 mv ${f_nameonly}.pdf /tmp/compiled/${f_dir}/.
                 cd $work_dir;
             done
-             
 
       - name: Move to pdfs branch
         uses: s0/git-publish-subdir-action@develop
