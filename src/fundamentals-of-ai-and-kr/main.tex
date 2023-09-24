@@ -1,0 +1,64 @@
+\documentclass[11pt]{scrreprt}
+\usepackage{geometry}
+\usepackage{graphicx, xcolor}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm}
+\usepackage{hyperref}
+\usepackage[nameinlink]{cleveref}
+\usepackage[all]{hypcap} % Links hyperref to object top and not caption
+\usepackage[inline]{enumitem}
+\usepackage{marginnote}
+\usepackage[bottom]{footmisc}
+
+\geometry{ margin=3cm, lmargin=2cm, rmargin=4cm, marginparwidth=3cm }
+\hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
+
+\NewDocumentEnvironment{descriptionlist}{}{%
+  \begin{description}[labelindent=1em]
+}{
+  \end{description}%
+}
+\setlength{\parindent}{0pt}
+\renewcommand*{\marginfont}{\color{gray}\footnotesize}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem*{example}{Example}
+\theoremstyle{definition}
+\newtheorem*{definition}{Def}
+
+\newcommand{\ubar}[1]{\text{\b{$#1$}}}
+\renewcommand{\vec}[1]{{\bm{#1}}}
+\newcommand{\nullvec}[0]{\bar{\vec{0}}}
+\newcommand{\matr}[1]{{\bm{#1}}}
+
+
+
+\title{Fundamentals of Artificial Intelligence and Knowledge Representation}
+\date{2023 -- 2024}
+
+\begin{document}
+\newgeometry{margin=3cm}
+    \makeatletter
+    \begin{titlepage}
+        \centering
+        \vspace*{\fill}
+        \huge
+        \textbf{\@title}
+        \vspace*{\fill}
+
+        \Large
+        Academic Year \@date\\
+        Alma Mater Studiorum $\cdot$ University of Bologna
+        \vspace*{1cm}
+    \end{titlepage}
+    \makeatother
+    \pagenumbering{roman}
+    \tableofcontents
+\restoregeometry
+    \newpage
+    \pagenumbering{arabic}
+
+    \input{sections/_intro.tex}
+
+
+\end{document}

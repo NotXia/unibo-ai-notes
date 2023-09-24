@@ -1,0 +1,180 @@
+\chapter{Introduction}
+
+
+\section{AI systems classification}
+
+\subsection{Intelligence classification}
+Intelligence is defined as the ability to perceive or infer information and to retain the knowledge for future use.
+
+\begin{description}
+    \item[Weak AI] \marginnote{Weak AI}
+        aims to build a system that acts as an intelligent system. 
+    
+        \item[Strong AI] \marginnote{Strong AI}
+        aims to build a system that is actually intelligent. 
+\end{description}
+
+
+\subsection{Capability classification}
+\begin{description}
+    \item[General AI] \marginnote{General AI}
+        systems able to solve any generalized task. 
+    
+        \item[Narrow AI] \marginnote{Narrow AI}
+        systems able to solve a particular task. 
+\end{description}
+
+
+\subsection{AI approaches}
+\begin{description}
+    \item[Symbolic AI (top-down)] \marginnote{Symbolic AI}
+        Symbolic representation of knowledge, understandable by humans.
+
+    \item[Connectionist approach (bottom up)] \marginnote{Connectionist approach}
+        Neural networks. Knowledge is encoded and not understandable by humans.
+\end{description}
+
+
+
+\section{Symbolic AI}
+\begin{description}
+    \item[Deductive reasoning] \marginnote{Deductive reasoning}
+        Conclude something given some premises (general to specific). 
+        It is unable to produce new knowledge.
+        \begin{example}
+            "All men are mortal" and "Socrates is a man" $\rightarrow$ "Socrates is mortal"
+        \end{example}
+    
+    \item[Inductive reasoning] \marginnote{Inductive reasoning}
+        A conclusion is derived from an observation (specific to general).
+        Produces new knowledge, but correctness is not guaranteed.
+        \begin{example}
+            "Several birds fly" $\rightarrow$ "All birds fly"
+        \end{example}
+
+    \item[Abduction reasoning] \marginnote{Abduction reasoning}
+        An explanation of the conclusion is found from known premises.
+        Differently from inductive reasoning, it does not search for a general rule.
+        Produces new knowledge, but correctness is not guaranteed.
+        \begin{example}
+            "Socrates is dead" (conclusion) and "All men are mortal" (knowledge) $\rightarrow$ "Socrates is a man"
+        \end{example}
+    
+    \item[Reasoning by analogy] \marginnote{Reasoning by analogy}
+        Principle of similarity (e.g. k-nearest-neighbor algorithm).
+        \begin{example}
+            "Socrates loves philosophy" and Socrates resembles John $\rightarrow$ "John loves philosophy"
+        \end{example}
+
+    \item[Constraint reasoning and optimization] \marginnote{Constraint reasoning}
+        Constraints, probability, statistics.
+\end{description}
+
+
+
+\section{Machine learning}
+
+\subsection{Training approach}
+\begin{description}
+    \item[Supervised learning] \marginnote{Supervised learning}
+        Trained on labeled data (ground truth is known).\\
+        Suitable for classification and regression tasks.
+
+    \item[Unsupervised learning] \marginnote{Unsupervised learning}
+        Trained on unlabeled data (the system makes its own discoveries).\\
+        Suitable for clustering and data mining.
+
+    \item[Semi-supervised learning] \marginnote{Semi-supervised learning}
+        The system is first trained to synthesize data in an unsupervised manner,
+        followed by a supervised phase.
+
+    \item[Reinforcement learning] \marginnote{Reinforcement learning}
+        An agent learns by simulating actions in an environment with rewards and punishments depending on its choices.
+\end{description}
+
+
+\subsection{Tasks}
+\begin{description}
+    \item[Classification] \marginnote{Classification}
+        Supervised task that, given the input variables $X$ and the output (discrete) categories $Y$,
+        aims to approximate a mapping function $f: X \rightarrow Y$.
+
+    \item[Regression] \marginnote{Regression}
+        Supervised task that, given the input variables $X$ and the output (continuous) variables $Y$,
+        aims to approximate a mapping function $f: X \rightarrow Y$.
+
+    \item[Clustering] \marginnote{Clustering}
+        Unsupervised task that aims to organize objects into groups.
+\end{description}
+
+
+\subsection{Neural networks}
+\marginnote{Perceptron}
+A neuron (\textbf{perceptron}) computes a weighted sum of its inputs and 
+passes the result to an activation function to produce the output.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.40\textwidth]{img/neuron.png}
+    \caption{Representation of an artificial neuron}
+\end{figure}
+
+\marginnote{Feed-forward neural network}
+A \textbf{feed-forward neural network} is composed of multiple layers of neurons, each connected to the next one.
+The first layer is the input layer, while the last is the output layer.
+Intermediate layers are hidden layers.
+
+The expressivity of a neural networks increases when more neurons are used:
+\begin{descriptionlist}
+    \item[Single perceptron] 
+        Able to compute a linear separation.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.25\textwidth]{img/1perceptron.png}
+            \caption{Separation performed by one perceptron}
+        \end{figure}
+    \item[Three-layer network] 
+        Able to separate a convex region ($n_\text{edges} \leq n_\text{hidden neurons}$)
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.75\textwidth]{img/3layer.png}
+            \caption{Separation performed by a three-layer network}
+        \end{figure}
+    \item[Four-layer network] 
+        Able to separate regions of arbitrary shape.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.30\textwidth]{img/4layer.png}
+            \caption{Separation performed by a four-layer network}
+        \end{figure}
+\end{descriptionlist}
+
+\begin{theorem}[Universal approximation theorem] \marginnote{Universal approximation theorem}
+    A feed-forward network with one hidden layer and a finite number of neurons is
+    able to approximate any continuous function with desired accuracy.
+\end{theorem}
+
+\begin{description}
+    \item[Deep learning] \marginnote{Deep learning}
+        Neural network with a large number of layers and neurons.
+        The learning process is hierarchical: the network exploits simple features in the first layers and
+        synthesis more complex concepts while advancing through the layers.
+\end{description}
+
+
+
+\section{Automated planning}
+Given an initial state, a set of actions and a goal, 
+\textbf{automated planning} aims to find a partially or totally ordered sequence of actions to achieve a goal. \marginnote{Automated planning}
+
+An \textbf{automated planner} is an agent that operates in a given domain described by:
+\begin{itemize}
+    \item Representation of the initial state
+    \item Representation of a goal
+    \item Formal description of the possible actions (preconditions and effects)
+\end{itemize}
+
+
+
+\section{Swarm intelligence}
+\marginnote{Swarm intelligence}
+Decentralized and self-organized systems that result in emergent behaviors. 
