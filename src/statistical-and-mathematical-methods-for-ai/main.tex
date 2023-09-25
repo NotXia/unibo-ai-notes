@@ -8,6 +8,7 @@
 \usepackage[inline]{enumitem}
 \usepackage{marginnote}
 \usepackage[bottom]{footmisc}
+\usepackage{array}
 
 \geometry{ margin=3cm, lmargin=2cm, rmargin=4cm, marginparwidth=3cm }
 \hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
@@ -59,10 +60,9 @@
     \pagenumbering{arabic}
 
     \input{sections/_finite_numbers.tex}
-    \newpage
     \input{sections/_linear_algebra.tex}
-    \newpage
     \input{sections/_linear_systems.tex}
+    \input{sections/_matrix_decomp.tex}
 
 
 \end{document}

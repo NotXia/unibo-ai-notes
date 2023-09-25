@@ -209,6 +209,7 @@ Common norms are:
                         \frac{\vec{x}^T\vec{y}}{\Vert \vec{x} \Vert \cdot \Vert \vec{y} \Vert}
                 \]
         \end{enumerate}
+        Note: an orthogonal matrix represents a rotation.
 
     \item[Orthogonal basis] \marginnote{Orthogonal basis}
         Given a $n$-dimensional vector space $V$ and a basis $\beta = \{ \vec{b}_1, \dots, \vec{b}_n \}$ of $V$.
@@ -336,15 +337,6 @@ A matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is diagonalizable if it is simil
 
 \begin{theorem}
     Similar matrices have the same eigenvalues.
-\end{theorem}
-
-\begin{theorem}[Eigendecomposition] \marginnote{Eigendecomposition}
-    Given a matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
-    If the eigenvectors of $\matr{A}$ form a basis of $\mathbb{R}^n$,
-    then $\matr{A} \in \mathbb{R}^{n \times n}$ can be decomposed into:
-    \[ \matr{A} = \matr{P}\matr{D}\matr{P}^{-1} \]
-    where $\matr{P} \in \mathbb{R}^{n \times n}$ contains the eigenvectors of $\matr{A}$ as its columns and 
-    $\matr{D}$ is a diagonal matrix whose diagonal contains the eigenvalues of $\matr{A}$.
 \end{theorem}
 
 \begin{theorem} \marginnote{Symmetric matrix diagonalizability}
