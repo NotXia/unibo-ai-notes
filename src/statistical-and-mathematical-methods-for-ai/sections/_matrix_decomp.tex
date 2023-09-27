@@ -99,8 +99,30 @@ Then, we can compose $\matr{A}$ as a sum of dyads:
 \marginnote{Rank-$k$ approximation}
 By considering only the first $k < r$ singular values, we can obtain a rank-$k$ approximation of $\matr{A}$:
 \[ \hat{\matr{A}}(k) = \sum_{i=1}^{k} \sigma_i \vec{u}_i \vec{v}_i^T = \sum_{i=1}^{k} \sigma_i \matr{A}_i \]
-Each dyad required $1 + m + n$ (respectively for $\sigma_i$, $\vec{u}_i$ and $\vec{v}_i$) numbers to be stored.
+
+\begin{theorem}[Eckart-Young]
+    Given $\matr{A} \in \mathbb{R}^{m \times n}$ of rank $r$.
+    For any $k \leq r$ (this theorem is interesting for $k < r$), the rank-$k$ approximation is:
+    \[ 
+        \hat{\matr{A}}(k) = \arg \min_{\matr{B} \in \mathbb{R}^{m \times n}, \text{rank}(\matr{B}) = k} \Vert \matr{A} - \matr{B} \Vert_2 
+    \]
+\end{theorem}
+In other words, among all the possible projections, $\hat{\matr{A}}(k)$ is the closer one to $\matr{A}$.
+Moreover, the error of the rank-$k$ approximation is:
+\[
+    \Vert \matr{A} - \hat{\matr{A}}(k) \Vert_2 = 
+        \left\Vert \sum_{i=1}^{r} \sigma_i \matr{A}_i - \sum_{j=1}^{k} \sigma_j \matr{A}_j \right\Vert_2 =
+        \left\Vert \sum_{i=k+1}^{r} \sigma_i \matr{A}_i \right\Vert_2 = 
+        \sigma_{k+1}
+\]
+
+\subsubsection{Image compression}
+Each dyad requires $1 + m + n$ (respectively for $\sigma_i$, $\vec{u}_i$ and $\vec{v}_i$) numbers to be stored.
 A rank-$k$ approximation requires to store $k(1 + m + n)$ numbers.
+Therefore, the compression factor is given by: \marginnote{Compression factor}
+\[
+    c_k = 1 - \frac{k(1 + m + n)}{mn}
+\]
 
 \begin{figure}[h]
     \centering
