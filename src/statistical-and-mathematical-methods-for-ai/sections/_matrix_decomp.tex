@@ -19,17 +19,35 @@ The singular value decomposition (SVD) of $\matr{A}$ is always possible and has 
 \[
     \matr{A} = \matr{U}\matr{\Sigma}\matr{V}^T
 \]
+\[
+    =
+    \begin{pmatrix}
+        \begin{pmatrix} \\ \vec{u}_1 \\ \\ \end{pmatrix}    &
+        \dots                                               &
+        \begin{pmatrix} \\ \vec{u}_m \\ \\ \end{pmatrix} 
+    \end{pmatrix}
+    \begin{pmatrix}
+        \sigma_1    & 0         & 0                 \\
+        0           & \ddots    & 0                 \\
+        0           & 0    & \sigma_{\min\{m, n\}}  \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        \begin{pmatrix} & \vec{v}_1 & \end{pmatrix} \\
+        \vdots                                      \\
+        \begin{pmatrix} & \vec{v}_n & \end{pmatrix} \\
+    \end{pmatrix}
+\]
 where:
 \begin{itemize}
     \item 
         $\matr{U} \in \mathbb{R}^{m \times m}$ is an orthogonal matrix with columns $\vec{u}_i$ called left-singular vectors.
     
     \item 
-        $\matr{\Sigma} \in \mathbb{R}^{m \times n}$ is an orthogonal matrix with columns $\vec{v}_i$ called right-singular vectors.
+        $\matr{V} \in \mathbb{R}^{n \times n}$ is an orthogonal matrix with columns $\vec{v}_i$ called right-singular vectors.
     
     \item 
-        $\matr{V} \in \mathbb{R}^{n \times n}$ is a matrix with $\matr{\Sigma}_{i,j} = 0$ (i.e. diagonal if it was a square matrix) and
-        the singular values $\sigma_i, i = 1 \dots r$ on the diagonal.
+        $\matr{\Sigma} \in \mathbb{R}^{m \times n}$ is a matrix with $\matr{\Sigma}_{i,j} = 0$ (i.e. diagonal if it was a square matrix) and
+        the singular values $\sigma_i, i = 1 \dots \min\{m, n\}$ on the diagonal.
         By convention $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r \geq 0$.
         Note that singular values $\sigma_j = 0$ for $(r + 1) \leq j \leq n$.
 \end{itemize}
