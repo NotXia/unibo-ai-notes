@@ -9,8 +9,33 @@
 \usepackage{marginnote}
 \usepackage[bottom]{footmisc}
 \usepackage{scrlayer-scrpage}
+\usepackage{algorithm, listings}
+\usepackage{array, makecell}
 \geometry{ margin=3cm, lmargin=1.5cm, rmargin=4.5cm, marginparwidth=3cm }
 \hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    commentstyle = \color{codegreen},
+    keywordstyle = \color{magenta},
+    numberstyle = \tiny\color{codegray},
+    stringstyle = \color{codepurple},
+    basicstyle = \footnotesize\ttfamily,
+    breakatwhitespace = false, 
+    breaklines = true, 
+    captionpos = b, 
+    keepspaces = true,
+    numbers = none,
+    showspaces = false,
+    showstringspaces = true,
+    showtabs = false,
+    tabsize = 3
+}
+\lstset{style=mystyle}
+\lstset{language=Python}
 
 \NewDocumentEnvironment{descriptionlist}{}{%
   \begin{description}[labelindent=1em]
@@ -60,6 +85,7 @@
     \pagenumbering{arabic}
 
     \input{sections/_intro.tex}
+    \input{sections/_search.tex}
 
 
 \end{document}
