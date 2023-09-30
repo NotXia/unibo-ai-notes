@@ -116,6 +116,17 @@ It must be noted that $\matr{P}$ is orthogonal, so $\matr{P}^T = \matr{P}^{-1}$.
 The solution to the system ($\matr{P}^T\matr{A}\vec{x} = \matr{P}^T\vec{b}$) can be found as above.
 
 
+\subsection{Cholesky factorization}
+Given a symmetric definite positive matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
+It is possible to decompose $\matr{A}$ as:
+\[ \matr{A} = \matr{L}\matr{L}^T \]
+where $\matr{L}$ is lower triangular.
+
+A square system where $\matr{A}$ is symmetric definite positive can be solved as above using the Cholesky factorization.
+This method has time complexity $O(\frac{n^3}{6})$.
+
+
+
 
 \section{Iterative methods}
 \marginnote{Iterative methods}
@@ -187,3 +198,7 @@ Finally, we can define the \textbf{condition number} of a matrix $\matr{A}$ as: 
 A system is \textbf{ill-conditioned} if $K(\matr{A})$ is large \marginnote{Ill-conditioned}
 (i.e. a small perturbation of the input causes a large change of the output).
 Otherwise it is \textbf{well-conditioned}. \marginnote{Well-conditioned}
+
+
+\section{Linear least squares problem}
+See \Cref{sec:lls}.
