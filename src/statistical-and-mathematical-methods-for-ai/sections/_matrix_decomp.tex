@@ -49,7 +49,8 @@ where:
         $\matr{\Sigma} \in \mathbb{R}^{m \times n}$ is a matrix with $\matr{\Sigma}_{i,j} = 0$ (i.e. diagonal if it was a square matrix) and
         the singular values $\sigma_i, i = 1 \dots \min\{m, n\}$ on the diagonal.
         By convention $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r \geq 0$.
-        Note that singular values $\sigma_j = 0$ for $(r + 1) \leq j \leq n$.
+        Note that singular values $\sigma_j = 0$ for $(r + 1) \leq j \leq \min\{m, n\}$ 
+        (i.e. singular values at indexes after $\text{rank}(\matr{A})$ are always 0).
 \end{itemize}
 
 \marginnote{Singular value equation}
