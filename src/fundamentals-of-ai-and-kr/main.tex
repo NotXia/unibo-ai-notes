@@ -8,8 +8,8 @@
 \usepackage[inline]{enumitem}
 \usepackage{marginnote}
 \usepackage[bottom]{footmisc}
-
-\geometry{ margin=3cm, lmargin=2cm, rmargin=4cm, marginparwidth=3cm }
+\usepackage{scrlayer-scrpage}
+\geometry{ margin=3cm, lmargin=1.5cm, rmargin=4.5cm, marginparwidth=3cm }
 \hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
 
 \NewDocumentEnvironment{descriptionlist}{}{%
@@ -19,6 +19,7 @@
 }
 \setlength{\parindent}{0pt}
 \renewcommand*{\marginfont}{\color{gray}\footnotesize}
+\renewcommand*\chapterpagestyle{scrheadings} % Header in chapter pages
 
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]

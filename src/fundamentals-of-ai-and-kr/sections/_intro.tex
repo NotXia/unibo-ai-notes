@@ -1,3 +1,5 @@
+\lohead{\color{gray} Not required for the exam}
+\lehead{\color{gray} Not required for the exam}
 \chapter{Introduction}
 
 
@@ -71,7 +73,6 @@ Intelligence is defined as the ability to perceive or infer information and to r
 \end{description}
 
 
-
 \section{Machine learning}
 
 \subsection{Training approach}
@@ -136,14 +137,14 @@ The expressivity of a neural networks increases when more neurons are used:
         Able to separate a convex region ($n_\text{edges} \leq n_\text{hidden neurons}$)
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.75\textwidth]{img/3layer.png}
+            \includegraphics[width=0.90\textwidth]{img/3layer.png}
             \caption{Separation performed by a three-layer network}
         \end{figure}
     \item[Four-layer network] 
         Able to separate regions of arbitrary shape.
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.30\textwidth]{img/4layer.png}
+            \includegraphics[width=0.40\textwidth]{img/4layer.png}
             \caption{Separation performed by a four-layer network}
         \end{figure}
 \end{descriptionlist}
@@ -178,3 +179,37 @@ An \textbf{automated planner} is an agent that operates in a given domain descri
 \section{Swarm intelligence}
 \marginnote{Swarm intelligence}
 Decentralized and self-organized systems that result in emergent behaviors. 
+
+
+
+\section{Decision support systems}
+
+\begin{description}
+    \item[Knowledge based system] \marginnote{Knowledge based system}
+        Use knowledge (and data) to support human decisions.
+        Bottlenecked by knowledge acquisition.
+\end{description}
+
+Different levels of decision support exist:
+\begin{descriptionlist}
+    \item[Descriptive analytics] \marginnote{Descriptive analytics}
+        Data are used to describe the system (e.g. dashboards, reports, \dots).
+        Human intervention is required.
+            
+    \item[Diagnostic analytics] \marginnote{Diagnostic analytics}
+        Data are used to understand causes (e.g. fault diagnosis)
+        Decisions are made by humans.
+
+    \item[Predictive analytics] \marginnote{Predictive analytics}
+        Data are used to predict future evolutions of the system.
+        Uses machine learning models or simulators (digital twins)
+
+    \item[Prescriptive analytics] \marginnote{Prescriptive analytics}
+        Make decisions by finding the preferred scenario.
+        Uses optimization systems, combinatorial solvers or logical solvers.
+\end{descriptionlist}
+
+
+\newpage
+\lohead{}
+\lehead{}
