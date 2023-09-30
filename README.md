@@ -1,4 +1,4 @@
-# Unibo MSc AI Notes
+# Unibo M.Sc. AI Notes
 
 My notes for the courses of the Master's Degree in Artificial Intelligence at the University of Bologna.
 
