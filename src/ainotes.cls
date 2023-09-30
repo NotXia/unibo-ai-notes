@@ -43,9 +43,9 @@
 \lstset{language=Python}
 
 \NewDocumentEnvironment{descriptionlist}{}{%
-  \begin{description}[labelindent=1em]
+    \begin{description}[labelindent=1em]
 }{
-  \end{description}%
+    \end{description}%
 }
 \setlength{\parindent}{0pt}
 \renewcommand*{\marginfont}{\color{gray}\footnotesize}
@@ -61,3 +61,33 @@
 \renewcommand{\vec}[1]{{\bm{#1}}}
 \newcommand{\nullvec}[0]{\bar{\vec{0}}}
 \newcommand{\matr}[1]{{\bm{#1}}}
+
+
+\renewcommand*{\maketitle}{%
+    \begin{titlepage}
+    \newgeometry{margin=3cm}
+        \centering
+        \vspace*{\fill}
+        \huge
+        \textbf{\@title}
+        \vspace*{\fill}
+
+        \Large
+        Academic Year \@date\\
+        Alma Mater Studiorum $\cdot$ University of Bologna
+        \vspace*{1cm}
+    \restoregeometry
+    \end{titlepage}
+    \newpage
+}
+
+
+\newcommand*{\makenotesfront}{%
+    \newgeometry{margin=3cm}
+    \maketitle
+    \pagenumbering{roman}
+    \tableofcontents
+    \restoregeometry
+    \newpage
+    \pagenumbering{arabic}
+}

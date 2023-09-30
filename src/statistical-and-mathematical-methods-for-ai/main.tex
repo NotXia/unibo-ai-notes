@@ -4,31 +4,12 @@
 \date{2023 -- 2024}
 
 \begin{document}
-\newgeometry{margin=3cm}
-    \makeatletter
-    \begin{titlepage}
-        \centering
-        \vspace*{\fill}
-        \huge
-        \textbf{\@title}
-        \vspace*{\fill}
-
-        \Large
-        Academic Year \@date\\
-        Alma Mater Studiorum $\cdot$ University of Bologna
-        \vspace*{1cm}
-    \end{titlepage}
-    \makeatother
-    \pagenumbering{roman}
-    \tableofcontents
-\restoregeometry
-    \newpage
-    \pagenumbering{arabic}
+    
+    \makenotesfront
 
     \input{sections/_finite_numbers.tex}
     \input{sections/_linear_algebra.tex}
     \input{sections/_linear_systems.tex}
     \input{sections/_matrix_decomp.tex}
-
 
 \end{document}
