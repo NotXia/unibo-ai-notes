@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+    paths: ["src/**", .github/workflows/**]
 
 jobs:
   compile:
@@ -47,4 +48,4 @@ jobs:
           BRANCH: pdfs
           FOLDER: /tmp/compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "🤖 It's hard to work with you"
+          MESSAGE: "🤖 It's hard to work with you ({sha})"
