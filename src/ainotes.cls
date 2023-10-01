@@ -6,7 +6,7 @@
 
 \usepackage{geometry}
 \usepackage{graphicx, xcolor}
-\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm, upgreek}
 \usepackage{hyperref}
 \usepackage[nameinlink]{cleveref}
 \usepackage[all]{hypcap} % Links hyperref to object top and not caption
@@ -58,7 +58,7 @@
 \newtheorem*{definition}{Def}
 
 \newcommand{\ubar}[1]{\text{\b{$#1$}}}
-\renewcommand{\vec}[1]{{\bm{#1}}}
+\renewcommand{\vec}[1]{{\mathbf{#1}}}
 \newcommand{\nullvec}[0]{\bar{\vec{0}}}
 \newcommand{\matr}[1]{{\bm{#1}}}
 

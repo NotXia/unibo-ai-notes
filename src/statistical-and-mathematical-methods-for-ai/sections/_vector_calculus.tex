@@ -1,0 +1,131 @@
+\chapter{Vector calculus}
+
+
+\section{Gradient of real-valued multivariate functions}
+
+\begin{description}
+    \item[Gradient] \marginnote{Gradient}
+        Given a function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, 
+        the gradient is a row vector containing the partial derivatives of $f$:
+        \[ 
+            \nabla f(\vec{x}) = 
+            \begin{pmatrix}
+                \frac{\partial f(\vec{x})}{\partial x_1} & \frac{\partial f(\vec{x})}{\partial x_2} & \dots & \frac{\partial f(\vec{x})}{\partial x_n}
+            \end{pmatrix}
+            \in \mathbb{R}^{1 \times n}
+        \]
+
+    \item[Hessian] \marginnote{Hessian matrix}
+        Given a function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, 
+        the Hessian matrix $\matr{H} \in \mathbb{R}^{n \times n}$ contains the second derivatives of $f$:
+        \[
+            \matr{H} = 
+            \begin{pmatrix}
+                \frac{\partial f}{\partial x_1^2}               & \frac{\partial f}{\partial x_1 \partial x_2} & \dots & \frac{\partial f}{\partial x_1 \partial x_n} \\
+                \frac{\partial f}{\partial x_2 \partial x_1}    & \frac{\partial f}{\partial x_2^2} & \dots & \vdots \\
+                \vdots                                          & \vdots & \ddots & \vdots \\
+                \frac{\partial f}{\partial x_n \partial x_1}    & \dots & \dots & \frac{\partial f}{\partial x_n^2}
+            \end{pmatrix} 
+        \]
+        In other words, $H_{i,j} = \frac{\partial f}{\partial x_i \partial x_j}$.
+        Moreover, $\matr{H}$ is symmetric.
+\end{description}
+
+\subsection{Partial differentiation rules}
+\begin{description}
+    \item[Product rule] \marginnote{Product rule}
+        Let $f, g: \mathbb{R}^n \rightarrow \mathbb{R}$:
+        \[ 
+            \frac{\partial}{\partial \vec{x}} (f(\vec{x})g(\vec{x})) = 
+                \frac{\partial f}{\partial \vec{x}} g(\vec{x}) + f(\vec{x}) \frac{\partial g}{\partial \vec{x}}
+        \]
+    \item[Sum rule] \marginnote{Sum rule}
+        Let $f, g: \mathbb{R}^n \rightarrow \mathbb{R}$:
+        \[
+            \frac{\partial}{\partial \vec{x}} (f(\vec{x}) + g(\vec{x})) =
+                \frac{\partial f}{\partial \vec{x}} + \frac{\partial g}{\partial \vec{x}}
+        \]
+    \item[Chain rule] \marginnote{Chain rule}
+        Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ and $\vec{g}$ a vector of $n$ functions $g_i: \mathbb{R}^m \rightarrow \mathbb{R}$:
+        \[
+            \frac{\partial}{\partial \vec{x}} (f \circ \vec{g})(\vec{x}) = 
+                \frac{\partial}{\partial \vec{x}} (f(\vec{g}(\vec{x}))) =
+                \frac{\partial f}{\partial \vec{g}} \frac{\partial \vec{g}}{\partial \vec{x}}
+        \]
+
+        More precisely, considering a $f: \mathbb{R}^2 \rightarrow \mathbb{R}$ of two variables 
+        $g_1(t), g_2(t): \mathbb{R} \rightarrow \mathbb{R}$ that are functions of $t$. 
+        The gradient of $f$ with respect to $t$ is:
+        \[
+            \frac{\text{d}f}{\text{d}t} = 
+            % \frac{\partial f}{\partial (g_1, g_2)} \frac{\partial (g_1, g_2)}{\partial t} =
+            \begin{pmatrix}
+                \frac{\partial f}{\partial g_1} & \frac{\partial f}{\partial g_2}
+            \end{pmatrix}
+            \begin{pmatrix}
+                \frac{\partial g_1}{\partial t} \\ \frac{\partial g_2}{\partial t}
+            \end{pmatrix}
+            = \frac{\partial f}{\partial g_1} \frac{\partial g_1}{\partial t} + \frac{\partial f}{\partial g_2} \frac{\partial g_2}{\partial t}
+        \]
+        In other words, the first matrix represents the gradient of $f$ w.r.t. its variables and 
+        the second matrix contains in the $i$-th row the gradient of $g_i$.
+
+        Therefore, if $g_i$ are in turn multivariate functions $g_1(s, t), g_2(s, t): \mathbb{R}^2 \rightarrow \mathbb{R}$,
+        the chain rule can be applies as:
+        \[
+            \frac{\text{d}f}{\text{d}(s, t)} = 
+            \begin{pmatrix}
+                \frac{\partial f}{\partial g_1} & \frac{\partial f}{\partial g_2}
+            \end{pmatrix}
+            \begin{pmatrix}
+                \frac{\partial g_1}{\partial s} & \frac{\partial g_1}{\partial t} \\ 
+                \frac{\partial g_2}{\partial s} & \frac{\partial g_2}{\partial t}
+            \end{pmatrix}
+        \]
+
+        \begin{example}
+            Let $f(x_1, x_2) = x_1^2 + 2x_2$, where $x_1 = \sin(t)$ and $x_2 = \cos(t)$.
+            \[
+                \begin{split}
+                    \frac{\text{d}f}{\text{d}t} & = 
+                        \frac{\partial f}{\partial x_1}\frac{\partial x_1}{\partial t} + \frac{\partial f}{\partial x_2}\frac{\partial x_2}{\partial t} \\
+                        & = (2x_1)(\cos(t)) + (2)(-\sin(t)) \\
+                        & = 2\sin(t)\cos(t) - 2\sin(t)
+                \end{split}
+            \]
+        \end{example}
+\end{description}
+
+
+
+\section{Gradient of vector-valued multivariate functions}
+
+\begin{description}
+    \item[Vector-valued function]
+        Function $\vec{f}: \mathbb{R}^n \rightarrow \mathbb{R}^m$ with $n \geq 1$ and $m > 1$.
+        Given $\vec{x} \in \mathbb{R}^n$, the output can be represented as:
+        \[
+            \vec{f}(\vec{x}) = 
+            \begin{pmatrix}
+                f_1(\vec{x}) \\ \vdots \\ f_m(\vec{x})
+            \end{pmatrix} \in \mathbb{R}^m
+        \]
+        where $f_i: \mathbb{R}^n \rightarrow \mathbb{R}$.
+
+    \item[Jacobian] \marginnote{Jacobian matrix}
+        Given $\vec{f}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the Jacobian matrix $\matr{J} \in \mathbb{R}^{m \times n}$
+        contains the first-order derivatives of $\vec{f}$:
+        \[
+            \matr{J} = \nabla\vec{f}(\vec{x}) = 
+            \begin{pmatrix}
+                \frac{\partial \vec{f}(\vec{x})}{\partial x_1} & \dots & \frac{\partial \vec{f}(\vec{x})}{\partial x_n}
+            \end{pmatrix} = 
+            \begin{pmatrix}
+                \frac{\partial f_1(\vec{x})}{\partial x_1} & \dots & \frac{\partial f_1(\vec{x})}{\partial x_n} \\
+                \vdots & \ddots & \vdots \\
+                \frac{\partial f_m(\vec{x})}{\partial x_1} & \dots & \frac{\partial f_m(\vec{x})}{\partial x_n} \\
+            \end{pmatrix}
+        \]
+        In other words, $J_{i,j} = \frac{\partial f_i}{\partial x_j}$.
+        Note that the Jacobian matrix is a generalization of the gradient in the real-valued case.
+\end{description}
