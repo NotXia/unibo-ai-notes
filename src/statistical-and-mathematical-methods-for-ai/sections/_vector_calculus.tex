@@ -94,6 +94,61 @@
                 \end{split}
             \]
         \end{example}
+
+        \begin{example}
+            Let $h: \mathbb{R} \rightarrow \mathbb{R}$ be defined as $h(t) = (f \circ g)(t)$ where:
+            \[ f: \mathbb{R}^2 \rightarrow \mathbb{R} \text{ is defined as } f(\vec{x}) = \exp(x_1 x_2^2) \]
+            \[ 
+                g: \mathbb{R} \rightarrow \mathbb{R}^2 \text{ is defined as } 
+                \vec{g}(t) = \begin{pmatrix} x_1 \\ x_2 \end{pmatrix} = \begin{pmatrix}t \cos(t) \\ t \sin(t) \end{pmatrix}
+            \]
+            The gradient of $h$ with respect to $t$ can be computed as:
+            \[
+                \frac{\text{d} h}{\text{d} t} =
+                    \frac{\partial f}{\partial \vec{g}} \frac{\partial \vec{g}}{\partial t} =
+                    \begin{pmatrix}
+                        \frac{\partial f}{\partial x_1} & \frac{\partial f}{\partial x_2}
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                        \frac{\partial x_1}{\partial t} \\ \frac{\partial x_2}{\partial t}
+                    \end{pmatrix}
+            \]
+            \[
+                = 
+                \begin{pmatrix} \exp(x_1 x_2^2)x_2^2 & 2\exp(x_1 x_2^2)x_1 x_2 \end{pmatrix}
+                \begin{pmatrix} \cos(t) + (-t\sin(t)) \\ \sin(t) + t\cos(t) \end{pmatrix}
+            \]
+        \end{example}
+
+        \begin{example}[Gradient of a least squares loss] \marginnote{Least squares loss gradient}
+            Given a linear model defined on $\vec{\uptheta}$:
+            \[ \vec{y} = \matr{\Phi}\vec{\uptheta} \]
+        \end{example}
+        with $\vec{\uptheta} \in \mathbb{R}^D$, $\matr{\Phi} \in \mathbb{R}^{N \times D}$ and $\vec{y} \in \mathbb{R}^N$.
+        We can define the least squares loss function as:
+        \[ L(\vec{e}) = \Vert \vec{e} \Vert_2^2 \]
+        \[ \vec{e}(\vec{\uptheta}) = \vec{y} - \matr{\Phi}\vec{\uptheta} \]
+        It must be noted that:
+        \[ L(\vec{e}) = \Vert \vec{e} \Vert_2^2 = \vec{e}^T\vec{e} = \sum_{i=1}^{N} \vec{e}_i^2 \]
+
+        To compute the gradient of $L$ with respect to $\vec{\uptheta}$, we can use the chain rule:
+        \[ 
+            \begin{split}
+                \nabla L(\vec{\uptheta}) &= \frac{\partial L}{\partial \vec{e}} \frac{\partial \vec{e}}{\partial \vec{\uptheta}} 
+                        = (2\vec{e}^T) (-\matr{\Phi}) \\
+                    & = -2(\vec{y}^T - \vec{\uptheta}^T \matr{\Phi}^T)\matr{\Phi} \\
+                    & = -2(\vec{y}^T\matr{\Phi} - \vec{\uptheta}^T \matr{\Phi}^T\matr{\Phi})
+            \end{split}
+        \]
+
+        Note that if we enforce $\nabla L(\vec{\uptheta}) = \nullvec$, we obtain the normal equation of \Cref{sec:lls}:
+        \[
+            \begin{split}
+                \nabla L = 0 &\iff -2(\vec{y}^T\matr{\Phi} - \vec{\uptheta}^T \matr{\Phi}^T\matr{\Phi}) = \nullvec \\
+                    &\iff \vec{y}^T \matr{\Phi} - \vec{\uptheta}^T \matr{\Phi}^T\matr{\Phi} = \nullvec \\
+                    &\iff \matr{\Phi}^T \vec{y} - \matr{\Phi}^T \matr{\Phi} \vec{\uptheta} = \nullvec
+            \end{split}
+        \]
 \end{description}
 
 
@@ -128,4 +183,178 @@
         \]
         In other words, $J_{i,j} = \frac{\partial f_i}{\partial x_j}$.
         Note that the Jacobian matrix is a generalization of the gradient in the real-valued case.
-\end{description}
+    \end{description}
+
+
+
+\section{Backpropagation}
+\marginnote{Backpropagation}
+Backpropagation is used to tune the parameters of a neural network.
+A neural network can be seen as a composition of many functions:
+\[ \vec{y} = (\vec{f}_K \circ \vec{f}_{K-1} \circ \dots \circ \vec{f}_1)(\vec{x}) = \vec{f}_K(\vec{f}_{K-1}(\cdots \vec{f}_1(\vec{x}) \cdots)) \]
+Each $\vec{f}_i$ takes as input the output of the previous layer $\vec{x}_{i-1}$ and has the form:
+\[ \vec{f}_i(\vec{x}_{i-1}) = \sigma_i(\matr{A}_{i-1}\vec{x}_{i-1} + \vec{b}_{i-1}) \]
+where $\sigma_i$ is an activation function\footnote{\url{https://en.wikipedia.org/wiki/Activation_function}} (a function to add nonlinearity), 
+while $\matr{A}_{i-1}$ (linear mapping) and $\vec{b}_{i-1}$ (biases) are the parameters of $\vec{f}_i$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/_forward_pass.pdf}
+    \caption{Forward pass}
+\end{figure}
+
+We can more compactly denote a neural network with input $\vec{x}$ and $K$ layers as:
+\[ 
+    \begin{split}
+        \vec{f}_0 &= \vec{x} \\
+        \vec{f}_i &= \sigma_i(\matr{A}_{i-1} \vec{f}_{i-1} + \vec{b}_{i-1}) \text{ } i=1, \dots, K
+    \end{split}
+\]
+Given the ground truth $\vec{y}$, we want to find the parameters $\matr{A}_j$ and $\vec{b}_j$ that minimizes the squared loss:
+\[ L(\vec{\uptheta}) = \Vert \vec{y} - \vec{f}_K(\vec{\uptheta}, \vec{x}) \Vert^2 \]
+where $\vec{\uptheta} = \{ \matr{A}_{0}, \vec{b}_{0}, \dots, \matr{A}_{K-1}, \vec{b}_{K-1} \}$ are the parameters of each layer.
+This can be done by using the chain rule to compute the partial derivatives of $L$ with respect to the parameters $\vec{\uptheta}_j = \{ \matr{A}_j, \vec{b}_j \}$:
+\[
+    \begin{split}
+        \frac{\partial L}{\partial \vec{\uptheta}_{K-1}} &= 
+            \overbrace{\frac{\partial L}{\partial \vec{f}_K} \frac{\partial \vec{f}_K}{\partial \vec{\uptheta}_{K-1}}}^{\mathclap{\text{New}}} \\
+        \frac{\partial L}{\partial \vec{\uptheta}_{K-2}} &= 
+            \overbrace{\frac{\partial L}{\partial \vec{f}_K}}^{\mathclap{\text{Known}}}
+            \overbrace{\frac{\partial \vec{f}_K}{\partial \vec{f}_{K-1}} \frac{\partial \vec{f}_{K-1}}{\partial \vec{\uptheta}_{K-2}}}^{\mathclap{\text{New}}} \\
+        \frac{\partial L}{\partial \vec{\uptheta}_{K-3}} &= 
+            \overbrace{\frac{\partial L}{\partial \vec{f}_K} \frac{\partial \vec{f}_K}{\partial \vec{f}_{K-1}}}^{\mathclap{\text{Known}}}
+            \overbrace{\frac{\partial \vec{f}_{K-1}}{\partial \vec{f}_{K-2}} \frac{\partial \vec{f}_{K-2}}{\partial \vec{\uptheta}_{K-3}}}^{\mathclap{\text{New}}} \\
+        \vdots \\
+        \frac{\partial L}{\partial \vec{\uptheta}_{i}} &= 
+            \overbrace{\frac{\partial L}{\partial \vec{f}_K} \frac{\partial \vec{f}_K}{\partial \vec{f}_{K-1}} \dots}^{\mathclap{\text{Known}}}
+            \overbrace{\frac{\partial \vec{f}_{i+2}}{\partial \vec{f}_{i+1}} \frac{\partial \vec{f}_{i+1}}{\partial \vec{\uptheta}_{i}}}^{\mathclap{\text{New}}}
+    \end{split}
+\]
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/_backward_pass.pdf}
+    \caption{Backward pass}
+\end{figure}
+
+
+
+\section{Automatic differentiation}
+Starting from the example below first is recommended.\\
+
+\marginnote{Automatic differentiation}
+Automatic differentiation allows to numerically compute 
+the gradient of complex functions using elementary functions, intermediate variables and the chain rule through a computation graph.
+When the gradient has many components, it also allows to compute it more efficiently.
+
+Let $f$ be a function,
+$x_1, \dots, x_d$ the input variables of $f$,
+$x_{d+1}, \dots, x_{D-1}$ the intermediate variables and
+$x_D$ the output variable.
+The computation graph can be expressed as:
+\[
+    \forall i \in \{ d+1, \dots, D \}: x_i = g_i(x_{\text{Pa}(x_i)})
+\]
+where $g_i$ are elementary functions and $x_{\text{Pa}(x_i)}$ are the parent nodes of $x_i$ in the graph.
+In other words, each intermediate variable is expressed as an elementary function of its preceding nodes.
+The derivatives of $f$ can then be computed step-by-step going backwards as:
+\[ \frac{\partial f}{\partial x_D} = 1 \text{, as by definition } f = x_D \]
+\[ 
+    \frac{\partial f}{\partial x_i} = \sum_{\forall x_j: x_i \in \text{Pa}(x_j)} \frac{\partial f}{\partial x_j} \frac{\partial x_j}{\partial x_i}
+        = \sum_{\forall x_j: x_i \in \text{Pa}(x_j)} \frac{\partial f}{\partial x_j} \frac{\partial g_j}{\partial x_i}
+\]
+where $\text{Pa}(x_j)$ is the set of parent nodes of $x_j$ in the graph.
+In other words, to compute the partial derivative of $f$ w.r.t. $x_i$, 
+we apply the chain rule by first computing 
+the partial derivative of $f$ w.r.t. the variables following $x_i$ in the graph (as the computation goes backwards).
+
+Automatic differentiation is applicable to all functions that can be expressed as a computational graph and 
+when the elementary functions are differentiable.
+Note that backpropagation is a special case of automatic differentiation.
+
+\begin{example}
+    Given the function:
+    \[ f(x) = \sqrt{x^2 + \exp(x^2)} + \cos(x^2 + \exp(x^2)) \]
+    and the elementary functions $\{ (\cdot)^2, \exp(\cdot), +, \sqrt{\cdot}, \cos(\cdot) \}$,
+    $f$ can be decomposed in the following intermediate variables:\\
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                a &= x^2        \\
+                b &= \exp(a)    \\
+                c &= a + b      \\
+                d &= \sqrt{c}   \\
+            \end{split} 
+        \]
+    \end{minipage}%
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                e &= \cos(c)    \\
+                f &= d + e      \\
+            \end{split} 
+        \]
+    \end{minipage}\\
+
+    Which corresponds to the following computation graph:
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{img/auto_diff.png}
+    \end{center}
+
+    We can then compute the derivatives of the intermediate variables w.r.t. their inputs (i.e. inbound edges):\\
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                \frac{\partial a}{\partial x} &= 2x                     \\
+                \frac{\partial b}{\partial a} &= \exp(a)                \\
+                \frac{\partial c}{\partial a} &= 1                      \\
+                \frac{\partial c}{\partial b} &= 1
+            \end{split}
+        \]
+    \end{minipage}%
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                \frac{\partial d}{\partial c} &= \frac{1}{2\sqrt{c}}    \\
+                \frac{\partial e}{\partial c} &= -\sin(c)               \\
+                \frac{\partial f}{\partial d} &= 1                      \\
+                \frac{\partial f}{\partial e} &= 1                      
+            \end{split}
+        \]
+    \end{minipage}\\
+
+    Finally, we can compute $\frac{\partial f}{\partial x}$ by going backward from the output ($f$) to the input ($x$):\\
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                \frac{\partial f}{\partial d} &= \text{ already known (previous step)} \\
+                \frac{\partial f}{\partial e} &= \text{ already known (previous step)} \\
+                \frac{\partial f}{\partial c} &= 
+                    \frac{\partial f}{\partial d}\frac{\partial d}{\partial c} + \frac{\partial f}{\partial e}\frac{\partial e}{\partial c} \\
+            \end{split}
+        \]
+    \end{minipage}%
+    \begin{minipage}{.5\linewidth}
+        \[
+            \begin{split}
+                \frac{\partial f}{\partial b} &= \frac{\partial f}{\partial c}\frac{\partial c}{\partial b} \\
+                \frac{\partial f}{\partial a} &= 
+                    \frac{\partial f}{\partial b}\frac{\partial b}{\partial a} + \frac{\partial f}{\partial c}\frac{\partial c}{\partial a} \\
+                \frac{\partial f}{\partial x} &= \frac{\partial f}{\partial a}\frac{\partial a}{\partial x}                    
+            \end{split}
+        \]
+    \end{minipage}\\
+
+    In other words, to compute the partial derivative of $f$ w.r.t. a variable $x_i$, 
+    all variables $w_j$ that follows $x_i$ in the graph are considered.
+
+    Now, by substituting we obtain:
+    \[
+        \begin{split}
+        \frac{\partial f}{\partial c} &= 1 \cdot \frac{1}{2\sqrt{c}} + 1 \cdot (-\sin(c)) \\
+        \frac{\partial f}{\partial b} &= \frac{\partial f}{\partial c} \cdot 1 \\
+        \frac{\partial f}{\partial a} &= \frac{\partial f}{\partial b} \cdot \exp(a) + \frac{\partial f}{\partial c} \cdot 1 \\
+        \frac{\partial f}{\partial x} &= \frac{\partial f}{\partial a} \cdot 2x
+        \end{split}
+    \] 
+\end{example}
