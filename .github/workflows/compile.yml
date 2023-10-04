@@ -48,4 +48,6 @@ jobs:
           BRANCH: pdfs
           FOLDER: /tmp/compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "🤖 It's hard to work with you ({sha})"
+          COMMIT_NAME: "github-actions[bot]"
+          COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
+          MESSAGE: "🤖 Hello human, doing my things ({sha})"
