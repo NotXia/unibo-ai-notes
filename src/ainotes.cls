@@ -39,8 +39,7 @@
     showspaces = false,
     showstringspaces = true,
     showtabs = false,
-    tabsize = 3,
-    belowskip = -0.8\baselineskip
+    tabsize = 3
 }
 \lstset{style=mystyle}
 \lstset{language=Python}

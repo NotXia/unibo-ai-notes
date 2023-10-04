@@ -106,7 +106,7 @@ Note: descent methods usually converge to a local minimum.
     
     \item[Backtracking procedure] \marginnote{Backtracking procedure}
         $\alpha_k$ is chose such that it respects the Wolfe condition\footnote{\url{https://en.wikipedia.org/wiki/Wolfe_conditions}}:
-        \begin{lstlisting}[mathescape=true]
+        \begin{lstlisting}[mathescape=true, belowskip = -0.8\baselineskip]
             def backtracking($\tau$, $c_1$):
                 $\alpha_k$ = 1 # Initial guess
                 while $f(x_k - \alpha_k \nabla f(\vec{x}_k))$ > $f(\vec{x}_k)$ + $c_1 \alpha_k \nabla f(\vec{x}_k)^T \nabla f(\vec{x}_k)$:
