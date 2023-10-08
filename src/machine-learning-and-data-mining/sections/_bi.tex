@@ -27,11 +27,11 @@
 
 \begin{description}
     \item[\ac{olap} analyses] \marginnote{\Acl{olap} (\Ac{olap})}
-        Interactively navigate the information in a data warehouse.
+        Able to interactively navigate the information in a data warehouse.
         Allows to visualize different levels of aggregation.
 
     \item[\ac{olap} session] 
-        Navigation path created by the operations of a user.
+        Navigation path created by the operations that a user applied.
 \end{description}
 
 \begin{figure}[ht]
@@ -45,60 +45,65 @@
 
 \begin{description}
     \item[Roll-up] \marginnote{Roll-up}
-        Increases the level of aggregation (i.e. \texttt{GROUP BY} in SQL). Some details are collapsed together.
+        \begin{minipage}{0.7\textwidth}
+            Increases the level of aggregation (i.e. \texttt{GROUP BY} in SQL).
+            Some details are collapsed together.
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.15\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{img/olap_rollup.png}
+        \end{minipage}
 
     \item[Drill-down] \marginnote{Drill-down}
-        Reduces the level of aggregation. Some details are reintroduced.
+        \begin{minipage}{0.7\textwidth}
+            Reduces the level of aggregation.
+            Some details are reintroduced.
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.15\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{img/olap_drilldown.png}
+        \end{minipage}
     
     \item[Slide-and-dice] \marginnote{Slide-and-dice}
-        The slice operator reduces the number of dimensions (i.e. drops columns).
+        \begin{minipage}{0.65\textwidth}
+            The slice operator reduces the number of dimensions (i.e. drops columns).
 
-        The dice operator reduces the number of data being analyzed (i.e. \texttt{LIMIT} in SQL).
+            The dice operator reduces the number of data being analyzed (i.e. \texttt{LIMIT} in SQL).
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.15\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{img/olap_slicedice.png}
+        \end{minipage}    
 
     \item[Pivot] \marginnote{Pivot}
-        Changes the layout of the data to analyze it from a different viewpoint.
+        \begin{minipage}{0.7\textwidth}
+            Changes the layout of the data, to analyze it from a different viewpoint.
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.15\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{img/olap_pivot.png}
+        \end{minipage}
 
     \item[Drill-across] \marginnote{Drill-across}
-        Links concepts from different data sources (i.e. \texttt{JOIN} in SQL).
-
+        \begin{minipage}{0.7\textwidth}
+            Links concepts from different data sources (i.e. \texttt{JOIN} in SQL).
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.15\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{img/olap_drillacross.png}
+        \end{minipage}    
+    
     \item[Drill-through] \marginnote{Drill-through}
         Switches from multidimensional aggregated data to operational data (e.g. a spreadsheet).
+        \begin{center}
+            \includegraphics[width=0.5\textwidth]{img/olap_drillthrough.png}
+        \end{center}    
 \end{description}
-
-\begin{figure}[ht]
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.60\linewidth]{img/olap_rollup.png}
-        \caption{\ac{olap} roll-up}
-    \end{subfigure}%
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.60\linewidth]{img/olap_drilldown.png}
-        \caption{\ac{olap} drill-down}
-    \end{subfigure}
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.80\linewidth]{img/olap_slicedice.png}
-        \caption{\ac{olap} slide-and-dice}
-    \end{subfigure}
-    \\
-    \begin{subfigure}{.5\textwidth}
-        \centering
-        \includegraphics[width=.35\linewidth]{img/olap_pivot.png}
-        \caption{\ac{olap} pivot}
-    \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-        \centering
-        \includegraphics[width=.35\linewidth]{img/olap_drillacross.png}
-        \caption{\ac{olap} drill-across}
-    \end{subfigure}
-    \\
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=.60\linewidth]{img/olap_drillthrough.png}
-        \caption{\ac{olap} drill-through}
-    \end{subfigure}
-\end{figure}
 
 
 
@@ -142,7 +147,7 @@ Operational data may contain:
     \item[Typos]    
 \end{descriptionlist}
 
-Methods to increase the quality of the data are:
+Methods to clean and increase the quality of the data are:
 \begin{descriptionlist}
     \item[Dictionary-based techniques] \marginnote{Dictionary-based cleaning}
         Lookup tables to substitute abbreviations, synonyms or typos.
@@ -152,7 +157,7 @@ Methods to increase the quality of the data are:
         Merging data that do not have a common key.
         \begin{description}
             \item[Approximate join]
-                Use non-key attributes to join two tables (e.g. using the name and surname instead of an identifier).
+                Use non-key attributes to join two tables (e.g. using the name and surname instead of an unique identifier).
 
             \item[Similarity approach]
                 Use similarity functions (e.g. edit distance) to merge multiple instances of the same information
@@ -167,10 +172,10 @@ Methods to increase the quality of the data are:
 Data are transformed to respect the format of the data warehouse:
 \begin{descriptionlist}
     \item[Conversion] \marginnote{Conversion}
-        modifications of types and formats (e.g. date format)
+        Modifications of types and formats (e.g. date format)
     
     \item[Enrichment] \marginnote{Enrichment}
-        creating new information by using existing attributes (e.g. compute profit from receipts and expenses)
+        Creating new information by using existing attributes (e.g. compute profit from receipts and expenses)
 
     \item[Separation and concatenation] \marginnote{Separation and concatenation}
         Denormalization of the data: introduces redundances (i.e. breaks normal form\footnote{\url{https://en.wikipedia.org/wiki/Database_normalization}}) 
@@ -185,7 +190,166 @@ Adding data into a data warehouse:
         The entire \ac{dwh} is rewritten.
 
     \item[Update] \marginnote{Update loading}
-        Only the changes are added to the \ac{dwh}. Old data is not modified.
+        Only the changes are added to the \ac{dwh}. Old data are not modified.
 \end{descriptionlist}
 
 
+
+\section{Data warehouse architectures}
+
+The architecture of a data warehouse should meet the following requirements:
+\begin{descriptionlist}
+    \item[Separation] Separate the analytical and transactional workflows.
+    \item[Scalability] Hardware and software should be easily upgradable.
+    \item[Extensibility] Capability to host new applications and technologies without the need to redesign the system.
+    \item[Security] Access control.
+    \item[Administrability] Easily manageable.
+\end{descriptionlist}
+
+\subsection{Single-layer architecture}
+\marginnote{Single-layer architecture}
+\begin{minipage}{0.55\textwidth}
+    \begin{itemize}
+        \item Minimizes the amount of data stored (i.e. no redundances).
+        \item The source layer is the only physical layer (i.e. no separation).
+        \item A middleware provides the \ac{dwh} features.
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/_1layer_dwh.pdf}
+\end{minipage}
+
+
+\subsection{Two-layer architecture}
+\marginnote{Two-layer architecture}
+\begin{minipage}{0.55\textwidth}
+    \begin{itemize}
+        \item Source data (source layer) are physically separated from the \ac{dwh} (data warehouse layer).
+        \item A staging layer applies \ac{etl} procedures before populating the \ac{dwh}.
+        \item The \ac{dwh} is a centralized repository from which data marts can be created.
+            Metadata repositories store information on sources, staging and data marts schematics.
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/_2layer_dwh.pdf}
+\end{minipage}
+
+
+\subsection{Three-layer architecture}
+\marginnote{Three-layer architecture}
+\begin{minipage}{0.45\textwidth}
+    \begin{itemize}
+        \item A reconciled layer enhances the cleaned data coming from the staging step by 
+            adding enterprise-level details (i.e. adds more redundancy before populating the \ac{dwh}).
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/_3layer_dwh.pdf}
+\end{minipage}
+
+
+
+\section{Conceptual modeling}
+
+\begin{description}
+    \item[\Acl{dfm} (\acs{dfm})] \marginnote{\Acl{dfm} (\acs{dfm})}
+        Conceptual model to support the design of data marts.
+        The main concepts are:
+        \begin{descriptionlist}
+            \item[Fact] 
+                Concept relevant to decision-making processes (e.g. sales).
+            \item[Measure]
+                Numerical property to describe a fact (e.g. profit).
+            \item[Dimension] 
+                Property of a fact with a finite domain (e.g. date).
+            \item[Dimensional attribute] 
+                Property of a dimension (e.g. month).
+            \item[Hierarchy] 
+                A tree where the root is a dimension and nodes are dimensional attributes (e.g. date $\rightarrow$ month).
+            \item[Primary event] 
+                Occurrence of a fact. It is described by a tuple with a value for each dimension and each measure.
+            \item[Secondary event] 
+                Aggregation of primary events. 
+                Measures of primary events are aggregated if they have the same (preselected) dimensional attributes.
+        \end{descriptionlist}
+\end{description}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/dfm.png}
+    \caption{Example of \ac{dfm}}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/dfm_events.png}
+    \caption{Example of primary and secondary events}
+\end{figure}
+
+
+\subsection{Aggregation operators}
+
+Measures can be classified as:
+\begin{descriptionlist}
+    \item[Flow measures] \marginnote{Flow measures}
+        Evaluated cumulatively with respect to a time interval (e.g. quantity sold).
+    \item[Level measures] \marginnote{Level measures}
+        Evaluated at a particular time (e.g. number of products in inventory).
+    \item[Unit measures] \marginnote{Unit measures}
+        Evaluated at a particular time but expressed in relative terms (e.g. unit price).
+\end{descriptionlist}
+
+Aggregation operators can be classified as:
+\begin{descriptionlist}
+    \item[Distributive] \marginnote{Distributive operators}
+        Able to calculate aggregates from partial aggregates (e.g. \texttt{SUM}, \texttt{MIN}, \texttt{MAX}).
+    \item[Algebraic] \marginnote{Algebraic operators}
+        Requires a finite number of support measures to compute the result (e.g. \texttt{AVG}).
+    \item[Holistic] \marginnote{Holistic operators}
+        Requires an infinite number of support measures to compute the result (e.g. \texttt{RANK}).
+\end{descriptionlist}
+
+\begin{description}
+    \item[Additivity] \marginnote{Additive measure}
+    A measure is additive along a dimension if an aggregation operator can be applied. 
+    \begin{table}[ht]
+        \centering
+        \begin{tabular}{l | c | c}
+                                        & \textbf{Temporal hierarchies}                             & \textbf{Non-temporal hierarchies} \\
+            \hline
+            \textbf{Flow measures}      & \texttt{SUM}, \texttt{AVG}, \texttt{MIN}, \texttt{MAX}    & \texttt{SUM}, \texttt{AVG}, \texttt{MIN}, \texttt{MAX} \\
+            \textbf{Level measures}     & \texttt{AVG}, \texttt{MIN}, \texttt{MAX}                  & \texttt{SUM}, \texttt{AVG}, \texttt{MIN}, \texttt{MAX} \\
+            \textbf{Unit measures}      & \texttt{AVG}, \texttt{MIN}, \texttt{MAX}                  & \texttt{AVG}, \texttt{MIN}, \texttt{MAX} \\
+        \end{tabular}
+        \caption{Allowed operators for each measure type}
+    \end{table}
+\end{description}
+
+
+\subsection{Logical design}
+\marginnote{Logical design}
+Defining the data structures (e.g. tables and relationships) according to a conceptual model.
+There are mainly two strategies:
+\begin{descriptionlist}
+    \item[Star schema] \marginnote{Star schema}
+        A fact table that contains all the measures and linked to dimensional tables.
+        \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{img/logical_star_schema.png}
+            \caption{Example of star schema}
+        \end{figure}
+
+    \item[Snowflake schema] \marginnote{Snowflake schema}
+        A star schema variant with partially normalized dimension tables.
+        \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{img/logical_snowflake_schema.png}
+            \caption{Example of snowflake schema}
+        \end{figure}
+\end{descriptionlist}
