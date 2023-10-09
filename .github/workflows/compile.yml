@@ -25,6 +25,7 @@ jobs:
             mkdir /tmp/compiled
 
             cp README.md /tmp/compiled
+            cp LICENSE /tmp/compiled
 
             shopt -s globstar
             cd src
