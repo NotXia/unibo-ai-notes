@@ -57,6 +57,7 @@
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem*{example}{Example}
 \theoremstyle{definition}
 \newtheorem*{definition}{Def}
