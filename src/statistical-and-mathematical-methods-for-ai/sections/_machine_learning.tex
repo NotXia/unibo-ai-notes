@@ -1,0 +1,84 @@
+\chapter{Machine learning}
+
+
+\section{Models}
+
+\begin{description}
+    \item[Function model] \marginnote{Function model}
+        The model (predictor) is a deterministic function:
+        \[ f: \mathbb{R}^D \rightarrow \mathbb{R} \]
+
+        In this course, only linear functions are considered:
+        \[ f_\vec{\uptheta}(\vec{x}) = \uptheta_0 + \uptheta_1 x_1 + \dots + \uptheta_D x_D = \vec{\uptheta}^T \vec{x} \]
+        where $\vec{x} = \begin{pmatrix} 1, x_1, \dots, x_D \end{pmatrix}$ is the input vector and
+        $\vec{\uptheta} = \begin{pmatrix} \uptheta_0, \dots, \uptheta_D \end{pmatrix}$ is the parameter vector.
+
+    \item[Probabilistic model] \marginnote{Probabilistic model}
+        The model is a multivariate probabilistic distribution.
+\end{description}
+
+
+
+\section{Learning}
+
+\subsection{Empirical risk minimization}
+\marginnote{Empirical risk minimization}
+Used for function models.
+
+Let $(\vec{x}_n, y_n)$ be a dataset of $N$ elements
+where $\vec{x}_n \in \mathbb{R}^D$ are the examples and $y_n \in \mathbb{R}$ are the labels.
+We want to estimate a predictor $f_\vec{\uptheta}(\vec{x}) = \vec{\uptheta}^T \vec{x}$ with parameters $\vec{\uptheta}$
+such that, with the ideal parameters $\vec{\uptheta}^*$, it fits the data well:
+\[ f_{\vec{\uptheta}^*}(\vec{x}_n) \approx y_n \]
+
+We denote the output of the estimator as $\hat{y}_n = f_\vec{\uptheta}(\vec{x}_n)$.
+
+\begin{description}
+    \item[Loss function] \marginnote{Loss function}
+        A loss function $\ell(y_n, \hat{y}_n)$ indicates how a predictor fits the data.
+
+        An assumption commonly made in machine learning is that 
+        the dataset $(\vec{x}_n, y_n)$ is independent and identically distributed. 
+        Therefore, the empirical mean is a good estimate of the population mean.
+
+        \begin{description}
+            \item[Empirical risk] \marginnote{Empirical risk}
+                Given the example matrix $\matr{X} = \begin{pmatrix} \vec{x}_1, \dots, \vec{x}_N \end{pmatrix} \in \mathbb{R}^{N \times D}$
+                and the label vector $\vec{y} = \begin{pmatrix} y_1, \dots, y_N \end{pmatrix} \in \mathbb{R}^N$.
+                The empirical risk is given by the average loss:
+                \[ \textbf{R}_\text{emp}(f_\vec{\uptheta}, \matr{X}, \vec{y}) = \frac{1}{N} \sum_{n=1}^{N} \ell(y_n, \hat{y}_n) \]
+
+            \begin{example}[Least-squares loss] \marginnote{Least-squares loss}
+                The least-squares loss is defined as:
+                \[ \ell(y_n, \hat{y}_n) = (y_n - \hat{y}_n)^2 \]
+
+                Therefore, the minimization task is:
+                \[ 
+                    \min_{\vec{\uptheta} \in \mathbb{R}^D} \frac{1}{N} \sum_{n=1}^{N} (y_n - f_\vec{\uptheta}(\vec{x}_n))^2 =
+                    \min_{\vec{\uptheta} \in \mathbb{R}^D} \frac{1}{N} \sum_{n=1}^{N} (y_n - \vec{\uptheta}^T\vec{x}_n)^2 =
+                    \min_{\vec{\uptheta} \in \mathbb{R}^D} \frac{1}{N} \Vert \vec{y} - \matr{X}\vec{\uptheta} \Vert^2
+                \]
+            \end{example}
+
+            \item[Expected risk] \marginnote{Expected risk}
+                The expected risk is defined as:
+                \[ \textbf{R}_\text{true}(f_\vec{\uptheta}) = \mathbb{E}_{\vec{x}, y}[\ell(y, f_\vec{\uptheta}(\vec{x}_\text{test}))] \]
+                where the parameters $\vec{\uptheta}$ are fixed and the samples are taken from a test set.
+
+            \item[Overfitting] \marginnote{Overfitting}
+                A predictor $f_\vec{\uptheta}$ is overfitting when $\textbf{R}_\text{emp}(f, \matr{X}_\text{train}, \vec{y}_\text{train})$
+                underestimates $\textbf{R}_\text{true}(f_\vec{\uptheta})$ (i.e. the loss on the training set is low, but on the test set is high).
+
+            \item[Regularization] \marginnote{Regularization}
+                Method that introduces a penalty term to the loss that
+                helps to find a compromise between the accuracy and the complexity of the solution:
+                \[ \bar{\ell}(y_n, \hat{y}_n) = \ell(y_n, \hat{y}_n) + \lambda \mathcal{R}(\vec{\uptheta}) \]
+                where $\lambda \in \mathbb{R}^+$ is the regularization parameter and $\mathcal{R}$ is the penalty.
+        \end{description}
+\end{description}
+
+
+
+\subsection{Maximum likelihood}
+\marginnote{Maximum likelihood}
+Used for probabilistic models.
