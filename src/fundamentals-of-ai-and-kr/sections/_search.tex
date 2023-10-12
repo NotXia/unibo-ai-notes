@@ -343,3 +343,67 @@ The fringe is ordered according the estimated scores.
             \caption{A$^*$ visit order}
         \end{figure}
 \end{description}
+
+
+\section{Graph search}
+\marginnote{Graph search}
+Differently from a tree search, searching in a graph requires to keep track of the explored nodes.
+\begin{algorithm}
+    \caption{Graph search} \label{alg:search_graph_search}
+    \begin{lstlisting}
+    def graphSearch(problem, fringe):
+        closed = set()
+        fringe.push(problem.initial_state)
+        # Get a node in the fringe and 
+        # expand it if it is not a solution and is not closed
+        while fringe.notEmpty():
+            node = fringe.pop()
+            if problem.isGoal(node.state):
+                return node.solution
+            if node.state not in closed:
+                closed.add(node.state)
+                fringe.pushAll(expand(node, problem))
+        return FAILURE
+    \end{lstlisting}
+\end{algorithm}
+
+
+\subsection{A$^\textbf{*}$ with graphs}
+\marginnote{A$^*$ with graphs}
+The algorithm keeps track of closed and open nodes.
+The heuristic $g(n)$ evaluates the minimum distance from the root to the node $n$.
+
+\begin{description}
+    \item[Consistent heuristic (monotone)] \marginnote{Consistent heuristic (monotone)}
+    An heuristic is consistent if for each $n$, for any successor $n'$ of $n$ (i.e. nodes reachable from $n$ by making an action)
+    holds that:
+    \[ 
+        \begin{cases}
+            h(n) = 0 & \text{if the corresponding status is the goal} \\
+            h(n) \leq c(n, a, n') + h(n') & \text{otherwise}
+        \end{cases}
+    \]
+    where $c(n, a, n')$ is the cost to reach $n'$ from $n$ by taking the action $a$.
+
+    In other words, $f$ never decreases along a path.
+    In fact:\\
+    \begin{minipage}{.48\linewidth}
+        \[  
+            \begin{split}
+                f(n') &= g(n') + h(n') \\
+                    &= g(n) + c(n, a, n') + h(n') \\
+                    &\geq g(n) + h(n) \\
+                    &= f(n)
+            \end{split}
+        \]
+    \end{minipage}
+    \begin{minipage}{.48\linewidth}
+        \centering
+        \includegraphics[width=0.3\textwidth]{img/monotone_heuristic.png}
+    \end{minipage}
+
+
+    \begin{theorem}
+        If $h$ is a consistent heuristic, A$^*$ on graphs is optimal.
+    \end{theorem}
+\end{description}
