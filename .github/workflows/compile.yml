@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install LaTeX
         run: |
@@ -31,15 +33,21 @@ jobs:
             cd src
             work_dir=$(pwd)
             for f in **/[!_]*.tex; do
-                f_dir=$(dirname $f);
-                f_base=$(basename $f);
-                f_nameonly="${f_base%.*}";
+                f_dir=$(dirname $f)
+                f_base=$(basename $f)
+                f_nameonly="${f_base%.*}"
 
                 cd ${f_dir};
-                latexmk -pdf -jobname=${f_nameonly} ${f_base};
+
+                # Insert last update date
+                last_update=$(git log -1 --pretty="format:%ad" --date="format:%d %B %Y" .)
+                cp --remove-destination $(readlink ainotes.cls) ainotes.cls
+                sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" ainotes.cls
+
+                latexmk -pdf -jobname=${f_nameonly} ${f_base}
                 mkdir -p /tmp/compiled/${f_dir}
                 mv ${f_nameonly}.pdf /tmp/compiled/${f_dir}/.
-                cd $work_dir;
+                cd $work_dir
             done
 
       - name: Move to pdfs branch

@@ -75,7 +75,8 @@
         \centering
         \vspace*{\fill}
         \huge
-        \textbf{\@title}
+        \textbf{\@title}\\
+        {\Large Last update: {PLACEHOLDER-LAST-UPDATE}}
         \vspace*{\fill}
 
         \Large
