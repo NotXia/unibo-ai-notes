@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" modified="2023-10-13T17:44:38.951Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="0k6DN-mG6fDlB8POdY3R" version="22.0.4" type="device">
+  <diagram name="Pagina-1" id="Obl2eNAEIfPRNowj_f7H">
+    <mxGraphModel dx="1195" dy="622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-1" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;startArrow=classic;startFill=1;fontSize=20;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="400" as="sourcePoint" />
+            <mxPoint x="680" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-2" value="Data warehouse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="180" y="360" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-3" value="&lt;div align=&quot;right&quot; style=&quot;font-size: 20px;&quot;&gt;Data lake&lt;br style=&quot;font-size: 20px;&quot;&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="530" y="360" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-4" value="Data hub" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="360" y="360" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-5" value="Hot" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="180" y="410" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j0uoPLtJFFh1yWsyPPyp-6" value="Cold" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="620" y="410" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
