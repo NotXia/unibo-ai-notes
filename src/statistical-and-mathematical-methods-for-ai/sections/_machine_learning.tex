@@ -218,15 +218,15 @@ By applying the Bayes' theorem, the problem becomes:
 \section{Linear regression}
 \marginnote{Linear regression}
 Given a dataset of inputs $\vec{x}_n \in \mathbb{R}^D$ with corresponding labels $y_n = f(\vec{x}_n) + \varepsilon$,
-where $f: \mathbb{R}^D \rightarrow \mathbb{R}$ and $\varepsilon \sim \mathcal{N}(0, \sigma^2)$ is a Gaussian noise.
-We want to estimate the function $f$.
+where $f: \mathbb{R}^D \rightarrow \mathbb{R}$ and $\varepsilon \sim \mathcal{N}(0, \sigma^2)$ is a Gaussian noise,
+we want to estimate the function $f$.
 
 \begin{description}
     \item[Model]
+        We use as predictor:
+        \[ f(\vec{x}) = \vec{x}^T \vec{\uptheta} \]
         Because of the noise, we use a probabilistic model with likelihood:
         \[ p_\vec{\uptheta}(y \,\vert\, \vec{x}) = \mathcal{N}(y \,\vert\, f(\vec{x}), \sigma^2) \]
-        As model, we use a linear predictor:
-        \[ f(\vec{x}) = \vec{x}^T \vec{\uptheta} \]
 
     \item[Parameter estimation]  
         To estimate $\vec{\uptheta}$, we can use MLE:
@@ -237,12 +237,51 @@ We want to estimate the function $f$.
 \subsection{Maximum likelihood estimation with features}
 \marginnote{MLE with features}
 Linear regression is linear only with respect to the parameters $\vec{\uptheta}$. 
-Therefore, it is possible to apply any transformation to the inputs of $f$ such that:
+Therefore, it is possible to apply any transformation to the inputs of the predictor $f$ such that:
 \[ f(\vec{x}_n) = (\phi(\vec{x}_n))^T \vec{\uptheta}  \]
-where $\phi: \mathbb{R}^D \rightarrow \mathbb{R}^K$ and $\vec{\uptheta} \in \mathbb{R}^K$.
+where $\phi: \mathbb{R}^D \rightarrow \mathbb{R}^K$ is a transformation and 
+$\vec{\uptheta} \in \mathbb{R}^K$ are the parameters.
 
-The likelihood becomes:
-\[ p_\vec{\uptheta}(y \,\vert\, \vec{x}) = \mathcal{N}(y \,\vert\, (\phi(\vec{x}))^T\vec{\uptheta}, \sigma^2) \]
+Given a dataset of $N$ entries $\vec{x}_n \in \mathbb{R}^D$ with labels $y_n \in \mathbb{R}$
+and a transformation function $\phi: \mathbb{R}^D \rightarrow \mathbb{R}^K$,
+the transformed features can be expressed through a feature matrix $\matr{\Phi} \in \mathbb{R}^{N \times K}$:
+\[
+    \matr{\Phi} = 
+    \begin{pmatrix}
+        (\phi(\vec{x}_1))^T \\ \vdots \\ (\phi(\vec{x}_N))^T
+    \end{pmatrix} 
+    =
+    \begin{pmatrix}
+        \phi_0(\vec{x}_1) & \cdots & \phi_{K-1}(\vec{x}_1) \\ 
+        \vdots & \ddots & \vdots \\ 
+        \phi_0(\vec{x}_N) & \cdots & \phi_{K-1}(\vec{x}_N) \\ 
+    \end{pmatrix}
+\]
+
+The negative log-likelihood can be defined as:
+\[ 
+    -\log p_\vec{\uptheta}(\vec{y} \,\vert\, \matr{X}) =
+    \frac{1}{2\sigma^2} (\vec{y} - \matr{\Phi}\vec{\uptheta})^T (\vec{y} - \matr{\Phi}\vec{\uptheta}) + \text{constant}
+\]
+As $\matr{\Phi}$ is (usually) full-rank and convex, the problem can be solved directly using normal equations:
+\[ 
+    \matr{\Phi}^T \matr{\Phi} \vec{\uptheta} = \matr{\Phi}^T \vec{y} \iff 
+    \vec{\uptheta} = (\matr{\Phi}^T \matr{\Phi})^{-1} \matr{\Phi}^T \vec{y}
+\]
+Obviously, the negative log-likelihood can also be minimized by using a gradient method.
+
+\begin{description}
+    \item[Root mean square error (RMSE)] \marginnote{Root mean square error (RMSE)}
+        RMSE is computed as:
+            \[ 
+                \sqrt{ \frac{1}{N} \Vert \vec{y} - \matr{\Phi}\vec{\uptheta} \Vert^2 } =
+                \sqrt{ \frac{1}{N} \sum_{n=1}^{N}(y_n - (\phi(\vec{x}_n))^T\vec{\uptheta})^2 }
+            \]
+            Differently from MSE, RMSE allows to compare errors of datasets with different sizes
+            and scales its result to the labels.
+
+            By comparing the RMSE of the train and test sets, it is possible to check if a model is overfitting.
+\end{description}
 
 \begin{description}
     \item[Polynomial regression] \marginnote{Polynomial regression}
@@ -261,8 +300,7 @@ The likelihood becomes:
         \[ 
             \begin{split}
                 f(x) &= (\phi(x))^T \vec{\uptheta} \\
-                    &= \sum_{i=0}^{K-1} \phi_i(x)\vartheta_i \\
-                    &= \sum_{i=0}^{K-1} x^i \vartheta_i
+                    &= \sum_{i=0}^{K-1} \phi_i(x)\vartheta_i = \sum_{i=0}^{K-1} x^i \vartheta_i
             \end{split}
         \]
 \end{description}

@@ -98,3 +98,6 @@
     \newpage
     \pagenumbering{arabic}
 }
+
+
+\newcommand{\eoc}[0]{\begin{flushright}\texttt{\raggedleft\small <end of course>}\end{flushright}}
