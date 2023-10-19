@@ -1,0 +1,203 @@
+\chapter{Probability}
+
+\begin{description}
+    \item[Sample space] \marginnote{Sample space}
+        Set $\Omega$ of all possible worlds.
+        \begin{descriptionlist}
+            \item[Event] \marginnote{Event}
+                Subset $A \subseteq \Omega$.
+            \item[Sample point/Possible world/Atomic event] \marginnote{Sample point}
+                Element $\omega \in \Omega$.
+        \end{descriptionlist}
+
+    \item[Probability space] \marginnote{Probability space}
+        A probability space/model is a function $\prob{\cdot}: \Omega \rightarrow [0, 1]$ assigned to a sample space such that:
+        \begin{itemize}
+            \item $0 \leq \prob{\omega} \leq 1$
+            \item $\sum_{\omega \in \Omega} \prob{\omega} = 1$
+            \item $\prob{A} = \sum_{\omega \in A} \prob{\omega}$
+        \end{itemize}
+
+    \item[Random variable] \marginnote{Random variable}
+        A function from an event to some range (e.g. reals, booleans, \dots).
+
+    \item[Probability distribution] \marginnote{Probability distribution}
+        For any random variable $X$:
+        \[ \prob{X = x_i} = \sum_{\omega \text{ st } X(\omega)=x_i} \prob{\omega} \]
+
+    \item[Proposition] \marginnote{Proposition}
+        Event where a random variable has a certain value.
+        \[ a = \{ \omega \,\vert\, A(\omega) = \texttt{true} \} \]
+        \[ \lnot  a = \{ \omega \,\vert\, A(\omega) = \texttt{false} \} \]
+        \[ (\texttt{Weather} = \texttt{rain}) = \{ \omega \,\vert\, B(\omega) = \texttt{rain} \} \]
+
+    \item[Prior probability] \marginnote{Prior probability}
+        Prior/unconditional probability of a proposition based on known evidence.
+        
+    \item[Probability distribution (all)] \marginnote{Probability distribution (all)}
+        Gives all the probabilities of a random variable.
+        \[ \textbf{P}(A) = \langle \prob{A=a_1}, \dots, \prob{A=a_n} \rangle \]
+    
+    \item[Joint probability distribution] \marginnote{Joint probability distribution}
+        The joint probability distribution of a set of random variables gives 
+        the probability of all the different combinations of their atomic events.
+
+        Note: Every question on a domain can, in theory, be answered using the joint distribution.
+        In practice, it is hard to apply.
+
+        \begin{example}
+            $\textbf{P}(\texttt{Weather}, \texttt{Cavity}) = $
+            \begin{center}
+                \small
+                \begin{tabular}{c | cccc}
+                                            & \texttt{Weather=sunny} & \texttt{Weather=rain} & \texttt{Weather=cloudy} & \texttt{Weather=snow} \\
+                    \hline
+                    \texttt{Cavity=true}    & 0.144 & 0.02 & 0.016 & 0.02 \\
+                    \texttt{Cavity=false}   & 0.576 & 0.08 & 0.064 & 0.08
+                \end{tabular}
+            \end{center}
+        \end{example}
+
+    \item[Probability density function] \marginnote{Probability density function}
+        The probability density function (PDF) of a random variable $X$ is a function $p: \mathbb{R} \rightarrow \mathbb{R}$
+        such that:
+        \[ \int_{\mathcal{T}_X} p(x) \,dx = 1 \]
+        \begin{descriptionlist}
+            \item[Uniform distribution] \marginnote{Uniform distribution}
+                \[ 
+                    p(x) = \text{Unif}[a, b](x) = 
+                    \begin{cases}
+                        \frac{1}{b-a} & a \leq x \leq b \\
+                        0 & \text{otherwise}
+                    \end{cases} 
+                \]
+            \item[Gaussian (normal) distribution] \marginnote{Gaussian (normal) distribution}
+                \[ \mathcal{N}(\mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}e^{\frac{-(x-\mu)^2}{2\sigma^2}} \]
+
+                $\mathcal{N}(0, 1)$ is the standard Gaussian.
+        \end{descriptionlist}
+
+    \item[Conditional probability] \marginnote{Conditional probability}
+        Probability of a prior knowledge with new evidence:
+        \[ \prob{a \vert b} = \frac{\prob{a \land b}}{\prob{b}} \]
+        The product rule gives an alternative formulation:
+        \[ \prob{a \land b} = \prob{a \vert b}{\prob{b}} = \prob{b \vert a}{\prob{a}} \]
+
+        \begin{description}
+            \item[Chain rule] \marginnote{Chain rule}
+                Successive application of the product rule:
+                \[ 
+                    \begin{split}
+                        \textbf{P}(X_1, \dots, X_n) &= \textbf{P}(X_1, \dots, X_{n-1}) \textbf{P}(X_n \vert X_1, \dots, X_{n-1}) \\
+                            &= \textbf{P}(X_1, \dots, X_{n-2}) \textbf{P}(X_{n-1} \vert X_1, \dots, X_{n-2}) \textbf{P}(X_n \vert X_1, \dots, X_{n-1}) \\
+                            &= \prod_{i=1}^{n} \textbf{P}(X_i \vert X_1, \dots, X_{i-1})
+                    \end{split}  
+                \]
+        \end{description}
+
+    \item[Independence] \marginnote{Independence}
+        Two random variables $A$ and $B$ are independent ($A \perp B$) iff:
+        \[ 
+            \textbf{P}(A \vert B) = \textbf{P}(A) \,\text{ or }\, 
+            \textbf{P}(B \vert A) = \textbf{P}(B) \,\text{ or }\,
+            \textbf{P}(A, B) = \textbf{P}(A)\textbf{P}(B)
+        \]
+
+    \item[Conditional independence] \marginnote{Conditional independence}
+        Two random variables $A$ and $B$ are conditionally independent iff:
+        \[ \textbf{P}(A \,\vert\, C, B) = \textbf{P}(A \,\vert\, C) \]
+\end{description}
+
+
+
+\section{Inference with full joint distributions}
+Given a joint distribution, the probability of any proposition $\phi$ 
+can be computed as the sum of the atomic events where $\phi$ is true:
+\[ \prob{\phi} = \sum_{\omega:\, \omega \models \phi} \prob{\omega} \]
+
+\begin{example}
+    Given the following joint distribution:
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+            \cline{2-5}
+            \multicolumn{1}{c|}{}    & \multicolumn{2}{c|}{\texttt{toothache}} & \multicolumn{2}{c|}{$\lnot$\texttt{toothache}} \\
+            \cline{2-5}
+            \multicolumn{1}{c|}{}    & \texttt{catch} & $\lnot$\texttt{catch} & \texttt{catch} & $\lnot$\texttt{catch} \\
+            \hline
+            \texttt{cavity}         & 0.108 & 0.012 & 0.072 & 0.008 \\
+            $\lnot$\texttt{cavity}  & 0.016 & 0.064 & 0.144 & 0.576 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    We have that:
+    \begin{itemize}
+        \item $\prob{\texttt{toothache}} = 0.108 + 0.012 + 0.016 + 0.064 = 0.2$
+        \item $\prob{\texttt{cavity} \vee \texttt{toothache}} = 0.108 + 0.012 + 0.072 + 0.008 + 0.016 + 0.064 = 0.28$
+        \item $\prob{\lnot\texttt{cavity} \,\vert\, \texttt{toothache}} = \frac{\prob{\lnot\texttt{cavity} \land \texttt{toothache}}}{\prob{\texttt{toothache}}} =
+                \frac{0.016 + 0.064}{0.2} = 0.4$
+    \end{itemize}
+\end{example}
+
+\begin{description}
+    \item[Marginalization] \marginnote{Marginalization}
+        The probability that a random variable assumes a specific value is given by 
+        the sum off all the joint probabilities where that random variable assumes the given value.
+        \begin{example}
+            Given the joint distribution:
+            \begin{center}
+                \small
+                \begin{tabular}{c | cccc}
+                                            & \texttt{Weather=sunny} & \texttt{Weather=rain} & \texttt{Weather=cloudy} & \texttt{Weather=snow} \\
+                    \hline
+                    \texttt{Cavity=true}    & 0.144 & 0.02 & 0.016 & 0.02 \\
+                    \texttt{Cavity=false}   & 0.576 & 0.08 & 0.064 & 0.08
+                \end{tabular}
+            \end{center}
+            We have that $\prob{\texttt{Weather}=\texttt{sunny}} = 0.144 + 0.576$
+        \end{example}
+    \item[Conditioning] \marginnote{Conditioning}
+        Adding a condition to a probability (reduction and renormalization).
+
+    \item[Normalization] \marginnote{Normalization}
+        Given a conditional probability distribution $\textbf{P}(A \vert B)$,
+        it can be formulated as:
+        \[ \textbf{P}(A \vert B) = \alpha\textbf{P}(A, B) \]
+        where $\alpha$ is a normalization constant.
+        In fact, fixed the evidence $B$, the denominator to compute the conditional probability is the same for each probability.
+
+        \begin{example}
+            Given the joint distribution:
+            \begin{center}
+                \begin{tabular}{|c|c|c|c|c|}
+                    \cline{2-5}
+                    \multicolumn{1}{c|}{}    & \multicolumn{2}{c|}{\texttt{toothache}} & \multicolumn{2}{c|}{$\lnot$\texttt{toothache}} \\
+                    \cline{2-5}
+                    \multicolumn{1}{c|}{}    & \texttt{catch} & $\lnot$\texttt{catch} & \texttt{catch} & $\lnot$\texttt{catch} \\
+                    \hline
+                    \texttt{cavity}         & 0.108 & 0.012 & 0.072 & 0.008 \\
+                    $\lnot$\texttt{cavity}  & 0.016 & 0.064 & 0.144 & 0.576 \\
+                    \hline
+                \end{tabular}
+            \end{center}
+
+            We have that:
+            \[
+                \textbf{P}(\texttt{cavity} \vert \texttt{toothache}) = 
+                    \langle 
+                        \frac{\prob{\texttt{cavity}, \texttt{toothache}, \texttt{catch}}}{\prob{\texttt{toothache}}},
+                        \frac{\prob{\texttt{cavity}, \texttt{toothache}, \lnot\texttt{catch}}}{\prob{\texttt{toothache}}}
+                    \rangle  
+            \]
+        \end{example}
+
+    \item[Probability query] \marginnote{Probability query}
+        Given a set of query variables $\bm{Y}$, the evidence variables $\vec{e}$ and the other hidden variables $\bm{H}$,
+        the probability of the query can be computed as:
+        \[ 
+            \textbf{P}(\bm{Y} \vert \bm{E}=\vec{e}) = \alpha \textbf{P}(\bm{Y} \vert \bm{E}=\vec{e})
+                = \alpha \sum_{\vec{h}} \textbf{P}(\bm{Y} \vert \bm{E}=\vec{e}, \bm{H}=\vec{h})
+        \]
+        The problem of this approach is that it has exponential time and space complexity
+        which makes it not applicable in practice.
+\end{description}
