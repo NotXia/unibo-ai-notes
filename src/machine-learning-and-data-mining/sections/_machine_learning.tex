@@ -1,0 +1,172 @@
+\chapter{Machine learning}
+
+\begin{description}
+    \item[Machine learning] \marginnote{Machine learning}
+        Application of methods and algorithms to extract patterns from data.
+\end{description}
+
+\section{Tasks}
+\begin{description}
+    \item[Classification] Estimation of a finite number of classes.
+    \item[Regression] Estimation of a numeric value.
+    \item[Similarity matching] Identify similar individuals.
+    \item[Clustering] Grouping individuals based on their similarities.
+    \item[Co-occurrence groupping] Identify associations between entities based on the transactions in which they appear together.
+    \item[Profiling] Behavior description.
+    \item[Link analysis] Analysis of connections (e.g. in a graph).
+    \item[Data reduction] Reduce the dimensionality of data with minimal information loss.
+    \item[Casual modeling] Understand the connections between events and actions.  
+\end{description}
+
+
+\section{Categories}
+\begin{description}
+    \item[Supervised learning] \marginnote{Supervised learning}
+        Problem where the target(s) is defined.
+    \item[Unsupervised learning] \marginnote{Unsupervised learning}
+        Problem where no specific target is known.
+    \item[Reinforcement learning] \marginnote{Reinforcement learning}
+        Learn a policy to generate a sequence of actions.
+\end{description}
+
+
+
+\section{Data}
+
+\begin{description}
+    \item[Dataset] \marginnote{Dataset}
+        Set of $N$ individuals, each described by $D$ features. 
+\end{description}
+
+
+\subsection{Data types}
+
+\begin{description}
+    \item[Categorical] Values with a discrete domain.
+        \begin{description}
+            \item[Nominal] \marginnote{Categorical nominal data}
+                The values are a set of non-ordered labels.
+
+                \textbf{Operators.} $=$, $\neq$
+                \begin{example}
+                    Name, surname, zip code.
+                \end{example}
+
+            \item[Ordinal] \marginnote{Categorical ordinal data}
+                The values are a set of totally ordered labels.
+
+                \textbf{Operators.} $=$, $\neq$, $<$, $>$, $\leq$, $\geq$
+                \begin{example}
+                    Non-numerical quality evaluations (excellent, good, fair, poor, bad).
+                \end{example}
+        \end{description}
+
+    \item[Numerical] Values with a continuous domain.
+        \begin{description}
+            \item[Interval] \marginnote{Numerical interval data}
+                Numerical values without an univocal definition of 0 (i.e. 0 is not used as reference).
+                It is not reasonable to compare the magnitude of this type of data.
+
+                \textbf{Operators.} $=$, $\neq$, $<$, $>$, $\leq$, $\geq$, $+$, $-$
+                \begin{example}
+                    Celsius and Fahrenheit temperature scales, CGPA, time.
+                    
+                    For instance, there is a $6.25\%$ increase from $16\text{°C}$ to $17\text{°C}$, but
+                    converted in Fahrenheit, the increase is of $2.96\%$ (from $60.8\text{°F}$ to $62.6\text{°F}$).
+                \end{example}
+
+            \item[Ratio] \marginnote{Numerical ratio data}
+                Values with an absolute 0 point.
+
+                \textbf{Operators.} $=$, $\neq$, $<$, $>$, $\leq$, $\geq$, $+$, $-$
+                \begin{example}
+                    Kelvin temperature scale, age, income, length.
+
+                    For instance, there is a $10\%$ increase from 100\$ to 110\$.
+                    Converted in euro (1\geneuro = 1.06\$), the increase is still of $10\%$ (from $94.34\geneuro$ to $103.77\geneuro$).
+                \end{example}
+        \end{description}
+\end{description}
+
+
+\subsection{Transformations}
+\begin{center}
+    
+    \begin{tabular}{c|c|>{\raggedright\arraybackslash}m{8cm}}
+        \hline
+        \multicolumn{2}{c|}{\textbf{Data type}} & \textbf{Transformation} \\
+        \hline
+        \multirow{2}{*}{Categorical}    & Nominal  & One-to-one transformations \\
+        \cline{2-3}
+                                        & Ordinal  & Order preserving transformations (i.e. monotonic functions) \\
+        \hline
+        \multirow{2}{*}{Numerical}      & Interval & Linear transformations \\
+        \cline{2-3}
+                                        & Ratio    & Any mathematical function, standardization, variation in percentage \\
+        \hline
+    \end{tabular}
+\end{center}
+
+
+% \subsection{Dataset characteristics}
+% \begin{description}
+%     \item[Dimensionality] 
+%     \item[Sparsity] 
+%     \item[Missing data] 
+%     \item[Resolution] 
+% \end{description}
+
+
+\subsection{Dataset format}
+\begin{description}
+    \item[Relational table] \marginnote{Relational table}
+        The attributes of each record are the same.
+    
+    \item[Data matrix] \marginnote{Data matrix}
+        Matrix with $N$ rows (entries) and $D$ columns (attributes).
+    
+    \item[Sparse matrix] \marginnote{Sparse matrix}
+        Data matrix with lots of zeros.
+        \begin{example}[Bag-of-words]
+            Each row represents a document, each column represents a term.
+            The $i,j$-th cell contains the frequency of the $j$-th term in the $i$-th document.
+        \end{example}
+    
+    \item[Transactional data] \marginnote{Transactional data}
+        Each record contains a set of objects (not necessarily a relational table).
+    
+    \item[Graph data] \marginnote{Graph data}
+        Set of nodes and edges.
+    
+    \item[Ordered data] \marginnote{Ordered data}
+        e.g. temporal data.
+\end{description}
+
+
+\subsection{Data quality}
+\begin{description}
+    \item[Noise] \marginnote{Noise}
+        Alteration of the original values.
+
+    \item[Outliers] \marginnote{Outliers}
+        Data that considerably differ from the majority of the dataset.
+        May be caused by noise or rare events.
+
+        Box plots can be used to visually detect outliers.
+
+    \item[Missing values] \marginnote{Missing values}
+        Data that have not been collected.
+        Sometimes they are not easily recognizable 
+        (e.g. when special values are used, instead of \texttt{null}, to mark missing data).
+
+        Can be handled in different ways:
+        \begin{itemize}
+            \item Ignore the records with missing values.
+            \item Estimate or default missing values.
+            \item Ignore the fact that some values are missing (not always applicable).
+            \item Insert all the possible values and weight them by their probability.
+        \end{itemize}
+
+    \item[Duplicated data] \marginnote{Duplicated data}
+        Data that may be merged.
+\end{description}
