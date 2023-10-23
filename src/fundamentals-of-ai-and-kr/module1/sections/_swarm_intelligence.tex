@@ -1,0 +1,167 @@
+\chapter{Swarm intelligence}
+
+\begin{description}
+    \item[Swarm intelligence] \marginnote{Swarm intelligence}
+        Group of locally-interacting agents that 
+        shows an emergent behavior without a centralized control system.
+
+        A swarm intelligent system has the following features:
+        \begin{itemize}
+            \item Individuals are simple and have limited capabilities.
+            \item Individuals are not aware of the global view.
+            \item Individuals have local direct or indirect communication patterns.
+            \item The computation is distributed and not centralized.
+            \item The system works even if some individuals "break" (robustness).
+            \item The system adapts to changes.
+        \end{itemize}
+
+        Agents interact between each other and obtain positive and negative feedbacks.
+
+    \item[Stigmergy] \marginnote{Stigmergy}
+        Form of indirect communication where an agent modifies the environment and the others react to it.
+\end{description}
+
+
+
+\section{Ant colony optimization (ACO)}
+
+
+Ants release pheromones while walking from the nest to the food.
+They also tend to prefer paths marked with the highest pheromone concentration.
+
+\begin{description}
+    \item[Ant colony optimization] \marginnote{Ant colony optimization (ACO)}
+        Probabilistic parametrized model that builds the solution incrementally.
+        A problem is solved by making stochastic steps in a fully connected graph (construction graph) $G=(C, L)$ where:
+        \begin{itemize}
+            \item The vertexes $C$ are the solution components.
+            \item The edges $L$ are connections.
+            \item The paths on $G$ are states.
+        \end{itemize}
+        Additional constraints may be added if needed.
+
+        \begin{example}[Travelling salesman]
+            The construction graph can be defined as:
+            \begin{itemize}
+                \item Nodes are cities.
+                \item Edges are connections between cities.
+                \item A solution is an Hamiltonian path in the graph.
+                \item Constraints to avoid sub-cycles (i.e. avoid visiting a city multiple times).
+            \end{itemize}            
+        \end{example}
+
+    \item[Pheromone] \marginnote{Pheromone}
+        Value associated to each node and each edge to estimate the quality of the solution.
+
+    \item[Heuristic values] \marginnote{Heuristic values}
+        Value associated to each node and each edge to represent the prior background knowledge.
+\end{description}
+
+
+\subsection{ACO system} 
+
+\begin{description}
+    \item[Transition rule] \marginnote{ACO system}
+        Ants build a path on the construction graph based on a transition rule that uses pheromones and heuristics.
+        The probability of choosing the node $j$ starting from $i$ 
+        is parametrized on $\alpha$ (pheromones) and $\beta$ (heuristics), and is defined as:
+        \[ p_{\alpha, \beta}(i, j) = \begin{cases}
+            \frac{(\tau_{ij})^\alpha \cdot (\eta_{ij})^\beta}{\sum_{k \in \texttt{feasible\_nodes}} (\tau_{ik})^\alpha \cdot (\eta_{ik})^\beta} & \text{if } $j$ \text{ consistent} \\
+            0 & \text{otherwise}
+        \end{cases} \]
+        where $\tau_{ij}$ is the pheromone trail from $i$ to $j$ and $\eta_{ij} = \frac{1}{d_{ij}}$ is the heuristic ($d_{ij}$ is the distance).
+
+    \item[Pheromone update]
+        After each step, the pheromone trail is updated depending on an evaporation factor $\rho \in [0, 1]$:
+        \[ \tau_{ij} = (1 - \rho) \tau_{ij} + \sum_{k=1}^{n_\text{ants}} \Delta \tau_{ij}^{(k)} \]
+        $\tau_{ij}^{(k)}$ of the $k$-th ant is defined as:
+        \[ \tau_{ij}^{(k)} = \begin{cases}
+            \frac{1}{L_k} & \text{if ant } k \text{ used the arch } (i, j) \\
+            0 & \text{otherwise}
+        \end{cases} \]
+        where $L_k$ is the length of the path followed by the $k$-th ant.
+
+        For the best ant, the update also affects all the components on the path crossed by the ant.
+
+    \item[Daemon actions]
+        Centralized actions performed on each solution built by the ants.
+        These actions cannot be performed by single ants and are useful to improve the solution using global information.
+        In practice, a local search can be applied to push the result towards a better solution.
+\end{description} 
+
+\begin{algorithm}
+\caption{ACO system}
+\begin{lstlisting}[mathescape=true]
+    def acoSystem(problem):
+        initPheromones()
+        while not terminationConditions():
+            antBasedSolutionConstruction()
+            pheromonesUpdate()
+            daemonActions() # Optional
+\end{lstlisting}
+\end{algorithm}
+
+
+
+\section{Artificial bee colony algorithm (ABC)}
+\marginnote{Artificial bee colony algorithm (ABC)}
+
+System where the position of nectar sources represents the solutions and
+the quantity of nectar sources represents the fitness of the solution.
+Artificial bees can be:
+\begin{descriptionlist}
+    \item[Employed] 
+        Bee associated to a specific nectar source (intensification) (i.e. it represents a solution).
+    \item[Onlooker]
+        Bee that is observing the employed bees and is choosing its nectar source.
+    \item[Scout]
+        Bee that discovers new food sources (diversification).
+\end{descriptionlist}
+
+The algorithm has the following phases:
+\begin{descriptionlist}
+    \item[Initialization] 
+        The initial nectar source of each bee is determined randomly.
+        Each solution (nectar source) is a vector $\vec{x}_m \in \mathbb{R}^n$ and 
+        each of its component is initialized constrained to a lower ($l_i$) and upper ($u_i$) bound:
+        \[ \vec{x}_m\texttt{[}i\texttt{]} = l_i + \texttt{rand}(0, 1) \cdot (u_i - l_i) \]
+    
+    \item[Employed bees] 
+        Starting from their assigned nectar source, employed bees look in their neighborhood for a new food source with more fitness (more nectar).
+        The fitness (for minimization problems) of a food source $\vec{x}_m$ is determined as:
+        \[ \texttt{fit}(\vec{x}_m) = \begin{cases}
+            \frac{1}{1 + \texttt{obj}(\vec{x}_m)}   & \text{if } \vec{x}_m \geq 0 \\
+            1 + \vert \texttt{obj}(\vec{x}_m) \vert & \text{if } \vec{x}_m < 0 \\
+        \end{cases} \]
+        where \texttt{obj} is the objective function.
+
+    \item[Onlooker bees] 
+        Onlooker bees stochastically choose their food source.
+        Each food source $\vec{x}_m$ has a probability associated to it defined as:
+        \[ p_m = \frac{\texttt{fit}(\vec{x}_m)}{\sum_{i=1}^{n_\text{bees}} \texttt{fit}(\vec{x}_i)} \]
+        This provides a positive feedback as more promising solutions have a higher probability to be chosen.
+
+    \item[Scout bees] 
+        Scout bees choose a nectar source randomly.
+
+        An employed bee that cannot improve its solution after a given number of attempts {\tiny(gets fired and)} becomes a scout (negative feedback).
+\end{descriptionlist}
+
+\begin{algorithm}
+\caption{ABC algorithm}
+\begin{lstlisting}[mathescape=true]
+    def abcAlgorithm(problem):
+        initPhase()
+        sol = None
+        while not terminationConditions():
+            employedBeesPhase()
+            onlookerBeesPhase()
+            scoutBeesPhase()
+            sol = getCurrentBest()
+\end{lstlisting}
+\end{algorithm}
+
+
+
+\section{Particle swarm optimization (PSO)}
+\marginnote{Particle swarm optimization (PSO)}
