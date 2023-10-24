@@ -92,10 +92,10 @@ They also tend to prefer paths marked with the highest pheromone concentration.
 \begin{algorithm}
 \caption{ACO system}
 \begin{lstlisting}[mathescape=true]
-    def acoSystem(problem):
+    def acoSystem(problem, $\alpha$, $\beta$):
         initPheromones()
         while not terminationConditions():
-            antBasedSolutionConstruction()
+            antBasedSolutionConstruction($\alpha$, $\beta$)
             pheromonesUpdate()
             daemonActions() # Optional
 \end{lstlisting}
@@ -165,3 +165,92 @@ The algorithm has the following phases:
 
 \section{Particle swarm optimization (PSO)}
 \marginnote{Particle swarm optimization (PSO)}
+
+In a bird flock, the movement of the individuals tend to:
+\begin{itemize}
+    \item Follow the neighbors.
+    \item Stay in the flock.
+    \item Avoid collisions.
+\end{itemize}
+However, a model based on the these rules does not have a common objective.
+
+PSO introduces as common objective the search of food.
+Each individual that finds food can:
+\begin{itemize}
+    \item Move away from the flock and reach the food.
+    \item Stay in the flock.
+\end{itemize}
+Following the movement rules, the entire flock will gradually move towards promising areas.
+
+Applied to optimization problems, the bird flock metaphor can be interpreted as:
+\begin{descriptionlist}
+    \item[Bird] 
+        Agent that represents a possible solution that is progressively improved (exploration).
+
+    \item[Social interaction] 
+        Exploiting the knowledge of other agents to move towards a global solution (exploitation).
+
+    \item[Neighborhood]
+        Individuals are affected by the actions of others close to them and are part of one or more sub-groups.
+
+        Note that sub-groups are not necessarily defined by physical proximity.
+\end{descriptionlist}
+
+Given a cost function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ to minimize (gradient is not known),
+PSO initializes a swarm of particles (agents) whose movement is guided by the best known position.
+Each particle is described by:
+\begin{itemize}
+    \item Its position $\vec{x}_i \in \mathbb{R}^n$ in the search space.
+    \item A velocity $\vec{v}_i \in \mathbb{R}^n$ that controls the movement of the particle.
+    \item The best solution $\vec{p}_i$ it has found so far.
+\end{itemize}
+
+\begin{algorithm}
+\caption{PSO algorithm}
+\begin{lstlisting}[mathescape=true]
+    def pco(f, n_particles, $\vec{l}$, $\vec{u}$, $\omega$, $\varphi_p$, $\varphi_g$):
+        particles = [Particle()] * n_particles
+        global_best = None
+        for particle in particles:
+            particle.value = randomUniform($\vec{l}$, $\vec{u}$) # Search space bounds
+            particle.vel = randomUniform($-\vert \vec{u}-\vec{l} \vert$, $\vert \vec{u}-\vec{l} \vert$)
+            particle.best = particle.value
+            if f(particles.best) < f(g): g = particles.best
+
+        while not terminationConditions():
+            for particle in particles:
+                $r_p$, $r_g$ = randomUniform(0, 1), randomUniform(0, 1)
+                $\vec{x}_i$, $\vec{p}_i$, $\vec{v}_i$ = particle.value, particle.best, particle.vel
+                $\vec{g}$ = global_best
+                particle.vel = $\omega$*$\vec{v}_i$ + $\varphi_p$*$r_p$*($\vec{p}_i$-$\vec{x}_i$) + $\varphi_g$*$r_g$*($\vec{g}$-$\vec{x}_i$)
+                particle.value = particle.value + particle.vel
+                if f(particle.value) < f(particle.best):
+                    particle.best = particle.value
+                    if f(particle.best) < f(g): g = particle.best
+\end{lstlisting}
+\end{algorithm}
+
+% \begin{algorithm}
+% \caption{PSO algorithm}
+% \begin{lstlisting}[mathescape=true]
+% def pco(f, $\omega$, $\varphi_p$, $\varphi_g$):
+%     particles = initParticles($\vec{l}$, $\vec{u}$)
+%     particles_best = [None] * len(particles)
+%     velocities = [None] * len(particles)
+%     global_best = None
+%     for i in range(len(particles)):
+%         velocities[i] = randomUniform($-\vert \vec{u}-\vec{l} \vert$, $\vert \vec{u}-\vec{l} \vert$)
+%         particles_best[i] = particles[i]
+%         if f(particles_best[i]) < f(g): g = particles_best[i]
+%     while not terminationConditions():
+%         for i in range(len(particles)):
+%             $r_p$, $r_g$ = randomUniform(0, 1), randomUniform(0, 1)
+%             $\vec{x}_i$, $\vec{p}_i$, $\vec{v}_i$ = particles[i], particles_best[i], velocities[i]
+%             $\vec{g}$ = global_best
+%             velocities[i] = $\omega$*$\vec{v}_i$ + $\varphi_p$*$r_p$*($\vec{p}_i$-$\vec{x}_i$) + $\varphi_g$*$r_g$*($\vec{g}$-$\vec{x}_i$)
+%             particles[i] = particles[i] + velocities[i]
+%             if f(particles[i]) < f(particles_best[i]):
+%                 particles_best[i] = particles[i]
+%                 if f(particles_best[i]) < f(g): g = particles_best[i]
+% \end{lstlisting}
+% \end{algorithm}
