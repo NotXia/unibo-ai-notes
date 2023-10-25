@@ -1,0 +1,88 @@
+\chapter{Games}
+
+In this course, we are interested in two-player games with 
+perfect knowledge (both players have the same information on the state of the game).
+
+
+\section{Minimax algorithm}
+\marginnote{Minimax algorithm}
+The minimax (min-max) algorithm allows to determine the optimal strategy for a player by
+building and propagating utility scores in a tree where each node represents a state of the game.
+It considers the player as the entity that maximizes (\textsc{Max}) its utility and
+the opponent as the entity that (optimally) minimizes (\textsc{Min}) the utility of the player.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/_minmax.pdf}
+    \caption{Example of game tree with propagated scores}
+\end{figure}
+
+In a game tree, each level represents the actions a that single player can do.
+In minimax, the levels where the player plays are the \textsc{Max} levels, 
+while the levels of the opponent are the \textsc{Min} levels.
+
+Given a node $n$ of a game tree,
+an iteration of the minimax algorithm can be described as follows:
+\begin{descriptionlist}
+    \item[Expansion] 
+        Expansion of the sub-tree having $n$ as root by considering the possible moves starting from the state of $n$.
+        
+        The expansion in height stops when a final state is reached or when some predetermined conditions are met 
+        (note that different branches may be expanded with different heights).
+
+        The expansion in width stops when all the possible moves have been considered or when some predetermined conditions are met.
+
+    \item[Evaluation]
+        Each leaf is labeled with a score.
+        For terminal states, a possible score assignment is:
+        \[ \texttt{utility}(\texttt{state}) = \begin{cases}
+            +1 & \text{Win} \\
+            -1 & \text{Loss} \\
+            0 & \text{Draw}
+        \end{cases} \]
+        For non-terminal states, heuristics are required.
+
+    \item[Propagation]
+        Starting from the parents of the leaves, the scores are propagated upwards 
+        by labeling the parents based on the children's score.
+
+        Given an unlabeled node $m$, if $m$ is at a \textsc{Max} level, its label is the maximum of its children's score.
+        Otherwise (\textsc{Min} level), the label is the minimum of its children's score.
+\end{descriptionlist}
+
+
+\begin{center}
+    \def\arraystretch{1.2}
+    \begin{tabular}{c | m{10cm}}
+        \hline
+        \textbf{Completeness} & Yes, if the game tree is finite \\
+        \hline
+        \textbf{Optimality} & Yes, assuming an optimal opponent (otherwise, it may need more moves) \\
+        \hline
+        \textbf{Time complexity}
+            & $O(b^m)$, with breadth $m$ and branching factor $b$ \\
+        \hline
+        \textbf{Space complexity}
+            & $O(b \cdot m)$, with breadth $m$ and branching factor $b$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{algorithm}
+\caption{Minimax algorithm}
+\begin{lstlisting}[mathescape=true]
+def minimax(node, who_is_next):
+    if isLeaf(node): 
+        eval = evaluate(node)
+    elif who_is_next == ME:
+        eval = $-\infty$
+        for c in node.children: # Expansion if needed
+            eval = max(eval, minimax(c, OPPONENT))
+    elif who_is_next == OPPONENT:
+        eval = $+\infty$
+        for c in node.children: # Expansion if needed
+            eval = min(eval, minimax(c, ME))
+    return eval
+\end{lstlisting}
+\end{algorithm}
