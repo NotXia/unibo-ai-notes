@@ -72,17 +72,75 @@ an iteration of the minimax algorithm can be described as follows:
 \begin{algorithm}
 \caption{Minimax algorithm}
 \begin{lstlisting}[mathescape=true]
-def minimax(node, who_is_next):
-    if isLeaf(node): 
-        eval = evaluate(node)
-    elif who_is_next == ME:
-        eval = $-\infty$
-        for c in node.children: # Expansion if needed
-            eval = max(eval, minimax(c, OPPONENT))
-    elif who_is_next == OPPONENT:
-        eval = $+\infty$
-        for c in node.children: # Expansion if needed
-            eval = min(eval, minimax(c, ME))
-    return eval
+    def minimax(node, max_depth, who_is_next):
+        if node.isLeaf() or max_depth == 0: 
+            eval = evaluate(node)
+        elif who_is_next == ME:
+            eval = -$\infty$
+            for c in node.children:
+                eval = max(eval, minimax(c, max_depth-1, OPPONENT))
+        elif who_is_next == OPPONENT:
+            eval = +$\infty$
+            for c in node.children:
+                eval = min(eval, minimax(c, max_depth-1, ME))
+        return eval
 \end{lstlisting}
 \end{algorithm}
+
+
+\section{Alpha-beta cuts}
+\marginnote{Alpha-beta cuts}
+Alpha-beta cuts (pruning) allows to prune subtrees whose state will never be selected (when playing optimally).
+$\alpha$ represents the best choice found for \textsc{Max}.
+$\beta$ represents the best choice found for \textsc{Min}.
+
+The best case for alpha-beta cuts is when the best nodes are evaluated first.
+In this scenario, the theoretical number of nodes to explore is decreased to $O(b^{d/2})$.
+In practice, the reduction is of order $O(\sqrt{b^d})$.
+In the average case of a random distribution, the reduction is of order $O(b^{3d/4})$.
+
+\begin{algorithm}
+\caption{Minimax with alpha-beta cuts}
+\begin{lstlisting}[mathescape=true]
+    def alphabeta(node, max_depth, who_is_next, $\alpha$=-$\infty$, $\beta$=+$\infty$):
+        if node.isLeaf() or max_depth == 0: 
+            eval = evaluate(node)
+        elif who_is_next == ME:
+            eval = -$\infty$
+            for c in node.children:
+                eval = max(eval, alphabeta(c, max_depth-1, OPPONENT, $\alpha$, $\beta$))
+                $\alpha$ = max(eval, $\alpha$)
+                if eval >= $\beta$: break # cutoff
+        elif who_is_next == OPPONENT:
+            eval = +$\infty$
+            for c in node.children:
+                eval = min(eval, alphabeta(c, max_depth-1, ME, $\alpha$, $\beta$))
+                $\beta$ = min(eval, $\beta$)
+                if eval <= $\alpha$: break # cutoff
+        return eval
+\end{lstlisting}
+\end{algorithm}
+
+\begin{figure}[h]
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/alphabeta_algo_example1.png}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/alphabeta_algo_example2.png}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/alphabeta_algo_example3.png}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/alphabeta_algo_example4.png}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/alphabeta_algo_example5.png}
+    \end{subfigure}
+    \caption{Algorithmic (left) and intuitive (right) application of alpha-beta cuts}
+\end{figure}
