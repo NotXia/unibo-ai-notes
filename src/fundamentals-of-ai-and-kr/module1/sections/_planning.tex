@@ -1,0 +1,90 @@
+\chapter{Automated planning}
+
+\begin{description}
+    \item[Automated planning] \marginnote{Automated planning} 
+        Given:
+        \begin{itemize}
+            \item An initial state.
+            \item A set of actions an agent can perform (operators).
+            \item The goal to achieve.
+        \end{itemize}
+        Automated planning finds a partially or totally ordered set of actions
+        that leads an agent from the initial state to the goal.
+
+    \item[Domain theory] \marginnote{Domain theory}
+        Formal description of the executable actions.
+        Each action has a name, pre-conditions and post-conditions.
+        \begin{descriptionlist}
+            \item[Pre-conditions] 
+                Conditions that must hold for the action to be executable.
+            \item[Post-conditions] 
+                Effects of the action.
+        \end{descriptionlist}
+
+    \item[Planner] \marginnote{Planner}
+        Process to decide the actions that solve a planning problem.
+        In this phase, actions are considered:
+        \begin{description}
+            \item[Non decomposable] 
+                An action is atomic (it starts and finishes).
+                Actions interact with each other by reaching sub-goals.
+            \item[Reversible] 
+                Choices are backtrackable.
+        \end{description}
+
+        A planner can have the following properties:
+        \begin{descriptionlist}
+            \item[Correctness] \marginnote{Correct planner}
+                The planner always finds a solution that leads from the initial state to the goal.
+            \item[Completeness] \marginnote{Complete planner}
+                The planner always finds a plan when it exits (planning is semi-decidable).
+        \end{descriptionlist}
+
+    \item[Execution] \marginnote{Execution}
+        The execution is the implementation of a plan. 
+        In this phase, actions are:
+        \begin{descriptionlist}
+            \item[Irreversible]
+                An action that has been executed cannot (usually) be backtracked.
+            \item[Non deterministic] 
+                An action applied to the real world may have unexpected effects due to uncertainty.
+        \end{descriptionlist}
+\end{description}
+
+
+\section{Generative planning}
+
+\begin{description}
+    \item[Generative planning] \marginnote{Generative planning}
+        Offline planning that creates the entire plan before execution based on
+        a snapshot of the current state of the world.
+        It relies on the following assumptions:
+        \begin{descriptionlist}
+            \item[Atomic time] 
+                Actions cannot be interrupted.
+            \item[Determinism] 
+                Actions are deterministic.
+            \item[Closed world] 
+                The initial state is fully known, 
+                what is not in the initial state is considered false (which is different from unknown).
+            \item[No interference] Only the execution of the plan changes the state of the world.
+        \end{descriptionlist}
+\end{description}
+
+
+\subsection{Linear planning}
+\marginnote{Linear planning}
+Formulates the planning problem as a search problem where:
+\begin{itemize}
+    \item Nodes contain the state of the world.
+    \item Edges represent possible actions.
+\end{itemize}
+Produces a totally ordered list of actions.
+
+The direction of the search can be:
+\begin{descriptionlist}
+    \item[Forward] 
+        Starting from the initial state, the search terminates when a state containing a superset of the goal is reached.
+    \item[Backward] 
+        Starting from the goal, the search terminates when a state containing a subset of the initial state is reached.
+    \end{descriptionlist}
