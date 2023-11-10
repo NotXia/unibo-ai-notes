@@ -1,0 +1,44 @@
+\chapter{First order logic}
+
+
+\section{Syntax}
+\marginnote{Syntax}
+The symbols of propositional logic are:
+\begin{descriptionlist}
+    \item[Constants]
+        Known elements of the domain. Do not represent truth values.
+        
+    \item[Variables]
+        Unknown elements of the domain. Do not represent truth values.
+    
+    \item[Function symbols] 
+        Function $f^{(n)}$ applied on $n$ constants to obtain another constant.
+
+    \item[Predicate symbols]
+        Function $P^{(n)}$ applied on $n$ constants to obtain a truth value.
+
+    \item[Connectives] $\forall$ $\exists$ $\land$ $\vee$ $\rightarrow$ $\lnot$ $\leftrightarrow$ $\bot$ $($ $)$
+\end{descriptionlist}
+
+Using the basic syntax, the following constructs can be defined:
+\begin{descriptionlist}
+    \item[Term] Denotes elements of the domain.
+        \[ t := \texttt{constant} \,|\, \texttt{variable} \,|\, f^{(n)}(t_1, \dots, t_n) \]
+
+    \item[Proposition] Denotes truth values.
+        \[
+            P := \bot \,|\, P \land P \,|\, P \vee P \,|\,  P \rightarrow P \,|\, P \leftrightarrow P \,|\, 
+                \lnot P \,|\, \forall x. P \,|\, \exists x. P \,|\, (P) \,|\, P^{(n)}(t_1, \dots, t_n) 
+        \]
+\end{descriptionlist}
+
+
+\begin{description}
+    \item[Well-formed formula] \marginnote{Well-formed formula}
+        The definition of well-formed formula in first order logic extends the one of
+        propositional logic by adding the following conditions:
+        \begin{itemize}
+            \item If S is well-formed, $\exists X. S$ is well-formed. Where $X$ is a variable.
+            \item If S is well-formed, $\forall X. S$ is well-formed. Where $X$ is a variable.
+        \end{itemize}
+\end{description}

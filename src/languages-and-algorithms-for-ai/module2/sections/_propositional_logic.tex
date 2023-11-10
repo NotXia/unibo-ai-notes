@@ -3,14 +3,13 @@
 \section{Syntax}
 \begin{description}
     \item[Syntax] \marginnote{Syntax}
-        Rules and symbols to define well formed sentences.
+        Rules and symbols to define well-formed sentences.
 \end{description}
 
 The symbols of propositional logic are:
 \begin{descriptionlist}
     \item[Proposition symbols] $p_0$, $p_1$, \dots
-    \item[Connectives] $\land$, $\vee$, $\rightarrow$, $\lnot$, $\leftrightarrow$, $\bot$
-    \item[Auxiliary symbols] $($ and $)$
+    \item[Connectives] $\land$ $\vee$ $\rightarrow$ $\leftrightarrow$ $\lnot$ $\bot$ $($ $)$
 \end{descriptionlist}
 
 \begin{description}
@@ -24,28 +23,31 @@ The symbols of propositional logic are:
         \end{itemize}
 
         Note that the implication $S_1 \rightarrow S_2$ can be written as $\lnot S_1 \vee S_2$.
+
+        The BNF definition of a formula is:
+        \[
+            F := \texttt{atomic\_proposition} \,|\, F \land F \,|\, F \vee F \,|\,  
+                F \rightarrow F \,|\, F \leftrightarrow F \,|\, \lnot F \,|\, (F) 
+        \]
+        % \[ 
+        %     \begin{split}
+        %         \texttt{<formula>} :=\,\, &\texttt{atomic\_proposition} \,|\,\\
+        %             &\lnot \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \land \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \vee \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \rightarrow \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \leftrightarrow \texttt{<formula>} \,|\, \\
+        %             &(\texttt{<formula>}) \\
+        %     \end{split}
+        % \]
 \end{description}
-
-\subsection{Propositional logic BNF}
-\[ 
-    \begin{split}
-        \texttt{<formula>} :=\,\, &\texttt{atomic\_proposition} \,|\,\\
-            &\lnot \texttt{<formula>} \,|\, \\
-            &\texttt{<formula>} \land \texttt{<formula>} \,|\, \\
-            &\texttt{<formula>} \vee \texttt{<formula>} \,|\, \\
-            &\texttt{<formula>} \rightarrow \texttt{<formula>} \,|\, \\
-            &\texttt{<formula>} \leftrightarrow \texttt{<formula>} \,|\, \\
-            &(\texttt{<formula>}) \\
-    \end{split}
-\]
-
 
 
 \section{Semantics}
 
 \begin{description}
     \item[Semantics] \marginnote{Semantics}
-        Rules to associate a meaning to well formed sentences.
+        Rules to associate a meaning to well-formed sentences.
         \begin{descriptionlist}
             \item[Model theory] What is true.
             \item[Proof theory] What is provable.
@@ -55,32 +57,20 @@ The symbols of propositional logic are:
 \begin{description}
     \item[Interpretation] \marginnote{Interpretation}
         Given a propositional formula $F$ of $n$ atoms $ \{ A_1, \dots, A_n \}$,
-        an interpretation $I$ of $F$ is an assignment of truth values to $\{ A_1, \dots, A_n \}$.
+        an interpretation $\mathcal{I}$ of $F$ is is a pair $(D, I)$ where:
+        \begin{itemize}
+            \item $D$ is the domain. Truth values in the case of propositional logic.
+            \item $I$ is the interpretation mapping that assigns
+                to the atoms $\{ A_1, \dots, A_n \}$ an element of $D$.
+        \end{itemize}
 
         Note: given a formula $F$ of $n$ distinct atoms, there are $2^n$ district interpretations.
 
         \begin{description}
             \item[Model] \marginnote{Model}
-                If $F$ is true under the interpretation $I$, 
-                we say that $I$ is a model of $F$ ($I \models F$).
+                If $F$ is true under the interpretation $\mathcal{I}$, 
+                we say that $\mathcal{I}$ is a model of $F$ ($\mathcal{I} \models F$).
         \end{description}
-
-
-    \item[Truth table] \marginnote{Truth table}
-        Useful to define the semantics of connectives.
-        \begin{itemize}
-            \item $\lnot S$ is true iff $S$ is false.
-            \item $S_1 \land S_2$ is true iff $S_1$ is true and $S_2$ is true.
-            \item $S_1 \vee S_2$ is true iff $S_1$ is true or $S_2$ is true.
-            \item $S_1 \rightarrow S_2$ is true iff $S_1$ is false or $S_2$ is true.
-            \item $S_1 \leftrightarrow S_2$ is true iff $S_1 \rightarrow S_2$ is true and $S_1 \leftarrow S_2$ is true.
-        \end{itemize}
-
-
-    \item[Evaluation] \marginnote{Evaluation order}
-        The connectives of a propositional formula are evaluated in the order:
-        \[ \leftrightarrow, \rightarrow, \vee, \land, \lnot \]
-        Formulas in parenthesis have higher priority.
 
     \item[Valid formula] \marginnote{Valid formula}
         A formula $F$ is valid (tautology) iff it is true in all the possible interpretations.
@@ -98,23 +88,42 @@ The symbols of propositional logic are:
         A formula $F$ is consistent (satisfiable) iff it is not inconsistent.
 
         In other words, there is at least an interpretation where $F$ is true.
-    
+
     \item[Decidability] \marginnote{Decidability}
-         A propositional formula is decidable if there is a terminating method to decide if it is valid.
+        A logic is decidable if there is a terminating method to decide if a formula is valid.
 
-    \item[Logical consequence] \marginnote{Logical consequence} 
-         Let $\Gamma = \{F_1, \dots, F_n\}$ be a set of formulas and $G$ a formula.
-         $G$ is a logical consequence of $\Gamma$ ($\Gamma \models G$)
-         if in all the possible interpretations $I$, 
-         if $F_1 \land \dots \land F_n$ is true, $G$ is true.
+        Propositional logic is decidable.
 
-    \item[Logical equivalence] \marginnote{Logical equivalence}
-        Two formulas $F$ and $G$ are logically equivalent ($F \equiv G$) iff the truth values of $F$ and $G$
-        are the same under the same interpretation.
-        In other words, $F \models G$ and $G \models F$.
+    \item[Truth table] \marginnote{Truth table}
+        Useful to define the semantics of connectives.
+        \begin{itemize}
+            \item $\lnot S$ is true iff $S$ is false.
+            \item $S_1 \land S_2$ is true iff $S_1$ is true and $S_2$ is true.
+            \item $S_1 \vee S_2$ is true iff $S_1$ is true or $S_2$ is true.
+            \item $S_1 \rightarrow S_2$ is true iff $S_1$ is false or $S_2$ is true.
+            \item $S_1 \leftrightarrow S_2$ is true iff $S_1 \rightarrow S_2$ is true and $S_1 \leftarrow S_2$ is true.
+        \end{itemize}
 
-        Common equivalences are:
-        \begin{descriptionlist}
+
+    \item[Evaluation] \marginnote{Evaluation order}
+        The connectives of a propositional formula are evaluated in the order:
+        \[ \leftrightarrow, \rightarrow, \vee, \land, \lnot \]
+        Formulas in parenthesis have higher priority.
+
+   \item[Logical consequence] \marginnote{Logical consequence} 
+        Let $\Gamma = \{F_1, \dots, F_n\}$ be a set of formulas (premises) and $G$ a formula (conclusion).
+        $G$ is a logical consequence of $\Gamma$ ($\Gamma \models G$)
+        if in all the possible interpretations $\mathcal{I}$, 
+        if $F_1 \land \dots \land F_n$ is true, $G$ is true.
+
+   \item[Logical equivalence] \marginnote{Logical equivalence}
+       Two formulas $F$ and $G$ are logically equivalent ($F \equiv G$) iff the truth values of $F$ and $G$
+       are the same under the same interpretation.
+       In other words, $F \equiv G \iff F \models G \land G \models F$.
+
+       Common equivalences are:
+       \begin{descriptionlist}
+            \footnotesize
             \item[Commutativity]: $(P \land Q) \equiv (Q \land P)$ and $(P \vee Q) \equiv (Q \vee P)$
             \item[Associativity]: $((P \land Q) \land R) \equiv (P \land (Q \land R))$
                 and $((P \vee Q) \vee R) \equiv (P \vee (Q \vee R))$
@@ -125,59 +134,18 @@ The symbols of propositional logic are:
             \item[De Morgan]: $\lnot(P \land Q) \equiv (\lnot P \vee \lnot Q)$ and $\lnot(P \vee Q) \equiv (\lnot P \land \lnot Q)$
             \item[Distributivity of $\land$ over $\vee$]: $(P \land (Q \vee R)) \equiv ((P \land Q) \vee (P \land R))$
             \item[Distributivity of $\vee$ over $\land$]: $(P \vee (Q \land R)) \equiv ((P \vee Q) \land (P \vee R))$
-        \end{descriptionlist}
+       \end{descriptionlist}
 \end{description}
-
-\begin{theorem}[Deduction] \marginnote{Deduction theorem}
-    Given a set of formulas $\{ F_1, \dots, F_n \}$ and a formula $G$:
-    \[ (F_1 \land \dots \land F_n) \models G \,\iff\, \models (F_1 \land \dots \land F_n) \rightarrow G \]
-
-    \begin{proof} \phantom{}
-        \begin{description}
-            \item[$\rightarrow$])
-                By hypothesis $(F_1 \land \dots \land F_n) \models G$.
-
-                So, for each interpretation $I$ in which $(F_1 \land \dots \land F_n)$ is true, $G$ is also true.
-                Therefore, $I \models (F_1 \land \dots \land F_n) \rightarrow G$.
-
-                Moreover, for each interpretation $I'$ in which $(F_1 \land \dots \land F_n)$ is false,
-                $(F_1 \land \dots \land F_n) \rightarrow G$ is true.
-                Therefore, $I' \models (F_1 \land \dots \land F_n) \rightarrow G$.
-
-                In conclusion, $\models (F_1 \land \dots \land F_n) \rightarrow G$.
-
-            \item[$\leftarrow$]) 
-                By hypothesis $\models (F_1 \land \dots \land F_n) \rightarrow G$.
-                Therefore, for each interpretation where $(F_1 \land \dots \land F_n)$ is true,
-                $G$ is also true.
-
-                In conclusion, $(F_1 \land \dots \land F_n) \models G$.
-        \end{description}
-    \end{proof}
-\end{theorem}
-
-\begin{theorem}[Refutation] \marginnote{Refutation theorem}
-    Given a set of formulas $\{ F_1, \dots, F_n \}$ and a formula $G$:
-    \[ (F_1 \land \dots \land F_n) \models G \,\iff\, F_1 \land \dots \land F_n \land \lnot G \text{ is inconsistent} \]
-
-    Note: this theorem is not accepted in intuitionistic logic.
-
-    \begin{proof}
-        By definition, $(F_1 \land \dots \land F_n) \models G$ iff for every interpretation where 
-        $(F_1 \land \dots \land F_n)$ is true, $G$ is also true.
-        This requires that there are no interpretations where $(F_1 \land \dots \land F_n)$ is true and $G$ false.
-        In other words, it requires that $(F_1 \land \dots \land F_n \land \lnot G)$ is inconsistent.
-    \end{proof}
-\end{theorem}
 
 
 \subsection{Normal forms}
+
 \begin{description}
     \item[Negation normal form (NNF)] \marginnote{Negation normal form}
-        A formula is in negation normal form iff negations appears only in front of atoms (i.e. not parenthesis).
+        A formula is in negation normal form iff negations appear only in front of atoms (i.e. not parenthesis).
         
     \item[Conjunctive normal form (CNF)] \marginnote{Conjunctive normal form}
-        A formula $F$ is in conjunctive normal form iff 
+        A formula $F$ is in conjunctive normal form iff:
         \begin{itemize}
             \item it is in negation normal form;
             \item it has the form $F := F_1 \land F_2 \dots \land F_n$, where each $F_i$ (clause) is a disjunction of literals.
@@ -189,19 +157,87 @@ The symbols of propositional logic are:
         \end{example}
 
     \item[Disjunctive normal form (DNF)] \marginnote{Disjunctive normal form}
-        A formula $F$ is in disjunctive normal form iff 
+        A formula $F$ is in disjunctive normal form iff:
         \begin{itemize}
             \item it is in negation normal form;
             \item it has the form $F := F_1 \vee F_2 \dots \vee F_n$, where each $F_i$ is a conjunction of literals.
         \end{itemize}
 \end{description}
 
-\section{Natural deduction}
 
+
+\section{Reasoning}
+
+\begin{description}
+    \item[Reasoning method] \marginnote{Reasoning method}
+        Systems to work with symbols.
+        
+        Given a set of formulas $\Gamma$, a formula $F$ and a reasoning method $E$,
+        we denote with $\Gamma \vdash^E F$ the fact that $F$ can be deduced from $\Gamma$
+        using the reasoning method $E$.
+
+        \begin{description}
+            \item[Sound] \marginnote{Soundness}
+                A reasoning method $E$ is sound iff:
+                \[ (\Gamma \vdash^E F) \rightarrow (\Gamma \models F) \]
+
+            \item[Complete] \marginnote{Completeness}
+                A reasoning method $E$ is complete iff:
+                \[ (\Gamma \models F) \rightarrow (\Gamma \vdash^E F) \]
+        \end{description}
+
+    \item[Deduction theorem] \marginnote{Deduction theorem}
+        Given a set of formulas $\{ F_1, \dots, F_n \}$ and a formula $G$:
+        \[ (F_1 \land \dots \land F_n) \models G \,\iff\, \models (F_1 \land \dots \land F_n) \rightarrow G \]
+        
+        \begin{proof} \phantom{}
+            \begin{description}
+                \item[$\rightarrow$])
+                    By hypothesis $(F_1 \land \dots \land F_n) \models G$.
+        
+                    So, for each interpretation $\mathcal{I}$ in which $(F_1 \land \dots \land F_n)$ is true, 
+                    $G$ is also true.
+                    Therefore, $\mathcal{I} \models (F_1 \land \dots \land F_n) \rightarrow G$.
+        
+                    Moreover, for each interpretation $\mathcal{I}'$ in which $(F_1 \land \dots \land F_n)$ is false,
+                    $(F_1 \land \dots \land F_n) \rightarrow G$ is true.
+                    Therefore, $\mathcal{I}' \models (F_1 \land \dots \land F_n) \rightarrow G$.
+        
+                    In conclusion, $\models (F_1 \land \dots \land F_n) \rightarrow G$.
+        
+                \item[$\leftarrow$]) 
+                    By hypothesis $\models (F_1 \land \dots \land F_n) \rightarrow G$.
+                    Therefore, for each interpretation where $(F_1 \land \dots \land F_n)$ is true,
+                    $G$ is also true.
+        
+                    In conclusion, $(F_1 \land \dots \land F_n) \models G$.
+            \end{description}
+        \end{proof}
+
+    \item[Refutation theorem] \marginnote{Refutation theorem}
+        Given a set of formulas $\{ F_1, \dots, F_n \}$ and a formula $G$:
+        \[ (F_1 \land \dots \land F_n) \models G \,\iff\, F_1 \land \dots \land F_n \land \lnot G \text{ is inconsistent} \]
+        
+        Note: this theorem is not accepted in intuitionistic logic.
+        
+        \begin{proof}
+            By definition, $(F_1 \land \dots \land F_n) \models G$ iff for every interpretation where 
+            $(F_1 \land \dots \land F_n)$ is true, $G$ is also true.
+            This requires that there are no interpretations where $(F_1 \land \dots \land F_n)$ is true and $G$ false.
+            In other words, it requires that $(F_1 \land \dots \land F_n \land \lnot G)$ is inconsistent.
+        \end{proof}
+\end{description}
+
+
+
+
+\subsection{Natural deduction}
 \begin{description}
     \item[Proof theory] \marginnote{Proof theory}
         Set of rules that allows to derive conclusions from premises by exploiting syntactic manipulations.
+\end{description}
 
+\begin{description}
     \item[Natural deduction] \marginnote{Natural deduction for propositional logic}
         Set of rules to introduce or eliminate connectives.
         We consider a subset $\{ \land, \rightarrow, \bot \}$ of functionally complete connectives.
