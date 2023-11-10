@@ -7,7 +7,7 @@
 \usepackage{geometry}
 \usepackage{graphicx, xcolor}
 \usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm, upgreek, cancel}
-\usepackage{hyperref}
+\usepackage[pdfusetitle]{hyperref}
 \usepackage[nameinlink]{cleveref}
 \usepackage[all]{hypcap} % Links hyperref to object top and not caption
 \usepackage[inline]{enumitem}
