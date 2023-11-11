@@ -239,6 +239,7 @@
 
 \section{Building Bayesian networks}
 
+\subsection{Algorithm}
 The following algorithm can be used to construct a Bayesian network of $n$ random variables:
 \begin{enumerate}
     \item Choose an ordering of the variables $X_1, \dots, X_n$.
@@ -265,18 +266,146 @@ By construction, this algorithm guarantees the global semantics.
     \begin{figure}[h]
         \begin{subfigure}{.3\textwidth}
             \centering
-            \includegraphics[width=0.2\linewidth]{img/_monty_hall1.pdf}
+            \includegraphics[width=0.15\linewidth]{img/_monty_hall1.pdf}
             \caption{First interaction}
         \end{subfigure}
         \begin{subfigure}{.3\textwidth}
             \centering
-            \includegraphics[width=0.6\linewidth]{img/_monty_hall2.pdf}
+            \includegraphics[width=0.45\linewidth]{img/_monty_hall2.pdf}
             \caption{Second interaction (note that $P \perp G$)}
         \end{subfigure}
         \begin{subfigure}{.3\textwidth}
             \centering
-            \includegraphics[width=0.6\linewidth]{img/_monty_hall3.pdf}
+            \includegraphics[width=0.45\linewidth]{img/_monty_hall3.pdf}
             \caption{Third interaction}
         \end{subfigure}
     \end{figure}
 \end{example}
+
+The nodes of the resulting network can be classified as:
+\begin{descriptionlist}
+    \item[Initial evidence] The initial observation.
+    \item[Testable variables] Variables that can be verified.
+    \item[Operable variables] Variables that can be changed by intervening on them.
+    \item[Hidden variables] Variables that "compress" more variables to reduce the parameters.
+\end{descriptionlist}
+
+\begin{example} \phantom{}\\
+    \begin{minipage}{.4\linewidth}
+        \begin{description}
+            \item[Initial evidence] Red.
+            \item[Testable variables] Green.
+            \item[Operable variables] Orange.
+            \item[Hidden variables] Gray.
+        \end{description}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+        \begin{center}
+            \includegraphics[width=\linewidth]{img/_car_example.pdf}
+        \end{center}
+    \end{minipage}
+\end{example}
+
+
+\subsection{Structure learning}
+\marginnote{Structure learning}
+Learn the network from the available data.
+\begin{description}
+    \item[Constraint-based] 
+        Independence tests to identify the constraints of the edges.
+    \item[Score-based] 
+        Define a score to evaluate the network.
+\end{description}
+
+
+
+\section{Causal networks}
+When building a Bayesian network, a correct ordering of the nodes 
+that respects the causality allows to obtain more compact networks.
+
+\begin{description}
+    \item[Structural equation] \marginnote{Structural equation}
+        Given a variable $X_i$ with values $x_i$, its structural equation is a function $f_i$
+        such that it represents all its possible values:
+        \[ x_i = f_i(\text{other variables}, U_i) \]
+        $U_i$ represents unmodeled variables or error terms.
+
+    \item[Causal network] \marginnote{Causal network}
+        Restricted class of Bayesian networks that only allows causally compatible ordering.
+
+        An edge exists between $X_j \rightarrow X_i$ iff $X_j$ is an argument of 
+        the structural equation $f_i$ of $X_i$.
+
+        \begin{example} \phantom{}\\[0.5em]
+            \begin{minipage}{.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{img/_causal_network_example1.pdf}
+            \end{minipage}
+            \begin{minipage}{.6\linewidth}
+                The structural equations are:
+                \[ 
+                    \begin{split}
+                        \texttt{cloudy} &= f_C(U_C) \\
+                        \texttt{sprinkler} &= f_S(\texttt{Cloudy}, U_S) \\
+                        \texttt{rain} &= f_R(\texttt{Cloudy}, U_R) \\
+                        \texttt{wet\_grass} &= f_W(\texttt{Sprinkler}, \texttt{Rain}, U_W) \\
+                        \texttt{greener\_grass} &= f_G(\texttt{WetGrass}, U_G)
+                    \end{split}
+                \]
+            \end{minipage}\\[0.5em]
+
+            If the sprinkler is disabled, the network becomes:\\[0.5em]
+            \begin{minipage}{.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{img/_causal_network_example2.pdf}
+            \end{minipage}
+            \begin{minipage}{.6\linewidth}
+                The structural equations become:
+                \[ 
+                    \begin{split}
+                        \texttt{cloudy} &= f_C(U_C) \\
+                        \texttt{sprinkler} &= f_S(U_S) \\
+                        \texttt{rain} &= f_R(\texttt{Cloudy}, U_R) \\
+                        \texttt{wet\_grass} &= f_W(\texttt{Rain}, U_W) \\
+                        \texttt{greener\_grass} &= f_G(\texttt{WetGrass}, U_G)
+                    \end{split}
+                \]
+            \end{minipage}
+        \end{example}
+
+    \item[do-operator] \marginnote{do-operator}
+        The do-operator allows to represent manual interventions on the network.
+        The operation $\texttt{do}(X_i = x_i)$ makes the structural equation of $X_i$
+        constant (i.e. $f_i = x_i$, without arguments, so there won't be inward edges to $X_i$).
+
+        \begin{example} \phantom{}\\[0.5em]
+            \begin{minipage}{.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{img/_do_operator_example1.pdf}
+            \end{minipage}
+            \begin{minipage}{.65\linewidth}
+                By applying $\texttt{do}(\texttt{Sprinkler} = \texttt{true})$, the structural equations become:
+                \[ 
+                    \begin{split}
+                        \texttt{cloudy} &= f_C(U_C) \\
+                        \texttt{sprinkler} &= \texttt{true} \\
+                        \texttt{rain} &= f_R(\texttt{Cloudy}, U_R) \\
+                        \texttt{wet\_grass} &= f_W(\texttt{Sprinkler}, \texttt{Rain}, U_W) \\
+                        \texttt{greener\_grass} &= f_G(\texttt{WetGrass}, U_G)
+                    \end{split}
+                \]
+            \end{minipage}\\[0.5em]
+
+            \begin{minipage}{.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{img/_do_operator_example2.pdf}
+            \end{minipage}
+            \begin{minipage}{.65\linewidth}
+                Note that Bayesian networks are not capable of modelling manual interventions.
+                In fact, intervening and observing a variable are different concepts:
+                \[ \prob{\texttt{WetGrass} \mid \texttt{do}(\texttt{Sprinkler} = \texttt{true})} \]
+                \[ \neq \]
+                \[ \prob{\texttt{WetGrass} \mid \texttt{Sprinkler} = \texttt{true}} \]
+            \end{minipage}
+        \end{example}
+\end{description}
