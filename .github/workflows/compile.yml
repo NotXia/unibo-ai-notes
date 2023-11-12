@@ -21,21 +21,43 @@ jobs:
         run: |
             sudo apt update
             sudo apt install -y latexmk texlive texlive-science texlive-latex-extra
+        
+
+      - name: Checkout old pdfs
+        uses: actions/checkout@v3
+        with:
+          ref: pdfs
+          path: src/.compiled
+
+      - name: Copy basic files to pdfs branch
+        run: |
+          cp README.md src/.compiled
+          cp LICENSE src/.compiled
+
 
       - name: Compile
         run: |
-            mkdir /tmp/compiled
-
-            cp README.md /tmp/compiled
-            cp LICENSE /tmp/compiled
-
             shopt -s globstar
             cd src
+
             work_dir=$(pwd)
+            [[ -f .compiled/.hash.cls ]] && old_class_hash="$(cat .compiled/.hash.cls)" || old_class_hash=''
+            curr_class_hash="$(git log -n 1 --format='%h' ./ainotes.cls)"
+
             for f in **/[!_]*.tex; do
                 f_dir=$(dirname $f)
                 f_base=$(basename $f)
                 f_nameonly="${f_base%.*}"
+                [[ -f .compiled/${f_dir}/.hash ]] && old_hash="$(cat .compiled/${f_dir}/.hash)" || old_hash=''
+                curr_hash="$(git log -n 1 --format='%h' $f_dir)"
+
+                # Nothing to update
+                if [[ $old_hash == $curr_hash && $old_class_hash == $curr_class_hash ]]; then
+                  continue
+                fi
+
+                # Update hash
+                echo "$curr_hash" > .compiled/${f_dir}/.hash
 
                 cd ${f_dir};
 
@@ -45,17 +67,20 @@ jobs:
                 sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" ainotes.cls
 
                 latexmk -pdf -jobname=${f_nameonly} ${f_base}
-                mkdir -p /tmp/compiled/${f_dir}
-                mv ${f_nameonly}.pdf /tmp/compiled/${f_dir}/.
+                mkdir -p .compiled/${f_dir}
+                mv ${f_nameonly}.pdf .compiled/${f_dir}/.
                 cd $work_dir
             done
+
+            echo "$curr_class_hash" > .compiled/.hash.cls
+
 
       - name: Move to pdfs branch
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
           BRANCH: pdfs
-          FOLDER: /tmp/compiled
+          FOLDER: src/.compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_NAME: "github-actions[bot]"
           COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
