@@ -53,15 +53,23 @@
             \end{subfigure}
         \end{figure}
 
+    \item[Hyperparameters]
+        Parameters of the model that have to be manually chosen.
+\end{description}
+
+
+\section{Evaluation}
+
+\begin{description}
     \item[Dataset split]
         A supervised dataset can be randomly split into:
         \begin{descriptionlist}
             \item[Train set] \marginnote{Train set}
-                Used to learn the model. Usually the largest split.
+                Used to learn the model. Usually the largest split. Can be seen as an upper-bound of the model performance.
             \item[Test set] \marginnote{Test set}
-                Used to evaluate the trained model.
+                Used to evaluate the trained model. Can be seen as a lower-bound of the model performance.
             \item[Validation set] \marginnote{Validation set}
-                Used to evaluate the model during training.
+                Used to evaluate the model during training and/or for tuning parameters.
         \end{descriptionlist}
         It is assumed that the splits have similar characteristics.
 
@@ -80,6 +88,232 @@
             \item Noisy data.
             \item Lack of representative instances.
         \end{itemize}
+\end{description}
+
+
+\subsection{Test set error}
+\textbf{\underline{Disclaimer: I'm very unsure about this part}}\\
+The error on the test set can be seen as a lower-bound error of the model.
+If the test set error ratio is $x$, we can expect an error of $(x \pm  \text{confidence interval})$.
+
+Predicting the elements of the test set can be seen as a binomial process (i.e. a series of $N$ Bernoulli processes).
+We can therefore compute the empirical frequency of success as $f = (\text{correct predictions}/N)$.
+We want to estimate the probability of success $p$.
+
+We assume that the deviation between the empirical frequency and the true frequency is due to a 
+normal noise around the true probability (i.e. the true probability $p$ is the mean).
+Fixed a confidence level $\alpha$ (i.e. the probability of a wrong estimate),
+we want that:
+\[ \prob{ z_{\frac{\alpha}{2}} \leq \frac{f-p}{\sqrt{\frac{1}{N}p(1-p)}} \leq z_{(1-\frac{\alpha}{2})} } = 1 - \alpha \]
+In other words, we want the middle term to have a high probability to 
+be between the $\frac{\alpha}{2}$ and $(1-\frac{\alpha}{2})$ quantiles of the gaussian.
+\begin{center}
+    \includegraphics[width=0.35\textwidth]{img/normal_quantile_test_error.png}
+\end{center}
+
+We can estimate $p$ using the Wilson score interval\footnote{\url{https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval}}:
+\[ p = \frac{1}{1+\frac{1}{N}z^2} \left( f + \frac{1}{2N}z^2 \pm z\sqrt{\frac{1}{N}f(1-f) + \frac{z^2}{4N^2}} \right) \]
+where $z$ depends on the value of $\alpha$.
+For a pessimistic estimate, $\pm$ becomes a $+$. Vice versa, for a optimistic estimate, $\pm$ becomes a $-$.
+
+As $N$ is at the denominator, this means that for large values of $N$, the uncertainty becomes smaller.
+\begin{center}
+    \includegraphics[width=0.45\textwidth]{img/confidence_interval.png}
+\end{center}
+
+\subsection{Dataset splits}
+
+\begin{description}
+    \item[Holdout] \marginnote{Holdout}
+        The dataset is split into train, test and, if needed, validation.
+
+    \item[Cross validation] \marginnote{Cross validation}
+        The training data is partitioned into $k$ chunks.
+        For $k$ iterations, one of the chunks if used to test and the others to train a new model.
+        The overall error is obtained as the average of the errors of the $k$ iterations.
+
+        At the end, the final model is still trained on the entire training data, 
+        while cross validation results are used as an evaluation and comparison metric.
+        Note that cross validation is done on the training set, so a final test set can still be used to
+        evaluate the final model.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.6\textwidth]{img/cross_validation.png}
+            \caption{Cross validation example}
+        \end{figure}
+
+    \item[Leave-one-out] \marginnote{Leave-one-out}
+        Extreme case of cross validation with $k=N$, the size of the training set.
+        In this case the whole dataset but one element is used for training and the remaining entry for testing.
+
+    \item[Bootstrap] \marginnote{Bootstrap}
+        Statistical sampling of the dataset with replacement (i.e. an entry can be selected multiple times).
+        The selected entries form the training set while the elements that have never been selected are used for testing.
+\end{description}
+
+
+\subsection{Binary classification performance measures}
+
+In binary classification, the two classes can be distinguished as the positive and negative labels.
+The prediction of a classifier can be a:
+\begin{center}
+    True positive ($TP$) $\cdot$ False positive ($FP$) $\cdot$ True negative ($TN$) $\cdot$ False negative ($FN$)
+\end{center}
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \cline{3-4}
+        \multicolumn{2}{c|}{} & \multicolumn{2}{c|}{Predicted} \\
+        \cline{3-4}
+        \multicolumn{2}{c|}{} & Pos & Neg \\
+        \hline
+        \multirow{2}{*}{\rotatebox[origin=c]{90}{True}} & Pos & $TP$ & $FN$ \\
+        \cline{2-4}
+        & Neg & $FP$ & $TN$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Given a test set of $N$ element, possible metrics are:
+\begin{descriptionlist}
+    \item[Accuracy] \marginnote{Accuracy}
+        Number of correct predictions.
+        \[ \text{accuracy} = \frac{TP + TN}{N} \]
+
+    \item[Error rate] \marginnote{Error rate}
+        Number of incorrect predictions.
+        \[ \text{error rate} = 1 - \text{accuracy} \]
+
+    \item[Precision] \marginnote{Precision}
+        Number of true positives among what the model classified as positive
+        (i.e. how many samples the model classified as positive are real positives).
+        \[ \text{precision} = \frac{TP}{TP + FP} \]
+
+    \item[Recall/Sensitivity] \marginnote{Recall}
+        Number of true positives among the real positives
+        (i.e. how many real positive the model predicted).
+        \[ \text{recall} = \frac{TP}{TP + FN} \]
+
+    \item[Specificity] \marginnote{Specificity}
+        Number of true negatives among the real negatives
+        (i.e. recall for negative labels).
+        \[ \text{specificity} = \frac{TN}{TN + FP} \]
+
+    \item[F1 score] \marginnote{F1 score}
+        Harmonic mean of precision and recall
+        (i.e. measure of balance between precision and recall).
+        \[ \text{F1} = 2 \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}} \]
+\end{descriptionlist}
+
+
+\subsection{Multi-class classification performance measures}
+
+\begin{descriptionlist}
+    \item[Confusion matrix] \marginnote{Confusion matrix}
+        Matrix to correlate the predictions of $n$ classes:
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \cline{3-6}
+                \multicolumn{2}{c|}{} & \multicolumn{4}{c|}{Predicted} \\
+                \cline{3-6}
+                \multicolumn{2}{c|}{} & a & b & c & Total \\
+                \hline
+                \multirow{4}{*}{\rotatebox[origin=c]{90}{True}} 
+                & a & $TP_a$ & $FP_{a-b}$ & $FP_{a-c}$ & $T_a$ \\
+                \cline{2-6}
+                & b & $FP_{b-a}$ & $TP_b$ & $FP_{b-c}$ & $T_b$ \\
+                \cline{2-6}
+                & c & $FP_{c-a}$ & $FP_{c-b}$ & $TP_c$ & $T_c$ \\
+                \cline{2-6}
+                & Total & $P_a$ & $P_b$ & $P_c$ & $N$ \\
+                \hline
+            \end{tabular}
+        \end{center}
+        where:
+        \begin{itemize}
+            \item $a$, $b$ and $c$ are the classes.
+            \item $T_x$ is the true number of labels of class $x$ in the dataset.
+            \item $P_x$ is the predicted number of labels of class $x$ in the dataset.
+            \item $TP_x$ is the number of times a class $x$ was correctly predicted (true predictions).
+            \item $FP_{i-j}$ is the number of times a class $i$ was predicted as $j$ (false predictions).
+        \end{itemize}
+
+    \item[Accuracy] \marginnote{Accuracy}
+        Accuracy is extended from the binary case as:
+        \[ \text{accuracy} = \frac{\sum_i TP_i}{N} \]
+
+    \item[Precision] \marginnote{Precision}
+        Precision is defined w.r.t. a single class:
+        \[ \text{precision}_i = \frac{TP_i}{P_i} \]
+
+    \item[Recall] \marginnote{Recall}
+        Recall is defined w.r.t. a single class:
+        \[ \text{recall}_i = \frac{TP_i}{T_i} \]
+\end{descriptionlist}
+
+If a single value of precision or recall is needed, the mean can be used by computing
+a macro (unweighted) average or a class-weighted average.
+
+\begin{description}
+    \item[$\kappa$-statistic] \marginnote{$\kappa$-statistic}
+        Evaluates the concordance between two classifiers (in our case, the predictor and the ground truth).
+        It is based on two probabilities:
+        \begin{descriptionlist}
+            \item[Probability of concordance] $\prob{c} = \frac{\sum_{i}^{\texttt{classes}} TP_i}{N}$ 
+            \item[Probability of random concordance] $\prob{r} = \frac{\sum_{i}^{\texttt{classes}} T_i P_i}{N^2}$ 
+        \end{descriptionlist}
+
+        $\kappa$-statistic is given by:
+        \[ \kappa = \frac{\prob{c} - \prob{r}}{1 - \prob{r}} \in [-1, 1] \]
+        When $\kappa = 1$, there is perfect agreement ($\sum_{i}^{\texttt{classes}} TP_i = 1$), 
+        when $\kappa = -1$, there is total disagreement ($\sum_{i}^{\texttt{classes}} TP_i = 0$) and
+        when $\kappa = 0$, there is random agreement.
+
+
+    \item[Cost sensitive learning] \marginnote{Cost sensitive learning}
+        Assign a cost to the errors. This can be done by:
+        \begin{itemize}
+            \item Altering the proportions of the dataset by duplicating samples to reduce its misclassification.
+            \item Weighting the classes (possible in some algorithms).
+        \end{itemize}
+\end{description}
+
+
+\subsection{Probabilistic classifier performance measures}
+
+\begin{description}
+    \item[Lift chart] \marginnote{Lift chart}
+        Used in binary classification.
+        Given the resulting probabilities of the positive class of a classifier, 
+        sort them in decreasing order and plot a 2d-chart with
+        increasing sample size on the x-axis and the number of positive samples on the y-axis.
+
+        Then, plot a straight line to represent a baseline classifier that makes random choices.
+        As the probabilities are sorted in decreasing order, it is expected a high concentration of
+        positive labels on the right side.
+        When the area between the two curves is large and the curve is above the random classifier, 
+        the model can be considered a good classifier.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.5\textwidth]{img/lift_chart.png}
+            \caption{Example of lift chart}
+        \end{figure}
+
+    \item[ROC curve] \marginnote{ROC curve}
+        The ROC curve can be seen as a way to represent multiple confusion matrices of a classifier
+        that uses different thresholds.
+        The x-axis of a ROC curve represent the false positive rate while the y-axis represent the true positive rate.
+
+        A straight line is used to represent a random classifier.
+        A threshold can be considered good if it is high on the y-axis and low on the x-axis.
+        
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.35\textwidth]{img/roc_curve.png}
+            \caption{Example of ROC curves}
+        \end{figure}
 \end{description}
 
 
@@ -148,7 +382,7 @@
         \begin{itemize}
             \item The applied splitting criteria (i.e. feature and threshold). 
                 Leaves do not have this value.
-            \item The entropy of the current split.
+            \item The purity (e.g. entropy) of the current split.
             \item Dataset coverage of the current split.
             \item Classes distribution.
         \end{itemize}
@@ -195,9 +429,9 @@
                 When $\matr{X}$ is uniformly distributed, $GINI(\matr{X}) \sim (1-\frac{1}{\vert C \vert})$.
                 When $\matr{X}$ is constant, $GINI(\matr{X}) \sim 0$.
 
-                Given a node $p$ split in $n$ children $p_1, \dots, p_n$,
+                Given a node $x$ split in $n$ children $x_1, \dots, x_n$,
                 the Gini gain of the split is given by:
-                \[ GINI_\text{gain} = GINI(p) - \sum_{i=1}^n \frac{\vert p_i \vert}{\vert p \vert} GINI(p_i) \]
+                \[ GINI_\text{gain} = GINI(x) - \sum_{i=1}^n \frac{\vert x_i \vert}{\vert x \vert} GINI(x_i) \]
  
             \item[Misclassification error] \marginnote{Misclassification error}
                 Skipped.
@@ -210,6 +444,8 @@
         \end{figure}
 
         Compared to Gini index, entropy is more robust to noise.
+
+        Misclassification error has a bias toward the major class.
 \end{description}
 
 \begin{algorithm}[H]
@@ -232,8 +468,52 @@
 \end{lstlisting}
 \end{algorithm}
 
-
 \begin{description}
     \item[Pruning] \marginnote{Pruning}
         Remove branches to reduce overfitting.
+        Different pruning techniques can be employed:
+        \begin{descriptionlist}
+            \item[Maximum depth] 
+                Maximum depth allowed for the tree.
+
+            \item[Minimum samples for split] 
+                Minimum number of samples a node is required to have to apply a split.
+
+            \item[Minimum samples for a leaf] 
+                Minimum number of samples a node is required to have to become a leaf.
+
+            \item[Minimum impurity decrease] 
+                Minimum decrease in impurity for a split to be made.
+
+            \item[Statistical pruning] 
+                Prune the children of a node if the weighted sum of the maximum errors of the children is greater than 
+                the maximum error of the node if it was a leaf.
+        \end{descriptionlist}
 \end{description}
+
+
+\subsection{Complexity}
+Given a dataset $\matr{X}$ of $N$ instances and $D$ attributes,
+each level of the tree requires to evaluate all the dataset and
+each node requires to process all the attributes.
+Assuming an average height of $O(\log N)$, 
+the overall complexity for induction (parameters search) is $O(DN \log N)$.
+
+Moreover, The other operations of a binary tree have complexity:
+\begin{itemize}
+    \item Threshold search and binary split: $O(N \log N)$ (scan the dataset for the threshold).
+    \item Pruning: $O(N \log N)$ (requires to scan the dataset).
+\end{itemize}
+
+For inference, to classify a new instance it is sufficient to traverse the tree from the root to a leaf.
+This has complexity $O(h)$, with $h$ the height of the tree.
+
+
+\subsection{Characteristics}
+\begin{itemize}
+    \item Decision trees are non-parametric in the sense that they do not require any assumption on the distribution of the data.
+    \item Finding the best tree is an NP-complete problem.
+    \item Decision trees are robust to noise if appropriate overfitting methods are applied.
+    \item Decision trees are robust to redundant attributes (correlated attributes are very unlikely to be chosen for multiple splits).
+    \item In practice, the impurity measure has a low impact on the final result, while the pruning strategy is more relevant.
+\end{itemize}

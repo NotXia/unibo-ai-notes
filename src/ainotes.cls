@@ -68,7 +68,7 @@
 \renewcommand{\vec}[1]{{\bm{\mathbf{#1}}}}
 \newcommand{\nullvec}[0]{\bar{\vec{0}}}
 \newcommand{\matr}[1]{{\bm{#1}}}
-\newcommand{\prob}[1]{{\mathcal{P}({#1})}}
+\newcommand{\prob}[1]{{\mathcal{P}\left({#1}\right)}}
 
 
 \renewcommand*{\maketitle}{%
