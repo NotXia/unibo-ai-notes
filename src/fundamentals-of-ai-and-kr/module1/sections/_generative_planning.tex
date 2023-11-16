@@ -18,6 +18,7 @@
 \end{description}
 
 
+
 \section{Linear planning}
 \marginnote{Linear planning}
 Formulates the planning problem as a search problem where:
@@ -326,3 +327,240 @@ Conjunction of goals are solved separately, but this could lead to the \marginno
 where a sub-goal destroys what another sub-goal has done.
 For this reason, when a conjunction is encountered, it is not immediately popped from the goal stack
 and is left as a final check.
+
+
+
+\section{Non-linear planning}
+\marginnote{Non-linear planning}
+Non-linear planning finds a plan as a search problem in the space of plans (instead of states as in linear planning).
+Each node of the search tree is a partial plan. Edges represent plan refinement operations.
+
+A non-linear plan is represented by:
+\begin{descriptionlist}
+    \item[Actions{\normalfont.}] \marginnote{Actions set}
+    \item[Orderings] \marginnote{Orderings set}
+        between actions.
+    \item[Causal links] \marginnote{Causal links}
+        triplet $\langle S_i, S_j, c \rangle$ where $S_i$ and $S_j$ are actions and $c$ is a sub-goal.
+        $c$ should be the effect of $S_i$ and precondition of $S_j$.
+
+        Causal links represent causal relations between actions (i.e. interaction between sub-goals): 
+        to execute $S_j$, the effect $c$ of $S_i$ is required first.
+\end{descriptionlist}
+
+The initial plan is an empty plan with two fake actions \texttt{start} and \texttt{stop} 
+with ordering $\texttt{start} < \texttt{stop}$:
+\begin{descriptionlist}
+    \item[\texttt{start}] has no preconditions and the effects match the initial state.
+    \item[\texttt{stop}] has no effects and the preconditions match the goal.
+\end{descriptionlist}
+At each step, one of the following refinement operations can be applied until the goal is reached:
+\begin{itemize}
+    \item Add an action to the set of actions.
+    \item Add an ordering to the set of orderings.
+    \item Add a causal link to the set of causal links.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/_nonlinear_plan_example.pdf}
+    \caption{Example of search tree in non-linear planning}
+\end{figure}
+
+
+\begin{description}
+    \item[Least commitment planning] \marginnote{Least commitment planning}
+        Only strictly necessary restrictions (e.g. ordering) are imposed.
+        Non-linear planning is a least commitment planning.
+
+    \item[Linearization] \marginnote{Linearization} 
+        At the end, the partially ordered actions should be linearized, 
+        respecting the ordering constraints, to obtain the final plan.
+\end{description}
+
+
+\begin{description}
+    \item[Threat] \marginnote{Threat} 
+        An action $S_k$ is a threat to a causal link $\langle S_i, S_j, c \rangle$ 
+        if its effects cancel $c$.
+        $S_k$ should not be executed in between $S_i$ and $S_j$.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.3\textwidth]{img/_threat_example.pdf}
+            \caption{Example of threat. Causal links are represented using thick arrows.}
+        \end{figure}
+
+        Possible solutions to a threat $S_k$ to $\langle S_i, S_j, c \rangle$ are:
+        \begin{descriptionlist}
+            \item[Demotion] \marginnote{Demotion}
+                Add the ordering constraint $S_k < S_i$ (i.e. threat executed before).
+            \item[Promotion] \marginnote{Promotion}
+                Add the ordering constraint $S_k > S_i$ (i.e. threat executed after).
+        \end{descriptionlist}
+\end{description}
+
+\begin{algorithm}
+\caption{Partial order planning (POP)}
+\begin{lstlisting}[mathescape=true]
+def pop(initial_state, goal, actions):
+    plan = init_empty_plan(initial_state, goal)
+    while not plan.isSolution():
+        try:
+            sn, c = selectSubgoal(plan)
+            chooseOperator(plan, actions, sn, c)
+            resolveThreats(plan)
+        except PlanFailError:
+            plan.backtrack()
+    return plan
+
+def selectSubgoal(plan):
+    sn, c = random([sn, c in plan.steps if c in sn.unsolved_preconditions])
+    return sn, c
+
+def chooseOperator(plan, actions, sn, c):
+    s = random([s in (actions + plan.steps) if c in s.effects])
+    if s is None: raise(PlanFailError)
+    plan.addCausalLink($\langle$s, sn, c$\rangle$)
+    plan.addOrdering(s < sn)
+    if s not in plan.steps:
+        plan.addAction(s)
+        plan.addOrdering(start < s < stop)
+
+def resolveThreats(plan):
+    for s_k, s_i, s_j in plan.threats():
+        resolution = random([ DEMOTION, PROMOTION ])
+        if resolution == DEMOTION:
+            plan.addOrdering(s_k < s_i)
+        elif resolution == PROMOTION:
+            plan.addOrdering(s_k > s_j)
+        if plan.isNotConsistent(): raise(PlanFailError)
+\end{lstlisting}
+\end{algorithm}
+
+\begin{example}[Purchasing schedule]
+    The initial state is: 
+    \[ \texttt{at(home)}, \texttt{sells(hws, drill)}, \texttt{sells(sm, milk)}, \texttt{sells(sm, banana)} \]
+    where $\texttt{hws}$ means "hardware store" and $\texttt{sm}$ means "supermarket".
+    
+    The goal is:
+    \[ \texttt{at(home)}, \texttt{have(drill)}, \texttt{have(milk)}, \texttt{have(banana)} \]
+
+    The possible actions are:\\[0.5em]
+    \begin{minipage}{.5\linewidth}
+        \begin{descriptionlist}
+            \item[\texttt{GO(X, Y)}] \phantom{}
+                \begin{description}
+                    \item[Preconditions] $\texttt{at(X)}$
+                    \item[Effects] $\texttt{at(Y)}$, $\lnot \texttt{at(X)}$
+                \end{description}
+        \end{descriptionlist}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+        \begin{descriptionlist}
+            \item[\texttt{BUY(S, Y)}] \phantom{}
+            \begin{description}
+                \item[Preconditions] $\texttt{at(S)}$, $\texttt{sells(S, Y)}$
+                \item[Effects] $\texttt{have(Y)}$
+            \end{description}
+        \end{descriptionlist}
+    \end{minipage}\\[0.5em]
+
+    Partial order planning steps are:
+    \begin{enumerate}
+        \item Define the initial plan:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example1.pdf}
+            \end{center}
+
+        \item The loop of POP is:
+            \begin{itemize}
+                \item Choose an action $a_i$ and one of its unsolved preconditions $c$. 
+                \item Select an action $a_j$ with the precondition $c$ in its effects.
+                \item Add the ordering constraint $\texttt{start} < a_j < \texttt{stop}$.
+                \item Add the causal link $\langle a_j, a_i, c \rangle$ (and ordering $a_j < a_i$).
+                \item Solve threats.
+            \end{itemize}
+        
+            We choose the action $a_i = \texttt{stop}$ and the precondition $c = \texttt{have(drill)}$.
+            We choose as action with $c$ in its effects $a_j = \texttt{BUY(X, drill)}$.
+            We therefore add to the plan the ordering $\texttt{start} < \texttt{BUY(X, drill)} < \texttt{stop}$ and
+            the causal link $\langle \texttt{BUY(X, drill)}, \texttt{stop}, \texttt{have(drill)} \rangle$:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example2.pdf}
+            \end{center}
+
+        \item Repeat the previous point for the preconditions $\texttt{have(milk)}$ and $\texttt{have(banana)}$:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example3.pdf}
+            \end{center}
+
+        \item Now, we choose as action $\texttt{BUY(X, drill)}$ and as unsolved precondition $\texttt{sells(X, drill)}$.
+            This can be solved from the action $\texttt{start}$ with effect $\texttt{sells(hws, drill)}$.
+            We make the substitution $\texttt{X}/\texttt{drill}$ and 
+            add $\langle \texttt{start}, \texttt{BUY(hws, drill)}, \texttt{sells(hws, drill)} \rangle$ to the causal links.
+            The same process can be repeated for $\texttt{BUY(X, milk)}$ and $\texttt{BUY(X, banana)}$:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example4.pdf}
+            \end{center}
+
+        \item Now, we choose as action $\texttt{BUY(hws, drill)}$ and as unsolved precondition $\texttt{at(hws)}$.
+            This can be solved using the action $\texttt{GO(X, hws)}$.
+            We add $\langle \texttt{GO(X, hws)}, \texttt{BUY(hws, drill)}, \texttt{at(hws)} \rangle$ to the causal links.
+
+            We continue by choosing as action $\texttt{GO(X, hws)}$ and as unsolved precondition $\texttt{at(X)}$.
+            This can be solved from $\texttt{start}$ with effect $\texttt{at(home)}$.
+            We therefore make the substitution $\texttt{X}/\texttt{home}$ and 
+            add $\langle \texttt{start}, \texttt{GO(home, hws)}, \texttt{at(home)} \rangle$ to the causal links.
+
+            The same process can be repeated for the $\texttt{milk}$ and $\texttt{banana}$ branch:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example5.pdf}
+            \end{center}
+
+        \item We have a threat between $\texttt{GO(home, hws)}$ and $\texttt{GO(home, sm)}$ as they both
+            require the precondition $\texttt{at(home)}$ and both have as effect $\lnot\texttt{at(home)}$.
+            It can be easily seen that neither promotion nor demotion solves the conflict. 
+            We are therefore forced to backtrack.
+
+            We backtrack at the previous point, where we chose as action $\texttt{GO(X, sm)}$ and as precondition $\texttt{at(X)}$
+            (this step has been implicitly done in the previous point).
+            \begin{itemize}
+                \item Instead of choosing the action $\texttt{start}$, we choose $\texttt{GO(home, hws)}$ with the effect $\texttt{at(hws)}$.
+                    We therefore make the substitution $\texttt{X}/\texttt{hws}$ and update the causal links.
+                \item We also resolve the threat $\texttt{GO(hws, sm)}$ to $\texttt{BUY(hws, drill)}$
+                    (it removes the precondition $\texttt{at(hws)}$)
+                    by promoting $\texttt{GO(hws, sm)}$
+                    and adding the ordering constraint $\texttt{BUY(hws, drill)} < \texttt{GO(hws, sm)}$:
+            \end{itemize}
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example6.pdf}
+            \end{center}
+
+        \item Now, we choose as action $\texttt{stop}$ and as precondition $\texttt{at(home)}$.
+            We choose as action $\texttt{GO(sm, home)}$ and update the causal links.
+            
+            Finally, we solve the threat $\texttt{GO(sm, home)}$ to 
+            both $\texttt{BUY(sm, milk)}$ and $\texttt{BUY(sm, banana)}$ (it removes the required precondition $\texttt{at(sm)}$)
+            by promoting $\texttt{GO(sm, home)}$.
+            The newly added ordering constraints are 
+            $\texttt{BUY(sm, milk)} < \texttt{GO(sm, home)}$ and 
+            $\texttt{BUY(sm, banana)} < \texttt{GO(sm, home)}$.
+            
+            The final plan is:
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{img/_pop_example7.pdf}
+            \end{center}
+            By considering the ordering constraints, a linearization could be:
+            \[ 
+                \begin{split}
+                    \texttt{GO(home, hws)} &\rightarrow  
+                    \texttt{BUY(hws, drill)} \rightarrow  
+                    \texttt{GO(hws, sm)} \rightarrow\\
+                    &\texttt{BUY(sm, milk)} \rightarrow  
+                    \texttt{BUY(sm, banana)} \rightarrow  
+                    \texttt{GO(sm, home)} 
+                \end{split}
+            \]
+    \end{enumerate}
+\end{example}
