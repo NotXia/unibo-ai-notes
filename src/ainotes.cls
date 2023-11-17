@@ -21,6 +21,7 @@
 \usepackage{eurosym}
 \usepackage{bussproofs} % Deductive tree
 
+
 \geometry{ margin=3cm, lmargin=1.5cm, rmargin=4.5cm, marginparwidth=3cm }
 \hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
 
