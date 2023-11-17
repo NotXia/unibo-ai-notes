@@ -56,7 +56,7 @@ for f in **/[!_]*.tex; do
     cd ${f_dir};
 
     # Insert last update date
-    last_update=$(git log -1 --pretty="format:%ad" --date="format:%d %B %Y" .)
+    last_update=$(LC_ALL="en_GB.UTF-8" git log -1 --pretty="format:%ad" --date="format:%d %B %Y" .)
     cp --remove-destination $(readlink ainotes.cls) ainotes.cls
     sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" ainotes.cls
 

@@ -37,6 +37,8 @@ jobs:
 
       - name: Compile
         run: |
+            export LANG="en_GB.UTF-8"
+            export LC_ALL="en_GB.UTF-8"
             bash ./compile.sh .compiled
 
 
