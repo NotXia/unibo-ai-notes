@@ -27,52 +27,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: pdfs
-          path: src/.compiled
+          path: .compiled
 
       - name: Copy basic files to pdfs branch
         run: |
-          cp README.md src/.compiled
-          cp LICENSE src/.compiled
+          cp README.md .compiled
+          cp LICENSE .compiled
 
 
       - name: Compile
         run: |
-            shopt -s globstar
-            cd src
-
-            work_dir=$(pwd)
-            [[ -f .compiled/.hash.cls ]] && old_class_hash="$(cat .compiled/.hash.cls)" || old_class_hash=''
-            curr_class_hash="$(git log -n 1 --format='%h' ./ainotes.cls)"
-
-            for f in **/[!_]*.tex; do
-                f_dir=$(dirname $f)
-                f_base=$(basename $f)
-                f_nameonly="${f_base%.*}"
-                [[ -f .compiled/${f_dir}/.hash ]] && old_hash="$(cat .compiled/${f_dir}/.hash)" || old_hash=''
-                curr_hash="$(git log -n 1 --format='%h' $f_dir)"
-
-                # Nothing to update
-                if [[ $old_hash == $curr_hash && $old_class_hash == $curr_class_hash ]]; then
-                  continue
-                fi
-
-                # Update hash
-                echo "$curr_hash" > .compiled/${f_dir}/.hash
-
-                cd ${f_dir};
-
-                # Insert last update date
-                last_update=$(git log -1 --pretty="format:%ad" --date="format:%d %B %Y" .)
-                cp --remove-destination $(readlink ainotes.cls) ainotes.cls
-                sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" ainotes.cls
-
-                latexmk -pdf -jobname=${f_nameonly} ${f_base}
-                mkdir -p .compiled/${f_dir}
-                mv ${f_nameonly}.pdf .compiled/${f_dir}/.
-                cd $work_dir
-            done
-
-            echo "$curr_class_hash" > .compiled/.hash.cls
+            bash ./compile.sh .compiled
 
 
       - name: Move to pdfs branch
@@ -80,7 +45,7 @@ jobs:
         env:
           REPO: self
           BRANCH: pdfs
-          FOLDER: src/.compiled
+          FOLDER: .compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_NAME: "github-actions[bot]"
           COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
