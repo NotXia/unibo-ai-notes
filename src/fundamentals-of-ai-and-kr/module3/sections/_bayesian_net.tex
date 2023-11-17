@@ -409,3 +409,149 @@ that respects the causality allows to obtain more compact networks.
             \end{minipage}
         \end{example}
 \end{description}
+
+
+
+\section{Compact conditional distributions}
+
+Use canonical distributions (standard patterns) to reduce 
+the number of variables in a conditional probability table.
+
+
+\subsection{Noisy-OR}
+\marginnote{Noisy-OR}
+Noisy-OR distributions model a network of non-interacting causes with a common effect.
+A node $X$ has $k$ parents $U_1, \dots, U_k$ and eventually a leak node $U_L$ to capture unmodeled concepts. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\textwidth]{img/_noisy_or_example.pdf}
+    \caption{Example of noisy-OR network}
+\end{figure}
+
+Each node $U_i$ has a failure (inhibition) probability $q_i$:
+\[ q_i = \prob{\lnot x \mid u_i, \lnot u_j \text{ for } j \neq i} \]
+The CRT can be built by computing the probabilities as:
+\[ \prob{\lnot x \mid \texttt{Parents($X$)}} = \prod_{j:\, U_j = \texttt{true}} q_j \]
+In other words:
+\[ \prob{\lnot x \mid u_1, \dots, u_n} = 
+    \prob{\lnot x \mid u_1} \cdot \prob{\lnot x \mid u_2} \cdot \text{\dots} \cdot \prob{\lnot x \mid u_n} \]
+
+Because only the failure probabilities are required, the number of parameters is linear in the number of parents.
+
+\begin{example}
+    We have as causes \texttt{Cold}, \texttt{Flu} and \texttt{Malaria} and as effect \texttt{Fever}.
+    For simplicity there are no leak nodes.
+    The failure probabilities are:
+    \[
+        \begin{split}
+            q_\texttt{cold} &= \prob{\lnot \texttt{fever} \mid \texttt{cold}, \lnot\texttt{flu}, \lnot\texttt{malaria}} = 0.6 \\
+            q_\texttt{flu} &= \prob{\lnot \texttt{fever} \mid \lnot\texttt{cold}, \texttt{flu}, \lnot\texttt{malaria}} = 0.2 \\
+            q_\texttt{malaria} &= \prob{\lnot \texttt{fever} \mid \lnot\texttt{cold}, \lnot\texttt{flu}, \texttt{malaria}} = 0.1
+        \end{split}    
+    \]
+
+    Known the failure probabilities, the entire CRT can be computed:
+    \begin{center}
+        \begin{tabular}{c|c|c|rc|c}
+            \hline
+            \texttt{Cold} & \texttt{Flu} & \texttt{Malaria} & \multicolumn{2}{c|}{$\prob{\lnot\texttt{fever}}$} & $1-\prob{\lnot\texttt{fever}}$ \\
+            \hline
+            F & F & F &                                                                 & 0.0       & 1.0 \\
+            F & F & T & $q_\texttt{malaria} =$                                            & 0.1       & 0.9 \\
+            F & T & F & $q_\texttt{flu} =$                                                & 0.2       & 0.8 \\
+            F & T & T & $q_\texttt{flu} \cdot q_\texttt{malaria} =$                       & 0.02      & 0.98 \\
+            T & F & F & $q_\texttt{cold} =$                                               & 0.6       & 0.4 \\
+            T & F & T & $q_\texttt{cold} \cdot q_\texttt{malaria} =$                      & 0.06      & 0.94 \\
+            T & T & F & $q_\texttt{cold} \cdot q_\texttt{flu} =$                          & 0.12      & 0.88 \\
+            T & T & T & $q_\texttt{cold} \cdot q_\texttt{flu} \cdot q_\texttt{malaria} =$ & 0.012     & 0.988 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{example}
+
+
+\subsection{Hybrid Bayesian networks}
+\marginnote{Hybrid Bayesian networks}
+
+Network with discrete and continuous random variables.
+Continuous variables must be converted into a finite representation.
+Possible approaches are:
+\begin{description}
+    \item[Discretization] \marginnote{Discretization} 
+        Values are divided into a fixed set of intervals.
+        This approach may introduce large errors and large CPTs.
+
+    \item[Finitely parametrized canonical families] \marginnote{Finitely parametrized canonical families}
+        There are two cases to handle using this approach:
+        \begin{descriptionlist}
+            \item[Continuous child] 
+                Given the continuous variables $X$ and $C$ and a discrete (boolean, for simplicity) variable $D$,
+                we want to compute the distribution $\textbf{P}(X \mid C, D)$.
+
+                The discrete parent is handled by enumeration, by computing the probability over the domain of $D$.
+
+                For the continuous parent, an arbitrarily chosen distribution over the values of $X$ is used.
+                A common choice is the \textbf{linear Gaussian} \marginnote{Linear Gaussian}
+                whose mean is a linear combination of the values of the parents and the variance is fixed.
+                
+                A network with all continuous linear Gaussian distributions has the property 
+                of having a multivariate Gaussian distribution as joint distribution.
+                Moreover, if a continuous variable has some discrete parents, it defines a conditional Gaussian distribution
+                where, fixed the values of the discrete variables, the distribution over the continuous variable is a multivariate Gaussian.
+
+                \begin{example}
+                    Let \texttt{Subsidy} and \texttt{Buys} be discrete variables and
+                    \texttt{Harvest} and \texttt{Cost} be continuous variables.
+                    \begin{center}
+                        \includegraphics[width=0.3\textwidth]{img/_linear_gaussian_example.pdf}
+                    \end{center}
+    
+                    To compute $\textbf{P}(\texttt{Cost} \mid \texttt{Harvest}, \texttt{Subsidy})$,
+                    we split the probabilities over the values of the discrete variable \texttt{Subsidy}
+                    and use a linear Gaussian for \texttt{Harvest}.
+                    We therefore have that:
+                    \[ 
+                        \begin{split}
+                            \prob{\texttt{C} = \texttt{c} \mid \texttt{Harvest} = \texttt{h}, \texttt{Subsidy} = \texttt{true}} 
+                            &= \mathcal{N}(a_t h + b_t, \sigma_t)(c) \\
+                            \prob{\texttt{C} = \texttt{c} \mid \texttt{Harvest} = \texttt{h}, \texttt{Subsidy} = \texttt{false}} 
+                            &= \mathcal{N}(a_f h + b_f, \sigma_f)(c)
+                        \end{split}
+                    \]
+                    where $a_t$, $b_t$, $\sigma_t$, $a_f$, $b_f$ and $\sigma_t$ are parameters.
+                \end{example}
+
+            \item[Discrete child with continuous parents] 
+                Given the continuous variable $C$ and a discrete variable $X$,
+                the probability of $X$ given $C$ in obtained by using a threshold function.
+                For instance, probit or sigmoid distributions can be used.
+        \end{descriptionlist}
+\end{description}
+
+
+\subsection{Other methods}
+
+\begin{description}
+    \item[Dynamic Bayesian network] \marginnote{Dynamic Bayesian network}
+        Useful to model the evolution through time.
+        A template variable $X_i$ is instantiated as $X_i^{(t)}$ at each time step.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.3\textwidth]{img/_dynamic_bn_example.pdf}
+            \caption{Example of dynamic Bayesian network}
+        \end{figure}
+
+    \item[Density estimation] \marginnote{Density estimation}
+        Parameters of the conditional distribution are learnt:
+        \begin{description}
+            \item[Bayesian learning] calculate the probability of each hypothesis.
+            \item[Approximations] using the maximum-a-posteriori and maximum-likelihood hypothesis.
+            \item[Expectation-maximization algorithm{\normalfont.}] 
+        \end{description}
+
+    \item[Undirected graphical models] \marginnote{Undirected graphical models}
+        Markov networks are an alternative to probabilistic graphical models (as Bayesian networks).
+        Markov networks are undirected graphs with factors (instead of probabilities) and
+        are able to naturally capture independence relations.
+\end{description}
