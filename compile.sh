@@ -2,6 +2,8 @@
 
 # 
 # Commit based .tex compiling
+# $1 is the output directory.
+# $2 is the directory of the current state of the files.
 # 
 
 if [ $# -eq 0 ]; then
@@ -12,7 +14,9 @@ fi
 shopt -s globstar
 
 out_dir=`realpath $1`
-hash_file="$out_dir/.hash"
+old_out_dir=`realpath $2`
+hash_file="$old_out_dir/.hash"
+new_hash_file="$out_dir/.hash"
 work_dir=`realpath src`
 
 mkdir -p $out_dir
@@ -26,10 +30,10 @@ getDirLastHash () {
 
 updateHashes() {
     cd $work_dir
-    echo "ainotes.cls,`git log -n 1 --format='%h' ./ainotes.cls`" > $hash_file
+    echo "ainotes.cls,`git log -n 1 --format='%h' ./ainotes.cls`" > $new_hash_file
     for f in **/[!_]*.tex; do
         f_dir=$(dirname $f)
-        echo "$f_dir,`git log -n 1 --format='%h' $f_dir`" >> $hash_file
+        echo "$f_dir,`git log -n 1 --format='%h' $f_dir`" >> $new_hash_file
     done
 }
 
@@ -46,12 +50,14 @@ for f in **/[!_]*.tex; do
     old_hash=`getDirLastHash "$f_dir"`
     curr_hash="$(git log -n 1 --format='%h' $f_dir)"
 
+    mkdir -p $out_dir/$f_dir
+
     # Nothing to update
     if [[ $old_hash == $curr_hash && $old_class_hash == $curr_class_hash ]]; then
         echo "Skipping $f_dir"
+        cp -r $old_out_dir/$f_dir/. $out_dir/$f_dir
         continue
     fi
-
 
     cd ${f_dir};
 
@@ -61,7 +67,6 @@ for f in **/[!_]*.tex; do
     sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" ainotes.cls
 
     latexmk -pdf -jobname=${f_nameonly} ${f_base}
-    mkdir -p $out_dir/$f_dir
     mv ${f_nameonly}.pdf $out_dir/${f_dir}/.
     cd $work_dir
 done

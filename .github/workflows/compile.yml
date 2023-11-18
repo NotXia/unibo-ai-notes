@@ -17,29 +17,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout current pdfs branch
+        uses: actions/checkout@v3
+        with:
+          ref: pdfs
+          path: .currpdfs
+
+
       - name: Install LaTeX
         run: |
             sudo apt update
             sudo apt install -y latexmk texlive texlive-science texlive-latex-extra
         
 
-      - name: Checkout old pdfs
-        uses: actions/checkout@v3
-        with:
-          ref: pdfs
-          path: .compiled
-
-      - name: Copy basic files to pdfs branch
+      - name: Prepare output directory
         run: |
+          mkdir .compiled
           cp README.md .compiled
           cp LICENSE .compiled
 
-
       - name: Compile
         run: |
-            export LANG="en_GB.UTF-8"
-            export LC_ALL="en_GB.UTF-8"
-            bash ./compile.sh .compiled
+          bash ./compile.sh .compiled .currpdfs
 
 
       - name: Move to pdfs branch
