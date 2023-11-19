@@ -517,3 +517,280 @@ This has complexity $O(h)$, with $h$ the height of the tree.
     \item Decision trees are robust to redundant attributes (correlated attributes are very unlikely to be chosen for multiple splits).
     \item In practice, the impurity measure has a low impact on the final result, while the pruning strategy is more relevant.
 \end{itemize}
+
+
+
+\section{Naive Bayes}
+
+\begin{description}
+    \item[Bayes' theorem]
+        Given a class $c$ and the evidence $\vec{e}$, we have that:
+        \[ \prob{c \mid \vec{e}} = \frac{\prob{\vec{e} \mid c} \prob{c}}{\prob{\vec{e}}} \]
+
+    \item[Naive Bayes classifier] \marginnote{Naive Bayes classifier}
+        Classifier that uses the Bayes' theorem assuming that the attributes are independent given the class.
+        Given a class $c$ and the evidence $\vec{e} = \langle e_1, e_2, \dots, e_n \rangle$, the probability that 
+        the observation $\vec{e}$ is of class $c$ is given by:
+        \[
+            \prob{c \mid \vec{e}} = \frac{\prod_{i=1}^{n}\prob{e_i \mid c} \cdot \prob{c}}{\prob{\vec{e}}}  
+        \]
+        As the denominator is the same for all classes, it can be omitted.
+\end{description}
+
+
+\subsection{Training and inference}
+\begin{description}
+    \item[Training] \marginnote{Training} 
+        Given the classes $C$ and the features $E$,
+        to train the classifier the following priors need to be estimated:
+        \begin{itemize}
+            \item $\forall c \in C:\, \prob{c}$
+            \item $\forall e_{ij} \in E, \forall c \in C:\, \prob{e_{ij} \mid c}$,
+                where $e_{ij}$ is the $j$-th value of the domain of the $i$-th feature $E_i$.
+        \end{itemize}
+
+    \item[Inference] \marginnote{Inference} 
+        Given a new observation $\vec{x}_\text{new} = \langle x_1, x_2, \dots, x_n \rangle$,
+        its class is determined by computing the likelihood:
+        \[
+            c_\text{new} = \arg\max_{c \in C} \prob{c} \prod_{i=1}^{n}\prob{x_i \mid c}
+        \]
+\end{description}
+
+
+\subsection{Problems}
+\begin{description}
+    \item[Smooting] 
+        If the value $e_{ij}$ of the domain of a feature $E_i$ never appears in the dataset, 
+        its probability $\prob{e_{ij} \mid c}$ will be 0 for all classes.
+        This nullifies all the probabilities that uses this feature when 
+        computing the products chain during inference.
+        Smoothing methods can be used to avoid this problem.
+
+        \begin{description}
+            \item[Laplace smoothing] \marginnote{Laplace smoothing}
+                Given:
+                \begin{descriptionlist}
+                    \item[$\alpha$] The smoothing factor.
+                    \item[\normalfont$\text{af}_{e_{ij}, c}$] The absolute frequency of the value $e_{ij}$ of the feature $E_i$ over the class $c$.
+                    \item[$\vert \mathbb{D}_{E_i} \vert$] The number of distinct values in the domain of $E_i$.
+                    \item[\normalfont$\text{af}_{c}$] The absolute frequency of the class $c$.
+                \end{descriptionlist}
+                the smoothed frequency is computed as:
+                \[
+                    \prob{e_{ij} \mid c} = \frac{\text{af}_{e_{ij}, c} + \alpha}{\text{af}_{c} + \alpha \vert \mathbb{D}_{E_i} \vert}    
+                \]
+
+                A common value of $\alpha$ is 1.
+                When $\alpha = 0$, there is no smoothing.
+                For higher values of $\alpha$, the smoothed feature gain more importance when computing the priors.
+        \end{description}
+
+    \item[Missing values] \marginnote{Missing values}
+        Naive Bayes is robust to missing values.
+
+        During training, the record is ignored in the frequency count of the missing feature.
+
+        During inference, the missing feature can be simply excluded in the computation of the likelihood
+        as this equally affects all classes.
+
+    \item[Numeric values] \marginnote{Gaussian assumption}
+        For continuous numeric values, the frequency count method cannot be used.
+        Therefore, an additional assumption is made: numeric values follow a Gaussian distribution.
+
+        During training, the mean $\mu_{i,c}$ and variance $\sigma_{i,c}$ for a numeric feature $E_i$ is computed with respect to a class $c$.
+        Its probability is then obtained as:
+        \[ \prob{E_i = x \mid c} = \mathcal{N}(\mu_{i,c}, \sigma_{i,c})(x) \]
+
+\end{description}
+
+
+
+\section{Perceptron}
+
+\begin{description}
+    \item[Perceptron] \marginnote{Perceptron}
+        A single artificial neuron that takes $n$ inputs $x_1, \dots, x_n$ and a bias $b$,
+        and computes a linear combination of them with weights $w_1, \dots, w_n, w_b$.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.25\textwidth]{img/_perceptron.pdf}
+            \caption{Example of perceptron}
+        \end{figure}
+
+        The learnt weights $w_b, w_1, \dots, w_n$ define a hyperplane for binary classification such that:
+        \[
+            w_1 x_1 + \text{\dots} + w_n x_n + w_b b = \begin{cases}
+                \texttt{positive} & \text{if $> 0$} \\
+                \texttt{negative} & \text{if $< 0$} \\
+            \end{cases}
+        \]
+        It can be shown that there are either none or infinite hyperplanes with this property.
+\end{description}
+
+
+\subsection{Training}
+\begin{algorithm}
+\caption{Perceptron training}
+\begin{lstlisting}[mathescape=true]
+    def trainPerceptron(dataset):
+        perceptron = Perceptron(weights=[0 $\dots$ 0])
+        
+        while accuracy(perceptron, dataset) != 1.0:
+            for x, y in dataset:
+                if perceptron.predict(x) != y:
+                    if y is positive_class:
+                        perceptron.weights += x
+                    else:
+                        perceptron.weights -= x
+\end{lstlisting}
+\end{algorithm}
+
+Note that the algorithm converges only if the dataset is linearly separable.
+In practice, a maximum number of iterations is set.
+
+
+
+\section{Support vector machine}
+
+\begin{description}
+    \item[Convex hull]
+        The convex hull of a set of points is the tightest enclosing convex polygon that contains those points.
+
+        Note: the convex hulls of a linearly separable dataset do not intersect.
+
+    \item[Maximum margin hyperplane] \marginnote{Maximum margin hyperplane}
+        Hyperplane with the maximum margin between two convex hulls.
+
+        In general, a subset of points (support vectors) \marginnote{Support vectors} 
+        in the training set is sufficient to define the hulls.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.4\textwidth]{img/svm.png}
+            \caption{Maximum margin hyperplane of linearly separable data}
+        \end{figure}
+
+    \item[Support vector machine] \marginnote{Support vector machine}
+        SVM\footnote{\scriptsize\url{https://www.cs.princeton.edu/courses/archive/spring16/cos495/slides/AndrewNg_SVM_note.pdf}} 
+        finds the maximum margin hyperplane and the support vectors as a constrained quadratic optimization problem.
+        Given a dataset of $D$ elements and $n$ features, the problem is defined as:
+        \[ \max_{w_0, w_1, \dots, w_n} M \]
+        \[ 
+            \begin{split}
+                \text{subject to }  & \sum_{i=1}^{n} w_i^2 = 1 \\
+                                    & c_i(w_0 + w_1 x_{i1} + \dots + w_n x_{in}) \geq M \,\, \forall i = 1, \dots, D
+            \end{split}    
+        \]
+        where $M$ is the margin, $w_i$ are the weights of the hyperplane and $c_i = \{-1, 1 \}$ is the class.
+        The second constraint imposes the hyperplane to have a large margine. 
+        For positive labels ($c_i=1$), this is true when the hyperplane is positive.
+        For negative labels ($c_i=-1$), this is true when the hyperplane is negative.
+
+        \begin{description}
+            \item[Soft margin] \marginnote{Soft margin}
+                As real-world data is not always linearly separable, 
+                soft margin relaxes the margin constraint by adding a penalty $C$.
+                The margin constraint becomes:
+                \[ c_i(w_0 + w_1 x_{i1} + \dots + w_n x_{in}) \geq M - \xi_i \,\, \forall i = 1, \dots, D \]
+                \[ \text{where } \xi_i \geq 0 \text{ and } \sum_{i=0}^{D} \xi_i = C \]
+        \end{description}
+\end{description}
+
+
+\subsection{Kernel trick}\marginnote{Kernel trick}
+For non-linearly separable data, the boundary can be found using a non-linear mapping 
+to map the data into a new space (feature space) where a linear separation is possible.
+Then, the data and the boundary is mapped back into the original space.
+
+\begin{figure}[h]
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/svm_kernel_example1.png}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/svm_kernel_example2.png}
+    \end{subfigure}
+    \caption{Example of mapping from $\mathbb{R}^2$ to $\mathbb{R}^3$}
+\end{figure}
+
+The kernel trick allows to avoid to explicitly map the dataset into the new space by using kernel functions.
+Known kernel functions are:
+\begin{descriptionlist}
+    \item[Linear] $K(x, y) = \langle x, y \rangle$.
+    \item[Polynomial] $K(x, y) = (\gamma \langle x, y \rangle + r)^d$, where $\gamma$, $r$ and $d$ are parameters.
+    \item[Radial based function] $K(x, y) = \exp(-\gamma \Vert x - y \Vert^2)$, where $\gamma$ is a parameter.
+    \item[Sigmoid] $K(x, y) = \tanh(\langle x, y \rangle + r)$, where $r$ is a parameter.
+\end{descriptionlist}
+
+
+\subsection{Complexity}
+Given a dataset with $D$ entries of $n$ features, the complexity of SVM scales from $O(nD^2)$ to $O(nD^3)$
+depending on the effectiveness of data caching.
+
+
+\subsection{Characteristics}
+\begin{itemize}
+    \item Training an SVM model is generally slower.
+    \item SVM is not affected by local minimums.
+    \item SVM do not suffer the curse of dimensionality.
+    \item SVM does not directly provide probability estimates. 
+        If needed, these can be computed using a computationally expensive method.
+\end{itemize}
+
+
+
+\section{Neural networks}
+
+\begin{description}
+    \item[Multilayer perceptron] \marginnote{Multilayer perceptron}
+        Hierarchical structure of perceptrons, each with an activation function.
+
+    \item[Activation function] \marginnote{Activation function}
+        Activation functions are useful to add non-linearity.
+
+        In a linear system, if there is noise in the input, it is transferred to the output 
+        (i.e. linearity implies that $f(x + \text{noise}) = f(x) + f(\text{noise})$).
+        On the other hand, a non-linear system is generally more robust 
+        (i.e. non-linearity generally implies that $f(x + \text{noise}) \neq f(x) + f(\text{noise})$)
+
+    \item[Feedforward neural network] \marginnote{Feedforward neural network}
+        Network with the following flow:
+        \[ \text{Input layer} \rightarrow \text{Hidden layer} \rightarrow \text{Output layer} \]
+        Neurons at each layer are connected to all neurons of the next layer.
+\end{description}
+
+
+\subsection{Training}
+Inputs are fed to the network and backpropagation is used to update the weights.
+
+\begin{description}
+    \item[Learning rate] \marginnote{Learning rate}
+        Size of the step for gradient descent.
+
+    \item[Epoch] \marginnote{Epoch} 
+        A round of training where the entire dataset has been processed.
+
+    \item[Stopping criteria] \marginnote{Stopping criteria}
+        Possible conditions to stop the training are:
+        \begin{itemize}
+            \item Small weights update.
+            \item The classification error goes below a predefined target.
+            \item Timeout or maximum number of epochs.
+        \end{itemize}
+
+    \item[Regularization] \marginnote{Regularization}
+        Smoothing of the loss function.
+\end{description}
+
+
+
+\section{K-nearest neighbors}
+
+\begin{description}
+    \item[K-nearest neighbors] \marginnote{K-nearest neighbors}
+        Given a similarity metric and a training set,
+        to predict a new observation, the $k$ most similar entries in the training set are selected
+        and the class of the new data is determined as the most frequent class among the $k$ entries.
+\end{description}
