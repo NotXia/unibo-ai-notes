@@ -109,7 +109,7 @@ A property of objects.
 
 \begin{description}
     \item[Quantitative measure] \marginnote{Quantitative measure}
-        Something that can be measured using some unit\\
+        Something that can be measured using a unit\\
         (e.g. $\texttt{length(table1)} = \texttt{cm(80)}$).
 
         Qualitative measures propagate when using \texttt{partOf} or \texttt{bunchOf} 
@@ -157,7 +157,107 @@ A property of objects.
 
 
 \section{Semantic networks}
+\marginnote{Semantic networks}
+Graphical representation of objects and categories connected through labelled links.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/semantic_network.png}
+    \caption{Example of semantic network}
+\end{figure}
+
+\begin{description}
+    \item[Objects and categories] Represented using the same symbol.
+
+    \item[Links] Four different types of links:
+        \begin{itemize}
+            \item Relation between objects (e.g. \texttt{SisterOf}).
+            \item Property of a category (e.g. 2 \texttt{Legs}).
+            \item Is-a relation (e.g. \texttt{SubsetOf}).
+            \item Property of the members of a category (e.g. \texttt{HasMother}).
+        \end{itemize} 
+\end{description}
+
+\begin{description}
+    \item[Single inheritance reasoning] \marginnote{Single inheritance reasoning}
+        Starting from an object, check if it has the queried property.
+        If not, iteratively move up to the category it belongs to and check for the property.
+
+    \item[Multiple inheritance reasoning] \marginnote{Multiple inheritance reasoning}
+        Reasoning is not possible as it is not clear which parent to choose.
+\end{description}
+
+\begin{description}
+    \item[Limitations]
+        Compared to first order logic, semantic networks do not have:
+        \begin{itemize}
+            \item Negations.
+            \item Universally and existentially quantified properties.
+            \item Disjunctions.
+            \item Nested function symbols.
+        \end{itemize}
+
+        Many semantic network systems allow to attach special procedures to handle special cases 
+        that the standard inference algorithm cannot handle.
+        This approach is powerful but does not have a corresponding logical meaning.
+
+    \item[Advantages]
+        With semantic networks it is easy to attach default properties to categories and
+        override them on the objects (i.e. \texttt{Legs} of \texttt{John}).
+\end{description}
 
 
 
 \section{Frames}
+\marginnote{Frames}
+Knowledge that describes an object in terms of its properties.
+Each frame has:
+\begin{itemize}
+    \item An unique name
+    \item Properties represented as pairs \texttt{<slot - filler>}
+\end{itemize}
+
+\begin{example}
+    \phantom{}\\[-1em]
+    \begin{lstlisting}[mathescape=true, language={}] 
+        (
+            toronto
+                <:Instance-Of City>
+                <:Province ontario>
+                <:Population 4.5M>
+        )
+    \end{lstlisting}
+\end{example}
+
+\begin{description}
+    \item[Prototype] \marginnote{Prototype}
+        Members of a category used as comparison metric to determine if another object belongs to the same class
+        (i.e. an object belongs to a category if it is similar enough to the prototypes of that category).
+
+    \item[Defeasible value] \marginnote{Defeasible value}
+        Value that is allowed to be different when comparing an object to a prototype.
+
+    \item[Facets] \marginnote{Facets}
+        Additional information contained in a slot for its filler (e.g. default value, type, domain).
+
+        \begin{description}
+            \item[Procedural information] 
+                Fillers can be a procedure that can be activated by specific facets:
+                \begin{descriptionlist}
+                    \item[\texttt{if-needed}] Looks for the value of the slot.
+                    \item[\texttt{if-added}] Adds a value.
+                    \item[\texttt{if-removed}] Removes a value.
+                \end{descriptionlist}
+                \begin{example}
+                    \phantom{}\\[-1em]
+                    \begin{lstlisting}[mathescape=true, language={}] 
+    (
+        toronto
+            <:Instance-Of City>
+            <:Province ontario>
+            <:Population [if-needed QueryDB]>
+    )
+                    \end{lstlisting}
+                \end{example}
+        \end{description}
+\end{description}
