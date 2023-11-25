@@ -1,0 +1,56 @@
+\chapter{Regression}
+
+\begin{description}
+    \item[Linear regression] \marginnote{Linear regression}
+        Given:
+        \begin{itemize}
+            \item A dataset $\matr{X}$ of $N$ rows and $D$ features.
+            \item A response vector $\vec{y}$ of $N$ continuous values.
+        \end{itemize}
+        We want to learn the parameters $\vec{w} \in \mathbb{R}^D$ such that:
+        \[ \vec{y} \approx \matr{X}\vec{w}^T \]
+
+    \item[Mean squared error] \marginnote{Mean squared error}
+        To find the parameters for linear regression,
+        we minimize as loss function the mean squared error:
+        \[  
+            \mathcal{L}(\vec{w}) = \Vert \matr{X}\vec{w}^T - \vec{y} \Vert^2    
+        \]
+        Its gradient is:
+        \[ \nabla\mathcal{L}(\vec{w}) = 2\matr{X}^T(\matr{X}\vec{w}^T - \vec{y}) \]
+        Constraining it to 0, we obtain the problem:
+        \[ \matr{X}^T\matr{X}\vec{w}^T = \matr{X}^T\vec{y} \]
+        If $\matr{X}^T\matr{X}$ is invertible, this can be solved analytically but could lead to overfitting.
+        Numerical methods are therefore more suited.
+
+        Note that:
+        \begin{itemize}
+            \item MSE is influenced by the magnitude of the data.
+            \item It measures the fitness of a model in absolute terms.
+            \item It is suited to compare different models.
+        \end{itemize}
+
+    \item[Coefficient of determination] \marginnote{Coefficient of determination}
+        Given:
+        \begin{itemize}
+            \item The mean of the observed data: $y_\text{avg} = \frac{1}{N} \sum_i \vec{y}_i$.
+            \item The sum of the squared residuals: $SS_\text{res} = \sum_i (\vec{y}_i - \vec{w}^T\vec{x}_i)^2$.
+            \item The total sum of squares: $SS_\text{tot} = \sum_i (\vec{y}_i - y_\text{avg})^2$.
+        \end{itemize}
+        The coefficient of determination is given by:
+        \[ \text{R}^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}} \]
+
+        Intuitively, $\text{R}^2$ compares the model with a horizontal straight line ($y_\text{avg}$).
+        When $\text{R}^2 = 1$, the model has a perfect fit.
+        When $\text{R}^2$ is outside the range $[0, 1]$, then the model is worse than a straight line.
+
+        Note that:
+        \begin{itemize}
+            \item $\text{R}^2$ is a standardized index.
+            \item $\text{R}^2$ tells how well the variables of the predictor can explain the variation in the target.
+            \item $\text{R}^2$ is not suited for non-linear models.
+        \end{itemize}
+
+    \item[Polynomial regression] \marginnote{Polynomial regression}
+        Find a polynomial instead of a hyperplane.
+\end{description}

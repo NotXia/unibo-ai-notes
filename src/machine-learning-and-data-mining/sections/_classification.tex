@@ -794,3 +794,73 @@ Inputs are fed to the network and backpropagation is used to update the weights.
         to predict a new observation, the $k$ most similar entries in the training set are selected
         and the class of the new data is determined as the most frequent class among the $k$ entries.
 \end{description}
+
+
+
+\section{Binary to multi-class classification}
+
+\begin{description}
+    \item[One-vs-one strategy (OVO)] \marginnote{One-vs-one strategy (OVO)}
+        Train a classifier for all the possible pairs of classes (this will result in $\frac{C \cdot (C-1)}{2}$ pairs).
+        The class assigned to a new observation is determined through a majority vote.
+
+    \item[One-vs-rest strategy (OVR)] \marginnote{One-vs-rest strategy (OVR)}
+        Train $C$ classifiers where each is specialized to classify a specific class as positive and the others as negative.
+        The class assigned to a new observation is determined by the confidence score of each classifier.
+\end{description}
+
+
+
+\section{Ensemble methods}
+\marginnote{Ensemble methods}
+Train a set of base classifiers and make predictions by majority vote.
+If all the classifiers have the same but independent error rate, 
+the overall error of the ensemble model is lower (derived from a binomial distribution).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/ensemble_error.png}
+    \caption{Relationship between the error of base classifiers and ensemble models}
+\end{figure}
+
+Different strategies to train an ensemble classifier can be used:
+\begin{descriptionlist}
+    \item[Dataset manipulation] Resampling the dataset for each base classifier:
+        \begin{description}
+            \item[Bagging] 
+                Sample with replacement with a uniform distribution.
+            \item[Boosting] 
+                Iteratively change the distribution of the training data 
+                prioritizing examples difficult to classify.
+                \begin{description}
+                    \item[Adaboost] \marginnote{Adaboost}
+                        Iteratively train base classifiers on a dataset where samples 
+                        misclassified at the previous iteration have a higher weight.
+                \end{description}
+        \end{description}
+    
+    \item[Feature manipulation]
+        Train a base classifier using only a subset of the features.
+
+    \item[Class labels manipulation]
+        Train a base classifier to classify a partition of the class labels.
+        For instance, class labels can be partitioned into two groups $A_1$ and $A_2$, and
+        the base classifier is trained to assign as label one of the two groups.
+        During inference, when a group is predicted, all labels within that group receive a vote.
+\end{descriptionlist}
+
+
+\subsection{Random forests}
+\marginnote{Random forests}
+
+Different decision trees trained on a different random sampling of the training set and different subset of features.
+A prediction is made by averaging the output of each tree.
+
+\begin{description}
+    \item[Bias] \marginnote{Bias}
+        Simplicity of the target function of a model.
+    \item[Variance] \marginnote{Variance}
+        Amount of change of the target function when using different training data (i.e. how much the model overfits).
+\end{description}
+
+Random forests aim to reduce the high variance of decision trees.
