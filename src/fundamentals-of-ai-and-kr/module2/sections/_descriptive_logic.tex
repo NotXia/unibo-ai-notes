@@ -1,0 +1,351 @@
+\chapter{Description logic}
+
+
+\section{Syntax}
+
+\begin{description}
+    \item[Logical symbols] \marginnote{Logical symbols}
+        Symbols with fixed meaning.
+        \begin{description}
+            \item[Punctuation] ( ) [ ]
+            \item[Positive integers] 
+            \item[Concept-forming operators] \texttt{ALL}, \texttt{EXISTS}, \texttt{FILLS}, \texttt{AND}
+            \item[Connectives] $\sqsubseteq$, $\doteq$, $\rightarrow$
+        \end{description}
+
+    \item[Non-logical symbols] \marginnote{Non-logical symbols}
+        Domain-dependant symbols.
+        \begin{description}
+            \item[Atomic concepts] Categories (CamelCase, e.g. \texttt{Person}).
+            \item[Roles] Used to describe objects (:CamelCase, e.g. \texttt{:Height}).
+            \item[Constants] (camelCase, e.g. \texttt{johnDoe}).
+        \end{description}
+
+    \item[Complex concept] \marginnote{Complex concept}
+        Concept-forming operators can be used to combine atomic concepts and form complex concepts.
+        A well-formed concept follows the conditions:
+        \begin{itemize}
+            \item An atomic concept is a concept.
+            \item If \texttt{r} is a role and \texttt{d} is a concept, then \texttt{[ALL r d]} is a concept.
+            \item If \texttt{r} is a role and $n$ is a positive integer, then \texttt{[EXISTS $n$ r]} is a concept.
+            \item If \texttt{r} is a role and \texttt{c} is a constant, then \texttt{[FILLS r c]} is a concept.
+            \item If $\texttt{d}_1 \dots \texttt{d}_n$ are concepts, 
+                then \texttt{[AND $\texttt{d}_1 \dots \texttt{d}_n$]} is a concept.
+        \end{itemize}
+
+    \item[Sentence] \marginnote{Sentence}
+        Connectives can be used to combine concepts and form sentences.
+        A well-formed sentence follows the conditions:
+        \begin{itemize}
+            \item If $\texttt{d}_1$ and $\texttt{d}_2$ are concepts, 
+                then $(\texttt{d}_1 \sqsubseteq \texttt{d}_2)$ is a sentence.
+            \item If $\texttt{d}_1$ and $\texttt{d}_2$ are concepts, 
+                then $(\texttt{d}_1 \doteq \texttt{d}_2)$ is a sentence.
+            \item If $\texttt{c}$ is a constant and $\texttt{d}$ is a concept,
+                then $(\texttt{c} \rightarrow \texttt{d})$ is a sentence.
+        \end{itemize}
+
+    \item[Knowledge base] \marginnote{Knowledge base}
+        Collection of sentences.
+        \begin{description}
+            \item[Constants] are individuals of the domain.
+            \item[Concepts] are categories of individuals.
+            \item[Roles] are binary relations between individuals.
+        \end{description}
+
+
+    \item[Assetion box (A-box)] \marginnote{Assetion box (A-box)}
+        List of facts about individuals.
+
+    \item[Terminological box (T-box)] \marginnote{Terminological box (T-box)}
+        List of sentences (axioms) about concepts.
+\end{description}
+
+
+
+\section{Semantics}
+
+\subsection{Concept-forming operators}
+\marginnote{Concept-forming operators}
+Let \texttt{r} be a role, \texttt{d} be a concept, \texttt{c} be a constant and $n$ a positive integer.
+The semantics of concept-forming operators are:
+\begin{descriptionlist}
+    \item[\texttt{[ALL r d]}] 
+        Individuals \texttt{r}-related to the individuals of the category \texttt{d}.
+        \begin{example}
+            \texttt{[ALL :HasChild Male]} individuals that have zero children or only male children.
+        \end{example}
+    
+    \item[\texttt{[EXISTS $n$ r]}] 
+        Individuals \texttt{r}-related to at least $n$ other individuals.
+        \begin{example}
+            \texttt{[EXISTS 1 :Child]} individuals with at least one child.
+        \end{example}
+
+    \item[\texttt{[FILLS r c]}] 
+        Individuals \texttt{r}-related to the individual \texttt{c}.
+        \begin{example}
+            \texttt{[FILLS :Child john]} individuals with child \texttt{john}.
+        \end{example}
+
+    \item[\texttt{[AND $\texttt{d}_1 \dots \texttt{d}_n$]}] 
+        Individuals belonging to all the categories $\texttt{d}_1 \dots \texttt{d}_n$.
+\end{descriptionlist}
+
+
+\subsection{Sentences}
+\marginnote{Sentences}
+Sentences are expressions with truth values in the domain.
+Let \texttt{d} be a concept and \texttt{c} be a constant.
+The semantics of sentences are:
+\begin{descriptionlist}
+    \item[$\texttt{d}_1 \sqsubseteq \texttt{d}_2$]
+        Concept $\texttt{d}_1$ is subsumed by $\texttt{d}_2$.
+        \begin{example}
+            $\texttt{PhDStudent} \sqsubseteq \texttt{Student}$ as every PhD is also a student.
+        \end{example}
+
+    \item[$\texttt{d}_1 \doteq \texttt{d}_2$]
+        Concept $\texttt{d}_1$ is equivalent to $\texttt{d}_2$.
+        \begin{example}
+            $\texttt{PhDStudent} \doteq \texttt{[AND Student :Graduated :HasFunding]}$
+        \end{example}
+
+    \item[$\texttt{c} \rightarrow \texttt{d}$]
+        The individual \texttt{c} satisfies the description of the concept \texttt{d}.
+        \begin{example}
+            $\texttt{federico} \rightarrow \texttt{Professor}$
+        \end{example}
+\end{descriptionlist}
+
+
+\subsection{Interpretation}
+
+\begin{description}
+    \item[Interpretation] \marginnote{Interpretation}
+        An interpretation $\mathfrak{I}$ in description logic is a pair ($\mathcal{D}, \mathcal{I}$) where:
+        \begin{itemize}
+            \item $\mathcal{D}$ is the domain.
+            \item $\mathcal{I}$ is the interpretation mapping.
+                \begin{description}
+                    \item[Constant] 
+                        Let \texttt{c} be a constant, $\mathcal{I}[\texttt{c}] \in \mathcal{D}$. 
+                    \item[Atomic concept] 
+                        Let \texttt{a} be an atomic concept, $\mathcal{I}[\texttt{a}] \subseteq \mathcal{D}$. 
+                    \item[Role] 
+                        Let \texttt{r} be a role, $\mathcal{I}[\texttt{r}] \subseteq \mathcal{D} \times \mathcal{D}$.
+                    \item[\texttt{Thing}] 
+                        The concept \texttt{Thing} corresponds to the domain: $\mathcal{I}[\texttt{Thing}] = \mathcal{D}$.
+                    \item[\texttt{[ALL r d]}]
+                        \[
+                            \mathcal{I}[\texttt{[ALL r d]}] = 
+                            \{ \texttt{x} \in \mathcal{D} \mid \forall \texttt{y}: 
+                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[r] \text{ then } \texttt{y} \in \mathcal{I}[d] \}
+                        \]
+                    \item[\texttt{[EXISTS $n$ r]}] 
+                        \[ 
+                            \mathcal{I}[\texttt{[EXISTS $n$ r]}] = 
+                            \{ \texttt{x} \in \mathcal{D} \mid \text{ exists at least $n$ distinct } \texttt{y}: 
+                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[r] \}
+                        \]
+                    \item[\texttt{[FILLS r c]}] 
+                        \[ 
+                            \mathcal{I}[\texttt{[FILLS r c]}] = \{ \texttt{x} \in \mathcal{D} \mid 
+                            \langle \texttt{x}, \mathcal{I}[\texttt{c}] \rangle \in \mathcal{I}[\texttt{r}] \} 
+                        \]
+                    \item[\texttt{[AND $\texttt{d}_1 \dots \texttt{d}_n$]}] 
+                        \[ 
+                            \mathcal{I}[\texttt{[AND $\texttt{d}_1 \dots \texttt{d}_n$]}] = 
+                                \mathcal{I}[\texttt{d}_1] \cap \dots \cap \mathcal{I}[\texttt{d}_n]
+                        \]
+                \end{description}
+        \end{itemize}
+
+    \item[Model] \marginnote{Model}
+        Given an interpretation $\mathfrak{I} = (\mathcal{D}, \mathcal{I})$,
+        a sentence is true under $\mathfrak{I}$ ($\mathfrak{I} \models \text{sentence}$) if:
+        \begin{itemize}
+            \item $\mathfrak{I} \models (\texttt{c} \rightarrow \texttt{d})$ iff $\mathcal{I}[\texttt{c}] \in \mathcal{I}[\texttt{d}]$.
+            \item $\mathfrak{I} \models (\texttt{d}_\texttt{1} \sqsubseteq \texttt{d}_\texttt{2})$ iff 
+                $\mathcal{I}[\texttt{d}_\texttt{1}] \subseteq \mathcal{I}[\texttt{d}_\texttt{2}]$.
+            \item $\mathfrak{I} \models (\texttt{d}_\texttt{1} \doteq \texttt{d}_\texttt{2})$ iff 
+                $\mathcal{I}[\texttt{d}_\texttt{1}] = \mathcal{I}[\texttt{d}_\texttt{2}]$.
+        \end{itemize}
+
+        Given a set of sentences $S$, $\mathfrak{I}$ models $S$ if $\mathfrak{I} \models S$.
+
+    \item[Entailment] \marginnote{Entailment}
+        A set of sentences $S$ logically entails a sentence $\alpha$ if:
+        \[ \forall \mathfrak{I}:\, (\mathfrak{I} \models S) \rightarrow (\mathfrak{I} \models \alpha) \]
+\end{description}
+
+
+
+\section{Reasoning}
+
+\subsection{T-box reasoning}
+
+Given a knowledge base of a set of sentences $S$, we would like to be able to determine the following:
+\begin{description}
+    \item[Satisfiability] \marginnote{Satisfiability}
+        A concept \texttt{d} is satisfiable w.r.t. $S$ if:
+        \[ \exists \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}] \neq \varnothing \]
+
+    \item[Subsumption] \marginnote{Subsumption}
+        A concept $\texttt{d}_1$ is subsumed by $\texttt{d}_2$ w.r.t. $S$ if:
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] \subseteq \mathfrak{I}[\texttt{d}_2] \]
+
+    \item[Equivalence] \marginnote{Equivalence}
+        A concept $\texttt{d}_1$ is equivalent to $\texttt{d}_2$ w.r.t. $S$ if:
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] = \mathfrak{I}[\texttt{d}_2] \]
+
+    \item[Disjointness] \marginnote{Disjointness}
+        A concept $\texttt{d}_1$ is disjoint to $\texttt{d}_2$ w.r.t. $S$ if:
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] \neq \mathfrak{I}[\texttt{d}_2] \]
+\end{description}
+
+\begin{theorem}[Reduction to subsumption]
+\marginnote{Reduction to subsumption}
+    Given the concepts $\texttt{d}_1$ and $\texttt{d}_2$, it holds that:
+    \begin{itemize}
+        \item $\texttt{d}_1 \text{ is unsatisfiable } \iff \texttt{d}_1 \sqsubseteq \bot$.
+        \item $\texttt{d}_1 \doteq \texttt{d}_2 \iff \texttt{d}_1 \sqsubseteq \texttt{d}_2 \land \texttt{d}_2 \sqsubseteq \texttt{d}_1$.
+        \item $\texttt{d}_1 \text{ and } \texttt{d}_2 \text{ are disjoint} \iff (\texttt{d}_1 \cap \texttt{d}_2) \sqsubseteq \bot$.
+    \end{itemize}
+\end{theorem}
+
+\subsection{A-box reasoning}
+Given a constant \texttt{c}, a concept \texttt{d} and a set of sentences $S$, we can determine the following:
+\begin{description}
+    \item[Satisfiability] \marginnote{Satisfiability}
+        A constant \texttt{c} satisfies the concept \texttt{d} if:
+        \[ S \models (\texttt{c} \rightarrow \texttt{d}) \]
+
+        Note that it can be reduced to subsumption.
+\end{description}
+
+
+\subsection{Computing subsumptions}
+
+Given a knowledge base $KB$ and two concepts \texttt{d} and \texttt{e},
+we want to prove:
+\[ KB \models (\texttt{d} \sqsubseteq \texttt{e}) \]
+The following algorithms can be employed:
+\begin{descriptionlist}
+    \item[Structural matching] \marginnote{Structural matching}
+        \phantom{}
+        \begin{enumerate}
+            \item Normalize \texttt{d} and \texttt{e} into a conjunctive form:
+                \[ \texttt{d} = \texttt{[AND d$_1$ \dots d$_n$]} \hspace*{1cm} \texttt{e} = \texttt{[AND e$_1$ \dots e$_m$]} \]
+            \item Check if each part of \texttt{e} is accounted by at least a component of \texttt{d}.
+        \end{enumerate}
+        
+    \item[Tableaux-based algorithms] \marginnote{Tableaux-based algorithms}
+        Exploit the following theorem:
+        \[ (KB \models (C \sqsubseteq D)) \iff (KB \cup (x : C \sqcap \lnot D)) \text{ is inconsistent} \]
+
+        Note: similar to refutation.
+\end{descriptionlist}
+
+
+\subsection{Open world assumption}
+
+\begin{description}
+    \item[Open world assumption] \marginnote{Open world assumption}
+        If a sentence cannot be inferred, its truth values is unknown.
+\end{description}
+
+Description logics are based on the open world assumption.
+To reason in open world assumption, all the possible models are split upon encountering an unknown facts
+depending on the possible cases (Oedipus example).
+
+
+
+\section{Expanding description logic}
+It is possible to expand a description logic by:
+\begin{descriptionlist}
+    \item[Adding concept-forming operators] \marginnote{Adding concept-forming operators}
+        Let \texttt{r} be a role, \texttt{d} be a concept, \texttt{c} be a constant and $n$ a positive integer.
+        We can extend our description logic with:
+        \begin{description}
+            \item[\texttt{[AT-MOST $n$ r]}]
+                Individuals \texttt{r}-related to at most $n$ other individuals.
+                \begin{example}
+                    \texttt{[AT-MOST $1$ :Child]} individuals with only a child.
+                \end{example}
+
+            \item[\texttt{[ONE-OF c$_1$ $\dots$ c$_n$]}]
+                Concept only satisfied by \texttt{c$_1$ $\dots$ c$_n$}.
+                \begin{example}
+                    $\texttt{Beatles} \doteq \texttt{[ALL :BandMember [ONE-OF john paul george ringo]]}$
+                \end{example}
+                
+            \item[\texttt{[EXISTS $n$ r d]}]
+                Individuals \texttt{r}-related to at least $n$ individuals in the category \texttt{d}.
+                \begin{example}
+                    \texttt{[EXISTS $2$ :Child Male]} individuals with at least two male children.
+                \end{example}
+                Note: this increases the computational complexity of entailment.
+        \end{description}
+
+    \item[Relating roles] \marginnote{Relating roles}
+        \begin{description}
+            \item[\texttt{[SAME-AS r$_1$ r$_2$]}]
+                Equates fillers of the roles r$_1$ and r$_2$
+                \begin{example}
+                    \texttt{[SAME-AS :CEO :Owner]}
+                \end{example}
+                Note: this increases the computational complexity of entailment.
+                Role chaining also leads to undecidability.
+        \end{description}
+
+    \item[Adding rules] \marginnote{Adding rules}
+        Rules are useful to add conditions (e.g. \texttt{if d$_1$ then [FILLS r c]}).
+\end{descriptionlist}
+
+
+\section{Description logics family}
+
+Depending on the number of operators, a description logic can be:
+\begin{itemize}
+    \item More expressive.
+    \item Computationally more expensive.
+    \item Undecidable.
+\end{itemize}
+
+\begin{description}
+    \item[Attributive language ($\mathcal{AL}$)] 
+        Minimal description logic with:
+        \begin{itemize}
+            \item Atomic concepts.
+            \item Universal concept (\texttt{Thing} or $\top$).
+            \item Bottom concept (\texttt{Nothing} or $\bot$).
+            \item Atomic negation (only for atomic concepts).
+            \item \texttt{AND} operator ($\sqcap$).
+            \item \texttt{ALL} operator ($\forall$).
+            \item \texttt{[EXISTS $1$ r]} operator ($\exists$).
+        \end{itemize}
+
+    \item[Attributive language complement ($\mathcal{ALC}$)] 
+        $\mathcal{AL}$ with negation for concepts.
+\end{description}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        $\mathcal{F}$ & Functional properties \\ \hline
+        $\mathcal{E}$ & Full existential quantification \\ \hline
+        $\mathcal{U}$ & Concept union \\ \hline
+        $\mathcal{C}$ & Complex concept negation \\ \hline
+        $\mathcal{S}$ & $\mathcal{ALC}$ with transitive roles \\ \hline
+        $\mathcal{H}$ & Role hierarchy \\ \hline
+        $\mathcal{R}$ & \makecell[c]{Limited complex roles axioms\\Reflexivity and irreflexivity\\Roles disjointness} \\ \hline
+        $\mathcal{O}$ & Nominals \\ \hline
+        $\mathcal{I}$ & Inverse properties \\ \hline
+        $\mathcal{N}$ & Cardinality restrictions \\ \hline
+        $\mathcal{Q}$ & Qualified cardinality restrictions \\ \hline
+        $\mathcal{(D)}$ & Datatype properties, data values and data types \\ \hline
+    \end{tabular}
+    \caption{Name and expressivity of logics}
+\end{table}
