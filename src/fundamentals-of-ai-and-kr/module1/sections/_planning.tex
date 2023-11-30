@@ -40,7 +40,7 @@
             \item[Correctness] \marginnote{Correct planner}
                 The planner always finds a solution that leads from the initial state to the goal.
             \item[Completeness] \marginnote{Complete planner}
-                The planner always finds a plan when it exits (planning is semi-decidable).
+                The planner always finds a plan when it exists (planning is semi-decidable).
         \end{descriptionlist}
 
     \item[Execution] \marginnote{Execution}
@@ -778,3 +778,251 @@ The steps the algorithm does are:
     \item Backtracks the effects of an action in case of a failure.
     \item Corrects the plan if external events occur.
 \end{itemize}
+
+
+
+\section{Graphplan}
+\marginnote{Graphplan}
+Graphplan is an off-line, least-commitment planner (closed-world assumption) that
+constructs a partially ordered set of actions through a planning graph based on time steps.
+
+The planner is correct, complete, optimal and computationally efficient.
+
+
+\begin{description}
+    \item[Action] \marginnote{Actions}
+        An action, as in STRIPS, has:
+        \begin{itemize}
+            \item Preconditions.
+            \item Add list.
+            \item Delete list.
+        \end{itemize}
+
+        \begin{description}
+            \item[\texttt{NO-OP}] 
+                Action that does not change the state (to solve the frame problem).
+                Can be seen as an action with the same proposition as precondition and add list.
+        \end{description}
+
+    \item[State] \marginnote{State}
+        A state is represented by a set of propositions that are true in that time step.
+
+    \item[Planning graph] \marginnote{Planning graph}
+        Directed leveled graph where edges connect nodes of adjacent levels.
+
+        There are two possible levels that are alternated during construction:
+        \begin{descriptionlist}
+            \item[Proposition level] 
+                Contains propositions that describe the state. 
+                Note that interfering propositions can appear.
+            \item[Action level] 
+                Contains all the possible actions that have as preconditions the propositions in the previous level.
+                Note that interfering actions can appear.
+        \end{descriptionlist}
+        The first level of the graph is a proposition level containing the initial state.
+
+        Edges can be:
+        \begin{descriptionlist}
+            \item[Precondition arcs] proposition $\rightarrow$ action.
+            \item[Add arcs] action $\rightarrow$ proposition.
+            \item[Delete arcs] action $\rightarrow$ proposition.
+        \end{descriptionlist}
+
+    \item[Inconsistency] \marginnote{Inconsistency}
+        Actions and propositions can be inconsistent in the same time step.
+        Possible causes are:
+        \begin{descriptionlist}
+            \item[Inconsistent effects] \marginnote{Inconsistent effects}
+                An action negates the effects of another one.
+            
+            \item[Interference] \marginnote{Interference}
+                An action deletes the preconditions of another one.
+           
+            \item[Competing needs] \marginnote{Competing needs} 
+                Propositions that cannot appear together either 
+                because one negates the other or
+                because they can be reached only through mutually exclusive paths.
+                (i.e. two actions have mutually exclusive preconditions).
+
+            \item[Domain dependent] 
+        \end{descriptionlist}
+
+    \item[Plan extraction] \marginnote{Plan extraction}
+        Once a proposition level containing the goal as non-mutually exclusive propositions has been reached,
+        the algorithm can attempt to extract a plan.
+        A valid plan has the following properties:
+        \begin{itemize}
+            \item Actions in the same time step do not interfere and can be executed in any order.
+            \item Propositions at the same time step are non-mutually exclusive.
+            \item The last step contains the goal as non-mutually exclusive propositions.
+        \end{itemize}
+        Even if the last step is a superset of the goal, planning may still fail.
+        In this case, the algorithm has to continue generating levels.
+        % Loop detection can be used to stop when a plan cannot be found.
+
+    \item[Memoization] \marginnote{Memoization}
+        At each step, if the goal is not satisfiable, the result is saved and 
+        when the same state is encountered in the future it will automatically fail.
+\end{description}
+
+
+\begin{theorem}
+    The following statements hold:
+    \begin{itemize}
+        \item If a valid plan exists, it can be found as a subgraph of the planning graph.
+        
+        \item In a planning graph, two actions in a time step are mutually exclusive
+            if a valid plan containing both does not exist.
+
+        \item In a planning graph, two propositions are mutually exclusive if they are inconsistent.
+    \end{itemize}
+\end{theorem}
+
+\begin{corollary}
+    Inconsistencies found during the planning graph construction
+    prune paths in the search tree.
+\end{corollary}
+
+
+\begin{algorithm}[H]
+\caption{Graphplan}
+\begin{lstlisting}[mathescape=true]
+def graphplan(initial_state, actions, goal):
+    graph = PlanningGraph()
+    graph.addPropositionLevel(initial_state)
+    while True:
+        if (goal in graph.lastPropositionLevel and 
+            not mutexPropositions(goal, graph.lastPropositionLevel)):
+            plan = extractSolution(graph, goal)
+            if plan is not FAIL: return plan
+        graph.addActionLevel( selectActions(graph) )
+        graph.addPropositionLevel( selectPreconditions(graph, actions) )
+
+def selectActions(graph, actions):
+    new_action_level = Level()
+    for action in actions.unify(graph.lastPropositionLevel):
+        preconds = action.preconditions
+        if not mutexPropositions(preconds, graph.lastPropositionLevel):
+            new_action_level.add(preconds, action)
+    for proposition in graph.lastPropositionLevel:
+        new_action_level.add(NO_OP(proposition))
+    new_action_level.findInconsistencies()
+    return new_action_level
+
+def selectPreconditions(graph):
+    new_props_level = Level()
+    for action in graph.lastActionLevel:
+        for prop in action.add_list:
+            new_props_level.add(action, prop, "add")
+        for prop in action.delete_list:
+            new_props_level.add(action, prop, "delete")
+    new_props_level.findInconsistencies()
+    return new_props_level
+
+def extractSolution(graph, goal):
+    plan = Plan()
+    actions = graph.lastActionLevel.getActionsWithEffect(goal)
+    if mutexActions(actions, graph.lastActionLevel): return FAIL
+    plan.addLevel(actions)
+    graph = graph.popLastActionLevel()
+    return plan.merge(extractSolution(graph, actions.preconditions))
+\end{lstlisting}
+\end{algorithm}
+
+
+\begin{example}[Moving objects with a cart]
+    Given the actions:
+    \begin{descriptionlist}
+        \item[\texttt{MOVE(R, PosA, PosB)}] \phantom{}
+            \begin{description}
+                \item[Preconditions] $\texttt{at(R, PosA)}$, $\texttt{hasFuel(R)}$
+                \item[Add list] $\texttt{at(R, PosB)}$
+                \item[Delete list] $\texttt{at(R, PosA)}$, $\texttt{hasFuel(R)}$
+            \end{description}
+    \end{descriptionlist}
+
+    \begin{minipage}{0.5\textwidth}
+        \begin{descriptionlist}
+            \item[\texttt{LOAD(Obj, Pos)}] \phantom{}
+                \begin{description}
+                    \item[Preconds] $\texttt{at(R, Pos)}$, $\texttt{at(Obj, Pos)}$
+                    \item[Add list] $\texttt{in(R, Obj)}$
+                    \item[Delete list] $\texttt{at(Obj, Pos)}$
+                \end{description}
+        \end{descriptionlist}
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+        \begin{descriptionlist}
+            \item[\texttt{UNLOAD(Obj, Pos)}] \phantom{}
+                \begin{description}
+                    \item[Preconds] $\texttt{in(R, Obj)}$, $\texttt{at(R, Pos)}$
+                    \item[Add list] $\texttt{at(Obj, Pos)}$
+                    \item[Delete list] $\texttt{in(R, Obj)}$
+                \end{description}
+        \end{descriptionlist}
+    \end{minipage}
+
+    Given a scenario where:
+    \begin{itemize}
+        \item \texttt{r} is a cart.
+        \item \texttt{a} and \texttt{b} are objects.
+        \item \texttt{l} and \texttt{p} are locations.
+    \end{itemize}
+    and the initial state is:
+    \begin{center}
+        \texttt{at(a, l)} $\cdot$ \texttt{at(b, l)} $\cdot$ \texttt{at(r, l)} $\cdot$ \texttt{hasFuel(r)} 
+    \end{center}
+
+    The first four time steps of the planning graph are:
+    \begin{center}
+        \includegraphics[width=\textwidth]{img/_graphplan.pdf}
+    \end{center}
+
+    The inconsistencies at $t=1$ are:
+    \begin{descriptionlist}
+        \item[Inconsistent effects] \phantom{}\\[0.5em]
+            $\begin{cases}\texttt{NO-OP} \\ \texttt{LOAD(a, r)}\end{cases} \text{for } \texttt{at(a, l)}$,
+            $\begin{cases}\texttt{NO-OP} \\ \texttt{LOAD(b, r)}\end{cases} \text{for } \texttt{at(b, l)}$,\\[0.3em]
+            $\begin{cases}\texttt{NO-OP} \\ \texttt{MOVE(r, l, p)}\end{cases} \text{for } \texttt{at(r, l)}$,
+            $\begin{cases}\texttt{NO-OP} \\ \texttt{MOVE(r, l, p)}\end{cases} \text{for } \texttt{hasFuel(r)}$
+
+        \item[Interference] \phantom{}\\[0.5em]
+            $\begin{cases}\texttt{MOVE(r, l, p)} \\ \texttt{LOAD(a, r)}\end{cases} \text{for } \texttt{at(r, l)}$,
+            $\begin{cases}\texttt{MOVE(r, l, p)} \\ \texttt{LOAD(b, r)}\end{cases} \text{for } \texttt{at(r, l)}$
+    \end{descriptionlist}
+
+    The inconsistencies of at $t=2$ are:
+    \begin{descriptionlist}
+        \item[Competing needs] \phantom{}\\[0.5em]
+            Consequence of the add and delete list of each action:\\[0.3em]
+                $\begin{cases}\texttt{at(a, l)} \\ \texttt{in(r, a)}\end{cases}$,
+                $\begin{cases}\texttt{at(b, l)} \\ \texttt{in(r, b)}\end{cases}$,
+                $\begin{cases}\texttt{at(r, l)} \\ \texttt{at(r, p)}\end{cases}$,
+                $\begin{cases}\texttt{at(r, p)} \\ \texttt{hasFuel(r)}\end{cases}$\\[0.5em]
+            Consequence of the add list of interfering actions (mutual exclusion):\\[0.3em]
+                $\begin{cases}\texttt{in(r, a)} \\ \texttt{at(r, p)}\end{cases}$,
+                $\begin{cases}\texttt{in(r, b)} \\ \texttt{at(r, p)}\end{cases}$
+    \end{descriptionlist}
+
+    Note that because of the mutually exclusive propositions at $t=2$, 
+    at $t=3$ the actions \texttt{UNLOAD($\cdot$, p)} cannot be performed.
+\end{example}
+
+
+\subsection{Fast forward}
+\marginnote{Fast forward}
+Heuristic planner based on Graphplan, hill climbing and A$^*$.
+
+\begin{description}
+    \item[Heuristic]
+        Given a problem $P$, the algorithm considers a relaxation $P^+$ 
+        where delete effects are ignored.
+        $P^+$ is solved using Graphplan and the number of actions required to solve it is used as lower bound heuristic for $P$.
+
+    \item[Algorithm] \phantom{}
+        \begin{enumerate}
+            \item From a state $S$, examine the successors.
+            \item If there is a successor $S'$ better than $S$, move into it and return to point 1.
+            \item Otherwise, run a complete A$^*$ search.
+        \end{enumerate}
+\end{description}
