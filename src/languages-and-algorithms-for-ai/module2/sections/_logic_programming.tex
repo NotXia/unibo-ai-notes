@@ -1,0 +1,120 @@
+\chapter{Logic programming}
+
+
+\section{Syntax}
+
+A logic program has the following components (defined using BNF):
+\begin{descriptionlist}
+    \item[Atom] \marginnote{Atom}
+        $A := p(t_1, \dots, t_n)$ for $n \geq 0$
+    
+    \item[Goal] \marginnote{Goal}
+        $G := \top \mid \bot \mid A \mid G_1 \land G_2$
+    
+    \item[Horn clause] \marginnote{Horn clause}
+        A clause with at most one positive literal.
+        \[ K := A \leftarrow G \]
+        In other words, $A$ and all the literals in $G$ are positive as $A \leftarrow G = A \vee \lnot G$.
+    
+    \item[Program] \marginnote{Program}
+        $P := K_1 \dots K_m$ for $m \geq 0$
+\end{descriptionlist}
+
+
+
+\section{Semantics}
+
+\subsection{State transition system}
+
+\begin{description}
+    \item[State] \marginnote{State}
+        Pair $\langle G, \theta \rangle$ where $G$ is a goal and $\theta$ is a substitution.
+        \begin{description}
+            \item[Intial state] $\langle G, \varepsilon \rangle$
+            \item[Successful final state] $\langle \top, \theta \rangle$
+            \item[Failed final state] $\langle \bot, \varepsilon \rangle$
+        \end{description}
+
+    \item[Derivation] \marginnote{Derivation}
+        A sequence of states.
+        A derivation can be:
+        \begin{descriptionlist}
+            \item[Successful] If the final state is successful.
+            \item[Failed] If the final state is failed.
+            \item[Infinite] If there is an infinite sequence of states.
+        \end{descriptionlist}
+
+        Given a derivation, a goal $G$ can be:
+        \begin{descriptionlist}
+            \item[Successful] There is a successful derivation starting from $\langle G, \varepsilon \rangle$.
+            \item[Finitely failed] All the derivations starting from $\langle G, \varepsilon \rangle$ are failed.
+        \end{descriptionlist}
+
+    \item[Computed answer substitution] \marginnote{Computed answer substitution}
+        Given a goal $G$ and a program $P$, if there exists a successful derivation 
+        $\langle G, \varepsilon \rangle \mapsto* \langle \top, \theta \rangle$,
+        then the substitution $\theta$ is the computed answer substitution of $G$.
+
+    \item[Transition] \marginnote{Transition}
+        Starting from the state $\langle A \land G, \theta \rangle$ of a program $P$, a transition on the atom $A$ can result in:
+        \begin{descriptionlist}
+            \item[Unfold]
+                If there exists a clause $(B \leftarrow H)$ in $P$ and
+                a (most general) unifier $\beta$ for $A\theta$ and $B$,
+                then we have a transition: $\langle A \land G, \theta \rangle \mapsto \langle H \land G, \theta\beta \rangle$.
+
+                In other words, we want to prove that $A\theta$ holds. 
+                To do this, we search for a clause that has as conclusion $A\theta$ and add its premise to the things to prove.
+                If a unification is needed to match $A\theta$, we add it to the substitutions of the state.
+            \item[Failure] 
+                If there are no clauses $(B \leftarrow H)$ in $P$ with a unifier for $A\theta$ and $B$,
+                then we have a transition: $\langle A \land G, \theta \rangle \mapsto \langle \bot, \varepsilon \rangle$.
+        \end{descriptionlist}
+
+        \begin{description}
+            \item[Non-determinism] A transition has two types of non-determinism:
+                \begin{descriptionlist}
+                    \item[Don't-care] \marginnote{Don't-care}
+                        Any atom in $(A \land G)$ can be chosen to determine the next state.
+                        This affects the length of the derivation (infinite in the worst case).
+                    
+                    \item[Don't-know] \marginnote{Don't-know}
+                        Any clause $(B \rightarrow H)$ in $P$ with an unifier for $A\theta$ and $B$ can be chosen.
+                        This determines the output of the derivation.
+                \end{descriptionlist}
+        \end{description}
+
+    \item[Selective linear definite resolution] \marginnote{SLD resolution}
+        Approach to avoid non-determinism when constructing a derivation.
+        \begin{description}
+            \item[Selection rule] \marginnote{Selection rule}
+                Method to select the atom in the goal to unfold (eliminates don't-care non-determinism).
+            \item[SLD tree] \marginnote{SLD tree}
+                Search tree constructed using all the possible clauses according to a selection rule
+                and visited following a search strategy (eliminates don't know non-determinism).
+        \end{description}
+
+        \begin{theorem}[Soundness]
+            Given a program $P$, a goal $G$ and a substitution $\theta$,
+            if $\theta$ is a computed answer substitution, then $P \models G\theta$.
+        \end{theorem}
+
+        \begin{theorem}[Completeness]
+            Given a program $P$, a goal $G$ and a substitution $\theta$,
+            if $P \models G\theta$, then it exists a computed answer substitution $\sigma$ such that $G\theta = G\sigma\beta$.
+        \end{theorem}
+
+        \begin{theorem}
+            If a computed answer substitution can be obtained using a selection rule $r$, 
+            it can be obtained also using a different selection rule $r'$.
+        \end{theorem}
+
+    \item[Prolog SLD] \marginnote{Prolog SLD}
+        \begin{description}
+            \item[Selection rule] Select the leftmost atom.
+            \item[Tree search strategy] Search following the order of definition of the clauses.
+        \end{description}
+
+        This results in a left-to-right, depth-first search of the SLD tree.
+        Note that this may end up in a loop.
+\end{description}
