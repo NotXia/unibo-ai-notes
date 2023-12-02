@@ -1,0 +1,163 @@
+\chapter{Data preprocessing}
+
+\section{Aggregation}
+\marginnote{Aggregation}
+
+Combining multiple attributes into a single one.
+Useful for:
+\begin{descriptionlist}
+    \item[Data reduction]
+        Reduce the number of attributes.
+
+    \item[Change of scale] 
+        View the data in a more general level of detail (e.g. from cities and regions to countries).
+
+    \item[Data stability] 
+        Aggregated data tend to have less variability.
+\end{descriptionlist}
+
+
+
+\section{Sampling}
+\marginnote{Sampling}
+Sampling can be used when the full dataset is too expensive to obtain or too expensive to process.
+Obviously a sample has to be representative.
+
+Type of sampling techniques are:
+\begin{descriptionlist}
+    \item[Simple random] \marginnote{Simple random}
+        Extraction of a single element following a given probability distribution.
+    
+    \item[With replacement] \marginnote{With replacement}
+        Multiple extractions with repetitions following a given probability distribution
+        (i.e. multiple simple random extractions).
+
+        If the population is small, the sample may underestimate the actual population.
+
+    \item[Without replacement] \marginnote{Without replacement}
+        Multiple extractions without repetitions following a given probability distribution.
+
+    \item[Stratified] \marginnote{Stratified}
+        Split the data and sample from each partition.
+        Useful when the partitions are homogenous.
+\end{descriptionlist}
+
+\begin{description}
+    \item[Sample size]
+        The sampling size represents a tradeoff between data reduction and precision.
+        In a labeled dataset, it is important to consider the probability of sampling data of all the possible classes.
+\end{description}
+
+
+
+\section{Dimensionality reduction}
+
+\begin{description}
+    \item[Curse of dimensionality] \marginnote{Curse of dimensionality}
+        Data with a high number of dimensions result in a sparse feature space
+        where distance metrics are ineffective. 
+
+    \item[Dimensionality reduction] \marginnote{Dimensionality reduction}
+        Useful to:
+        \begin{itemize}
+            \item Avoid the curse of dimensionality.
+            \item Reduce noise.
+            \item Reduce the time and space complexity of mining and learning algorithms.
+            \item Visualize multi-dimensional data.
+        \end{itemize}
+\end{description}
+
+\subsection{Principal component analysis} \marginnote{PCA} 
+Projection of the data into a lower-dimensional space that maximizes the variance of the data.
+It can be proven that this problem can be solved by finding the eigenvectors of the covariance matrix of the data.
+
+\subsection{Feature subset selection} \marginnote{Feature subset selection} 
+    Local technique to reduce dimensionality by:
+    \begin{itemize}
+        \item Removing redundant attributes.
+        \item Removing irrelevant attributes.
+    \end{itemize}
+
+    This can be achieved by:
+    \begin{descriptionlist}
+        \item[Brute force] 
+            Try all the possible subsets of the dataset.
+
+        \item[Embedded approach]
+            Feature selection is naturally done by the learning algorithm (e.g. decision trees).
+
+        \item[Filter approach]  
+            Features are filtered using domain-specific knowledge.
+
+        \item[Wrapper approaches]  
+            A mining algorithm is used to select the best features.
+    \end{descriptionlist}
+
+
+
+
+\section{Feature creation}
+\marginnote{Feature creation}
+Useful to help a learning algorithm capture data characteristics.
+Possible approaches are:
+\begin{descriptionlist}
+    \item[Feature extraction] 
+        Features extracted from the existing ones (e.g. from a picture of a face, the eye distance can be a new feature).
+
+    \item[Mapping] 
+        Projecting the data into a new feature space.
+
+    \item[New features] 
+        Add new, possibly redundant, features.
+\end{descriptionlist}
+
+
+
+\section{Data type conversion}
+
+\subsection{One-hot encoding} \marginnote{One-hot encoding}
+    A discrete feature $E \in \{ e_1, \dots, e_n \}$ with $n$ unique values is replaced with 
+    $n$ new binary features $H_{e_1}, \dots, H_{e_n}$ each corresponding to a value of $E$.
+    For each entry, if its feature $E$ has value $e_i$, then $H_{e_i} = \texttt{true}$ and the rests are \texttt{false}.
+
+\subsection{Ordinal encoding} \marginnote{Ordinal encoding}
+    A feature whose values have an ordering can be converted in a consecutive sequence of integers
+    (e.g. ["good", "neutral", "bad"] $\mapsto$ [1, 0, -1]).
+
+\subsection{Discretization} \marginnote{Discretization}
+    Convert a continuous feature to a discrete one.
+    \begin{description}
+        \item[Binarization] \marginnote{Binarization}
+            Given a continuous feature and a threshold, 
+            it can be replaced with a new binary feature that is \texttt{true} if the value is above the threshold and \texttt{false} otherwise.
+        
+        \item[Thresholding] \marginnote{Thresholding}
+            Same as binarization but using multiple thresholds.
+
+        \item[K-bins] \marginnote{K-bins}
+            A continuous feature is discretized using $k$ bins each representing an integer from $0$ to $k-1$.
+    \end{description}
+
+
+
+\section{Attribute transformation}
+Useful for normalizing features with different scales and outliers.
+
+\begin{description}
+    \item[Mapping] \marginnote{Mapping}
+        Map the domain of a feature into a new set of values (i.e. apply a function).
+
+    \item[Standardization] \marginnote{Standardization}
+        Transform a feature with Gaussian distribution into a standard distribution.
+        \[ x = \frac{x - \mu}{\sigma} \]
+
+    \item[Rescaling] \marginnote{Rescaling}
+        Map a feature into a fixed range (e.g. scale to $[0, 1]$ or $[-1, 1]$).
+
+    \item[Affine transformation] \marginnote{Affine transformation}
+        Apply a linear transformation on a feature before rescaling it.
+        This method is more robust to outliers.
+
+    \item[Normalization] \marginnote{Normalization}
+        Normalize each data row to unit norm.
+\end{description}

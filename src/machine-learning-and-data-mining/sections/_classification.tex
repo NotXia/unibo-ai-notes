@@ -269,14 +269,6 @@ a macro (unweighted) average or a class-weighted average.
         When $\kappa = 1$, there is perfect agreement ($\sum_{i}^{\texttt{classes}} TP_i = 1$), 
         when $\kappa = -1$, there is total disagreement ($\sum_{i}^{\texttt{classes}} TP_i = 0$) and
         when $\kappa = 0$, there is random agreement.
-
-
-    \item[Cost sensitive learning] \marginnote{Cost sensitive learning}
-        Assign a cost to the errors. This can be done by:
-        \begin{itemize}
-            \item Altering the proportions of the dataset by duplicating samples to reduce its misclassification.
-            \item Weighting the classes (possible in some algorithms).
-        \end{itemize}
 \end{description}
 
 
@@ -315,6 +307,35 @@ a macro (unweighted) average or a class-weighted average.
             \caption{Example of ROC curves}
         \end{figure}
 \end{description}
+
+
+\subsection{Data imbalance}
+A classifier may not perform well when predicting a minority class of the training data.
+Possible solutions are:
+\begin{descriptionlist}
+    \item[Undersampling] \marginnote{Undersampling}
+        Randomly reduce the number of example of the majority classes.
+
+    \item[Oversampling] \marginnote{Oversampling}
+        Increase the examples of the minority classes.
+
+        \begin{description}
+            \item[Synthetic minority oversampling technique (SMOTE)] \marginnote{SMOTE}
+                \begin{enumerate}
+                    \item Randomly select an example $x$ belonging to the minority class.
+                    \item Select a random neighbor $z_i$ among its $k$-nearest neighbors $z_1, \dots, z_k$.
+                    \item Synthetize a new example by selecting a random point of the feature space between $x$ and $z_i$.
+                \end{enumerate}
+        \end{description}
+
+    \item[Cost sensitive learning] \marginnote{Cost sensitive learning}
+        Assign a cost to the errors. Higher weights are assigned to minority classes.
+        This can be done by:
+        \begin{itemize}
+            \item Altering the proportions of the dataset by duplicating samples to reduce its misclassification.
+            \item Weighting the classes (possible in some algorithms).
+        \end{itemize}
+\end{descriptionlist}
 
 
 
