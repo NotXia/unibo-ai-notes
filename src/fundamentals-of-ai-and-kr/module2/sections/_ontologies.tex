@@ -58,11 +58,11 @@
 
     \item[Necessity] \marginnote{Necessity}
         Members of a category enjoy some properties 
-        (e.g. $(\text{x} \in \texttt{Car}) \rightarrow \texttt{hasWheels(x)}$).
+        (e.g. $(\text{x} \in \texttt{Car}) \Rightarrow \texttt{hasWheels(x)}$).
 
     \item[Sufficiency] \marginnote{Sufficiency}
         Sufficient conditions to be part of a category\\
-        (e.g. $\texttt{hasPlate(x)} \land \texttt{hasWheels(x)} \rightarrow \texttt{x} \in \texttt{Car}$).
+        (e.g. $\texttt{hasPlate(x)} \land \texttt{hasWheels(x)} \Rightarrow \texttt{x} \in \texttt{Car}$).
 
     \item[Category-level properties] \marginnote{Category-level properties}
         Category themselves can enjoy properties\\
@@ -70,7 +70,7 @@
 
     \item[Disjointness] \marginnote{Disjointness}
         Given a set of categories $S$, the categories in $S$ are disjoint iff they all have different objects:
-        \[ \texttt{disjoint($S$)} \iff (\forall c_1, c_2 \in S, c_1 \neq c_2 \rightarrow c_1 \cap c_2 = \emptyset) \]
+        \[ \texttt{disjoint($S$)} \iff (\forall c_1, c_2 \in S, c_1 \neq c_2 \Rightarrow c_1 \cap c_2 = \emptyset) \]
 
     \item[Exhaustive decomposition] \marginnote{Exhaustive decomposition}
         Given a category $c$ and a set of categories $S$, $S$ is an exhaustive decomposition of $c$ iff
@@ -92,7 +92,7 @@ Objects (meronyms) are part of a whole (holonym).
 
         Properties:
         \begin{descriptionlist}
-            \item[Transitivity] $\texttt{partOf(x, y)} \land \texttt{partOf(y, z)} \rightarrow \texttt{partOf(x, z)}$
+            \item[Transitivity] $\texttt{partOf(x, y)} \land \texttt{partOf(y, z)} \Rightarrow \texttt{partOf(x, z)}$
             \item[Reflexivity] $\texttt{partOf(x, x)}$
         \end{descriptionlist}
 
