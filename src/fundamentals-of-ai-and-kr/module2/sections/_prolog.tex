@@ -107,8 +107,8 @@ Therefore, mathematical expressions are terms.
 
         \begin{example} \phantom{}
             \begin{lstlisting}[language={}]
-    :- X is 2+3.
-    yes X=5
+    ?- X is 2+3.
+        yes X=5
             \end{lstlisting}
         \end{example}
 
@@ -156,8 +156,8 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
     q(2).
     r(2).
 
-    :- p(X).
-    yes X=2
+    ?- p(X).
+        yes X=2
         \end{lstlisting}
     \end{minipage}
     \begin{minipage}{0.5\textwidth}
@@ -167,8 +167,8 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
     q(2).
     r(2).
 
-    :- p(X).
-    no
+    ?- p(X).
+        no
         \end{lstlisting}
     \end{minipage}
 
@@ -255,7 +255,7 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
     city(X) :- capital(X).
     city(X) :- region_capital(X).
 
-    :- city(X), \+capital(X).
+    ?- city(X), \+capital(X).
                     \end{lstlisting}
                     its resolution succeeds with \texttt{X=bologna} as \texttt{\char`\\+capital(X)} is ground by the unification of \texttt{city(X)}.
                     \begin{center}
@@ -272,7 +272,7 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
     city(X) :- capital(X).
     city(X) :- region_capital(X).
 
-    :- \+capital(X), city(X).
+    ?- \+capital(X), city(X).
                         \end{lstlisting}
                     \end{minipage}
                     \begin{minipage}{0.5\textwidth}
@@ -284,4 +284,227 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
                     Note that \texttt{bologna} is not tried as it does not appear in the axioms of \texttt{capital}.
                 \end{example}
         \end{description}
+\end{description}
+
+
+
+\section{Meta predicates}
+
+\begin{description}
+    \item[\texttt{call/1}] \marginnote{\texttt{call/1}}
+        Given a term \texttt{T}, \texttt{call(T)} considers \texttt{T} as a predicate and evaluates it.
+        At the time of evaluation, \texttt{T} must be a non-numeric term.
+
+        \begin{example} \phantom{}
+            \begin{lstlisting}
+    p(X) :- call(X).
+    q(a).
+
+    ?- p(q(Y)).
+        yes Y=a
+            \end{lstlisting}
+        \end{example}
+
+    \item[\texttt{fail/0}] \marginnote{\texttt{fail/0}}
+        The evaluation of \texttt{fail} always fails, forcing the interpreter to backtrack.
+
+        \begin{example}[Implementation of negation as failure] \phantom{}
+            \begin{lstlisting}[language={}]
+    not(P) :- call(P), !, fail.
+    not(P).
+            \end{lstlisting}
+        \end{example} 
+        \vspace*{-1.5em}
+        Note that the cut followed by \texttt{fail} (\texttt{!, fail}) is useful to force a global failure.
+
+    \item[\texttt{bagof/3} and \texttt{setof/3}] \phantom{}
+        \begin{description}
+            \item[\texttt{bagof/3}]  \marginnote{\texttt{bagof/3}}
+                The predicate \texttt{bagof(X, P, L)} unifies \texttt{L} with a list of the instances of \texttt{X} that satisfy \texttt{P}.
+                Fails if none exists.
+            \item[\texttt{sefof/3}]  \marginnote{\texttt{sefof/3}}
+                The predicate \texttt{setof(X, P, S)} unifies \texttt{S} with a set of the instances of \texttt{X} that satisfy \texttt{P}.
+                Fails if none exists.
+                
+                In practice, for computational reasons, a list (with repetitions) might be computed.
+        \end{description}
+        
+        \begin{example} \phantom{}
+            \begin{lstlisting}[language={}]
+    p(1).
+    p(2).
+    p(1).
+
+    ?- setof(X, p(X), S).
+        yes S=[1, 2] X=X
+
+    ?- bagof(X, p(X), S).
+        yes S=[1, 2, 1] X=X
+            \end{lstlisting}
+        \end{example}
+
+        \begin{description}
+            \item[Quantification] 
+                When solving a goal, the interpreter unifies free variables with a value.
+                This may cause unwanted behaviors when using \texttt{bagof} or \texttt{setof}.
+                The \texttt{X\textasciicircum} tells the interpreter to not (permanently) bind the variable \texttt{X}.
+
+                \begin{example} \phantom{}\\
+                    \begin{minipage}{0.5\textwidth}
+                        \begin{lstlisting}[language={}]
+father(giovanni, mario).
+father(giovanni, giuseppe).
+father(mario, paola).
+
+?- setof(X, father(X, Y), S).
+    yes X=X Y=giuseppe S=[giovanni];
+        X=X Y=mario    S=[giovanni];
+        X=X Y=paola    S=[mario]
+                        \end{lstlisting}   
+                    \end{minipage}
+                    \begin{minipage}{0.5\textwidth}
+                        \begin{lstlisting}[language={}]
+father(giovanni, mario).
+father(giovanni, giuseppe).
+father(mario, paola).
+
+?- setof(X, Y^father(X, Y), S).
+    yes S=[giovanni, mario] X=X Y=Y
+                        \end{lstlisting}   
+                    \end{minipage}
+                \end{example}
+        \end{description}
+
+    \item[\texttt{findall/3}] \marginnote{\texttt{findall/3}}
+        The predicate \texttt{findall(X, P, S)} unifies \texttt{S} with a list of the instances of \texttt{X} that satisfy \texttt{P}.
+        If none exists, \texttt{S} is unified with an empty list.
+        Variables in \texttt{P} that do not appear in \texttt{X} are not bound (same as the \texttt{Y\textasciicircum} operator).
+
+        \begin{example} \phantom{}
+                \begin{lstlisting}[language={}]
+    father(giovanni, mario).
+    father(giovanni, giuseppe).
+    father(mario, paola).
+
+    ?- findall(X, father(X, Y), S).
+        yes S=[giovanni, mario] X=X Y=Y
+                \end{lstlisting}   
+        \end{example}
+
+    \item[\texttt{var/1}] \marginnote{\texttt{var/1}}
+        The predicate \texttt{var(T)} is true if \texttt{T} is a variable.    
+
+    \item[\texttt{nonvar/1}] \marginnote{\texttt{nonvar/1}}
+        The predicate \texttt{nonvar(T)} is true if \texttt{T} is not a free variable.    
+
+    \item[\texttt{number/1}] \marginnote{\texttt{number/1}}
+        The predicate \texttt{number(T)} is true if \texttt{T} is a number.    
+
+    \item[\texttt{ground/1}] \marginnote{\texttt{ground/1}}
+        The predicate \texttt{ground(T)} is true if \texttt{T} does not have free variables.    
+
+    \item[\texttt{=../2}] \marginnote{\texttt{=../2}}
+        The operator \texttt{T =.. L} unifies \texttt{L} with a list where 
+        its head is the head of \texttt{T} and the tail contains the remaining arguments of \texttt{T}
+        (i.e. puts all the components of a predicate into a list).
+        Only one between \texttt{T} and \texttt{L} may be a variable.
+
+        \begin{example} \phantom{} \\
+            \begin{minipage}{0.5\textwidth}
+                \begin{lstlisting}[language={}]
+    ?- foo(hello, X) =.. List.
+        List = [foo, hello, X]
+                \end{lstlisting}   
+            \end{minipage}
+            \begin{minipage}{0.5\textwidth}
+                \begin{lstlisting}[language={}]
+    ?- Term =.. [baz, foo(1)].
+        Term = baz(foo(1))
+                \end{lstlisting} 
+            \end{minipage}
+        \end{example}
+
+    \item[\texttt{clause/2}] \marginnote{\texttt{clause/2}}
+        The predicate \texttt{clause(Head, Body)} is true if it can unify \texttt{Head} and \texttt{Body} with an existing clause.
+        \texttt{Head} must be initialized to a non-numeric term. \texttt{Body} can be a variable or a term.
+
+        \begin{example} \phantom{}
+            \begin{lstlisting}[language={}]
+    p(1).
+    q(X, a) :- p(X), r(a).
+    q(2, Y) :- d(Y).
+
+    ?- clause(p(1), B).
+        yes B=true
+
+    ?- clause(p(X), true).
+        yes X=1
+    
+    ?- clause(q(X, Y), B).
+        yes X=_1 Y=a B=p(_1), r(a);
+            X=2 Y=_2 B=d(_2)
+            \end{lstlisting}  
+        \end{example}
+
+    \item[\texttt{assert/1}] \marginnote{\texttt{assert/1}}
+        The predicate \texttt{assert(T)} adds \texttt{T} in an unspecified position of the clauses database of Prolog.
+        In other words, it allows to dynamically add clauses.
+        \begin{descriptionlist}
+            \item[\texttt{asserta/1}] \marginnote{\texttt{asserta/1}}
+                As \texttt{assert(T)}, with insertion at the beginning of the database.
+            \item[\texttt{assertz/1}] \marginnote{\texttt{assertz/1}}
+                As \texttt{assert(T)}, with insertion at the end of the database.
+        \end{descriptionlist}
+
+        Note that \texttt{:- assert((p(X)))} quantifies \texttt{X} existentially as it is a query.
+        If it is not ground and added to the database as is, 
+        is becomes a clause and therefore quantified universally: $\forall \texttt{X}: \texttt{p(X)}$.
+
+        \begin{example}[Lemma generation] \phantom{}
+            \begin{lstlisting}[language={}]
+    fib(0, 0) :- !.
+    fib(1, 1) :- !.
+    fib(N, F) :- N1 is N-1, fib(N1, F1),
+                 N2 is N-2, fib(N2, F2),
+                 F is F1+F2,
+                 generate_lemma(fib(N, F)).
+
+    generate_lemma(T) :- clause(T, true), !.
+    generate_lemma(T) :- assert(T).
+            \end{lstlisting} 
+
+            \texttt{generate\_lemma/1} allows to add to the clauses database all the intermediate steps to compute the Fibonacci sequence
+            (similar concept to dynamic programming).
+        \end{example}
+
+    \item[\texttt{retract/1}] \marginnote{\texttt{retract/1}}
+        The predicate \texttt{retract(T)} removes from the database the first clause that unifies with \texttt{T}.
+
+    \item[\texttt{abolish/2}] \marginnote{\texttt{abolish/2}}
+        The predicate \texttt{abolish(T, n)} removes from the database all the occurrences of \texttt{T} with arity \texttt{n}.
+\end{description}
+
+
+
+\section{Meta-interpreters}
+
+\begin{description}
+    \item[Meta-interpreter] \marginnote{Meta-interpreter}
+        Interpreter for a language $L_1$ written in another language $L_2$.
+
+    \item[Prolog vanilla meta-interpreter] \marginnote{Vanilla meta-interpreter}
+        The Prolog vanilla meta-interpreter is defined as follows:
+        \begin{lstlisting}[language={}]
+    solve(true) :- !.
+    solve( (A, B) ) :- !, solve(A), solve(B).
+    solve(A) :- clause(A, B), solve(B).
+        \end{lstlisting}
+
+        In other words, the clauses state the following:
+        \begin{enumerate}
+            \item A tautology is a success.
+            \item To prove a conjunction, we have to prove both atoms.
+            \item To prove an atom \texttt{A}, 
+                we look for a clause \texttt{A :- B} that has \texttt{A} as conclusion and prove its premise \texttt{B}.
+        \end{enumerate}
 \end{description}
