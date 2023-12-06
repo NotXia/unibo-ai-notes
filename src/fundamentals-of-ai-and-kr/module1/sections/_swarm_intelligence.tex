@@ -74,8 +74,8 @@ They also tend to prefer paths marked with the highest pheromone concentration.
     \item[Pheromone update]
         After each step, the pheromone trail is updated depending on an evaporation factor $\rho \in [0, 1]$:
         \[ \tau_{ij} = (1 - \rho) \tau_{ij} + \sum_{k=1}^{n_\text{ants}} \Delta \tau_{ij}^{(k)} \]
-        $\tau_{ij}^{(k)}$ of the $k$-th ant is defined as:
-        \[ \tau_{ij}^{(k)} = \begin{cases}
+        $\Delta \tau_{ij}^{(k)}$ of the $k$-th ant is defined as:
+        \[ \Delta \tau_{ij}^{(k)} = \begin{cases}
             \frac{1}{L_k} & \text{if ant } k \text{ used the arch } (i, j) \\
             0 & \text{otherwise}
         \end{cases} \]
@@ -172,7 +172,7 @@ In a bird flock, the movement of the individuals tend to:
     \item Stay in the flock.
     \item Avoid collisions.
 \end{itemize}
-However, a model based on the these rules does not have a common objective.
+However, a model based on these rules does not have a common objective.
 
 PSO introduces as common objective the search of food.
 Each individual that finds food can:
