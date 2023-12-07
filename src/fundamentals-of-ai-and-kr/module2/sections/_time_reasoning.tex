@@ -1,4 +1,4 @@
-\chapter{Quantitative time reasoning}
+\chapter{Time reasoning}
 
 
 \section{Propositional logic}
@@ -211,4 +211,164 @@ Event calculus only captures instantaneous events that happen in given points in
                     \caption{Visual representation of temporal operators}
                 \end{figure}
         \end{description}
+\end{description}
+
+
+
+\section{Modal logics}
+
+Logic based on interacting agents with their own knowledge base.
+
+\begin{description}
+    \item[Propositional attitudes] \marginnote{Propositional attitudes}
+        Operators to represent knowledge and beliefs of an agent towards the environment and other agents.
+
+        First-order logic is not suited to represent these operators.
+
+    \item[Modal logics] \marginnote{Modal logics}
+        Modal logics have the same syntax of first-order logic with the addition of modal operators.
+
+    \item[Modal operator]
+        A modal operator takes as input the name of an agent and a sentence (instead of a term as in FOL).
+        
+        \begin{description}
+            \item[Knowledge operator] \marginnote{Knowledge operator}
+                Operator to indicate that an agent \texttt{a} knows $P$:
+                \[ \textbf{K}_\texttt{a}(P) \]
+
+            \item[Belief operator]
+            \item[Everyone knows operator]
+            \item[Common knowledge operator]
+            \item[Distribute knowledge operator]
+        \end{description}
+
+        Depending on the operators, different modal logics can be defined.
+
+    \item[Semantics]
+        An agent has a current perception of the world and considers the unknown as other possible worlds.
+        Moreover, if $P$ is true in any accessible world from the current one, the agent has knowledge of $P$.
+
+        Formally, semantics is defined on a set of primitive propositions $\phi$ 
+        using a Kripke structure $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where:
+        \begin{itemize}
+            \item $S$ is a set of states of the world.
+            \item $\pi: \phi \rightarrow 2^S$ specifies in which states each primitive proposition holds.
+            \item $K_\texttt{i} \subseteq S \times S$ is a binary relation where 
+                $(s, t) \in K_\texttt{i}$ if an agent \texttt{i} considers the world $t$ possible (accessible) from $s$.
+                In other words, when the agent is in the world $s$, it considers $t$ to be a possibly valid world.
+                Obviously, $(s, s) \in K_\texttt{i}$ for all states.
+        \end{itemize}
+
+        \begin{example}
+            Alice is in a room an tosses a coin. Bob is in another room an will enter Alice's room when the coin lands to observe the result.
+
+            We define a model $M = (S, \pi, K_\texttt{a}, K_\texttt{b})$ on $\phi$ where:
+            \begin{itemize}
+                \item $\phi = \{ \texttt{tossed}, \texttt{heads}, \texttt{tails} \}$.
+                \item $S = \{ s_0, h_1, t_1, h_2, t_2 \}$ where the possible states are divided in three stages:
+                    the initial state ($s_0$), the result of the coin flip ($h_1, t_1$) and the observation of Bob ($h_2, t_2$).
+                \item 
+                    $\pi(\texttt{tossed}) = \{ h_1, t_1, h_2, t_2 \}$\\
+                    $\pi(\texttt{heads}) = \{ h_1, h_2 \}$\\
+                    $\pi(\texttt{tails}) = \{ t_1, t_2 \}$
+                \item 
+                    $K_\texttt{a} = \{ (s, s) \mid s \in S \}$ as Alice observes everything in each world and does not have doubts.\\
+                    $K_\texttt{b} = \{ (s, s) \mid s \in S \} \cup \{ (h_1, t_1), (t_1, h_1) \}$ as Bob is unsure of what happens in the second stage.\\
+            \end{itemize}
+            \vspace*{-1em}
+            With this model, we can determine the truthness of sentences like:
+            \[ (M, s_0) \models K_\texttt{a}(\lnot\texttt{tossed}) \land K_\texttt{b}\Big(K_\texttt{a}\big(K_\texttt{b}(\lnot \texttt{heads} \land \lnot \texttt{tails})\big)\Big) \]
+            \[ (M, t_1) \models (\texttt{heads} \vee \texttt{tails}) \land \lnot\texttt{K}_\texttt{b}(\texttt{heads}) \land 
+                \lnot\texttt{K}_\texttt{b}(\texttt{tails}) \land 
+                \texttt{K}_\texttt{b}(\texttt{K}_\texttt{a}(\texttt{heads}) \vee \texttt{K}_\texttt{a}(\texttt{tails})) \]
+        \end{example}
+    
+    \item[Axioms] \phantom{}
+        \begin{description}
+            \item[Tautology] 
+                All propositional tautologies are valid.
+
+            \item[Modus ponens] 
+                If $\varphi$ and $\varphi \Rightarrow \psi$ are valid, then $\psi$ is valid.
+
+            \item[Distribution axiom] 
+                Knowledge is closed under implication:
+                \[ (K_\texttt{i}(\varphi) \land K_\texttt{i}(\varphi \Rightarrow \psi)) \Rightarrow K_\texttt{i}(\psi) \]
+
+            \item[Knowledge generalization rule] 
+                An agent knows all the tautologies:
+                \[ \forall \text{ structures } M: (M \models \varphi) \Rightarrow (M \models K_\texttt{i}(\varphi)) \]
+
+            \item[Knowledge axiom] 
+                If an agent knows $\varphi$, then $\varphi$ is true:
+                \[ K_\texttt{i}(\varphi) \Rightarrow \varphi \]
+
+                In belief logic, this axiom is substituted with $\lnot K_\texttt{i}(\texttt{false})$.
+
+            \item[Introspection axioms]
+                An agent is sure of its knowledge:
+                \begin{description}
+                    \item[Positive] $K_\texttt{i}(\varphi) \Rightarrow K_\texttt{i}(K_\texttt{i}(\varphi))$ 
+                    \item[Negative] $\lnot K_\texttt{i}(\varphi) \Rightarrow K_\texttt{i}(\lnot K_\texttt{i}(\varphi))$ 
+                \end{description}
+        \end{description}
+        
+        Different modal logics can be defined based on the valid axioms.
+\end{description}
+
+
+
+\section{Temporal logics}
+
+Logics based on modal logic with the addition of a temporal dimension.
+Time is discrete and each world is labeled with an integer. 
+The accessibility relation maps into the temporal dimension with two possible evolution alternatives:
+\begin{descriptionlist}
+    \item[Linear-time] \marginnote{Linear-time}
+        From each world, there is only one other accessible world.
+    
+    \item[Branching-time] \marginnote{Branching-time}
+        From each world, there are many accessible worlds.
+\end{descriptionlist}
+
+
+
+
+\subsection{Linear-time temporal logic}
+
+\begin{description}
+    \item[Operators] \phantom{}
+        \begin{description}
+            \item[Next ($\bigcirc \varphi$)] \marginnote{Next}
+                $\varphi$ is true in the next time step.
+
+            \item[Globally ($\square \varphi$)] \marginnote{Globally}
+                $\varphi$ is always true from now on.
+
+            \item[Future ($\diamond \varphi$)] \marginnote{Future}
+                $\varphi$ is true sometimes in the future.
+                It is equivalent to $\lnot\square(\lnot \varphi)$.
+
+            \item[Until ($\varphi \mathcal{U} \psi$)] \marginnote{Until}
+                There exists a moment (now or in the future) when $\psi$ holds. 
+                $\varphi$ is guaranteed to hold from now until $\psi$ starts to hold.
+
+            \item[Weak until ($\varphi \mathcal{W} \psi$)] \marginnote{Weak until}
+                There might be a moment when $\psi$ holds. 
+                $\varphi$ is guaranteed to hold from now until $\psi$ eventually starts to hold.
+        \end{description}
+
+    \item[Semantics]
+        Given a Kripke structure $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where states are represented using integers,
+        the semantic of the operators is the following:
+        \begin{itemize}
+            \item $(M, i) \models P \iff i \in \pi(P)$.
+            \item $(M, i) \models \bigcirc\varphi \iff (M, i+1) \models \varphi$.
+            \item $(M, i) \models \square\varphi \iff \forall j \geq i: (M, j) \models \varphi$.
+            \item $(M, i) \models \varphi \mathcal{U} \psi \iff \exists k \geq i: \big( (M, k) \models \psi \,\land\, \forall j. i \leq j \leq k: (M, j) \models \varphi \big)$.
+            \item $(M, i) \models \varphi \mathcal{W} \psi \iff ((M, i) \models \varphi \mathcal{U} \psi) \vee ((M, i) \models \square\varphi)$.
+        \end{itemize}
+
+    \item[Model checking] \marginnote{Model checking}
+        Methods to prove properties of linear-time temporal logic based finite state machines or distributed systems.
 \end{description}
