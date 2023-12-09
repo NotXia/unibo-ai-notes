@@ -1,0 +1,192 @@
+\chapter{Forward reasoning}
+
+\begin{description}
+    \item[Logical implication] \marginnote{Logical implication}
+        Simplest form of rule:
+        \[ p_1, \dots, p_n \Rightarrow q_1, \dots, q_m \]
+        where:
+        \begin{descriptionlist}
+            \item[Left hand side (LHS)] $p_1, \dots, p_n$
+            \item[Right hand side (RHS)] $q_1, \dots, q_m$
+        \end{descriptionlist}
+    
+    \item[Modus ponens] \marginnote{Modus ponens}
+        If $A$ and $A \Rightarrow B$ are true, then we can derive that $B$ is true.
+
+    \item[Production rules] \marginnote{Production rules}
+        Approach that allows to dynamically add facts to the knowledge base (differently from backward reasoning in Prolog).
+
+        When a fact is added, the reasoning mechanism is triggered:
+        \begin{descriptionlist}
+            \item[Match] Search for the rules whose LHS match the fact and (arbitrarily) decide which to trigger.
+            \item[Conflict resolution] Triggered rules are put in an agenda where conflicts are solved.
+            \item[Execution] The RHS of the triggered rules are executed and the effects are performed.
+                The knowledge base is updated with the (copies of the) new facts.
+        \end{descriptionlist}
+        These steps are executed until quiescence as the execution step may add new facts.
+
+    \item[Working memory] \marginnote{Working memory}
+        Data structure that contains the currently valid set of facts and rules.
+
+        The performance of a production rules system depends on the efficiency of the working memory.
+\end{description}
+
+
+
+\section{RETE algorithm}
+
+RETE is an efficient algorithm for implementing rule-based systems.
+
+\subsection{Match}
+\begin{description}
+    \item[Pattern] \marginnote{Pattern}
+        The LHS of a rule is expressed as a conjunction of patterns (conditions).
+
+        A pattern can test:
+        \begin{descriptionlist}
+            \item[Intra-element features] Features that can be tested directly on a fact.
+            \item[Inter-element features] Features that involves more facts.
+        \end{descriptionlist}
+
+    \item[Conflict set] \marginnote{Conflict set}
+        Set of all possible instantiations of production rules.
+        Each rule is described as:
+        \[ \langle \text{Rule}, \text{ list of facts matched by its LHS} \rangle \]
+
+        Instead of naively checking a rule over all the facts, each rule has associated the facts that match its LHS patterns.
+
+    \item[LHS network]
+        Compile the LHSs into networks:
+        \begin{descriptionlist}
+            \item[Alpha-network] \marginnote{Alpha-network}
+                For intra-element features.
+                The outcome is stored into alpha-memories and used by the beta network.
+
+            \item[Beta-network] \marginnote{Beta-network}
+                For inter-element features.
+                The outcome is stored into beta-memories and corresponds to the conflict set.
+        \end{descriptionlist}
+        If more rules use the same pattern, the node of that pattern is reused and possibly outputting to different memories.
+\end{description}
+
+
+\subsection{Conflict resolution}
+RETE allows different strategies to handle conflicts:
+\begin{itemize}
+    \item Rule priority.
+    \item Rule ordering.
+    \item Temporal attributes.
+    \item Rule complexity.
+\end{itemize}
+The best approach depends on the use case.
+
+
+\subsection{Execution}
+By default, RETE executes all the rules in the agenda and 
+then checks possible side effects that modified the working memory in a second moment.
+
+Note that it is very easy to create loops.
+
+
+
+\section{Drools framework}
+\marginnote{Drools}
+
+RETE-based rule engine that uses Java.
+
+\begin{description}
+    \item[Rule] A rule has structure:
+        \begin{lstlisting}[language={java}]
+            rule "rule name"
+                // Rule attributes
+            when
+                // LHS
+            then
+                // RHS
+            end
+        \end{lstlisting}
+
+    \item[Quantifiers] \phantom{}
+        \begin{description}
+            \item[\texttt{exists P(...)}] 
+                Trigger the rule once if at least a fact \texttt{P(...)} exists in the working memory. 
+            \item[\texttt{forall P(...)}] 
+                Trigger the rule if all the instances of \texttt{P(...)} match.
+                The rule can be executed multiple times. 
+            \item[\texttt{not P(...)}] 
+                Trigger the rule if the fact \texttt{P(...)} does not exist in the working memory. 
+                Note that a negation in different positions might result in different behaviors.
+        \end{description}
+
+    \item[Consequences] 
+        Drools allows two types of RHS operations:
+        \begin{description}
+            \item[Logic] \phantom{}
+                \begin{description}
+                    \item[Insert] 
+                        Create a new fact and insert it in the working memory.
+                        Existing rules may trigger if they match the new fact.
+
+                        If the conditions of the rule that inserted a fact are no longer true, the inserted fact is automatically retracted.
+
+                    \item[Retract]  Remove a fact from the working memory.
+                    
+                    \item[Modify] 
+                        A combination of retract and insert executed consecutively.
+                        The \texttt{no-loop} keyword can be used to avoid loops.
+                \end{description}
+
+            \item[Non-logic]
+                Execution of Java code or external side effects.
+        \end{description}
+
+    \item[Conflict resolution] \phantom{}
+        \begin{description}
+            \item[Salience score]
+            \item[Agenda group]
+                Associate a group to each rule. The method \texttt{setFocus} can be used to prioritize certain groups.
+            \item[Activation group]
+                Only one rule among the ones with the same activation group is executed (i.e. mutual exclusion).
+        \end{description}
+\end{description}
+
+
+
+\section{Complex event processing}
+
+\begin{description}
+    \item[Event] \marginnote{Event}
+        Information with a description and temporal information (instantaneous or with a duration).
+
+    \item[Simple event] \marginnote{Simple event}
+        Event detected outside an event processing system (e.g. a sensor). It does not provide any information alone.
+
+    \item[Complex event] \marginnote{Complex event}
+        Event generated by an event processing system and provides higher informative payload.
+
+    \item[Complex event processing (CEP)] \marginnote{Complex event processing}
+        Paradigm for dealing with a large amount of information.
+        Takes as input different types of events and outputs durative events.
+\end{description}
+
+
+\subsection{Drools}
+
+Drools supports CEP by representing events as facts.
+
+\begin{description}
+    \item[Clock]
+        Mechanism to specify time conditions to reason over temporal intervals.
+
+    \item[Sliding windows] \phantom{}
+        \begin{description} 
+            \item[Time-based window] Select events within a time slice. 
+            \item[Length-based window] Select the last $n$ events.
+        \end{description}
+
+    \item[Expiration]
+        Mechanism to specify an expiration time to events and discard them from the working memory.
+
+    \item[Temporal reasoning]
+        Allen's temporal operators for temporal reasoning.
+\end{description}
