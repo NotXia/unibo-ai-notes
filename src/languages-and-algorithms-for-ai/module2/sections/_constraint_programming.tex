@@ -1,0 +1,123 @@
+\chapter{Constraint programming}
+
+\begin{description}
+    \item[Class of problems] \phantom{}
+        \begin{description}
+            \item[Constraint satisfaction problem (CSP)] \marginnote{Constraint satisfaction problem}
+                Defined by:
+                \begin{itemize}
+                    \item A finite set of variables ${X_1, \dots, X_n}$.
+                    \item A domain for each variable $D(X_1), \dots, D(X_n)$.
+                    \item A set of constraints $\{ C_1, \dots, C_m \}$
+                \end{itemize}
+                A solution is an assignment to all the variables while satisfying the constraints.
+
+            \item[Constraint optimization problem (COP)] \marginnote{Constraint optimization problem}
+                Extension of a constraint satisfaction problem with an objective function with domain $D$:
+                \[ f: D(X_1) \times \dots \times D(X_n) \rightarrow D \]
+                A solution is a CSP solution that optimizes $f$.
+        \end{description}
+
+    \item[Class of languages] \phantom{}
+        \begin{description}
+            \item[Constraint logic programming (CLP)] \marginnote{Constraint logic programming}
+                Add constraints and solvers to logic programming.
+                Generally more efficient than plain logic programming.
+
+            \item[Imperative languages] \marginnote{Imperative languages}
+                Add constraints and solvers to imperative languages (e.g. MiniZinc).
+        \end{description}
+\end{description}
+
+
+
+\section{Constraint logic programming (CLP)}
+
+
+\subsection{Syntax}
+
+\begin{description}
+    \item[Atom] \marginnote{Atom}
+        $A := p(t_1, \dots, t_n)$, for $n \geq 0$. $p$ is a predicate.
+    \item[Constraint] \marginnote{Constraint}
+        $C := c(t_1, \dots, t_n) \mid C_1 \land C_2$, for $n \geq 0$. $c$ is an atomic constraint.
+    \item[Goal] \marginnote{Goal}
+        $G := \top \mid \bot \mid A \mid C \mid G_1 \land G_2$ 
+    \item[Constraint logic clause] \marginnote{Constraint logic clause}
+        $K := A \leftarrow G$ 
+    \item[Constraint logic program] \marginnote{Constraint logic program}
+        $P := K_1 \dots K_m$, for $m \geq 0$ 
+\end{description}
+
+
+\subsection{Semantics}
+
+\begin{description}
+    \item[Transition system] \marginnote{Transition system}
+        \phantom{}
+        \begin{description}
+            \item[State] Pair $\langle G, C \rangle$ where $G$ is a goal and $C$ is a constraint.
+                \begin{description}
+                    \item[Initial state] $\langle G, \top \rangle$ 
+                    \item[Successful final state] $\langle \top, C \rangle$ with $C \neq \bot$
+                    \item[Failed final state] $\langle G, \bot \rangle$
+                \end{description}
+
+            \item[Transition]
+                Starting from the state $\langle A \land G, C \rangle$ of a program $P$, a transition on the atom $A$ can result in:
+                \begin{description}
+                    \item[Unfold] \marginnote{Unfold}
+                        If there exists a clause $(B \leftarrow H)$ in $P$ and 
+                        an assignment $(B \doteq A)$ such that $((B \doteq A) \land C)$ is still valid,
+                        then we have a transition $\langle A \land G, C \rangle \mapsto \langle H \land G, (B \doteq A) \land C \rangle$.
+
+                        In other words, we want to develop an atom $A$ and the current constraints are denoted as $C$.
+                        We look for a clause whose head equals $A$, applying an assignment if needed.
+                        If this is possible, we transit from solving $A$ to solving the body of the clause and 
+                        add the assignment to the set of active constraints.
+
+                    \item[Failure] \marginnote{Failure}
+                        If there are no clauses $(B \leftarrow H)$ with a valid assignment $((B \doteq A) \land C)$,
+                        then we have a transition $\langle A \land G, C \rangle \mapsto \langle \bot, \bot \rangle$.
+                \end{description}
+
+                Moreover, starting from the state $\langle C \land G, D_1 \rangle$ of a program $P$, a transition on the constraint $C$ can result in:
+                \begin{description}
+                    \item[Solve] \marginnote{Solve}
+                        If $(C \land D_1) \iff D_2$ holds,
+                        then we have a transition $\langle C \land G, D_1 \rangle \mapsto \langle G, D_2 \rangle$.
+
+                        In other words, we want to develop a constraint $C$ and the current constraints are denoted as $D_1$.
+                        If $(C \land D_1)$ is valid, we call it $D_2$ and continue solving the rest of the goal constrained to $D_2$.
+                \end{description}
+
+            \item[Non-determinism]
+                As in logic programming, there is don't-care and don't-know non-determinism. 
+                A SLD search tree is also used.
+        \end{description} 
+
+    \item[Derivation strategies] \phantom{}
+        \begin{description}
+            \item[Generate-and-test] \marginnote{Generate-and-test}
+                Strategy adopted by logic programs.
+                Every possible assignment to the variables are generated and tested.
+                
+                The workflow is the following:
+                \begin{enumerate}
+                    \item Determine domain.
+                    \item Make an assignment to each variable.
+                    \item Test the constraints.
+                \end{enumerate}
+
+            \item[Constrain-and-generate] \marginnote{Constrain-and-generate}
+                Strategy adopted by constraint logic programs.
+                Exploit facts to reduce the search space.
+
+                The workflow is the following:
+                \begin{enumerate}
+                    \item Determine domain.
+                    \item Restrict the domain following the constraints.
+                    \item Make an assignment to each variable.
+                \end{enumerate}
+        \end{description}
+\end{description}
