@@ -18,7 +18,7 @@ the opponent as the entity that (optimally) minimizes (\textsc{Min}) the utility
     \caption{Example of game tree with propagated scores}
 \end{figure}
 
-In a game tree, each level represents the actions a that single player can do.
+In a game tree, each level represents the actions that a single player can do.
 In minimax, the levels where the player plays are the \textsc{Max} levels, 
 while the levels of the opponent are the \textsc{Min} levels.
 
@@ -70,7 +70,7 @@ an iteration of the minimax algorithm can be described as follows:
 \end{center}
 
 \begin{algorithm}
-\caption{Minimax algorithm}
+\caption{Minimax}
 \begin{lstlisting}[mathescape=true]
     def minimax(node, max_depth, who_is_next):
         if node.isLeaf() or max_depth == 0: 

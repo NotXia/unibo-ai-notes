@@ -148,7 +148,7 @@ The algorithm has the following phases:
 \end{descriptionlist}
 
 \begin{algorithm}
-\caption{ABC algorithm}
+\caption{ABC}
 \begin{lstlisting}[mathescape=true]
     def abcAlgorithm(problem):
         initPhase()
@@ -206,27 +206,26 @@ Each particle is described by:
 \end{itemize}
 
 \begin{algorithm}
-\caption{PSO algorithm}
+\caption{PSO}
 \begin{lstlisting}[mathescape=true]
-    def pco(f, n_particles, $\vec{l}$, $\vec{u}$, $\omega$, $\varphi_p$, $\varphi_g$):
+    def pso(f, n_particles, $\vec{l}$, $\vec{u}$, $\omega$, $\varphi_p$, $\varphi_g$):
         particles = [Particle()] * n_particles
-        global_best = None
+        gb = None # Global best
         for particle in particles:
             particle.value = randomUniform($\vec{l}$, $\vec{u}$) # Search space bounds
             particle.vel = randomUniform($-\vert \vec{u}-\vec{l} \vert$, $\vert \vec{u}-\vec{l} \vert$)
             particle.best = particle.value
-            if f(particles.best) < f(g): g = particles.best
+            if f(particles.best) < f(gb): gb = particles.best
 
         while not terminationConditions():
             for particle in particles:
                 $r_p$, $r_g$ = randomUniform(0, 1), randomUniform(0, 1)
                 $\vec{x}_i$, $\vec{p}_i$, $\vec{v}_i$ = particle.value, particle.best, particle.vel
-                $\vec{g}$ = global_best
-                particle.vel = $\omega$*$\vec{v}_i$ + $\varphi_p$*$r_p$*($\vec{p}_i$-$\vec{x}_i$) + $\varphi_g$*$r_g$*($\vec{g}$-$\vec{x}_i$)
+                particle.vel = $\omega$*$\vec{v}_i$ + $\varphi_p$*$r_p$*($\vec{p}_i$-$\vec{x}_i$) + $\varphi_g$*$r_g$*(gb-$\vec{x}_i$)
                 particle.value = particle.value + particle.vel
                 if f(particle.value) < f(particle.best):
                     particle.best = particle.value
-                    if f(particle.best) < f(g): g = particle.best
+                    if f(particle.best) < f(gb): gb = particle.best
 \end{lstlisting}
 \end{algorithm}
 

@@ -27,13 +27,13 @@
     \item[Planner] \marginnote{Planner}
         Process to decide the actions that solve a planning problem.
         In this phase, actions are considered:
-        \begin{description}
+        \begin{descriptionlist}
             \item[Non decomposable] 
                 An action is atomic (it starts and finishes).
                 Actions interact with each other by reaching sub-goals.
             \item[Reversible] 
                 Choices are backtrackable.
-        \end{description}
+        \end{descriptionlist}
 
         A planner can have the following properties:
         \begin{descriptionlist}
@@ -99,7 +99,7 @@ The direction of the search can be:
         \]
 
         \begin{example}[Moving blocks]
-            Given the action \texttt{unstack(X, Y)} with:
+            Given the action \texttt{UNSTACK(X, Y)} with:
             \[
                 \begin{split}
                     \texttt{d\_list} &= \{ \texttt{handempty}, \texttt{on(X, Y)}, \texttt{clear(X)} \} \\
@@ -109,10 +109,10 @@ The direction of the search can be:
             We have that:
             \[
                 \begin{split}
-                    \texttt{regr[holding(b), unstack(b, Y)]} &= \texttt{true} \\
-                    \texttt{regr[handempty, unstack(X, Y)]}  &= \texttt{false} \\
-                    \texttt{regr[ontable(c), unstack(X, Y)]} &= \texttt{ontable(c)} \\
-                    \texttt{regr[clear(c), unstack(X, Y)]} &= \begin{cases}
+                    \texttt{regr[holding(b), UNSTACK(b, Y)]} &= \texttt{true} \\
+                    \texttt{regr[handempty, UNSTACK(X, Y)]}  &= \texttt{false} \\
+                    \texttt{regr[ontable(c), UNSTACK(X, Y)]} &= \texttt{ontable(c)} \\
+                    \texttt{regr[clear(c), UNSTACK(X, Y)]} &= \begin{cases}
                         \texttt{true} & \text{if \texttt{Y}=\texttt{c}} \\
                         \texttt{clear(c)} & \text{otherwise}
                     \end{cases}
@@ -149,15 +149,15 @@ The main concepts are:
         \[ \texttt{pre-conditions} \rightarrow \texttt{post-conditions} \]
         Applying the equivalence $A \rightarrow B \equiv \lnot A \vee B$, actions can be described by means of disjunctions.
         \begin{example}[Moving blocks]
-            The action \texttt{stack(X, Y)} has pre-conditions \texttt{holding(X)} and \texttt{clear(Y)}, and
+            The action \texttt{STACK(X, Y)} has pre-conditions \texttt{holding(X)} and \texttt{clear(Y)}, and
             post-conditions \texttt{on(X, Y)}, \texttt{clear(X)} and \texttt{handfree}.
             Its representation in Green's formulation is:
             \[
                 \begin{split}
                     \texttt{holding(X, S)} \land \texttt{clear(Y, S)} &\rightarrow \\
-                    &\texttt{on(X, Y, do(stack(X, Y), s))} \land \\
-                    &\texttt{clear(X, do(stack(X, Y), s))} \land \\
-                    &\texttt{handfree(do(stack(X, Y), s))} \\
+                    &\texttt{on(X, Y, do(STACK(X, Y), s))} \land \\
+                    &\texttt{clear(X, do(STACK(X, Y), s))} \land \\
+                    &\texttt{handfree(do(STACK(X, Y), s))} \\
                 \end{split}
             \]
         \end{example}
@@ -166,7 +166,7 @@ The main concepts are:
         Besides the effects of actions, each state also have to define for all non-changing fluents their frame axioms.
         If the problem is complex, the number of frame axioms becomes unreasonable.
         \begin{example}[Moving blocks]
-            \[ \texttt{on(U, V, S)}, \texttt{diff(U, X)} \rightarrow \texttt{on(U, V, do(move(X, Y, Z), S))} \]
+            \[ \texttt{on(U, V, S)} \land \texttt{diff(U, X)} \rightarrow \texttt{on(U, V, do(MOVE(X, Y, Z), S))} \]
         \end{example}
 \end{descriptionlist}
 
@@ -194,33 +194,35 @@ The main concepts are:
         \includegraphics[width=\linewidth]{img/_moving_block_example_green.pdf}
     \end{minipage}\\[0.5em]
 
-    For simplicity, we only consider the action \texttt{move(X, Y, Z)} that moves \texttt{X} from \texttt{Y} to \texttt{Z}.
+    For simplicity, we only consider the action \texttt{MOVE(X, Y, Z)} that moves \texttt{X} from \texttt{Y} to \texttt{Z}.
     It is defined as:
     \[ 
         \begin{split}
             \texttt{clear(X, S)}&, \texttt{clear(Z, S)}, \texttt{on(X, Y, S)}, \texttt{diff(X, Z)} \rightarrow \\
-            &\texttt{clear(Y, do(move(X, Y, Z), S))}, \texttt{on(X, Z, do(move(X, Y, Z), S))}
+            &\texttt{clear(Y, do(MOVE(X, Y, Z), S))}, \texttt{on(X, Z, do(MOVE(X, Y, Z), S))}
         \end{split}
     \]
     This action can be translated into the following effect axioms:
     \[ 
         \begin{split}
             \lnot\texttt{clear(X, S)} &\vee \lnot\texttt{clear(Z, S)} \vee \lnot\texttt{on(X, Y, S)} \vee \lnot\texttt{diff(X, Z)} \vee \\
-            &\texttt{clear(Y, do(move(X, Y, Z), S))}
+            &\texttt{clear(Y, do(MOVE(X, Y, Z), S))}
         \end{split}
     \]
     \[ 
         \begin{split}
             \lnot\texttt{clear(X, S)} &\vee \lnot\texttt{clear(Z, S)} \vee \lnot\texttt{on(X, Y, S)} \vee \lnot\texttt{diff(X, Z)} \vee \\
-            &\texttt{on(X, Z, do(move(X, Y, Z), S))}
+            &\texttt{on(X, Z, do(MOVE(X, Y, Z), S))}
         \end{split}
     \]
 \end{example}
 
-Given the goal \texttt{on(a, b, s1)}, we prove that $\lnot\texttt{on(a, b, s1)}$ leads to an inconsistency.
-We decide to make the following substitutions: 
-\[ \{ \texttt{X}/\texttt{a}, \texttt{Z}/\texttt{b}, \texttt{s1}/\texttt{do(move(a, Y, b), S)} \} \]
-The premise of \texttt{move} leads to an inconsistency (when applying \texttt{move} its premise is false):
+Given the goal \texttt{on(a, b, s1)}, we look for an action whose effects together with $\lnot\texttt{on(a, b, s1)}$ lead to an inconsistency.
+We decide to achieve this by using the action \texttt{MOVE(a, Y, b)}, 
+therefore making the following substitutions: 
+\[ \{ \texttt{X}/\texttt{a}, \texttt{Z}/\texttt{b}, \texttt{s1}/\texttt{do(MOVE(a, Y, b), S)} \} \]
+Using the disjunctive formulation (effect axioms), we need to show that the negated preconditions are false
+(therefore, making the action applicable):
 \begin{center}
     \begin{tabular}{c|c|c|c}
         $\lnot\texttt{clear(a, S)}$ & $\lnot\texttt{clear(b, S)}$ & $\lnot\texttt{on(a, Y, S)}$ & $\lnot\texttt{diff(a, b)}$ \\
@@ -228,7 +230,7 @@ The premise of \texttt{move} leads to an inconsistency (when applying \texttt{mo
             & False with $\{ \texttt{S}/\texttt{s0}, \texttt{Y}/\texttt{d} \}$ & False
     \end{tabular}
 \end{center}
-Therefore, the substitution $\{ \texttt{s1}/\texttt{do(move(a, Y, b), S)} \}$ defines the plan to reach the goal \texttt{on(a, b, s1)}.
+Therefore, the action \texttt{do(MOVE(a, d, b), s0)} defines the plan to reach the goal \texttt{on(a, b, s1)}.
 
 
 \subsubsection{Kowalsky's formulation}
@@ -269,7 +271,7 @@ In the Kowalsky's formulation, each action requires a frame assertion (in Green'
 \end{example}
 
 \begin{example}[Moving blocks]
-    The action \texttt{unstack(X, Y)} has:
+    The action \texttt{UNSTACK(X, Y)} has:
     \begin{descriptionlist}
         \item[Pre-conditions] \texttt{on(X, Y)}, \texttt{clear(X)} and \texttt{handempty}
         \item[Effects] \phantom{}
@@ -285,20 +287,20 @@ In the Kowalsky's formulation, each action requires a frame assertion (in Green'
             \[ 
                 \begin{split}
                     \texttt{holds(on(X, Y), S)}&, \texttt{holds(clear(X), S)}, \texttt{holds(handempty, S)} \rightarrow \\
-                    &\texttt{pact(unstack(X, Y), S)} 
+                    &\texttt{pact(UNSTACK(X, Y), S)} 
                 \end{split}
             \]
         
         \item[Effects] (use add-list)
-            \[ \texttt{holds(holding(X), do(unstack(X, Y), S))} \]
-            \[ \texttt{holds(clear(Y), do(unstack(X, Y), S))} \]
+            \[ \texttt{holds(holding(X), do(UNSTACK(X, Y), S))} \]
+            \[ \texttt{holds(clear(Y), do(UNSTACK(X, Y), S))} \]
         
         \item[Frame condition] (uses delete-list)
             \[ 
                 \begin{split}
                     \texttt{holds(V, S)}&, \texttt{V} \neq \texttt{on(X, Y)}, \texttt{V} \neq \texttt{clear(X)}, \texttt{V} \neq \texttt{handempty}
                     \rightarrow \\
-                    & \texttt{holds(V, do(unstack(X, Y), S))}
+                    & \texttt{holds(V, do(UNSTACK(X, Y), S))}
                 \end{split}
             \]
     \end{descriptionlist}
@@ -332,7 +334,7 @@ STRIPS uses two data structures:
     \item[Current state] Represents the forward application of the actions found using the goal stack.
 \end{descriptionlist}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{STRIPS}
 \begin{lstlisting}[mathescape=true]
 def strips(problem):
@@ -365,17 +367,17 @@ def strips(problem):
 
 \begin{example}[Moving blocks] 
     \begin{center}
-        \includegraphics[trim={0 16cm 0 0}, clip, width=0.85\textwidth]{img/_strips_example.pdf}
+        \includegraphics[trim={0 32.2cm 0 0}, clip, width=0.85\textwidth]{img/_strips_example.pdf}
     \end{center}
     \begin{center}
-        \includegraphics[trim={0 0 0 33.8cm}, clip, width=0.85\textwidth]{img/_strips_example.pdf}
+        \includegraphics[trim={0 0 0 17.5cm}, clip, width=0.85\textwidth]{img/_strips_example.pdf}
     \end{center}
 \end{example}
 
-Since there are non-deterministic choices, the search space may become very large.
-Heuristics may be used to avoid this.
+Since there are non-deterministic choices, the search space might become very large.
+Heuristics can be used to avoid this.
 
-Conjunction of goals are solved separately, but this could lead to the \marginnote{Sussman anomaly} \textbf{Sussman anomaly} 
+Conjunction of goals are solved separately, but this can lead to the \marginnote{Sussman anomaly} \textbf{Sussman anomaly} 
 where a sub-goal destroys what another sub-goal has done.
 For this reason, when a conjunction is encountered, it is not immediately popped from the goal stack
 and is left as a final check.
@@ -398,7 +400,7 @@ A non-linear plan is represented by:
         between actions.
     \item[Causal links] \marginnote{Causal links}
         triplet $\langle S_i, S_j, c \rangle$ where $S_i$ and $S_j$ are actions and $c$ is a sub-goal.
-        $c$ should be the effect of $S_i$ and precondition of $S_j$.
+        $c$ should be the effects of $S_i$ and preconditions of $S_j$.
 
         Causal links represent causal relations between actions (i.e. interaction between sub-goals): 
         to execute $S_j$, the effect $c$ of $S_i$ is required first.
@@ -635,7 +637,7 @@ MTC refinement methods are:
         \begin{enumerate}
             \item Insert a new action in the plan.
             \item Add an ordering constraint.
-            \item Do a variable assignement.
+            \item Do a variable assignment.
         \end{enumerate}
 
     \item[Promotion] \marginnote{Promotion}
@@ -664,7 +666,8 @@ Different meta-level searches are executed to generate meta-level plans that are
 \marginnote{ABSTRIPS}
 In ABSTRIPS, a criticality value is assigned to each precondition based on the complexity of its achievement.
 
-At each level, a plan is found assuming that the preconditions corresponding to lower levels of criticality are true.
+At each level, a plan is found assuming that the preconditions corresponding to lower levels of criticality are true
+(i.e. solve harder goals first).
 At the next level, the previously found plan and its preconditions are used as starting point in the goal stack.
 
 \begin{algorithm}
@@ -755,7 +758,7 @@ It generates a different plan for each source of uncertainty and therefore has e
         \includegraphics[width=0.65\textwidth]{img/_conditional_planning.pdf}
     \end{center}
 
-    When executing a sensing action, a copy of the goal is generated for each possible scenario.
+    When executing a sensing action (\texttt{CHECK(tire1)}), a copy of the goal is generated for each possible scenario.
 \end{example}
 
 
@@ -968,7 +971,7 @@ def extractSolution(graph, goal):
         \item \texttt{a} and \texttt{b} are objects.
         \item \texttt{l} and \texttt{p} are locations.
     \end{itemize}
-    and the initial state is:
+    and the initial state:
     \begin{center}
         \texttt{at(a, l)} $\cdot$ \texttt{at(b, l)} $\cdot$ \texttt{at(r, l)} $\cdot$ \texttt{hasFuel(r)} 
     \end{center}
