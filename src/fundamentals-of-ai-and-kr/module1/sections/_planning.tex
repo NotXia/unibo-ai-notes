@@ -89,7 +89,7 @@ The direction of the search can be:
 
         Goal regression is used to reduce the goal into sub-goals.
         Given a (sub-)goal $G$ and a rule (action) $R$ with delete-list (states that are false after the action) \texttt{d\_list}
-        and add-list (states that are true after the action) \texttt{a\_list}, regression of $G$ through $R$ is define as:
+        and add-list (states that are true after the action) \texttt{a\_list}, regression of $G$ through $R$ is defined as:
         \[
             \begin{split}
                 \texttt{regr[$G$, $R$]} &= \texttt{true} \text{ if } G \in \texttt{a\_list} \text{ (i.e. regression possible)} \\
@@ -400,7 +400,7 @@ A non-linear plan is represented by:
         between actions.
     \item[Causal links] \marginnote{Causal links}
         triplet $\langle S_i, S_j, c \rangle$ where $S_i$ and $S_j$ are actions and $c$ is a sub-goal.
-        $c$ should be the effects of $S_i$ and preconditions of $S_j$.
+        $c$ should be in the effects of $S_i$ and in the preconditions of $S_j$.
 
         Causal links represent causal relations between actions (i.e. interaction between sub-goals): 
         to execute $S_j$, the effect $c$ of $S_i$ is required first.
@@ -786,7 +786,7 @@ The steps the algorithm does are:
 
 \section{Graphplan}
 \marginnote{Graphplan}
-Graphplan is an off-line, least-commitment planner (closed-world assumption) that
+Graphplan is an off-line, least-commitment, closed-world planner that
 constructs a partially ordered set of actions through a planning graph based on time steps.
 
 The planner is correct, complete, optimal and computationally efficient.
@@ -832,22 +832,27 @@ The planner is correct, complete, optimal and computationally efficient.
         \end{descriptionlist}
 
     \item[Inconsistency] \marginnote{Inconsistency}
-        Actions and propositions can be inconsistent in the same time step.
+        Actions and propositions in the same time step can be inconsistent.
         Possible causes are:
         \begin{descriptionlist}
-            \item[Inconsistent effects] \marginnote{Inconsistent effects}
-                An action negates the effects of another one.
-            
-            \item[Interference] \marginnote{Interference}
-                An action deletes the preconditions of another one.
-           
-            \item[Competing needs] \marginnote{Competing needs} 
-                Propositions that cannot appear together either 
+            \item[Actions] \phantom{}
+                \begin{description}
+                    \item[Inconsistent effects] \marginnote{Inconsistent effects}
+                        An action negates the effects of another one.
+                    
+                    \item[Interference] \marginnote{Interference}
+                        An action deletes the preconditions of another one.
+                
+                    \item[Competing needs] \marginnote{Competing needs} 
+                        Two actions have mutually exclusive preconditions.
+        
+                    \item[Domain dependent] 
+                \end{description}
+
+            \item[Propositions] \marginnote{Inconsistent propositions}
+                Propositions are inconsistent when they cannot appear together either 
                 because one negates the other or
                 because they can be reached only through mutually exclusive paths.
-                (i.e. two actions have mutually exclusive preconditions).
-
-            \item[Domain dependent] 
         \end{descriptionlist}
 
     \item[Plan extraction] \marginnote{Plan extraction}
@@ -994,18 +999,17 @@ def extractSolution(graph, goal):
             $\begin{cases}\texttt{MOVE(r, l, p)} \\ \texttt{LOAD(b, r)}\end{cases} \text{for } \texttt{at(r, l)}$
     \end{descriptionlist}
 
-    The inconsistencies of at $t=2$ are:
-    \begin{descriptionlist}
-        \item[Competing needs] \phantom{}\\[0.5em]
-            Consequence of the add and delete list of each action:\\[0.3em]
-                $\begin{cases}\texttt{at(a, l)} \\ \texttt{in(r, a)}\end{cases}$,
-                $\begin{cases}\texttt{at(b, l)} \\ \texttt{in(r, b)}\end{cases}$,
-                $\begin{cases}\texttt{at(r, l)} \\ \texttt{at(r, p)}\end{cases}$,
-                $\begin{cases}\texttt{at(r, p)} \\ \texttt{hasFuel(r)}\end{cases}$\\[0.5em]
-            Consequence of the add list of interfering actions (mutual exclusion):\\[0.3em]
-                $\begin{cases}\texttt{in(r, a)} \\ \texttt{at(r, p)}\end{cases}$,
-                $\begin{cases}\texttt{in(r, b)} \\ \texttt{at(r, p)}\end{cases}$
-    \end{descriptionlist}
+    The inconsistencies of propositions at $t=2$ are:
+    \begin{itemize}
+        \item Consequence of the add and delete list of each action:\\[0.3em]
+            $\begin{cases}\texttt{at(a, l)} \\ \texttt{in(r, a)}\end{cases}$,
+            $\begin{cases}\texttt{at(b, l)} \\ \texttt{in(r, b)}\end{cases}$,
+            $\begin{cases}\texttt{at(r, l)} \\ \texttt{at(r, p)}\end{cases}$,
+            $\begin{cases}\texttt{at(r, p)} \\ \texttt{hasFuel(r)}\end{cases}$\\[0.5em]
+        \item Consequence of the add list of interfering actions (mutual exclusion):\\[0.3em]
+            $\begin{cases}\texttt{in(r, a)} \\ \texttt{at(r, p)}\end{cases}$,
+            $\begin{cases}\texttt{in(r, b)} \\ \texttt{at(r, p)}\end{cases}$
+    \end{itemize}
 
     Note that because of the mutually exclusive propositions at $t=2$, 
     at $t=3$ the actions \texttt{UNLOAD($\cdot$, p)} cannot be performed.
