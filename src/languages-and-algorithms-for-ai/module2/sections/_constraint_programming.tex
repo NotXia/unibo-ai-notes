@@ -25,7 +25,7 @@
                 Generally more efficient than plain logic programming.
 
             \item[Imperative languages] \marginnote{Imperative languages}
-                Add constraints and solvers to imperative languages (e.g. MiniZinc).
+                Add constraints and solvers to imperative languages.
         \end{description}
 \end{description}
 
@@ -119,5 +119,81 @@
                     \item Restrict the domain following the constraints.
                     \item Make an assignment to each variable.
                 \end{enumerate}
+        \end{description}
+\end{description}
+
+
+
+\section{MiniZinc}
+
+Declarative language for constraint programming.
+
+\begin{description}
+    \item[Built-in types] \marginnote{Built-in types} 
+        \texttt{bool}, \texttt{int}, \texttt{float}, \texttt{string}
+    
+    \item[Logical operators] \marginnote{Logical operators} 
+        \texttt{\char`\\/} $\cdot$ \texttt{/\char`\\} $\cdot$ \texttt{->} $\cdot$ \texttt{!}
+
+    \item[Parameter] \marginnote{Parameter} 
+        User-inputted value passed to the solver before execution.
+        \[ \texttt{<domain>: <name>} \]
+        \begin{example} \texttt{int: size;} \end{example}
+
+    \item[Variable] \marginnote{Variable} 
+        Value computed by the solver.
+        \[ \texttt{var <domain>: <name>} \]
+        \begin{example} \texttt{var bool: flag;} \end{example}
+    
+    \item[Set] \marginnote{Set} 
+        For defining ranges.
+        \[ \texttt{set of <domain>: <name>} \]
+        \begin{example} \texttt{set of int: top10 = 1..10;} \end{example}
+
+    \item[Array] \marginnote{Array} 
+        Array of parameters or variables.
+        \[ \texttt{array[<index range>] of <domain>: <name>} \]
+        \begin{example} \texttt{array[1..5] of var int: vars;} \end{example}
+
+    \item[Aggregation functions] \marginnote{Aggregation functions}
+        \texttt{sum}, \texttt{product}, \texttt{min}, \texttt{max}.
+
+        \begin{description}
+            \item[Forall] 
+                \[ 
+                    \begin{split}
+                        &\texttt{forall(<iterators> in <domain>)}\texttt{(<conditions>) } \\
+                        &\texttt{forall(<iterators> in <domain> where <conditions>)}\texttt{(<conditions>) }
+                    \end{split}
+                \]
+                \begin{example} \texttt{forall(i, j in 1..3 where i < j)(arr[i] != arr[j]);} \end{example}
+            
+            \item[Exists]
+                \[ 
+                    \begin{split}
+                        &\texttt{exists(<iterators> in <domain>)}\texttt{(<conditions>) } \\
+                        &\texttt{exists(<iterators> in <domain> where <conditions>)}\texttt{(<conditions>) }
+                    \end{split}
+                \]
+        \end{description}
+
+    \item[Constraints] \marginnote{Constraints}
+        \[ \texttt{constraint <expression>} \]
+        Multiple constraints are seen as conjunctions.
+
+        \begin{example}
+            \texttt{constraint X >= 5 /\char`\\\, X != 10;}
+        \end{example}
+
+        \begin{description}
+            \item[Global constraints] \texttt{all\_different(...)}, \texttt{all\_equal(...)} 
+        \end{description}
+
+    \item[Solver] \marginnote{Solver} \phantom{}
+        \begin{description}
+            \item[Satisfiability problem] 
+                \[ \texttt{solve satisfy;} \]
+            \item[Optimization problem] 
+                \[ \texttt{solve minimize <variable>;} \]
         \end{description}
 \end{description}
