@@ -63,6 +63,7 @@
 \newtheorem*{example}{Example}
 \theoremstyle{definition}
 \newtheorem*{definition}{Def}
+\newtheorem*{remark}{Remark}
 
 \newcommand{\ubar}[1]{\text{\b{$#1$}}}
 \renewcommand{\vec}[1]{{\bm{\mathbf{#1}}}}
