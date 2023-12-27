@@ -194,11 +194,12 @@ A floating-point operation causes a small rounding error:
 However, some operations may be subject to the \textbf{cancellation} problem which causes information loss.
 \marginnote{Cancellation}
 \begin{example}
-    Given $x = 1$ and $y = 1 \cdot 10^{-16}$, we want to compute $x + y$ in $\mathcal{F}(10, 16, U, L)$.\\
+    Given $x = 1$ and $y = 1 \cdot 10^{-17}$, we want to compute $x + y$ in $\mathcal{F}(10, 16, U, L)$.
+    It is assumed that $U$ and $L$ are sufficient for this example.
     \begin{equation*}
         \begin{split}
             z & = \texttt{fl}(x) + \texttt{fl}(y) \\
-              & = 0.1 \cdot 10^1 + 0.1 \cdot 10^{-15} \\
+              & = 0.1 \cdot 10^1 + 0.1 \cdot 10^{-16} \\
               & = (0.1 + 0.\overbrace{0\dots0}^{\mathclap{16\text{ zeros}}}1) \cdot 10^1 \\
               & = 0.1\overbrace{0\dots0}^{\mathclap{15\text{ zeros}}}1 \cdot 10^1
         \end{split}
