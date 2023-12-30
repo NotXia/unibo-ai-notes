@@ -3,9 +3,9 @@
 
 \begin{description}
     \item[Probability]
-        model of a process where the underlying uncertainty is captured by random variables.
+        Model of a process where the underlying uncertainty is captured by random variables.
     \item[Statistics] 
-        determine the underlying process that explains an observation.
+        Determines the underlying process that explains an observation.
 \end{description}
 
 
@@ -23,7 +23,7 @@
 
     \item[Probability] \marginnote{Probability}
         Let $\mathcal{E}$ be the set of all the possible events (i.e. power set of $\Omega$).
-        The probability is a function:
+        The probability of an event is a function:
         \[ \prob{A}: \mathcal{E} \rightarrow [0, 1] \]
         \begin{example}
             Let $\Omega$ be as above.
@@ -115,14 +115,14 @@
         \begin{example}
             A coin is tossed twice.
 
-            The random variable is $X(\omega) = \{ \text{number of heads} \}$.
+            Given the random variable $X(\omega) = \{ \text{number of heads} \}$.
             We have that $\mathcal{T}_X = \{ 0, 1, 2 \}$, therefore $X$ is discrete.
         \end{example}
 
         \begin{example}
             Roll a die until 6 comes out.
 
-            The random variable is $Y(\omega) = \{ \text{number of rolls before 6} \}$.
+            Given the random variable $Y(\omega) = \{ \text{number of rolls before 6} \}$.
             We have that $\mathcal{T}_Y = \{ 1, 2, \dots \} = \mathbb{N} \smallsetminus \{0\}$, 
             therefore $Y$ is discrete as $\mathcal{T}_Y$ is a countable set.
         \end{example}
@@ -143,7 +143,7 @@
         \begin{example}
             Let $\Omega = \{ (\text{T}, \text{T}), (\text{T}, \text{H}), (\text{H}, \text{T}), (\text{H}, \text{H}) \}$.
             Given a random variable $X = \{ \text{number of heads} \}$ with $\mathcal{T}_X = \{ 0, 1, 2 \}$.
-            The PMF is:
+            Its PMF is:
             \[
                 \begin{split}
                     p_X &= \prob{X = 0} = \frac{1}{4} \\
@@ -160,7 +160,7 @@
 \begin{description}
     \item[Continuous random variable] \marginnote{Continuous random variable}
         A random variable $X$ is continuous if its target space $\mathcal{T}_X$ is uncountably infinite (i.e. a subset of $\mathbb{R}$).
-        Usually, $\mathcal{T}_X$ is an interval or union of intervals.
+        Usually, $\mathcal{T}_X$ is an interval or a union of intervals.
 
         \begin{example}
             Given a random variable $Z = \{ \text{Time before the arrival of a client} \}$.
@@ -210,25 +210,25 @@
             \end{center}
             We denote with:
             \begin{itemize}
-                \item $N$ the number of events
-                \item $n_{ij}$ the number of events with state $X=x_i$ and $Y=y_j$ (i.e. $p(x, y) = n_{ij}$)
-                \item $c_i = \sum_{j=1}^{3} n_{ij}$ the sum of the $i$-th column
-                \item $r_j = \sum_{i=1}^{5} n_{ij}$ the sum of the $j$-th row
+                \item $N$ the number of events.
+                \item $n_{ij}$ the number of events with state $X=x_i$ and $Y=y_j$ (i.e. $p_{XY}(x, y) = n_{ij}$).
+                \item $c_i = \sum_{j=1}^{3} n_{ij}$ the sum of the $i$-th column.
+                \item $r_j = \sum_{i=1}^{5} n_{ij}$ the sum of the $j$-th row.
             \end{itemize}
 
             The marginal probabilities are:\\
             \begin{minipage}{.48\linewidth}
                 \centering
-                \[ p(x_i) = \prob{X = x_i} = \frac{c_i}{N} \]
+                \[ p_X(x_i) = \prob{X = x_i} = \frac{c_i}{N} \]
             \end{minipage}
             \begin{minipage}{.48\linewidth}
                 \centering
-                \[ p(y_j) = \prob{Y = y_j} = \frac{r_j}{N} \]
+                \[ p_Y(y_j) = \prob{Y = y_j} = \frac{r_j}{N} \]
             \end{minipage}
 
             The conditional probabilities can be computed as:
-            \[ \prob{Y = y_j \vert X = x_i} = \frac{p(x_i, y_i)}{p(x_i)} = \frac{n_{ij}/N}{c_i/N} = \frac{n_{ij}}{c_i} \]
-            \[ \prob{X = x_i \vert Y = y_j} = \frac{p(x_i, y_i)}{p(y_j)} = \frac{n_{ij}/N}{r_j/N} = \frac{n_{ij}}{r_j} \]
+            \[ \prob{Y = y_j \vert X = x_i} = \frac{p_{XY}(x_i, y_i)}{p_X(x_i)} = \frac{n_{ij}/N}{c_i/N} = \frac{n_{ij}}{c_i} \]
+            \[ \prob{X = x_i \vert Y = y_j} = \frac{p_{XY}(x_i, y_i)}{p_Y(y_j)} = \frac{n_{ij}/N}{r_j/N} = \frac{n_{ij}}{r_j} \]
         \end{example}
 \end{description}
 
@@ -240,18 +240,18 @@
 \marginnote{Sum rule\\Marginalization property}
 Given $X$ and $Y$ random variables. The sum rule states that:
 \[
-    p(\bm{x}) =
+    p_X(\bm{x}) =
     \begin{cases}
-        \sum_{\bm{y} \in \mathcal{T}_Y} p(\bm{x}, \bm{y}) & \text{if } \bm{y} \text{ discrete} \\
-        \int_{\mathcal{T}_Y} p(\bm{x}, \bm{y}) \,d\bm{y} & \text{if } \bm{y} \text{ continuous}
+        \sum_{\bm{y} \in \mathcal{T}_Y} p_{XY}(\bm{x}, \bm{y}) & \text{if } \bm{y} \text{ discrete} \\
+        \int_{\mathcal{T}_Y} p_{XY}(\bm{x}, \bm{y}) \,d\bm{y} & \text{if } \bm{y} \text{ continuous}
     \end{cases}
 \]
 
-The sum rule relates the joint distribution and a marginal distribution.
+The sum rule relates the joint distribution and the marginal distribution.
 In fact, the sum rule can be applied to any subset of the random variables of a joint distribution.
 Given $\bm{x} = \begin{pmatrix} x_1, \dots, x_D \end{pmatrix}^T$, 
 the marginal w.r.t. $x_i$ can be obtained by integrating/summing out all random variables except $x_i$:
-\[ p(x_i) = \int p(x_1, \dots, x_D) \,d\bm{x}_{\backslash i} \]
+\[ p(x_i) = \int p(x_1, \dots, x_D) \,d\bm{x}_{\smallsetminus i} \]
 
 \subsection{Product rule}
 \marginnote{Product rule}
@@ -302,7 +302,7 @@ Note: sometimes, instead of the full posterior, the maximum is considered (with 
 
 \begin{description}
     \item[Statistic] \marginnote{Statistic}
-        A statistic of a random variable is a deterministic function of it. 
+        A statistic of a random variable is a deterministic function defined on it. 
 \end{description}
 
 
@@ -447,7 +447,7 @@ Two random variables $X$ and $Y$ are conditionally independent given $Z$ iff:
 \marginnote{Inner product of random variables}
 Given two zero mean random variables $X$ and $Y$, their inner product is defined as:
 \[ \left\langle X, Y \right\rangle = \text{Cov}[x, y] \]
-The covariance matrix is symmetric, positive definite.
+The covariance matrix is symmetric positive definite.
 
 Moreover, we have that:
 \begin{itemize}
@@ -465,7 +465,7 @@ Moreover, we have that:
 \subsection{Discrete random variables}
 \begin{descriptionlist}
     \item[Uniform distribution] \marginnote{Uniform distribution}
-        Given a discrete random variable $X$ with $\#(\mathcal{T}_X) = N$,
+        Given a discrete random variable $X$ with $\vert \mathcal{T}_X \vert = N$,
         $X$ has an uniform distribution if:
         \[ p_X(x) = \frac{1}{N}, \forall x \in \mathcal{T}_X \]
     

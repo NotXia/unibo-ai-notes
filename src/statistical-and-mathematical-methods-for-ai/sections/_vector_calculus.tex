@@ -49,11 +49,11 @@
         Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ and $\vec{g}$ a vector of $n$ functions $g_i: \mathbb{R}^m \rightarrow \mathbb{R}$:
         \[
             \frac{\partial}{\partial \vec{x}} (f \circ \vec{g})(\vec{x}) = 
-                \frac{\partial}{\partial \vec{x}} (f(\vec{g}(\vec{x}))) =
+                \frac{\partial}{\partial \vec{x}} \Big( f(\vec{g}(\vec{x})) \Big) =
                 \frac{\partial f}{\partial \vec{g}} \frac{\partial \vec{g}}{\partial \vec{x}}
         \]
 
-        More precisely, considering a $f: \mathbb{R}^2 \rightarrow \mathbb{R}$ of two variables 
+        For instance, consider a $f: \mathbb{R}^2 \rightarrow \mathbb{R}$ of two variables 
         $g_1(t), g_2(t): \mathbb{R} \rightarrow \mathbb{R}$ that are functions of $t$. 
         The gradient of $f$ with respect to $t$ is:
         \[
@@ -71,7 +71,7 @@
         the second matrix contains in the $i$-th row the gradient of $g_i$.
 
         Therefore, if $g_i$ are in turn multivariate functions $g_1(s, t), g_2(s, t): \mathbb{R}^2 \rightarrow \mathbb{R}$,
-        the chain rule can be applies as:
+        the chain rule can be applies as follows:
         \[
             \frac{\text{d}f}{\text{d}(s, t)} = 
             \begin{pmatrix}
@@ -96,26 +96,26 @@
         \end{example}
 
         \begin{example}
-            Let $h: \mathbb{R} \rightarrow \mathbb{R}$ be defined as $h(t) = (f \circ g)(t)$ where:
-            \[ f: \mathbb{R}^2 \rightarrow \mathbb{R} \text{ is defined as } f(\vec{x}) = \exp(x_1 x_2^2) \]
+            Let $h: \mathbb{R} \rightarrow \mathbb{R}$ be defined as $h(t) = (f \circ \vec{g})(t) = f(\vec{g}(t))$ where:
+            \[ f: \mathbb{R}^2 \rightarrow \mathbb{R} \text{ is defined as } f(g_1, g_2) = \exp(g_1 g_2^2) \]
             \[ 
-                g: \mathbb{R} \rightarrow \mathbb{R}^2 \text{ is defined as } 
-                \vec{g}(t) = \begin{pmatrix} x_1 \\ x_2 \end{pmatrix} = \begin{pmatrix}t \cos(t) \\ t \sin(t) \end{pmatrix}
+                \vec{g}: \mathbb{R} \rightarrow \mathbb{R}^2 \text{ is defined as } 
+                \vec{g}(t) = \begin{pmatrix} g_1 \\ g_2 \end{pmatrix} = \begin{pmatrix}t \cos(t) \\ t \sin(t) \end{pmatrix}
             \]
             The gradient of $h$ with respect to $t$ can be computed as:
             \[
                 \frac{\text{d} h}{\text{d} t} =
                     \frac{\partial f}{\partial \vec{g}} \frac{\partial \vec{g}}{\partial t} =
                     \begin{pmatrix}
-                        \frac{\partial f}{\partial x_1} & \frac{\partial f}{\partial x_2}
+                        \frac{\partial f}{\partial g_1} & \frac{\partial f}{\partial g_2}
                     \end{pmatrix}
                     \begin{pmatrix}
-                        \frac{\partial x_1}{\partial t} \\ \frac{\partial x_2}{\partial t}
+                        \frac{\partial g_1}{\partial t} \\ \frac{\partial g_2}{\partial t}
                     \end{pmatrix}
             \]
             \[
                 = 
-                \begin{pmatrix} \exp(x_1 x_2^2)x_2^2 & 2\exp(x_1 x_2^2)x_1 x_2 \end{pmatrix}
+                \begin{pmatrix} \exp(g_1 g_2^2)g_2^2 & 2\exp(g_1 g_2^2)g_1 g_2 \end{pmatrix}
                 \begin{pmatrix} \cos(t) + (-t\sin(t)) \\ \sin(t) + t\cos(t) \end{pmatrix}
             \]
         \end{example}
@@ -210,7 +210,7 @@ We can more compactly denote a neural network with input $\vec{x}$ and $K$ layer
         \vec{f}_i &= \sigma_i(\matr{A}_{i-1} \vec{f}_{i-1} + \vec{b}_{i-1}) \text{ } i=1, \dots, K
     \end{split}
 \]
-Given the ground truth $\vec{y}$, we want to find the parameters $\matr{A}_j$ and $\vec{b}_j$ that minimizes the squared loss:
+Given the ground truth $\vec{y}$, we want to find the parameters $\matr{A}_j$ and $\vec{b}_j$ that minimize the squared loss:
 \[ L(\vec{\uptheta}) = \Vert \vec{y} - \vec{f}_K(\vec{\uptheta}, \vec{x}) \Vert^2 \]
 where $\vec{\uptheta} = \{ \matr{A}_{0}, \vec{b}_{0}, \dots, \matr{A}_{K-1}, \vec{b}_{K-1} \}$ are the parameters of each layer.
 This can be done by using the chain rule to compute the partial derivatives of $L$ with respect to the parameters $\vec{\uptheta}_j = \{ \matr{A}_j, \vec{b}_j \}$:
@@ -260,12 +260,12 @@ In other words, each intermediate variable is expressed as an elementary functio
 The derivatives of $f$ can then be computed step-by-step going backwards as:
 \[ \frac{\partial f}{\partial x_D} = 1 \text{, as by definition } f = x_D \]
 \[ 
-    \frac{\partial f}{\partial x_i} = \sum_{\forall x_j: x_i \in \text{Pa}(x_j)} \frac{\partial f}{\partial x_j} \frac{\partial x_j}{\partial x_i}
-        = \sum_{\forall x_j: x_i \in \text{Pa}(x_j)} \frac{\partial f}{\partial x_j} \frac{\partial g_j}{\partial x_i}
+    \frac{\partial f}{\partial x_i} = \sum_{\forall x_c: x_i \in \text{Pa}(x_c)} \frac{\partial f}{\partial x_c} \frac{\partial x_c}{\partial x_i}
+        = \sum_{\forall x_c: x_i \in \text{Pa}(x_c)} \frac{\partial f}{\partial x_c} \frac{\partial g_c}{\partial x_i}
 \]
-where $\text{Pa}(x_j)$ is the set of parent nodes of $x_j$ in the graph.
+where $\text{Pa}(x_c)$ is the set of parent nodes of $x_c$ in the graph.
 In other words, to compute the partial derivative of $f$ w.r.t. $x_i$, 
-we apply the chain rule by first computing 
+we apply the chain rule by computing 
 the partial derivative of $f$ w.r.t. the variables following $x_i$ in the graph (as the computation goes backwards).
 
 Automatic differentiation is applicable to all functions that can be expressed as a computational graph and 
@@ -327,8 +327,8 @@ Note that backpropagation is a special case of automatic differentiation.
     \begin{minipage}{.5\linewidth}
         \[
             \begin{split}
-                \frac{\partial f}{\partial d} &= \text{ already known (previous step)} \\
-                \frac{\partial f}{\partial e} &= \text{ already known (previous step)} \\
+                \frac{\partial f}{\partial d} &= \text{ known (previous step)} \\
+                \frac{\partial f}{\partial e} &= \text{ known (previous step)} \\
                 \frac{\partial f}{\partial c} &= 
                     \frac{\partial f}{\partial d}\frac{\partial d}{\partial c} + \frac{\partial f}{\partial e}\frac{\partial e}{\partial c} \\
             \end{split}

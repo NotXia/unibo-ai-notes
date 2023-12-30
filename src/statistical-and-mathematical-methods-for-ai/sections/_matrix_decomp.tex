@@ -10,6 +10,8 @@ then $\matr{A} \in \mathbb{R}^{n \times n}$ can be decomposed into:
 where $\matr{P} \in \mathbb{R}^{n \times n}$ contains the eigenvectors of $\matr{A}$ as its columns and 
 $\matr{D}$ is a diagonal matrix whose diagonal contains the eigenvalues of $\matr{A}$.
 
+Note that a symmetric matrix can always be decomposed (\Cref{th:spectral_theorem})
+
 
 
 \section{Singular value decomposition}
@@ -40,10 +42,10 @@ The singular value decomposition (SVD) of $\matr{A}$ is always possible and has 
 where:
 \begin{itemize}
     \item 
-        $\matr{U} \in \mathbb{R}^{m \times m}$ is an orthogonal matrix with columns $\vec{u}_i$ called left-singular vectors.
+        $\matr{U} \in \mathbb{R}^{m \times m}$ is an orthogonal matrix whose columns $\vec{u}_i$ are called left-singular vectors.
     
     \item 
-        $\matr{V} \in \mathbb{R}^{n \times n}$ is an orthogonal matrix with columns $\vec{v}_i$ called right-singular vectors.
+        $\matr{V} \in \mathbb{R}^{n \times n}$ is an orthogonal matrix whose columns $\vec{v}_i$ are called right-singular vectors.
     
     \item 
         $\matr{\Sigma} \in \mathbb{R}^{m \times n}$ is a matrix with $\matr{\Sigma}_{i,j} = 0$ (i.e. diagonal if it was a square matrix) and
@@ -79,8 +81,8 @@ For $\matr{A}^T\matr{A}$, we can compute:
 \]
 As $\matr{V}$ is orthogonal ($\matr{V}^T = \matr{V}^{-1}$), we can apply the eigendecomposition theorem:
 \begin{itemize}
-    \item The diagonal of $\matr{\Sigma}^2$ (i.e. the square of the singular values of $A$) are the eigenvalues of $\matr{A}^T\matr{A}$
-    \item The columns of $\matr{V}$ (right-singular vectors) are the eigenvectors of $\matr{A}^T\matr{A}$
+    \item The diagonal of $\matr{\Sigma}^2$ (i.e. the square of the singular values of $A$) are the eigenvalues of $\matr{A}^T\matr{A}$.
+    \item The columns of $\matr{V}$ (right-singular vectors) are the eigenvectors of $\matr{A}^T\matr{A}$.
 \end{itemize}
 
 The same process holds for $\matr{A}\matr{A}^T$. In this case, the columns of $\matr{U}$ (left-singular vectors) are the eigenvectors.
@@ -99,7 +101,8 @@ We can compute the 2-norm as:
 \[ \Vert \matr{A} \Vert_2 = \sqrt{\rho(\matr{A}^T\matr{A})} = \sqrt{\rho(\matr{A}^2)} = \sqrt{\max\{\sigma_1^2, \dots, \sigma_r^2\}} = \sigma_1 \]
 \[ 
     \Vert \matr{A}^{-1} \Vert_2 = \sqrt{\rho((\matr{A}^{-1})^T(\matr{A}^{-1}))} = 
-    \sqrt{\rho((\matr{A}\matr{A}^T)^{-1})} = \sqrt{\rho((\matr{A}^2)^{-1})} = \sqrt{\max\{\frac{1}{\sigma_1^2}, \dots, \frac{1}{\sigma_r^2}\}} = \frac{1}{\sigma_r}
+    \sqrt{\rho((\matr{A}\matr{A}^T)^{-1})} = \sqrt{\rho((\matr{A}^2)^{-1})} = 
+    \sqrt{\max \left\{\frac{1}{\sigma_1^2}, \dots, \frac{1}{\sigma_r^2} \right\}} = \frac{1}{\sigma_r}
 \]
 Furthermore, we can compute the condition number of $\matr{A}$ as:
 \[ K(\matr{A}) = \Vert \matr{A} \Vert_2 \cdot \Vert \matr{A}^{-1} \Vert_2 = \sigma_1 \cdot \frac{1}{\sigma_r} \]
@@ -126,7 +129,7 @@ By considering only the first $k < r$ singular values, we can obtain a rank-$k$ 
         \hat{\matr{A}}(k) = \arg \min_{\matr{B} \in \mathbb{R}^{m \times n}, \text{rank}(\matr{B}) = k} \Vert \matr{A} - \matr{B} \Vert_2 
     \]
 \end{theorem}
-In other words, among all the possible projections, $\hat{\matr{A}}(k)$ is the closer one to $\matr{A}$.
+In other words, among all the possible projections, $\hat{\matr{A}}(k)$ is the closest one to $\matr{A}$.
 Moreover, the error of the rank-$k$ approximation is:
 \[
     \Vert \matr{A} - \hat{\matr{A}}(k) \Vert_2 = 
@@ -152,32 +155,15 @@ Therefore, the compression factor is given by: \marginnote{Compression factor}
 
 
 \subsection{Application: Linear least squares problem} \label{sec:lls}
-A system $\matr{A}\vec{x} = \vec{b}$ with $\matr{A} \in \mathbb{R}^{m \times n} \text{, } m > n$ 
-does not generally have a solution.
-\marginnote{Linear least squares}
-Therefore, instead of finding the exact solution, it is possible to search for a $\tilde{\vec{x}}$ such that:
-\[ \matr{A}\tilde{\vec{x}} - \vec{b} \approx \nullvec \]
-In other words, we aim to find a $\tilde{\vec{x}}$ that is close enough to solve the system.
-This problem is usually formulated as:
+Given a least squares problem:
 \[ 
     \tilde{\vec{x}} = \arg\min_{\vec{x} \in \mathbb{R}^n} \Vert \matr{A}\vec{x} - \vec{b} \Vert_2^2
 \]
-It always admits a solution and, depending on $\text{rank}(\matr{A})$, there two possible cases:
-\begin{descriptionlist}
-    \item[$\text{rank}(\matr{A}) = n$] 
-        The solution is unique for each $b \in \mathbb{R}^m$.
-        \marginnote{Normal equation}
-        It is found by solving the normal equation:
-        \[ \matr{A}^T\matr{A}\vec{x} = \matr{A}^T\vec{b} \]
-        $\matr{A}^T\matr{A}$ is symmetric definite positive and the system can be solved using the Cholesky factorization.
-    
-    \item[$\text{rank}(\matr{A}) < n$] \marginnote{Least squares using SVD}
-        The system admits infinite solutions.
-        Of all the solutions $S$, we are interested in the one with minimum norm:
-        \[ \vec{x}^* = \arg\min_{\vec{x} \in S} \Vert \vec{x} \Vert_2 \]
-        This problem can be solved using SVD:
-        \[ \vec{x}^* = \sum_{i=1}^{\text{rank}(\matr{A})} \frac{\vec{u}_i^T\vec{b}}{\sigma_i}\vec{v}_i \]
-\end{descriptionlist}
+When $\text{rank}(\matr{A}) < n$, the system admits infinite solutions.
+Of all the solutions $S$, we are interested in the one with minimum norm:
+\[ \vec{x}^* = \arg\min_{\vec{x} \in S} \Vert \vec{x} \Vert_2 \]
+This problem can be solved using SVD:
+\[ \vec{x}^* = \sum_{i=1}^{\text{rank}(\matr{A})} \frac{\vec{u}_i^T\vec{b}}{\sigma_i}\vec{v}_i \]
 
 
 \subsection{Application: Polynomial interpolation}

@@ -45,16 +45,22 @@ where:
 \section{Square linear systems}
 \marginnote{Square linear system}
 A square linear system $\matr{A}\vec{x} = \vec{b}$ with $\matr{A} \in \mathbb{R}^{n \times n}$ and $\vec{x}, \vec{b} \in \mathbb{R}^n$
-has an unique solution iff one of the following conditions is satisfied:
+has a unique solution iff one of the following conditions is satisfied:
 \begin{enumerate}
     \item $\matr{A}$ is non-singular (invertible)
     \item $\text{rank}(\matr{A}) = n$ (full rank)
-    \item $\matr{A}\vec{x}$ admits only the solution $\vec{x} = \nullvec$
+    \item $\matr{A}\vec{x}$ only admits the solution $\vec{x} = \nullvec$
 \end{enumerate}
 
 The solution can be algebraically determined as \marginnote{Algebraic solution to linear systems}
 \[ \matr{A}\vec{x} = \vec{b} \iff \vec{x} = \matr{A}^{-1}\vec{b} \]
 However, this approach requires to compute the inverse of a matrix, which has a time complexity of $O(n^3)$.
+Therefore, numerical methods are usually more suited.
+The two main families of methods are:
+\begin{itemize}
+    \item Direct methods.
+    \item Iterative methods.
+\end{itemize}
 
 
 
@@ -70,15 +76,19 @@ The most common approach consists in factorizing the matrix $\matr{A}$.
 Given a square linear system $\matr{A}\vec{x} = \vec{b}$, 
 the matrix $\matr{A} \in \mathbb{R}^{n \times n}$ is factorized into $\matr{A} = \matr{L}\matr{U}$ such that:
 \begin{itemize}
-    \item $\matr{L} \in \mathbb{R}^{n \times n}$ is a lower triangular matrix
-    \item $\matr{U} \in \mathbb{R}^{n \times n}$ is an upper triangular matrix
+    \item $\matr{L} \in \mathbb{R}^{n \times n}$ is a lower triangular matrix.
+    \item $\matr{U} \in \mathbb{R}^{n \times n}$ is an upper triangular matrix.
 \end{itemize}
 %
-The system can be decomposed to:
+The system can be decomposed into:
 \[
     \begin{split}
         \matr{A}\vec{x} = \vec{b} & \iff \matr{LU}\vec{x} = \vec{b} \\
-            & \iff \vec{y} = \matr{U}\vec{x} \text{ \& } \matr{L}\vec{y} = \vec{b}
+            & \iff 
+            \begin{cases}
+                \matr{L}\vec{y} = \vec{b} \\
+                \vec{y} = \matr{U}\vec{x} 
+            \end{cases}
     \end{split}
 \]
 To find the solution, it is sufficient to solve in order:
@@ -89,7 +99,7 @@ To find the solution, it is sufficient to solve in order:
 
 The overall complexity is $O(\frac{n^3}{3}) + 2 \cdot O(n^2) = O(\frac{n^3}{3})$.\\
 $O(\frac{n^3}{3})$ is the time complexity of the LU factorization. 
-$O(n^2)$ is the complexity to directly solving a system with a triangular matrix (forward or backward substitutions).
+$O(n^2)$ is the complexity to directly solve a system with a triangular matrix (forward or backward substitutions).
 
 
 \subsection{Gaussian factorization with pivoting}
@@ -97,15 +107,19 @@ $O(n^2)$ is the complexity to directly solving a system with a triangular matrix
 During the computation of $\matr{A} = \matr{L}\matr{U}$ 
 (using Gaussian elimination\footnote{\url{https://en.wikipedia.org/wiki/LU\_decomposition\#Using\_Gaussian\_elimination}}), 
 a division by 0 may occur.
-A method to prevent this problem (and to lower the algorithmic error) is to change the order of the rows of $\matr{A}$ before decomposing it.
+A method to prevent this problem (and to lower the algorithmic error (i.e. overflows)) is to change the order of the rows of $\matr{A}$ before decomposing it.
 This is achieved by using a permutation matrix $\matr{P}$, which is obtained as a permutation of the identity matrix.
 
 The permuted system becomes $\matr{P}\matr{A}\vec{x} = \matr{P}\vec{b}$ and the factorization is obtained as $\matr{P}\matr{A} = \matr{L}\matr{U}$.
-The system can be decomposed to:
+The system can be decomposed into:
 \[
     \begin{split}
         \matr{P}\matr{A}\vec{x} = \matr{P}\vec{b} & \iff \matr{L}\matr{U}\vec{x} = \matr{P}\vec{b} \\
-            & \iff \vec{y} = \matr{U}\vec{x} \text{ \& } \matr{L}\vec{y} = \matr{P}\vec{b}
+            & \iff 
+            \begin{cases}
+                \matr{L}\vec{y} = \matr{P}\vec{b} \\
+                \vec{y} = \matr{U}\vec{x}
+            \end{cases}
     \end{split}
 \]
 
@@ -117,7 +131,7 @@ The solution to the system ($\matr{P}^T\matr{A}\vec{x} = \matr{P}^T\vec{b}$) can
 
 
 \subsection{Cholesky factorization}
-Given a symmetric definite positive matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
+Given a symmetric positive definite matrix $\matr{A} \in \mathbb{R}^{n \times n}$.
 It is possible to decompose $\matr{A}$ as:
 \[ \matr{A} = \matr{L}\matr{L}^T \]
 where $\matr{L}$ is lower triangular.
@@ -183,7 +197,7 @@ This problem is independent from the algorithm and is estimated using exact arit
 Given a system $\matr{A}\vec{x} = \vec{b}$, we perturbate $\matr{A}$ and/or $\vec{b}$ and study the inherited error.
 For instance, if we perturbate $\vec{b}$, we obtain the following system:
 \[ \matr{A}\tilde{\vec{x}} = (\vec{b} + \Delta\vec{b}) \]
-After finding $\tilde{\vec{x}}$, we can compute the inherited error as $\Delta\vec{x} = \tilde{\vec{x}} - \vec{x}$.
+After finding $\tilde{\vec{x}}$, we can compute the inherent error as $\Delta\vec{x} = \tilde{\vec{x}} - \vec{x}$.
 
 By comparing $\left\Vert \frac{\Delta\vec{x}}{\vec{x}} \right\Vert$ and $\left\Vert \frac{\Delta\vec{b}}{\vec{b}} \right\Vert$, 
 we can compute the error introduced by the perturbation.
@@ -201,4 +215,28 @@ Otherwise it is \textbf{well-conditioned}. \marginnote{Well-conditioned}
 
 
 \section{Linear least squares problem}
-See \Cref{sec:lls}.
+
+A system $\matr{A}\vec{x} = \vec{b}$ with $\matr{A} \in \mathbb{R}^{m \times n} \text{, } m > n$ 
+does not generally have a solution.
+\marginnote{Linear least squares}
+Therefore, instead of finding the exact solution, it is possible to search for a $\tilde{\vec{x}}$ such that:
+\[ \matr{A}\tilde{\vec{x}} - \vec{b} \approx \nullvec \]
+In other words, we aim to find a $\tilde{\vec{x}}$ that is close enough to solve the system.
+This problem is usually formulated as:
+\[ 
+    \tilde{\vec{x}} = \arg\min_{\vec{x} \in \mathbb{R}^n} \Vert \matr{A}\vec{x} - \vec{b} \Vert_2^2
+\]
+It always admits a solution and, depending on $\text{rank}(\matr{A})$, there are two possible cases:
+\begin{descriptionlist}
+    \item[$\text{rank}(\matr{A}) = n$] 
+        The solution is unique for each $b \in \mathbb{R}^m$.
+        \marginnote{Normal equation}
+        It is found by solving the normal equation:
+        \[ \matr{A}^T\matr{A}\vec{x} = \matr{A}^T\vec{b} \]
+        $\matr{A}^T\matr{A}$ is symmetric definite positive and the system can be solved using the Cholesky factorization.
+    
+    \item[$\text{rank}(\matr{A}) < n$]
+        The system admits infinite solutions.
+        Of all the solutions $S$, we are interested in the one with minimum norm:
+        \[ \vec{x}^* = \arg\min_{\vec{x} \in S} \Vert \vec{x} \Vert_2 \]
+\end{descriptionlist}

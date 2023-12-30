@@ -6,7 +6,7 @@
 
 \begin{description}
     \item[Measure error] \marginnote{Measure error}
-        Precision of the measurement instrument.
+        Precision of the measuring instrument.
 
     \item[Arithmetic error] \marginnote{Arithmetic error}
         Propagation of rounding errors in each step of an algorithm.
@@ -37,7 +37,7 @@ Let $x$ be a value and $\hat{x}$ its approximation. Then:
         Note that, out of context, the absolute error is meaningless.
     \item[Relative error] 
         \[
-            E_{a} = \frac{\hat{x} - x}{x} 
+            E_{r} = \frac{\hat{x} - x}{x} 
             \marginnote{Relative error}
         \] 
 \end{descriptionlist}
@@ -148,7 +148,7 @@ In alternative, $\varepsilon_{\text{mach}}$ can be defined as the smallest repre
 \subsection{IEEE standard}
 IEEE 754 defines two floating-point formats:
 \begin{descriptionlist}
-    \item[Single precision] Stored in 32 bits. Represents the system $\mathcal{F}(2, 24, -128, 127)$. \marginnote{float32}
+    \item[Single precision] Stored in 32 bits. Represents the system $\mathcal{F}(2, 24, -128, 127)$. \marginnote{\texttt{float32}}
         \begin{center}
             \small
             \begin{tabular}{|c|c|c|}
@@ -158,7 +158,7 @@ IEEE 754 defines two floating-point formats:
             \end{tabular}
         \end{center}
 
-    \item[Double precision] Stored in 64 bits. Represents the system $\mathcal{F}(2, 53, -1024, 1023)$. \marginnote{float64}
+    \item[Double precision] Stored in 64 bits. Represents the system $\mathcal{F}(2, 53, -1024, 1023)$. \marginnote{\texttt{float64}}
         \begin{center}
             \small
             \begin{tabular}{|c|c|c|}

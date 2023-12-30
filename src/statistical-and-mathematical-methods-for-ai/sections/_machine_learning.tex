@@ -98,8 +98,8 @@ The parameters are determined as the most likely to predict the correct label gi
 \begin{description}
     \item[Negative log-likelihood] \marginnote{Negative log-likelihood}
         \sloppy
-        Given a random variable $\bm{x}$, a probability density $p_\vec{\uptheta}(\bm{x})$ parametrized by $\vec{\uptheta}$
-        and a predictor, the negative log-likelihood of $\bm{x}$ is:
+        Given a random variable $\bm{x}$ and a probability density $p_\vec{\uptheta}(\bm{x})$ parametrized by $\vec{\uptheta}$, 
+        the negative log-likelihood of $\bm{x}$ is:
         \[ \mathcal{L}_{\bm{x}}(\vec{\uptheta}) = -\log p_\vec{\uptheta}(\bm{x}) \]
         Note that:
         \begin{itemize}
@@ -118,7 +118,7 @@ The parameters are determined as the most likely to predict the correct label gi
         Moreover, as the dataset is identically distributed, 
         each $p_\vec{\uptheta}(y_n \vert \bm{x}_n)$ of the product has the same distribution.
 
-        By applying the logarithm, we have that the negative log-likelihood of a i.i.d. dataset is define as:
+        By applying the logarithm, we have that the negative log-likelihood of a i.i.d. dataset is defined as:
         \[ \mathcal{L}(\vec{\uptheta}) = -\sum_{n=1}^{N} \log p_\vec{\uptheta}(y_n \vert \bm{x}_n) \]
         and to find good parameters $\vec{\uptheta}$, we solve the problem:
         \[ 
@@ -173,7 +173,7 @@ The parameters are determined as the most likely to predict the correct label gi
                 \caption{When the parameters are bad, the label will be far the mean}
             \end{subfigure}
 
-            \caption{Geometric interpretation of the Gaussian likelihood. (not sure if this is correct)}
+            \caption{Geometric interpretation of the Gaussian likelihood}
         \end{figure}
 \end{description}
 
@@ -191,7 +191,7 @@ By applying the Bayes' theorem, the problem becomes:
     \begin{split}
         \min_{\vec{\uptheta} \in \mathbb{R}^D} 
             -\frac{p(\vec{y} \vert \matr{X}, \vec{\uptheta}) p(\vec{\uptheta})}{\underbrace{p(\vec{y} \vert \matr{X})}_{\mathclap{\text{constant}}}} &=
-        \min_{\vec{\uptheta} \in \mathbb{R}^D} -p(Y \vert \matr{X}, \vec{\uptheta}) p(\vec{\uptheta}) \\
+        \min_{\vec{\uptheta} \in \mathbb{R}^D} -p(\vec{y} \vert \matr{X}, \vec{\uptheta}) p(\vec{\uptheta}) \\
         &= \min_{\vec{\uptheta} \in \mathbb{R}^D} \{ -\log p(\vec{y} \vert \matr{X}, \vec{\uptheta}) -\log p(\vec{\uptheta}) \}
     \end{split}
 \]

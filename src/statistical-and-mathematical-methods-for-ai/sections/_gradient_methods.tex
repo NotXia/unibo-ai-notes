@@ -11,11 +11,13 @@ Let $f: \mathbb{R}^N \rightarrow \mathbb{R}$ be continuous and differentiable in
 
     \item[Local minimum] \marginnote{Local minimum}
         $\vec{x}^* \in \mathbb{R}^N$ is a local minimum of $f$ iff:
-        \[ f(\vec{x}^*) \leq f(\vec{x}) \text{ } \forall \vec{x} \in \mathbb{R}^N: \Vert \vec{x} - \vec{x}^* \Vert < \varepsilon \]
+        \[ \exists \varepsilon \in \mathbb{R} \text{ s.t. } 
+            f(\vec{x}^*) \leq f(\vec{x}) \text{ } \forall \vec{x} \in \mathbb{R}^N: \Vert \vec{x} - \vec{x}^* \Vert < \varepsilon \]
         
     \item[Strict local minimum] \marginnote{Strict local minimum}
         $\vec{x}^* \in \mathbb{R}^N$ is a strict local minimum of $f$ iff:
-        \[ f(\vec{x}^*) < f(\vec{x}) \text{ } \forall \vec{x} \in \mathbb{R}^N: \Vert \vec{x} - \vec{x}^* \Vert < \varepsilon \]
+        \[ \exists \varepsilon \in \mathbb{R} \text{ s.t. }
+            f(\vec{x}^*) < f(\vec{x}) \text{ } \forall \vec{x} \in \mathbb{R}^N: \Vert \vec{x} - \vec{x}^* \Vert < \varepsilon \]
 
     \item[Global minimum] \marginnote{Global minimum}
         $\vec{x}^* \in \mathbb{R}^N$ is a global minimum of $f$ iff:
@@ -26,7 +28,7 @@ Let $f: \mathbb{R}^N \rightarrow \mathbb{R}$ be continuous and differentiable in
         \[ f(\vec{x}^*) < f(\vec{x}) \text{ } \forall \vec{x} \in \mathbb{R}^N \]
 \end{descriptionlist}
 
-Note that $\max f(x) = \min -f(x)$.
+Note that $\max \{ f(x) \} = \min \{ -f(x)$ \}. 
 
 
 \subsection{Optimality conditions}
@@ -52,7 +54,7 @@ As the second order condition requires to compute the Hessian matrix, which is e
 
 \marginnote{Descent methods}
 Descent methods are iterative methods that have the property:
-\[ f(\vec{x}_k) < f(\vec{x}_{k+1}) \]
+\[ f(\vec{x}_k) < f(\vec{x}_{k-1}) \]
 
 The iteration is defined as:
 \[ \vec{x}_k = \vec{x}_{k-1} + \alpha_{k-1}\vec{p}_{k-1} \]
@@ -107,7 +109,7 @@ Note: descent methods usually converge to a local minimum.
         but it can be proved that this does not guarantee convergence.
     
     \item[Backtracking procedure] \marginnote{Backtracking procedure}
-        $\alpha_k$ is chose such that it respects the Wolfe condition\footnote{\url{https://en.wikipedia.org/wiki/Wolfe_conditions}}:
+        $\alpha_k$ is chosen such that it respects the Wolfe condition\footnote{\url{https://en.wikipedia.org/wiki/Wolfe_conditions}}:
         \begin{lstlisting}[mathescape=true, belowskip = -0.8\baselineskip]
             def backtracking($\tau$, $c_1$):
                 $\alpha_k$ = 1 # Initial guess
@@ -121,7 +123,7 @@ Note: descent methods usually converge to a local minimum.
 
 \subsection{Stopping condition}
 \marginnote{Stopping condition}
-We can stop iterating when $\vec{x}_k \approx \vec{x}^*$, that is, $\nabla f(\vec{x}_k) \approx \nullvec$.
+We can stop iterating when $\vec{x}_k \approx \vec{x}^*$, that is, when $\nabla f(\vec{x}_k) \approx \nullvec$.
 We can verify this by checking the norm of the gradient against a tolerance $\tau$:
 \begin{descriptionlist}
     \item[Absolute condition] $\Vert \nabla f(x_k) \Vert_2 < \tau$ 
@@ -152,7 +154,7 @@ A generic gradient-like method can then be defined as:
         it may cause numerical instabilities or bad results.
         Heuristics can be used to select an adequate starting point.
 
-    \item[Flag regions and local optima] \marginnote{Flag regions and local optima}
+    \item[Flat regions and local optima] \marginnote{Flat regions and local optima}
         Flat regions slow down the learning speed,
         while a local optima causes the method to converge at a poor solution.
         \begin{figure}[ht]
@@ -164,7 +166,7 @@ A generic gradient-like method can then be defined as:
     \item[Differential curvature]
         Different magnitudes of the partial derivatives may cause the problem of
         vanishing and exploding gradient. \marginnote{Vanishing gradient\\Exploding gradient}
-        This causes the learning process to require more iterations to correct the direction.
+        This causes the learning process to require more iterations to adjust the direction.
 
         In practice, as the gradient of complex functions is only an instantaneous direction of best decrease and
         does not represent the direction to the minimum in the long term, 
@@ -254,11 +256,11 @@ A generic gradient-like method can then be defined as:
 
 
 \subsection{Properties}
-\marginnote{Convex properties}
+% \marginnote{Convex properties}
 \begin{itemize}
-    \item $\text{if } f \text{ convex} \Rightarrow \text{ any local minimum of } f \text{ is also global}$
-    \item $\text{if } f \text{ strictly convex} \Rightarrow \text{ the global minimum of } f \text{ is unique}$
-    \item $\text{if } f \text{ convex and differentiable} \Rightarrow \text{ any stationary point of } f \text{ is a global minimum}$
+    \item $\text{if } f \text{ convex} \Rightarrow \text{any local minimum of } f \text{ is also global}$
+    \item $\text{if } f \text{ strictly convex} \Rightarrow \text{the global minimum of } f \text{ is unique}$
+    \item $\text{if } f \text{ convex and differentiable} \Rightarrow \text{any stationary point of } f \text{ is a global minimum}$
 \end{itemize}
 
 
