@@ -79,7 +79,7 @@
         \vspace*{\fill}
         \huge
         \textbf{\@title}\\
-        {\Large Last update: {PLACEHOLDER-LAST-UPDATE}}
+        {\Large Last update: \lastupdate}
         \vspace*{\fill}
 
         \Large
