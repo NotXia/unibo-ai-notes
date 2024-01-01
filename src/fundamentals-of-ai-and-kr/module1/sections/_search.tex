@@ -76,7 +76,7 @@ def expand(node, problem):
 \subsection{Strategies}
 \begin{description}
     \item[Non-informed strategy] \marginnote{Non-informed strategy}
-        Domain knowledge not available. Usually does an exhaustive search.
+        Domain knowledge is not available. Usually does an exhaustive search.
 
     \item[Informed strategy] \marginnote{Informed strategy}
         Use domain knowledge by using heuristics.
@@ -112,7 +112,7 @@ Always expands the least deep node. The fringe is implemented as a queue (FIFO).
         \hline
         \textbf{Completeness} & Yes \\
         \hline
-        \textbf{Optimality} & Only with uniform cost (i.e. all edges have same cost) \\
+        \textbf{Optimality} & Only with uniform cost (i.e. all edges have the same cost) \\
         \hline
         \textbf{\makecell{Time and space\\complexity}}
             & $O(b^d)$, where the solution depth is $d$ and the branching factor is $b$ (i.e. each non-leaf node has $b$ children) \\
@@ -238,7 +238,7 @@ estimate the effort needed to reach the final goal.
 \subsection{Best-first search}
 \marginnote{Best-first seacrh}
 Uses heuristics to compute the desirability of the nodes (i.e. how close they are to the goal).
-The fringe is ordered according the estimated scores.
+The fringe is ordered according to the estimated scores.
 
 
 \begin{description}

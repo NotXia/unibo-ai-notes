@@ -124,7 +124,7 @@ The direction of the search can be:
 
 \subsection{Deductive planning}
 \marginnote{Deductive planning}
-Formulates the planning problem using first order logic to represent states, goals and actions.
+Formulates the planning problem using first-order logic to represent states, goals and actions.
 Plans are generated as theorem proofs.
 
 \subsubsection{Green's formulation}
@@ -163,7 +163,7 @@ The main concepts are:
         \end{example}
 
     \item[Frame axioms]
-        Besides the effects of actions, each state also have to define for all non-changing fluents their frame axioms.
+        Besides the effects of actions, each state also has to define for all non-changing fluents their frame axioms.
         If the problem is complex, the number of frame axioms becomes unreasonable.
         \begin{example}[Moving blocks]
             \[ \texttt{on(U, V, S)} \land \texttt{diff(U, X)} \rightarrow \texttt{on(U, V, do(MOVE(X, Y, Z), S))} \]
@@ -247,7 +247,7 @@ Kowalsky's formulation avoids the frame axioms problem by using a set of fixed p
 Actions can be described as:
 \[ \texttt{poss(S)} \land \texttt{pact(A, S)} \rightarrow \texttt{poss(do(A, S))} \]
 
-In the Kowalsky's formulation, each action requires a frame assertion (in Green's formulation, each state requires frame axioms).
+In Kowalsky's formulation, each action requires a frame assertion (in Green's formulation, each state requires frame axioms).
 
 \begin{example}[Moving blocks]
     An initial state can be described by the following axioms:\\[0.5em]
@@ -381,7 +381,7 @@ def strips(problem):
 Since there are non-deterministic choices, the search space might become very large.
 Heuristics can be used to avoid this.
 
-Conjunction of goals are solved separately, but this can lead to the \marginnote{Sussman anomaly} \textbf{Sussman anomaly} 
+Conjunction of goals is solved separately, but this can lead to the \marginnote{Sussman anomaly} \textbf{Sussman anomaly} 
 where a sub-goal destroys what another sub-goal has done.
 For this reason, when a conjunction is encountered, it is not immediately popped from the goal stack
 and is left as a final check.
@@ -698,7 +698,7 @@ In macro-operators, two types of operators are defined:
     \item[Macro] Set of atomic operators. Before execution, this type of operator has to be decomposed.
         \begin{description}
             \item[Precompiled decomposition] 
-                The decomposition is known and described along side the preconditions and effects of the operator.
+                The decomposition is known and described alongside the preconditions and effects of the operator.
             \item[Planned decomposition] 
                 The planner has to synthesize the atomic operators that compose a macro operator.
         \end{description}
@@ -708,7 +708,7 @@ In macro-operators, two types of operators are defined:
         \begin{itemize}
             \item $X$ must be the effect of at least an atomic action in $P$ and should be protected until the end of $P$.
             \item Each precondition of the actions in $P$ must be guaranteed by previous actions or be a precondition of $A$.
-            \item $P$ must not threat any causal link.
+            \item $P$ must not threaten any causal link.
         \end{itemize}
 
         Moreover, when a macro action $A$ is replaced with its decomposition $P$:
@@ -747,7 +747,7 @@ def hdpop(initial_state, goal, actions, decomposition_methods):
 
 \section{Conditional planning}
 \marginnote{Conditional planning}
-Conditional planning is based on the open world assumption where what is not in the initial state is unknown.
+Conditional planning is based on the open-world assumption where what is not in the initial state is unknown.
 It generates a different plan for each source of uncertainty and therefore has exponential complexity.
 
 \begin{description}
@@ -768,7 +768,7 @@ It generates a different plan for each source of uncertainty and therefore has e
 
 
 \section{Reactive planning}
-Reactive planners are on-line algorithms able to interact with the dynamicity the world.
+Reactive planners are online algorithms able to interact with the dynamicity of the world.
 
 \subsection{Pure reactive systems}
 \marginnote{Pure reactive systems}
@@ -777,7 +777,7 @@ The choice of the action is predictable. Therefore, this approach is not suited 
 
 \subsection{Hybrid systems}
 \marginnote{Hybrid systems}
-Hybrid planners integrate the generative and reactive approach.
+Hybrid planners integrate the generative and reactive approaches.
 The steps the algorithm does are:
 \begin{itemize}
     \item Generates a plan to achieve the goal.

@@ -44,7 +44,7 @@
     \item[Goal] \marginnote{Goal}
         $G := \top \mid \bot \mid A \mid C \mid G_1 \land G_2$ 
     \item[Constraint logic clause] \marginnote{Constraint logic clause}
-        $K := A \leftarrow G$ 
+        $K := A \Leftarrow G$ 
     \item[Constraint logic program] \marginnote{Constraint logic program}
         $P := K_1 \dots K_m$, for $m \geq 0$ 
 \end{description}
@@ -67,17 +67,17 @@
                 Starting from the state $\langle A \land G, C \rangle$ of a program $P$, a transition on the atom $A$ can result in:
                 \begin{description}
                     \item[Unfold] \marginnote{Unfold}
-                        If there exists a clause $(B \leftarrow H)$ in $P$ and 
+                        If there exists a clause $(B \Leftarrow H)$ in $P$ and 
                         an assignment $(B \doteq A)$ such that $((B \doteq A) \land C)$ is still valid,
                         then we have a transition $\langle A \land G, C \rangle \mapsto \langle H \land G, (B \doteq A) \land C \rangle$.
 
                         In other words, we want to develop an atom $A$ and the current constraints are denoted as $C$.
                         We look for a clause whose head equals $A$, applying an assignment if needed.
-                        If this is possible, we transit from solving $A$ to solving the body of the clause and 
+                        If this is possible, we transition from solving $A$ to solving the body of the clause and 
                         add the assignment to the set of active constraints.
 
                     \item[Failure] \marginnote{Failure}
-                        If there are no clauses $(B \leftarrow H)$ with a valid assignment $((B \doteq A) \land C)$,
+                        If there are no clauses $(B \Leftarrow H)$ with a valid assignment $((B \doteq A) \land C)$,
                         then we have a transition $\langle A \land G, C \rangle \mapsto \langle \bot, \bot \rangle$.
                 \end{description}
 
@@ -100,7 +100,7 @@
         \begin{description}
             \item[Generate-and-test] \marginnote{Generate-and-test}
                 Strategy adopted by logic programs.
-                Every possible assignment to the variables are generated and tested.
+                Every possible assignment to the variables is generated and tested.
                 
                 The workflow is the following:
                 \begin{enumerate}

@@ -45,7 +45,7 @@ an iteration of the minimax algorithm can be described as follows:
 
     \item[Propagation]
         Starting from the parents of the leaves, the scores are propagated upwards 
-        by labeling the parents based on the children's score.
+        by labeling the parents based on the children's scores.
 
         Given an unlabeled node $m$, if $m$ is at a \textsc{Max} level, its label is the maximum of its children's score.
         Otherwise (\textsc{Min} level), the label is the minimum of its children's score.
@@ -90,7 +90,7 @@ an iteration of the minimax algorithm can be described as follows:
 
 \section{Alpha-beta cuts}
 \marginnote{Alpha-beta cuts}
-Alpha-beta cuts (pruning) allows to prune subtrees whose state will never be selected (when playing optimally).
+Alpha-beta pruning (cuts) allows to prune subtrees whose state will never be selected (when playing optimally).
 $\alpha$ represents the best choice found for \textsc{Max}.
 $\beta$ represents the best choice found for \textsc{Min}.
 

@@ -322,7 +322,7 @@ Note: sometimes, instead of the full posterior, the maximum is considered (with 
     \item[Expected value (multivariate)] \marginnote{Expected value (multivariate)}
         A multivariate random variable $X$ can be seen as 
         a vector of univariate random variables $\begin{pmatrix} X_1, \dots, X_D \end{pmatrix}^T$.
-        Its expected value can be computed element wise as:
+        Its expected value can be computed element-wise as:
         \[ 
             \mathbb{E}_X[g(\bm{x})] = 
             \begin{pmatrix} \mathbb{E}_{X_1}[g(x_1)] \\ \vdots \\ \mathbb{E}_{X_D}[g(x_D)] \end{pmatrix} \in \mathbb{R}^D
@@ -466,7 +466,7 @@ Moreover, we have that:
 \begin{descriptionlist}
     \item[Uniform distribution] \marginnote{Uniform distribution}
         Given a discrete random variable $X$ with $\vert \mathcal{T}_X \vert = N$,
-        $X$ has an uniform distribution if:
+        $X$ has a uniform distribution if:
         \[ p_X(x) = \frac{1}{N}, \forall x \in \mathcal{T}_X \]
     
     \item[Poisson distribution] \marginnote{Poisson distribution}

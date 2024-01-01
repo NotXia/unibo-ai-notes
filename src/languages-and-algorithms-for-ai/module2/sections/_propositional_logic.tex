@@ -9,7 +9,7 @@
 The symbols of propositional logic are:
 \begin{descriptionlist}
     \item[Proposition symbols] $p_0$, $p_1$, \dots
-    \item[Connectives] $\land$ $\vee$ $\rightarrow$ $\leftrightarrow$ $\lnot$ $\bot$ $($ $)$
+    \item[Connectives] $\land$ $\vee$ $\Rightarrow$ $\Leftrightarrow$ $\lnot$ $\bot$ $($ $)$
 \end{descriptionlist}
 
 \begin{description}
@@ -22,12 +22,12 @@ The symbols of propositional logic are:
             \item If $S_1$ and $S_2$ are well-formed, $S_1 \vee S_2$ is well-formed.
         \end{itemize}
 
-        Note that the implication $S_1 \rightarrow S_2$ can be written as $\lnot S_1 \vee S_2$.
+        Note that the implication $S_1 \Rightarrow S_2$ can be written as $\lnot S_1 \vee S_2$.
 
         The BNF definition of a formula is:
         \[
             F := \texttt{atomic\_proposition} \,|\, F \land F \,|\, F \vee F \,|\,  
-                F \rightarrow F \,|\, F \leftrightarrow F \,|\, \lnot F \,|\, (F) 
+                F \Rightarrow F \,|\, F \Leftrightarrow F \,|\, \lnot F \,|\, (F) 
         \]
         % \[ 
         %     \begin{split}
@@ -35,8 +35,8 @@ The symbols of propositional logic are:
         %             &\lnot \texttt{<formula>} \,|\, \\
         %             &\texttt{<formula>} \land \texttt{<formula>} \,|\, \\
         %             &\texttt{<formula>} \vee \texttt{<formula>} \,|\, \\
-        %             &\texttt{<formula>} \rightarrow \texttt{<formula>} \,|\, \\
-        %             &\texttt{<formula>} \leftrightarrow \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \Rightarrow \texttt{<formula>} \,|\, \\
+        %             &\texttt{<formula>} \Leftrightarrow \texttt{<formula>} \,|\, \\
         %             &(\texttt{<formula>}) \\
         %     \end{split}
         % \]
@@ -64,7 +64,7 @@ The symbols of propositional logic are:
                 to the atoms $\{ A_1, \dots, A_n \}$ an element of $D$.
         \end{itemize}
 
-        Note: given a formula $F$ of $n$ distinct atoms, there are $2^n$ district interpretations.
+        Note: given a formula $F$ of $n$ distinct atoms, there are $2^n$ distinct interpretations.
 
         \begin{description}
             \item[Model] \marginnote{Model}
@@ -100,14 +100,14 @@ The symbols of propositional logic are:
             \item $\lnot S$ is true iff $S$ is false.
             \item $S_1 \land S_2$ is true iff $S_1$ is true and $S_2$ is true.
             \item $S_1 \vee S_2$ is true iff $S_1$ is true or $S_2$ is true.
-            \item $S_1 \rightarrow S_2$ is true iff $S_1$ is false or $S_2$ is true.
-            \item $S_1 \leftrightarrow S_2$ is true iff $S_1 \rightarrow S_2$ is true and $S_1 \leftarrow S_2$ is true.
+            \item $S_1 \Rightarrow S_2$ is true iff $S_1$ is false or $S_2$ is true.
+            \item $S_1 \Leftrightarrow S_2$ is true iff $S_1 \Rightarrow S_2$ is true and $S_1 \Leftarrow S_2$ is true.
         \end{itemize}
 
 
     \item[Evaluation] \marginnote{Evaluation order}
-        The connectives of a propositional formula are evaluated in the order:
-        \[ \leftrightarrow, \rightarrow, \vee, \land, \lnot \]
+        The connectives of a propositional formula are evaluated in the following order:
+        \[ \Leftrightarrow, \Rightarrow, \vee, \land, \lnot \]
         Formulas in parenthesis have higher priority.
 
    \item[Logical consequence] \marginnote{Logical consequence} 
@@ -128,9 +128,9 @@ The symbols of propositional logic are:
             \item[Associativity]: $((P \land Q) \land R) \equiv (P \land (Q \land R))$
                 and $((P \vee Q) \vee R) \equiv (P \vee (Q \vee R))$
             \item[Double negation elimination]: $\lnot(\lnot P) \equiv P$
-            \item[Contraposition]: $(P \rightarrow Q) \equiv (\lnot Q \rightarrow \lnot P)$
-            \item[Implication elimination]: $(P \rightarrow Q) \equiv (\lnot P \vee Q)$
-            \item[Biconditional elimination]: $(P \leftrightarrow Q) \equiv ((P \rightarrow Q) \land (Q \rightarrow P))$
+            \item[Contraposition]: $(P \Rightarrow Q) \equiv (\lnot Q \Rightarrow \lnot P)$
+            \item[Implication elimination]: $(P \Rightarrow Q) \equiv (\lnot P \vee Q)$
+            \item[Biconditional elimination]: $(P \Leftrightarrow Q) \equiv ((P \Rightarrow Q) \land (Q \Rightarrow P))$
             \item[De Morgan]: $\lnot(P \land Q) \equiv (\lnot P \vee \lnot Q)$ and $\lnot(P \vee Q) \equiv (\lnot P \land \lnot Q)$
             \item[Distributivity of $\land$ over $\vee$]: $(P \land (Q \vee R)) \equiv ((P \land Q) \vee (P \land R))$
             \item[Distributivity of $\vee$ over $\land$]: $(P \vee (Q \land R)) \equiv ((P \vee Q) \land (P \vee R))$
@@ -179,34 +179,34 @@ The symbols of propositional logic are:
         \begin{description}
             \item[Sound] \marginnote{Soundness}
                 A reasoning method $E$ is sound iff:
-                \[ (\Gamma \vdash^E F) \rightarrow (\Gamma \models F) \]
+                \[ (\Gamma \vdash^E F) \Rightarrow (\Gamma \models F) \]
 
             \item[Complete] \marginnote{Completeness}
                 A reasoning method $E$ is complete iff:
-                \[ (\Gamma \models F) \rightarrow (\Gamma \vdash^E F) \]
+                \[ (\Gamma \models F) \Rightarrow (\Gamma \vdash^E F) \]
         \end{description}
 
     \item[Deduction theorem] \marginnote{Deduction theorem}
         Given a set of formulas $\{ F_1, \dots, F_n \}$ and a formula $G$:
-        \[ (F_1 \land \dots \land F_n) \models G \,\iff\, \models (F_1 \land \dots \land F_n) \rightarrow G \]
+        \[ (F_1 \land \dots \land F_n) \models G \,\iff\, \models (F_1 \land \dots \land F_n) \Rightarrow G \]
         
         \begin{proof} \phantom{}
             \begin{description}
-                \item[$\rightarrow$])
+                \item[$\Rightarrow$])
                     By hypothesis $(F_1 \land \dots \land F_n) \models G$.
         
                     So, for each interpretation $\mathcal{I}$ in which $(F_1 \land \dots \land F_n)$ is true, 
                     $G$ is also true.
-                    Therefore, $\mathcal{I} \models (F_1 \land \dots \land F_n) \rightarrow G$.
+                    Therefore, $\mathcal{I} \models (F_1 \land \dots \land F_n) \Rightarrow G$.
         
                     Moreover, for each interpretation $\mathcal{I}'$ in which $(F_1 \land \dots \land F_n)$ is false,
-                    $(F_1 \land \dots \land F_n) \rightarrow G$ is true.
-                    Therefore, $\mathcal{I}' \models (F_1 \land \dots \land F_n) \rightarrow G$.
+                    $(F_1 \land \dots \land F_n) \Rightarrow G$ is true.
+                    Therefore, $\mathcal{I}' \models (F_1 \land \dots \land F_n) \Rightarrow G$.
         
-                    In conclusion, $\models (F_1 \land \dots \land F_n) \rightarrow G$.
+                    In conclusion, $\models (F_1 \land \dots \land F_n) \Rightarrow G$.
         
-                \item[$\leftarrow$]) 
-                    By hypothesis $\models (F_1 \land \dots \land F_n) \rightarrow G$.
+                \item[$\Leftarrow$]) 
+                    By hypothesis $\models (F_1 \land \dots \land F_n) \Rightarrow G$.
                     Therefore, for each interpretation where $(F_1 \land \dots \land F_n)$ is true,
                     $G$ is also true.
         
@@ -240,9 +240,9 @@ The symbols of propositional logic are:
 \begin{description}
     \item[Natural deduction] \marginnote{Natural deduction for propositional logic}
         Set of rules to introduce or eliminate connectives.
-        We consider a subset $\{ \land, \rightarrow, \bot \}$ of functionally complete connectives.
+        We consider a subset $\{ \land, \Rightarrow, \bot \}$ of functionally complete connectives.
 
-        Natural deduction can be represented using a tree like structure:
+        Natural deduction can be represented using a tree-like structure:
         \begin{prooftree}
             \AxiomC{[hypothesis]}
             \noLine
@@ -252,12 +252,14 @@ The symbols of propositional logic are:
             \RightLabel{rule name}\UnaryInfC{conclusion}
         \end{prooftree}
 
-        The conclusion is true when the hypothesis are able to prove the premise.
-        Another tree can be built on top of premises to prove them.
+        The conclusion is true when the hypotheses can prove the premise.
+        Another tree can be built on top of the premises to prove them.
 
         \begin{descriptionlist}
             \item[Introduction] \marginnote{Introduction rules}
-                Usually used to prove the conclusion by splitting it.\\
+                Usually used to prove the conclusion by splitting it.
+                
+                Note that $\lnot \psi \equiv (\psi \Rightarrow \bot)$. \\
                 \begin{minipage}{.4\linewidth}
                     \begin{prooftree}
                         \AxiomC{$\psi$}
@@ -272,7 +274,7 @@ The symbols of propositional logic are:
                         \UnaryInfC{\vdots}
                         \noLine
                         \UnaryInfC{$\psi$}
-                        \RightLabel{$\rightarrow$I}\UnaryInfC{$\varphi \rightarrow \psi$}
+                        \RightLabel{$\Rightarrow$I}\UnaryInfC{$\varphi \Rightarrow \psi$}
                     \end{prooftree}
                 \end{minipage}
             
@@ -293,16 +295,18 @@ The symbols of propositional logic are:
                 \begin{minipage}{.3\linewidth}
                     \begin{prooftree}
                         \AxiomC{$\varphi$}
-                        \AxiomC{$\varphi \rightarrow \psi$}
-                        \RightLabel{$\rightarrow$E}\BinaryInfC{$\psi$}
+                        \AxiomC{$\varphi \Rightarrow \psi$}
+                        \RightLabel{$\Rightarrow$E}\BinaryInfC{$\psi$}
                     \end{prooftree}
                 \end{minipage}
 
             \item[Ex falso sequitur quodlibet] \marginnote{Ex falso sequitur quodlibet}
                 From contradiction, anything follows.
-                This can be used when we have two contradicting hypothesis.
+                This can be used when we have two contradicting hypotheses.
                 \begin{prooftree}
-                    \AxiomC{$\bot$}
+                    \AxiomC{$\psi$}
+                    \AxiomC{$\lnot \psi$}
+                    \BinaryInfC{$\bot$}
                     \RightLabel{$\bot$}\UnaryInfC{$\varphi$}
                 \end{prooftree}
 

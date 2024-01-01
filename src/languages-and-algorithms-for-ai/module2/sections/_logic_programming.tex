@@ -13,8 +13,8 @@ A logic program has the following components (defined using BNF):
     
     \item[Horn clause] \marginnote{Horn clause}
         A clause with at most one positive literal.
-        \[ K := A \leftarrow G \]
-        In other words, $A$ and all the literals in $G$ are positive as $A \leftarrow G = A \vee \lnot G$.
+        \[ K := A \Leftarrow G \]
+        In other words, $A$ and all the literals in $G$ are positive as $A \Leftarrow G = A \vee \lnot G$.
     
     \item[Program] \marginnote{Program}
         $P := K_1 \dots K_m$ for $m \geq 0$
@@ -52,14 +52,14 @@ A logic program has the following components (defined using BNF):
 
     \item[Computed answer substitution] \marginnote{Computed answer substitution}
         Given a goal $G$ and a program $P$, if there exists a successful derivation 
-        $\langle G, \varepsilon \rangle \mapsto* \langle \top, \theta \rangle$,
+        $\langle G, \varepsilon \rangle \mapsto^* \langle \top, \theta \rangle$,
         then the substitution $\theta$ is the computed answer substitution of $G$.
 
     \item[Transition] \marginnote{Transition}
         Starting from the state $\langle A \land G, \theta \rangle$ of a program $P$, a transition on the atom $A$ can result in:
         \begin{descriptionlist}
             \item[Unfold]
-                If there exists a clause $(B \leftarrow H)$ in $P$ and
+                If there exists a clause $(B \Leftarrow H)$ in $P$ and
                 a (most general) unifier $\beta$ for $A\theta$ and $B$,
                 then we have a transition: $\langle A \land G, \theta \rangle \mapsto \langle H \land G, \theta\beta \rangle$.
 
@@ -67,7 +67,7 @@ A logic program has the following components (defined using BNF):
                 To do this, we search for a clause that has as conclusion $A\theta$ and add its premise to the things to prove.
                 If a unification is needed to match $A\theta$, we add it to the substitutions of the state.
             \item[Failure] 
-                If there are no clauses $(B \leftarrow H)$ in $P$ with a unifier for $A\theta$ and $B$,
+                If there are no clauses $(B \Leftarrow H)$ in $P$ with a unifier for $A\theta$ and $B$,
                 then we have a transition: $\langle A \land G, \theta \rangle \mapsto \langle \bot, \varepsilon \rangle$.
         \end{descriptionlist}
 
@@ -79,7 +79,7 @@ A logic program has the following components (defined using BNF):
                         This affects the length of the derivation (infinite in the worst case).
                     
                     \item[Don't-know] \marginnote{Don't-know}
-                        Any clause $(B \rightarrow H)$ in $P$ with an unifier for $A\theta$ and $B$ can be chosen.
+                        Any clause $(B \Leftarrow H)$ in $P$ with a unifier for $A\theta$ and $B$ can be chosen.
                         This determines the output of the derivation.
                 \end{descriptionlist}
         \end{description}
@@ -101,7 +101,7 @@ A logic program has the following components (defined using BNF):
 
         \begin{theorem}[Completeness]
             Given a program $P$, a goal $G$ and a substitution $\theta$,
-            if $P \models G\theta$, then it exists a computed answer substitution $\sigma$ such that $G\theta = G\sigma\beta$.
+            if $P \models G\theta$, then there exists a computed answer substitution $\sigma$ such that $G\theta = G\sigma\beta$.
         \end{theorem}
 
         \begin{theorem}

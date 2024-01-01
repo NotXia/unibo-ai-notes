@@ -44,7 +44,7 @@ It may be useful to first have a look at the "Logic programming" section of
                         Variables appearing in a fact are quantified universally.
                         \[ \texttt{A(X).} \equiv \forall \texttt{X}: \texttt{A(X)}  \]
                     \item[Rules] 
-                        Variables appearing the the body only are quantified existentially.
+                        Variables appearing in the body only are quantified existentially.
                         Variables appearing in both the head and the body are quantified universally.
                         \[ \texttt{A(X) :- B(X, Y).} \equiv \forall \texttt{X}, \exists \texttt{Y} : \texttt{A(X)} \Leftarrow \texttt{B(X, Y)} \]
 
@@ -72,7 +72,7 @@ It may be useful to first have a look at the "Logic programming" section of
         \end{descriptionlist}
 
     \item[SLD resolution] \marginnote{SLD}
-        Prolog uses SLD resolution with the following choices:
+        Prolog uses a SLD resolution with the following choices:
         \begin{descriptionlist}
             \item[Left-most] Always proves the left-most literal first.
             \item[Depth-first] Applies the predicates following the order of definition.
@@ -204,7 +204,7 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
                 Adding new axioms to the program may change the set of valid theorems. 
         \end{description}
 
-        As first-order logic in undecidable, closed-world assumption cannot be directly applied in practice.
+        As first-order logic is undecidable, the closed-world assumption cannot be directly applied in practice.
 
     \item[Negation as failure] \marginnote{Negation as failure}
         A negated atom $\lnot A$ is considered true iff $A$ fails in finite time:
@@ -222,9 +222,8 @@ Therefore, if \texttt{qj, \dots, qn} fails, there won't be backtracking and \tex
                 \begin{itemize}
                     \item If \texttt{L$_i$} is positive, apply the normal SLD resolution.
                     \item If \texttt{L$_i$} = $\lnot A$, prove that $A$ fails in finite time. 
-                        If it succeeds, \texttt{L$_i$} fails.
                 \end{itemize}
-            \item Solve the goal \texttt{:- L$_1$, \dots, L$_{i-1}$, L$_{i+1}$, \dots  L$_m$}.
+            \item Solve the remaining goal \texttt{:- L$_1$, \dots, L$_{i-1}$, L$_{i+1}$, \dots,  L$_m$}.
         \end{enumerate}
 
         \begin{theorem}
@@ -407,7 +406,7 @@ father(mario, paola).
         The operator \texttt{T =.. L} unifies \texttt{L} with a list where 
         its head is the head of \texttt{T} and the tail contains the remaining arguments of \texttt{T}
         (i.e. puts all the components of a predicate into a list).
-        Only one between \texttt{T} and \texttt{L} may be a variable.
+        Only one between \texttt{T} and \texttt{L} can be a variable.
 
         \begin{example} \phantom{} \\
             \begin{minipage}{0.5\textwidth}
@@ -458,7 +457,7 @@ father(mario, paola).
 
         Note that \texttt{:- assert((p(X)))} quantifies \texttt{X} existentially as it is a query.
         If it is not ground and added to the database as is, 
-        is becomes a clause and therefore quantified universally: $\forall \texttt{X}: \texttt{p(X)}$.
+        it becomes a clause and therefore quantified universally: $\forall \texttt{X}: \texttt{p(X)}$.
 
         \begin{example}[Lemma generation] \phantom{}
             \begin{lstlisting}[language={}]
@@ -473,7 +472,7 @@ father(mario, paola).
     generate_lemma(T) :- assert(T).
             \end{lstlisting} 
 
-            \texttt{generate\_lemma/1} allows to add to the clauses database all the intermediate steps to compute the Fibonacci sequence
+            The custom defined \texttt{generate\_lemma/1} allows to add to the clauses database all the intermediate steps to compute the Fibonacci sequence
             (similar concept to dynamic programming).
         \end{example}
 

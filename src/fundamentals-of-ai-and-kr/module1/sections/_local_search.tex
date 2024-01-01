@@ -12,9 +12,9 @@
         In other words, for each $s \in \mathcal{S}$, $\mathcal{N}(s) \subseteq \mathcal{S}$.
 
         \begin{example}[Travelling salesman problem]
-            Problem: find an Hamiltonian tour of minimum cost in an undirected graph.
+            Problem: find a Hamiltonian tour of minimum cost in an undirected graph.
             
-            A possible neighborhood of a state applies the $k$-exchange that guarantees to maintain an Hamiltonian tour.
+            A possible neighborhood of a state applies the $k$-exchange that guarantees to maintain a Hamiltonian tour.
             \begin{figure}[ht]
                 \begin{subfigure}{.5\textwidth}
                     \centering
@@ -37,7 +37,7 @@
 
     \item[Global optima]
         Given an evaluation function $f$,
-        a global optima (maximization case) is a state $s_\text{opt}$ such that:
+        a global optimum (maximization case) is a state $s_\text{opt}$ such that:
         \[ \forall s \in \mathcal{S}: f(s_\text{opt}) \geq f(s) \]
 
         Note: a larger neighborhood usually allows to obtain better solutions.
@@ -55,7 +55,7 @@
 \marginnote{Iterative improvement (hill climbing)}
 Algorithm that only performs moves that improve the current solution.
 
-It does not keep track of the explored states (i.e. may return in a previously visited state) and 
+It does not keep track of the explored states (i.e. may return to a previously visited state) and 
 stops after reaching a local optima.
 
 \begin{algorithm}
@@ -169,7 +169,7 @@ moves can be stored instead but, with this approach, some still not visited solu
 \marginnote{Iterated local search}
 Based on two steps:
 \begin{descriptionlist}
-    \item[Subsidiary local search steps] Efficiently reach a local optima (intensification).
+    \item[Subsidiary local search steps] Efficiently reach a local optimum (intensification).
     \item[Perturbation steps] Escape from a local optima (diversification).
 \end{descriptionlist}
 In addition, an acceptance criterion controls the two steps.
@@ -194,7 +194,7 @@ Population based meta heuristics are built on the following concepts:
 \begin{descriptionlist}
     \item[Adaptation] Organisms are suited to their environment.
     \item[Inheritance] Offspring resemble their parents.
-    \item[Natural selection] Fit organisms have many offspring, others become extinct.
+    \item[Natural selection] Fit organisms have many offspring while others become extinct.
 \end{descriptionlist}
 
 \begin{table}[ht]
@@ -244,10 +244,10 @@ Genetic operators are:
             \includegraphics[width=0.2\textwidth]{img/_genetic_mutation.pdf}
         \end{center}
     \item[Proportional selection] 
-        Probability of a individual to be chosen as parent of the next offspring. 
+        Probability of an individual to be chosen as parent of the next offspring. 
         Depends on the fitness.
     \item[Generational replacement] 
-        Create the new generation. Possibile approaches are:
+        Create the new generation. Possible approaches are:
         \begin{itemize}
             \item Completely replace the old generation with the new one.
             \item Keep the best $n$ individual from the new and old population.

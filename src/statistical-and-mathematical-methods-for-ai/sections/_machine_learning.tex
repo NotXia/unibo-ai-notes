@@ -118,7 +118,7 @@ The parameters are determined as the most likely to predict the correct label gi
         Moreover, as the dataset is identically distributed, 
         each $p_\vec{\uptheta}(y_n \vert \bm{x}_n)$ of the product has the same distribution.
 
-        By applying the logarithm, we have that the negative log-likelihood of a i.i.d. dataset is defined as:
+        By applying the logarithm, we have that the negative log-likelihood of an i.i.d. dataset is defined as:
         \[ \mathcal{L}(\vec{\uptheta}) = -\sum_{n=1}^{N} \log p_\vec{\uptheta}(y_n \vert \bm{x}_n) \]
         and to find good parameters $\vec{\uptheta}$, we solve the problem:
         \[ 
@@ -170,7 +170,7 @@ The parameters are determined as the most likely to predict the correct label gi
             \begin{subfigure}{.45\textwidth}
                 \centering
                 \includegraphics[width=.75\linewidth]{img/gaussian_mle_bad.png}
-                \caption{When the parameters are bad, the label will be far the mean}
+                \caption{When the parameters are bad, the label will be far from the mean}
             \end{subfigure}
 
             \caption{Geometric interpretation of the Gaussian likelihood}
@@ -223,7 +223,7 @@ we want to estimate the function $f$.
 
 \begin{description}
     \item[Model]
-        We use as predictor:
+        We use as the predictor:
         \[ f(\vec{x}) = \vec{x}^T \vec{\uptheta} \]
         Because of the noise, we use a probabilistic model with likelihood:
         \[ p_\vec{\uptheta}(y \,\vert\, \vec{x}) = \mathcal{N}(y \,\vert\, f(\vec{x}), \sigma^2) \]

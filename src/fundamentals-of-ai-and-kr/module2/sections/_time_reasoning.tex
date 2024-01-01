@@ -5,12 +5,12 @@
 
 \begin{description}
     \item[State] \marginnote{State} 
-        The current state of the world can be represented as a set of propositions that are true according the observation of an agent.
+        The current state of the world can be represented as a set of propositions that are true according to the observation of an agent.
 
         The union of a countable sequence of states represents the evolution of the world. Each proposition is distinguished by its time step.
 
         \begin{example}
-            A child has a bow and an arrow, then shoots the arrow.
+            A child has a bow and an arrow and then shoots the arrow.
             \[
                 \begin{split}
                     \text{KB}^0 &= \{ \texttt{hasBow}^0, \texttt{hasArrow}^0  \} \\
@@ -51,7 +51,7 @@
 
 
 \section{Situation calculus (Green's formulation)}
-Situation calculus uses first order logic instead of propositional logic.
+Situation calculus uses first-order logic instead of propositional logic.
 
 \begin{description}
     \item[Situation] \marginnote{Situation}
@@ -142,8 +142,8 @@ Event calculus reifies fluents and events (actions) as terms (instead of predica
 \begin{description}
     \item[Deductive reasoning] 
         Event calculus only allows deductive reasoning: 
-        it takes as input the domain-dependant axioms and a set of events, and computes a set of true fluents.
-        If a new event is observed, the query need to be recomputed again.
+        it takes as input the domain-dependant axioms and a set of events and computes a set of true fluents.
+        If a new event is observed, the query needs to be recomputed again.
 \end{description}
 
 
@@ -183,7 +183,7 @@ Allows to add events dynamically without the need to recompute the result.
 
 \section{Allen's logic of intervals}
 
-Event calculus only captures instantaneous events that happen in given points in time.
+Event calculus only captures instantaneous events that happen at given points in time.
 
 \begin{description}
     \item[Allen's logic of intervals] \marginnote{Allen's logic of intervals}
@@ -217,7 +217,7 @@ Event calculus only captures instantaneous events that happen in given points in
 
 \section{Modal logics}
 
-Logic based on interacting agents with their own knowledge base.
+Logic-based on interacting agents with their own knowledge base.
 
 \begin{description}
     \item[Propositional attitudes] \marginnote{Propositional attitudes}
@@ -226,7 +226,7 @@ Logic based on interacting agents with their own knowledge base.
         First-order logic is not suited to represent these operators.
 
     \item[Modal logics] \marginnote{Modal logics}
-        Modal logics have the same syntax of first-order logic with the addition of modal operators.
+        Modal logics have the same syntax as first-order logic with the addition of modal operators.
 
     \item[Modal operator]
         A modal operator takes as input the name of an agent and a sentence (instead of a term as in FOL).
@@ -260,7 +260,7 @@ Logic based on interacting agents with their own knowledge base.
         \end{itemize}
 
         \begin{example}
-            Alice is in a room an tosses a coin. Bob is in another room an will enter Alice's room when the coin lands to observe the result.
+            Alice is in a room and tosses a coin. Bob is in another room and will enter Alice's room when the coin lands to observe the result.
 
             We define a model $M = (S, \pi, K_\texttt{a}, K_\texttt{b})$ on $\phi$ where:
             \begin{itemize}
@@ -359,7 +359,7 @@ The accessibility relation maps into the temporal dimension with two possible ev
         \end{description}
 
     \item[Semantics]
-        Given a Kripke structure $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where states are represented using integers,
+        Given a Kripke structure, $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where states are represented using integers,
         the semantic of the operators is the following:
         \begin{itemize}
             \item $(M, i) \models P \iff i \in \pi(P)$.
@@ -370,5 +370,5 @@ The accessibility relation maps into the temporal dimension with two possible ev
         \end{itemize}
 
     \item[Model checking] \marginnote{Model checking}
-        Methods to prove properties of linear-time temporal logic based finite state machines or distributed systems.
+        Methods to prove properties of linear-time temporal logic-based finite state machines or distributed systems.
 \end{description}

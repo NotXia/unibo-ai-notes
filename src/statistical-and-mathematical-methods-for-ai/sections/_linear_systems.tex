@@ -145,7 +145,7 @@ This method has time complexity $O(\frac{n^3}{6})$.
 \section{Iterative methods}
 \marginnote{Iterative methods}
 Iterative methods solve a linear system by computing a sequence that converges to the exact solution.
-Compared to direct methods, they are less precise but computationally faster and more adapt for large systems. 
+Compared to direct methods, they are less precise but computationally faster and more suited for large systems. 
 
 The overall idea is to build a sequence of vectors $\vec{x}_k$ 
 that converges to the exact solution $\vec{x}^*$:
@@ -192,7 +192,7 @@ Obviously, as the sequence is truncated, a truncation error is introduced when u
 
 \section{Condition number}
 Inherent error causes inaccuracies during the resolution of a system.
-This problem is independent from the algorithm and is estimated using exact arithmetic.
+This problem is independent of the algorithm and is estimated using exact arithmetic.
 
 Given a system $\matr{A}\vec{x} = \vec{b}$, we perturbate $\matr{A}$ and/or $\vec{b}$ and study the inherited error.
 For instance, if we perturbate $\vec{b}$, we obtain the following system:
@@ -210,8 +210,8 @@ Finally, we can define the \textbf{condition number} of a matrix $\matr{A}$ as: 
 \[ K(\matr{A}) = \Vert \matr{A} \Vert \cdot \Vert \matr{A}^{-1} \Vert \]
 
 A system is \textbf{ill-conditioned} if $K(\matr{A})$ is large \marginnote{Ill-conditioned}
-(i.e. a small perturbation of the input causes a large change of the output).
-Otherwise it is \textbf{well-conditioned}. \marginnote{Well-conditioned}
+(i.e. a small perturbation of the input causes a large change in the output).
+Otherwise, it is \textbf{well-conditioned}. \marginnote{Well-conditioned}
 
 
 \section{Linear least squares problem}

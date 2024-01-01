@@ -34,11 +34,11 @@ Note that $\max \{ f(x) \} = \min \{ -f(x)$ \}.
 \subsection{Optimality conditions}
 
 \begin{description}
-    \item[First order condition] \marginnote{First order condition}
+    \item[First-order condition] \marginnote{First-order condition}
         Let $f: \mathbb{R}^N \rightarrow \mathbb{R}$ be continuous and differentiable in $\mathbb{R}^N$.
         \[ \text{If } \vec{x}^* \text{ local minimum of } f \Rightarrow \nabla f(\vec{x}^*) = \nullvec \]
 
-    \item[Second order condition] \marginnote{Second order condition}
+    \item[Second-order condition] \marginnote{Second-order condition}
         Let $f: \mathbb{R}^N \rightarrow \mathbb{R}$ be continuous and twice differentiable.
         \[ 
             \text{If } \nabla f(\vec{x}^*) = \nullvec \text{ and } \nabla^2 f(\vec{x}^*) \text{ positive definite} \Rightarrow 
@@ -46,7 +46,7 @@ Note that $\max \{ f(x) \} = \min \{ -f(x)$ \}.
         \]
 \end{description}
 
-As the second order condition requires to compute the Hessian matrix, which is expensive, in practice only the first order condition is checked.
+As the second-order condition requires computing the Hessian matrix, which is expensive, in practice only the first-order condition is checked.
 
 
 
@@ -147,7 +147,7 @@ A generic gradient-like method can then be defined as:
 
 \begin{description}
     \item[Choice of the initialization point] \marginnote{Initialization point}
-        The starting point of an iterative method is a user defined parameter.
+        The starting point of an iterative method is a user-defined parameter.
         For simple problems, it is usually chosen randomly in $[-1, +1]$.
         
         For complex problems, the choice of the initialization point is critical as 
@@ -184,9 +184,9 @@ A generic gradient-like method can then be defined as:
     \item[Difficult topologies]
         \marginnote{Cliff}
         A cliff in the objective function causes problems when evaluating the gradient at the edge.
-        With a small step size, there is a slow down in convergence. 
+        With a small step size, there is a slowdown in convergence. 
         With a large step size, there is an overshoot that may cause the algorithm to diverge.
-        % a slow down when evaluating 
+        % a slowdown when evaluating 
         % the gradient at the edge using a small step size and 
         % an overshoot when the step is too large.
 

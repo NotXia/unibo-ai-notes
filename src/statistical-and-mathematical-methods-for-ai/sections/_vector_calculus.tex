@@ -71,7 +71,7 @@
         the second matrix contains in the $i$-th row the gradient of $g_i$.
 
         Therefore, if $g_i$ are in turn multivariate functions $g_1(s, t), g_2(s, t): \mathbb{R}^2 \rightarrow \mathbb{R}$,
-        the chain rule can be applies as follows:
+        the chain rule can be applied as follows:
         \[
             \frac{\text{d}f}{\text{d}(s, t)} = 
             \begin{pmatrix}
@@ -257,7 +257,7 @@ The computation graph can be expressed as:
 \]
 where $g_i$ are elementary functions and $x_{\text{Pa}(x_i)}$ are the parent nodes of $x_i$ in the graph.
 In other words, each intermediate variable is expressed as an elementary function of its preceding nodes.
-The derivatives of $f$ can then be computed step-by-step going backwards as:
+The derivatives of $f$ can then be computed step-by-step going backward as:
 \[ \frac{\partial f}{\partial x_D} = 1 \text{, as by definition } f = x_D \]
 \[ 
     \frac{\partial f}{\partial x_i} = \sum_{\forall x_c: x_i \in \text{Pa}(x_c)} \frac{\partial f}{\partial x_c} \frac{\partial x_c}{\partial x_i}
@@ -266,7 +266,7 @@ The derivatives of $f$ can then be computed step-by-step going backwards as:
 where $\text{Pa}(x_c)$ is the set of parent nodes of $x_c$ in the graph.
 In other words, to compute the partial derivative of $f$ w.r.t. $x_i$, 
 we apply the chain rule by computing 
-the partial derivative of $f$ w.r.t. the variables following $x_i$ in the graph (as the computation goes backwards).
+the partial derivative of $f$ w.r.t. the variables following $x_i$ in the graph (as the computation goes backward).
 
 Automatic differentiation is applicable to all functions that can be expressed as a computational graph and 
 when the elementary functions are differentiable.

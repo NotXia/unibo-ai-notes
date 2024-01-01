@@ -2,7 +2,7 @@
 
 \begin{description}
     \item[Swarm intelligence] \marginnote{Swarm intelligence}
-        Group of locally-interacting agents that 
+        Group of locally interacting agents that 
         shows an emergent behavior without a centralized control system.
 
         A swarm intelligent system has the following features:
@@ -15,7 +15,7 @@
             \item The system adapts to changes.
         \end{itemize}
 
-        Agents interact between each other and obtain positive and negative feedbacks.
+        Agents interact with each other and obtain positive and negative feedbacks.
 
     \item[Stigmergy] \marginnote{Stigmergy}
         Form of indirect communication where an agent modifies the environment and the others react to it.
@@ -45,7 +45,7 @@ They also tend to prefer paths marked with the highest pheromone concentration.
             \begin{itemize}
                 \item Nodes are cities.
                 \item Edges are connections between cities.
-                \item A solution is an Hamiltonian path in the graph.
+                \item A solution is a Hamiltonian path in the graph.
                 \item Constraints to avoid sub-cycles (i.e. avoid visiting a city multiple times).
             \end{itemize}            
         \end{example}
@@ -123,7 +123,7 @@ The algorithm has the following phases:
     \item[Initialization] 
         The initial nectar source of each bee is determined randomly.
         Each solution (nectar source) is a vector $\vec{x}_m \in \mathbb{R}^n$ and 
-        each of its component is initialized constrained to a lower ($l_i$) and upper ($u_i$) bound:
+        each of its components is initialized constrained to a lower ($l_i$) and upper ($u_i$) bound:
         \[ \vec{x}_m\texttt{[}i\texttt{]} = l_i + \texttt{rand}(0, 1) \cdot (u_i - l_i) \]
     
     \item[Employed bees] 
@@ -139,7 +139,7 @@ The algorithm has the following phases:
         Onlooker bees stochastically choose their food source.
         Each food source $\vec{x}_m$ has a probability associated to it defined as:
         \[ p_m = \frac{\texttt{fit}(\vec{x}_m)}{\sum_{i=1}^{n_\text{bees}} \texttt{fit}(\vec{x}_i)} \]
-        This provides a positive feedback as more promising solutions have a higher probability to be chosen.
+        This provides a positive feedback as more promising solutions have a higher probability of being chosen.
 
     \item[Scout bees] 
         Scout bees choose a nectar source randomly.
@@ -166,7 +166,7 @@ The algorithm has the following phases:
 \section{Particle swarm optimization (PSO)}
 \marginnote{Particle swarm optimization (PSO)}
 
-In a bird flock, the movement of the individuals tend to:
+In a bird flock, the movement of the individuals tends to:
 \begin{itemize}
     \item Follow the neighbors.
     \item Stay in the flock.
@@ -174,8 +174,8 @@ In a bird flock, the movement of the individuals tend to:
 \end{itemize}
 However, a model based on these rules does not have a common objective.
 
-PSO introduces as common objective the search of food.
-Each individual that finds food can:
+PSO introduces as a common objective the search for food.
+Each individual who finds food can:
 \begin{itemize}
     \item Move away from the flock and reach the food.
     \item Stay in the flock.
@@ -197,7 +197,7 @@ Applied to optimization problems, the bird flock metaphor can be interpreted as:
 \end{descriptionlist}
 
 Given a cost function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ to minimize (gradient is not known),
-PSO initializes a swarm of particles (agents) whose movement is guided by the best known position.
+PSO initializes a swarm of particles (agents) whose movement is guided by the best-known position.
 Each particle is described by:
 \begin{itemize}
     \item Its position $\vec{x}_i \in \mathbb{R}^n$ in the search space.

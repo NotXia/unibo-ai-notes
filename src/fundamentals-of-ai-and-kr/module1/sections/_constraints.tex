@@ -48,7 +48,7 @@ At level $i$, a value is assigned to the variable $X_i$ and
 constraints involving $X_1, \dots, X_i$ are checked.
 In case of failure, the path is not further explored.
 
-A problem of this approach is that it requires to backtrack in case of failure
+A problem with this approach is that it requires to backtrack in case of failure
 and reassign all the variables in the worst case.
 
 
@@ -81,7 +81,7 @@ If the domain of a variable becomes empty, the path is considered a failure and 
         \item $X_1 = 2 \hspace{1cm} X_2 :: [\cancel{1}, \cancel{2}, 3] \hspace{1cm} X_3 :: [\cancel{1}, \cancel{2}, 3]$
         \item $X_1 = 2 \hspace{1cm} X_2 = 3 \hspace{1cm} X_3 :: [\cancel{1}, \cancel{2}, \cancel{3}]$
     \end{enumerate}
-    As the domain of $X_3$ is empty, search on this branch fails and backtracking is required.
+    As the domain of $X_3$ is empty, a search on this branch fails and backtracking is required.
 \end{example}
 
 
@@ -103,7 +103,7 @@ If the domain of a variable becomes empty, the path is considered a failure and 
             Consider the variables and constraints: 
             \[ X_1 :: [1, 2, 3] \hspace{0.5cm} X_2 :: [1, 2, 3] \hspace{0.5cm} X_3 :: [1, 2, 3]  \hspace{1cm}  X_1 < X_2 < X_3 \]
 
-            We assign the variables in lexicographic order. At each step we have that:
+            We assign the variables in lexicographic order. At each step, we have that:
             \begin{enumerate}
                 \item $X_1 = 1 \hspace{1cm} X_2 :: [\cancel{1}, 2, \cancel{3}] \hspace{1cm} X_3 :: [\cancel{1}, 2, 3]$ \\
                     Here, we assign $X_1=1$ and propagate to unassigned constraints.
@@ -120,7 +120,7 @@ If the domain of a variable becomes empty, the path is considered a failure and 
             Consider the variables and constraints: 
             \[ X_1 :: [1, 2, 3] \hspace{0.5cm} X_2 :: [1, 2, 3] \hspace{0.5cm} X_3 :: [1, 2, 3]  \hspace{1cm}  X_1 < X_2 < X_3 \]
 
-            We assign the variables in lexicographic order. At each step we have that:
+            We assign the variables in lexicographic order. At each step, we have that:
             \begin{enumerate}
                 \item $X_1 = 1 \hspace{1cm} X_2 :: [\cancel{1}, 2, \cancel{3}] \hspace{1cm} X_3 :: [\cancel{1}, \cancel{2}, 3]$ \\
                     Here, we assign $X_1=1$ and propagate to unassigned constraints.
@@ -252,5 +252,5 @@ This class of methods can be applied statically before the search or after each 
         Generalization of arc/path consistency.
         If a problem with $n$ variables is $n$-consistent, the solution can be found without search.
 
-        Usually it is not applicable as it has exponential complexity.
+        Usually, it is not applicable as it has exponential complexity.
 \end{description}

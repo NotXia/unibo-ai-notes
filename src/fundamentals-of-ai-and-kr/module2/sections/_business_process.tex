@@ -7,7 +7,7 @@
     \item[Business process management] \marginnote{Business process management}
         Methods to design, manage and analyze business processes by mining data contained in information systems.
 
-        Business processes help in making decisions and automations.
+        Business processes help in making decisions and automation.
 
     \item[Business process lifecycle] \phantom{}
         \begin{description}
@@ -50,7 +50,7 @@
 
 
 
-\section{Business process modelling}
+\section{Business process modeling}
 
 \begin{description}
     \item[Activity instance] \marginnote{Activity instance}
@@ -73,30 +73,30 @@
 \end{description}
 
 
-\subsection{Control flow modelling}
+\subsection{Control flow modeling}
 
 \begin{description}
-    \item[Process modelling types] \phantom{}
+    \item[Process modeling types] \phantom{}
         \begin{description}
             \item[Procedural vs declarative] \phantom{}
                 \begin{description}
-                    \item[Procedural] \marginnote{Procedural modelling}
+                    \item[Procedural] \marginnote{Procedural modeling}
                         Based on a strict ordering of the steps.
                         Uses conditional choices, loops, parallel execution, events. 
 
                         Subject to the spaghetti-like process problem.
 
-                    \item[Declarative] \marginnote{Declarative modelling}
+                    \item[Declarative] \marginnote{Declarative modeling}
                         Based on the properties that should hold during execution.
-                        Uses concepts as: executions, expected executions, prohibited executions.
+                        Uses concepts such as executions, expected executions, prohibited executions.
                 \end{description}
 
             \item[Closed vs open] \phantom{}
                 \begin{description}
-                    \item[Closed] \marginnote{Closed modelling}
+                    \item[Closed] \marginnote{Closed modeling}
                         The execution of non-modelled activities is prohibited.
                     
-                    \item[Open] \marginnote{Open modelling}
+                    \item[Open] \marginnote{Open modeling}
                         Constraints to allow non-modelled activities.
                 \end{description}
         \end{description}
@@ -104,13 +104,13 @@
 
 The most common combination of approaches are:
 \begin{descriptionlist}
-    \item[Closed procedural process modelling] 
-    \item[Open declarative process modelling] 
+    \item[Closed procedural process modeling] 
+    \item[Open declarative process modeling] 
 \end{descriptionlist}
 
 
 
-\section{Closed procedural process modelling}
+\section{Closed procedural process modeling}
 
 \begin{description}
     \item[Process model]
@@ -230,14 +230,14 @@ The most common combination of approaches are:
 \begin{table}[H]
     \centering
     \begin{tabular}{c|c}
-        \textbf{Petri nets} & \textbf{Business process modelling} \\
+        \textbf{Petri nets} & \textbf{Business process modeling} \\
         \hline
         Petri net & Process model \\
         Transitions & Activity models \\
         Tokens & Instances \\
         Transition firing & Activity execution \\
     \end{tabular}
-    \caption{Petri nets and business process modelling concepts equivalence}
+    \caption{Petri nets and business process modeling concepts equivalence}
 \end{table}
 
 
@@ -299,7 +299,7 @@ De-facto standard for business process representation.
                         Drawn as a thin-bordered circle.
                     
                     \item[Intermediate event]
-                        Event occurring after the start of a process, but before its end.
+                        Event occurring after the start of a process but before its end.
 
                     \item[End event]
                         Indicates the end of a process and optionally provides its result.
@@ -355,7 +355,7 @@ De-facto standard for business process representation.
 
 
 
-\section{Open declarative process modelling}
+\section{Open declarative process modeling}
 
 Define formal properties for process models (i.e. more formal than procedural methods).
 Properties defined in term of the evolution of the process (similar to the evolution of the world in modal logics)
@@ -423,7 +423,7 @@ Based on constraints that must hold in every possible execution of the system.
         \end{description}
 
     \item[Semantics]
-        The semantic of the constraints can be defined using LTL.
+        The semantics of the constraints can be defined using LTL.
 
     \item[Verifiable properties] \phantom{}
         \begin{description}
@@ -497,7 +497,7 @@ Based on constraints that must hold in every possible execution of the system.
     \item[Process discovery] \marginnote{Process discovery}
         Learn a process model representative of the input event log.
 
-        More formally, a process discovery algorithm is a function that maps an event log into a business process modelling language.
+        More formally, a process discovery algorithm is a function that maps an event log into a business process modeling language.
         In our case, we map logs into Petri nets (preferably workflow nets).
 
         \begin{remark}
@@ -591,7 +591,7 @@ Based on constraints that must hold in every possible execution of the system.
     \item[Model evaluation]
         Different models can capture the same process described in a log.
         This allows for models that are capable of capturing all the possible traces of a log but 
-        are unable provide any insight (e.g. flower Petri net).
+        are unable to provide any insight (e.g. flower Petri net).
 
         \begin{figure}[H]
             \centering
@@ -608,7 +608,7 @@ Based on constraints that must hold in every possible execution of the system.
             \item[Precision] \marginnote{Precision}
                 How the model is able to capture rare cases.
             \item[Generalization] \marginnote{Generalization}
-                How the model generalize on the training traces.
+                How the model generalizes on the training traces.
         \end{descriptionlist}
 \end{description}
 
@@ -618,7 +618,7 @@ Based on constraints that must hold in every possible execution of the system.
 
 \begin{description}
     \item[Descriptive model discrepancies] \marginnote{Descriptive model}
-        The model need to be improved.
+        The model needs to be improved.
 
     \item[Prescriptive model discrepancies] \marginnote{Prescriptive model}
         The traces need to be checked as the model cannot be changed (e.g. model of the law).
@@ -632,14 +632,14 @@ Based on constraints that must hold in every possible execution of the system.
 \begin{description}
     \item[Token replay] \marginnote{Token replay}
         Given a trace and a Petri net, the trace is replayed on the model by moving tokens around.
-        The trace is conform if the end event can be reached, otherwise it is not.
+        The trace is conform if the end event can be reached, otherwise, it is not.
 
         A modified version of token replay allows to add or remove tokens when the trace is stuck on the Petri net. 
         These external interventions are tracked and used to compute a fitness score (i.e. degree of conformance).
 
         Limitations:
         \begin{itemize}
-            \item Fitness tend to be high for extremely problematic logs.
+            \item Fitness tends to be high for extremely problematic logs.
             \item If there are too many deviations, the model is flooded with tokens and may result in unexpected behaviors.
             \item It is a Petri net specific algorithm.
         \end{itemize}
