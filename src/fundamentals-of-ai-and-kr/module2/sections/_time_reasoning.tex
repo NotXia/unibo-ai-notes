@@ -251,11 +251,11 @@ Logic-based on interacting agents with their own knowledge base.
         Formally, semantics is defined on a set of primitive propositions $\phi$ 
         using a Kripke structure $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where:
         \begin{itemize}
-            \item $S$ is a set of states of the world.
+            \item $S$ is a set of the states of the world.
             \item $\pi: \phi \rightarrow 2^S$ specifies in which states each primitive proposition holds.
             \item $K_\texttt{i} \subseteq S \times S$ is a binary relation where 
                 $(s, t) \in K_\texttt{i}$ if an agent \texttt{i} considers the world $t$ possible (accessible) from $s$.
-                In other words, when the agent is in the world $s$, it considers $t$ to be a possibly valid world.
+                In other words, when the agent is in the world $s$, it considers $t$ to also be a possibly valid world.
                 Obviously, $(s, s) \in K_\texttt{i}$ for all states.
         \end{itemize}
 
@@ -272,7 +272,7 @@ Logic-based on interacting agents with their own knowledge base.
                     $\pi(\texttt{heads}) = \{ h_1, h_2 \}$\\
                     $\pi(\texttt{tails}) = \{ t_1, t_2 \}$
                 \item 
-                    $K_\texttt{a} = \{ (s, s) \mid s \in S \}$ as Alice observes everything in each world and does not have doubts.\\
+                    $K_\texttt{a} = \{ (s, s) \mid s \in S \}$ as Alice observes everything in each world and does not have uncertainty.\\
                     $K_\texttt{b} = \{ (s, s) \mid s \in S \} \cup \{ (h_1, t_1), (t_1, h_1) \}$ as Bob is unsure of what happens in the second stage.\\
             \end{itemize}
             \vspace*{-1em}
@@ -313,7 +313,7 @@ Logic-based on interacting agents with their own knowledge base.
                 \end{description}
         \end{description}
         
-        Different modal logics can be defined based on the valid axioms.
+        Different modal logics can be defined based on the validity of these axioms.
 \end{description}
 
 
@@ -346,7 +346,7 @@ The accessibility relation maps into the temporal dimension with two possible ev
                 $\varphi$ is always true from now on.
 
             \item[Future ($\diamond \varphi$)] \marginnote{Future}
-                $\varphi$ is true sometimes in the future.
+                $\varphi$ is sometimes true in the future.
                 It is equivalent to $\lnot\square(\lnot \varphi)$.
 
             \item[Until ($\varphi \mathcal{U} \psi$)] \marginnote{Until}
@@ -360,7 +360,7 @@ The accessibility relation maps into the temporal dimension with two possible ev
 
     \item[Semantics]
         Given a Kripke structure, $M = (S, \pi, K_\texttt{1}, \dots, K_\texttt{n})$ where states are represented using integers,
-        the semantic of the operators is the following:
+        the semantics of the operators is the following:
         \begin{itemize}
             \item $(M, i) \models P \iff i \in \pi(P)$.
             \item $(M, i) \models \bigcirc\varphi \iff (M, i+1) \models \varphi$.

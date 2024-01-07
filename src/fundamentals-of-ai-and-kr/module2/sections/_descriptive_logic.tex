@@ -54,7 +54,7 @@
         \end{description}
 
 
-    \item[Assetion box (A-box)] \marginnote{Assetion box (A-box)}
+    \item[Assertion box (A-box)] \marginnote{Assertion box (A-box)}
         List of facts about individuals.
 
     \item[Terminological box (T-box)] \marginnote{Terminological box (T-box)}
@@ -71,7 +71,7 @@ Let \texttt{r} be a role, \texttt{d} be a concept, \texttt{c} be a constant and 
 The semantics of concept-forming operators are:
 \begin{descriptionlist}
     \item[\texttt{[ALL r d]}] 
-        Individuals \texttt{r}-related to the individuals of the category \texttt{d}.
+        Individuals \texttt{r}-related to only individuals of the category \texttt{d}.
         \begin{example}
             \texttt{[ALL :HasChild Male]} individuals that have zero children or only male children.
         \end{example}
@@ -140,13 +140,13 @@ The semantics of sentences are:
                         \[
                             \mathcal{I}[\texttt{[ALL r d]}] = 
                             \{ \texttt{x} \in \mathcal{D} \mid \forall \texttt{y}: 
-                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[r] \text{ then } \texttt{y} \in \mathcal{I}[d] \}
+                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[\texttt{r}] \text{ then } \texttt{y} \in \mathcal{I}[\texttt{d}] \}
                         \]
                     \item[\texttt{[EXISTS $n$ r]}] 
                         \[ 
                             \mathcal{I}[\texttt{[EXISTS $n$ r]}] = 
                             \{ \texttt{x} \in \mathcal{D} \mid \text{ exists at least $n$ distinct } \texttt{y}: 
-                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[r] \}
+                            \langle \texttt{x}, \texttt{y} \rangle \in \mathcal{I}[\texttt{r}] \}
                         \]
                     \item[\texttt{[FILLS r c]}] 
                         \[ 
@@ -186,23 +186,23 @@ The semantics of sentences are:
 \subsection{T-box reasoning}
 
 Given a knowledge base of a set of sentences $S$, we would like to be able to determine the following:
-\begin{description}
+\begin{descriptionlist}
     \item[Satisfiability] \marginnote{Satisfiability}
         A concept \texttt{d} is satisfiable w.r.t. $S$ if:
-        \[ \exists \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}] \neq \varnothing \]
+        \[ \exists \mathfrak{I}, (\mathfrak{I} \models S): \mathcal{I}[\texttt{d}] \neq \varnothing \]
 
     \item[Subsumption] \marginnote{Subsumption}
         A concept $\texttt{d}_1$ is subsumed by $\texttt{d}_2$ w.r.t. $S$ if:
-        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] \subseteq \mathfrak{I}[\texttt{d}_2] \]
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathcal{I}[\texttt{d}_1] \subseteq \mathcal{I}[\texttt{d}_2] \]
 
     \item[Equivalence] \marginnote{Equivalence}
         A concept $\texttt{d}_1$ is equivalent to $\texttt{d}_2$ w.r.t. $S$ if:
-        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] = \mathfrak{I}[\texttt{d}_2] \]
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathcal{I}[\texttt{d}_1] = \mathcal{I}[\texttt{d}_2] \]
 
     \item[Disjointness] \marginnote{Disjointness}
         A concept $\texttt{d}_1$ is disjoint to $\texttt{d}_2$ w.r.t. $S$ if:
-        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathfrak{I}[\texttt{d}_1] \neq \mathfrak{I}[\texttt{d}_2] \]
-\end{description}
+        \[ \forall \mathfrak{I}, (\mathfrak{I} \models S): \mathcal{I}[\texttt{d}_1] \neq \mathcal{I}[\texttt{d}_2] \]
+\end{descriptionlist}
 
 \begin{theorem}[Reduction to subsumption]
 \marginnote{Reduction to subsumption}
@@ -216,13 +216,13 @@ Given a knowledge base of a set of sentences $S$, we would like to be able to de
 
 \subsection{A-box reasoning}
 Given a constant \texttt{c}, a concept \texttt{d} and a set of sentences $S$, we can determine the following:
-\begin{description}
+\begin{descriptionlist}
     \item[Satisfiability] \marginnote{Satisfiability}
         A constant \texttt{c} satisfies the concept \texttt{d} if:
         \[ S \models (\texttt{c} \rightarrow \texttt{d}) \]
 
         Note that it can be reduced to subsumption.
-\end{description}
+\end{descriptionlist}
 
 
 \subsection{Computing subsumptions}
@@ -237,18 +237,19 @@ The following algorithms can be employed:
         \begin{enumerate}
             \item Normalize \texttt{d} and \texttt{e} into a conjunctive form:
                 \[ \texttt{d} = \texttt{[AND d$_1$ \dots d$_n$]} \hspace*{1cm} \texttt{e} = \texttt{[AND e$_1$ \dots e$_m$]} \]
-            \item Check if each part of \texttt{e} is accounted by at least a component of \texttt{d}.
+            \item Check if each part of \texttt{d} is accounted by at least a component of \texttt{e}.
         \end{enumerate}
         
     \item[Tableaux-based algorithms] \marginnote{Tableaux-based algorithms}
         Exploit the following theorem:
-        \[ (KB \models (C \sqsubseteq D)) \iff (KB \cup (x : C \sqcap \lnot D)) \text{ is inconsistent} \]
+        \[ \big( KB \models (\texttt{d} \sqsubseteq \texttt{e}) \big) \iff 
+            \big( KB \cup (x : \texttt{[AND d $\lnot$e]}) \big) \text{ is inconsistent} \]
 
         Note: similar to refutation.
 \end{descriptionlist}
 
 
-\subsection{Open world assumption}
+\subsection{Open-world assumption}
 
 \begin{description}
     \item[Open-world assumption] \marginnote{Open-world assumption}
@@ -256,7 +257,7 @@ The following algorithms can be employed:
 \end{description}
 
 Description logics are based on the open-world assumption.
-To reason in open world assumption, all the possible models are split upon encountering unknown facts
+To reason in open-world assumption, all the possible models are split upon encountering unknown facts
 depending on the possible cases (Oedipus example).
 
 

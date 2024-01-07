@@ -75,7 +75,7 @@
     \item[Exhaustive decomposition] \marginnote{Exhaustive decomposition}
         Given a category $c$ and a set of categories $S$, $S$ is an exhaustive decomposition of $c$ iff
         any element in $c$ belongs to at least a category in $S$:
-        \[ \texttt{exhaustiveDecomposition($S$, $c$)} \iff (\forall o \in c \iff \exists c_2 \in S: o \in c_2) \]
+        \[ \texttt{exhaustiveDecomposition($S$, $c$)} \iff \forall o: (o \in c \iff \exists c_2 \in S: o \in c_2) \]
 
     \item[Partition] \marginnote{Partition}
         Given a category $c$ and a set of categories $S$, $S$ is a partition of $c$ when:
