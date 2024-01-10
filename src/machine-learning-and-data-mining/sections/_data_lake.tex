@@ -18,7 +18,7 @@
         Stored data can be classified as:
         \begin{descriptionlist}
             \item[Hot] \marginnote{Hot storage}
-                A low volume of highly requested data that require low latency.
+                A low volume of highly requested data that requires low latency.
                 More expensive HW/SW.
             \item[Cold] \marginnote{Cold storage}
                 A large amount of data that does not have latency requirements.
@@ -95,9 +95,8 @@
 \section{Components}
 
 \subsection{Data ingestion} 
-\marginnote{Data ingestion}
     \begin{descriptionlist}
-        \item[Workload migration]
+        \item[Workload migration] \marginnote{Data ingestion}
             Inserting all the data from an existing source.
         \item[Incremental ingestion]
             Inserting changes since the last ingestion.
@@ -123,7 +122,7 @@
 \begin{description}
     \item[Columnar storage] \phantom{}
         \begin{itemize}
-            \item Homogenous data are stores contiguously.
+            \item Homogenous data are stored contiguously.
             \item Speeds up methods that process entire columns (i.e. all the values of a feature).
             \item Insertion becomes slower.
         \end{itemize}
@@ -134,9 +133,8 @@
 \end{description}
         
 \subsection{Processing and analytics} 
-\marginnote{Processing and analytics}
 \begin{descriptionlist}
-    \item[Interactive analytics]
+    \item[Interactive analytics] \marginnote{Processing and analytics}
         Interactive queries to large volumes of data.
         The results are stored back in the data lake.
     \item[Big data analytics]
@@ -149,11 +147,13 @@
 \section{Architectures}
 
 \subsection{Lambda lake} 
-\marginnote{Lambda lake}
 \begin{description}
-    \item[Batch layer] Receives and stores the data. Prepares the batch views for the serving layer.
-    \item[Serving layer] Indexes batch views for faster queries.
-    \item[Speed layer] Receives the data and prepares real-time views. The views are also stored in the serving layer.
+    \item[Batch layer] \marginnote{Lambda lake}
+        Receives and stores the data. Prepares the batch views for the serving layer.
+    \item[Serving layer] 
+        Indexes batch views for faster queries.
+    \item[Speed layer] 
+        Receives the data and prepares real-time views. The views are also stored in the serving layer.
 \end{description}
 \begin{figure}[ht]
     \centering
@@ -190,7 +190,7 @@ Framework that adds features on top of an existing data lake.
 
 \section{Metadata}
 \marginnote{Metadata}
-Metadata are used to organize a data lake.
+Metadata is used to organize a data lake.
 Useful metadata are:
 \begin{descriptionlist}
     \item[Source] Origin of the data.

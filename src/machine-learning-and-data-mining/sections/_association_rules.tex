@@ -80,7 +80,7 @@
             \item \marginnote{Frequent itemset generation}
                 Determine the itemsets with $\text{support} \geq \texttt{min\_sup}$ (frequent itemsets).
             \item \marginnote{Rule generation}
-                Determine the the association rules with $\text{confidence} \geq \texttt{min\_conf}$.
+                Determine the association rules with $\text{confidence} \geq \texttt{min\_conf}$.
         \end{enumerate}
 \end{description}
 
@@ -250,7 +250,7 @@ Measures that take into account the statistical independence of the items.
         \hline
         High support        & The rule applies to many transactions. \\
         \hline
-        High confidence     & The chance that the rule is true for some transaction is high. \\
+        High confidence     & The chance that the rule is true for some transactions is high. \\
         \hline
         High lift           & Low chance that the rule is just a coincidence. \\
         \hline
@@ -329,7 +329,7 @@ Measures that take into account the statistical independence of the items.
 
 
 \section{Multi-level association rules}
-Organize items into an hierarchy.
+Organize items into a hierarchy.
 
 \begin{description}
     \item[Specialized to general] \marginnote{Specialized to general} 
@@ -345,7 +345,7 @@ Organize items into an hierarchy.
         \end{example}
 
     \item[Redundant level] \marginnote{Redundant level}
-        A more specialized rule in the hierarchy is redundant if its confidence is similar to the one of the more general rule.
+        A more specialized rule in the hierarchy is redundant if its confidence is similar to the one of a more general rule.
 
     \item[Multi-level association rule mining] \marginnote{Multi-level association rule mining}
         Run association rule mining on different levels of abstraction (general to specialized).

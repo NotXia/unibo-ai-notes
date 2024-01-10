@@ -7,13 +7,13 @@
         Deliver the right information to the right people at the right time through the right channel.
 
     \item[\Ac{dwh}] \marginnote{\Acl{dwh}}
-        Optimized repository that stores information for decision making processes.
+        Optimized repository that stores information for decision-making processes.
         \Acp{dwh} are a specific type of \ac{dss}.
 
         Features:
         \begin{itemize}
-            \item Subject-oriented: focused on enterprise specific concepts.
-            \item Integrates data from different sources and provides an unified view.
+            \item Subject-oriented: focused on enterprise-specific concepts.
+            \item Integrates data from different sources and provides a unified view.
             \item Non-volatile storage with change tracking. 
         \end{itemize}
 
@@ -143,7 +143,7 @@ Operational data may contain:
     \item[Missing data] 
     \item[Improper use of fields] (e.g. saving the phone number in the \texttt{notes} field)
     \item[Wrong values] (e.g. 30th of February)
-    \item[Inconsistency] (e.g. use of different abbreviations)
+    \item[Inconsistencies] (e.g. use of different abbreviations)
     \item[Typos]    
 \end{descriptionlist}
 
@@ -154,10 +154,10 @@ Methods to clean and increase the quality of the data are:
         Applicable if the domain is known and limited.
         
     \item[Approximate merging] \marginnote{Approximate merging}
-        Merging data that do not have a common key.
+        Methods to merge data that do not have a common key.
         \begin{description}
             \item[Approximate join]
-                Use non-key attributes to join two tables (e.g. using the name and surname instead of an unique identifier).
+                Use non-key attributes to join two tables (e.g. using the name and surname instead of a unique identifier).
 
             \item[Similarity approach]
                 Use similarity functions (e.g. edit distance) to merge multiple instances of the same information
@@ -178,7 +178,7 @@ Data are transformed to respect the format of the data warehouse:
         Creating new information by using existing attributes (e.g. compute profit from receipts and expenses)
 
     \item[Separation and concatenation] \marginnote{Separation and concatenation}
-        Denormalization of the data: introduces redundances (i.e. breaks normal form\footnote{\url{https://en.wikipedia.org/wiki/Database_normalization}}) 
+        Denormalization of the data: introduces redundancies (i.e. breaks normal form\footnote{\url{https://en.wikipedia.org/wiki/Database_normalization}}) 
         to speed up operations.
 \end{descriptionlist}
 
@@ -332,13 +332,14 @@ Aggregation operators can be classified as:
 \end{description}
 
 
-\subsection{Logical design}
+
+\section{Logical design}
 \marginnote{Logical design}
 Defining the data structures (e.g. tables and relationships) according to a conceptual model.
-There are mainly two strategies:
+There are two main strategies:
 \begin{descriptionlist}
     \item[Star schema] \marginnote{Star schema}
-        A fact table that contains all the measures and linked to dimensional tables.
+        A fact table that contains all the measures is linked to dimensional tables.
         \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{img/logical_star_schema.png}
@@ -346,8 +347,8 @@ There are mainly two strategies:
         \end{figure}
 
     \item[Snowflake schema] \marginnote{Snowflake schema}
-        A star schema variant with partially normalized dimension tables.
-        \begin{figure}[ht]
+        A star schema variant with partially normalized dimensional tables.
+        \begin{figure}[H]
             \centering
             \includegraphics[width=\textwidth]{img/logical_snowflake_schema.png}
             \caption{Example of snowflake schema}

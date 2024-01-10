@@ -10,7 +10,7 @@
 
     \item[Dissimilarity] \marginnote{Dissimilarity}
         Measures how two objects differ.
-        0 indicates no difference while the upper-bound varies.
+        0 indicates no difference while the upper bound varies.
 \end{description}
 
 \begin{table}[ht]
@@ -119,7 +119,7 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
 \begin{description}
     \item[Pearson's correlation] \marginnote{Pearson's correlation}
         Measure of linear relationship between a pair of quantitative attributes $e_1$ and $e_2$.
-        To compute the Pearson's correlation, the values of $e_1$ and $e_2$ are first standardized and then ordered to obtain the vectors $\vec{e}_1$ and $\vec{e}_2$.
+        To compute Pearson's correlation, the values of $e_1$ and $e_2$ are first standardized and then ordered to obtain the vectors $\vec{e}_1$ and $\vec{e}_2$.
         The correlation is then computed as the dot product between $\vec{e}_1$ and $\vec{e}_2$:
         \[ \texttt{corr}(e_1, e_2) = \langle \vec{e}_1, \vec{e}_2 \rangle \]
 
@@ -202,10 +202,10 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
         Given the global centroid of the dataset $\vec{c}$ and
         $K$ clusters each with $N_i$ objects,
         the sum of squares between clusters is given by:
-        \[ \texttt{SSB} = \sum_{i=1}^{K} N_i \texttt{dist}(\vec{c}_i, \vec{c})^2 \]
+        \[ \texttt{SSB} = \sum_{i=1}^{K} N_i \cdot \texttt{dist}(\vec{c}_i, \vec{c})^2 \]
 
     \item[Total sum of squares] \marginnote{Total sum of squares}
-        Sum of the squared distances between the point of the dataset and the global centroid.
+        Sum of the squared distances between the points of the dataset and the global centroid.
         It can be shown that the total sum of squares can be computed as:
         \[ \texttt{TSS} = \texttt{SSE} + \texttt{SSB} \]
 
@@ -217,7 +217,7 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
         The Silhouette score of a data point $\vec{x}_i$ belonging to a cluster $K_i$ is given by two components:
         \begin{description}
             \item[Sparsity contribution] 
-                The average distance of $\vec{x}_i$ to all other points in $K_i$:
+                The average distance of $\vec{x}_i$ to the other points in $K_i$:
                 \[ a(\vec{x}_i) = \frac{1}{\vert K_i \vert - 1} \sum_{\vec{x}_j \in K_i, \vec{x}_j \neq \vec{x}_i} \texttt{dist}(\vec{x}_i, \vec{x}_j) \]
             
             \item[Separation contribution] 
@@ -278,7 +278,7 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
             \item an encoding function $\texttt{encode}: \mathbb{R}^D \rightarrow [1, K]$;
             \item a decoding function $\texttt{decode}: [1, K] \rightarrow \mathbb{R}^D$.
         \end{itemize}
-        Distortion (or inertia) is defines as:
+        Distortion (or inertia) is defined as:
         \[ \texttt{distortion} = \sum_{i=1}^{N} \big(\vec{x}_i - \texttt{decode}(\texttt{encode}(\vec{x_i})) \big)^2 \]
 
         \begin{theorem}
@@ -288,7 +288,7 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
                 \item The center of a point is the centroid of the cluster it belongs to.
             \end{enumerate}
 
-            Note that k-means alternates point 1 and 2.
+            Note that k-means alternates points 1 and 2.
 
             \begin{proof}
                 The second point is derived by imposing the derivative of \texttt{distortion} to 0.
@@ -311,7 +311,7 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
         \begin{description}
             \item[Termination] 
                 There are a finite number of ways to cluster $N$ objects into $K$ clusters.
-                By construction, at each iteration the \texttt{distortion} is reduced.
+                By construction, at each iteration, the \texttt{distortion} is reduced.
                 Therefore, k-means is guaranteed to terminate.
 
             \item[Non-optimality] 
@@ -320,11 +320,11 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
                 The starting configuration is usually composed of points distant as far as possible.
 
             \item[Noise]
-                Outliers heavily influences the clustering result. Sometimes, it is useful to remove them.
+                Outliers heavily influence the clustering result. Sometimes, it is useful to remove them.
 
             \item[Complexity]
                 Given a $D$-dimensional dataset of $N$ points,
-                Running k-means for $T$ iterations to find $K$ clusters has complexity $O(TKND)$.
+                running k-means for $T$ iterations to find $K$ clusters has complexity $O(TKND)$.
         \end{description}
 \end{description}
 
@@ -333,9 +333,9 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
 \section{Hierarchical clustering}
 
 \begin{description}
-    \item[Dendogram] \marginnote{Dendogram}
-        Tree-like structure where the root is a cluster of all data points and 
-        the leaves are clusters with a single data points.
+    \item[Dendrogram] \marginnote{Dendrogram}
+        Tree-like structure where the root is a cluster of all the data points and 
+        the leaves are clusters with a single data point.
 
     \item[Agglomerative] \marginnote{Agglomerative} 
         Starts with a cluster per data point and iteratively merges them (leaves to root).
@@ -380,12 +380,12 @@ Given two $D$-dimensional data entries $p$ and $q$, possible distance metrics ar
         \begin{enumerate}
             \item Initialize a cluster for each data point.
             \item Compute the distance matrix between each cluster.
-            \item Merge the two clusters with lowest separation, 
-                drop their values from the distance matrix and add an row/column for the newly created cluster.
+            \item Merge the two clusters with the lowest separation, 
+                drop their values from the distance matrix and add a row/column for the newly created cluster.
             \item Go to point 2. if the number of clusters is greater than one.
         \end{enumerate}
 
-        After the construction of the dendogram, a cut \marginnote{Cut} can be performed at a user define level.
+        After the construction of the dendrogram, a cut \marginnote{Cut} can be performed at a user-defined level.
         A cut near the root will result in few bigger clusters.
         A cut near the leaves will result in numerous smaller clusters.
         
@@ -441,9 +441,9 @@ Consider as clusters the high-density areas of the data space.
             \item $\vec{q}$ is a core point.
             \item There exists a sequence of points $\vec{s}_1, \dots, \vec{s}_z$ such that:
             \begin{itemize}
-                \item $\vec{s}_1$ is directly density reachable from $\vec{p}$.
+                \item $\vec{s}_1$ is directly density reachable from $\vec{q}$.
                 \item $\vec{s}_{i+1}$ is directly density reachable from $\vec{s}_i$.
-                \item $\vec{q}$ is directly density reachable from $\vec{s}_z$.
+                \item $\vec{p}$ is directly density reachable from $\vec{s}_z$.
             \end{itemize}
         \end{itemize}
 
@@ -455,7 +455,7 @@ Consider as clusters the high-density areas of the data space.
         Determine clusters as maximal sets of density connected points.
         Border points not density connected to any core point are labeled as noise.
 
-        In other words, what happens it the following:
+        In other words, what happens is the following:
         \begin{itemize}
             \item Neighboring core points are part of the same cluster.
             \item Border points are part of the cluster of their nearest core point neighbor.
@@ -480,7 +480,7 @@ Consider as clusters the high-density areas of the data space.
                 \end{description}
 
             \item[Complexity]
-                Complexity of $O(N^2)$ reduced to $O(N \log N)$ if using spatial indexing.
+                Complexity of $O(N^2)$, reduced to $O(N \log N)$ if using spatial indexing.
         \end{description}
 \end{description}
 
@@ -493,7 +493,7 @@ Consider as clusters the high-density areas of the data space.
 
         \begin{description}
             \item[Kernel function] \marginnote{Kernel function}
-                Symmetric and monotonically decreasing function to describe the influence of a data point to its neighbors.
+                Symmetric and monotonically decreasing function to describe the influence of a data point on its neighbors.
 
                 A typical kernel function is the Gaussian.
 
@@ -514,7 +514,7 @@ Consider as clusters the high-density areas of the data space.
             \item Derive a density function of the dataset.
             \item Identify local maximums and consider them as density attractors.
             \item Associate to each data point the density attractor in the direction of maximum increase.
-            \item Points associated to the same density attractor are part of the same cluster.
+            \item Points associated with the same density attractor are part of the same cluster.
             \item Remove clusters with a density attractor lower than $\xi$.
             \item Merge clusters connected through a path of points whose density is greater or equal to $\xi$ 
                 (e.g. in \Cref{img:denclue} the center area will result in many small clusters that can be merged with an appropriate $\xi$).

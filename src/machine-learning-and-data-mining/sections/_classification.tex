@@ -65,9 +65,9 @@
         A supervised dataset can be randomly split into:
         \begin{descriptionlist}
             \item[Train set] \marginnote{Train set}
-                Used to learn the model. Usually the largest split. Can be seen as an upper-bound of the model performance.
+                Used to learn the model. Usually the largest split. Can be seen as an upper bound of the model performance.
             \item[Test set] \marginnote{Test set}
-                Used to evaluate the trained model. Can be seen as a lower-bound of the model performance.
+                Used to evaluate the trained model. Can be seen as a lower bound of the model performance.
             \item[Validation set] \marginnote{Validation set}
                 Used to evaluate the model during training and/or for tuning parameters.
         \end{descriptionlist}
@@ -93,7 +93,7 @@
 
 \subsection{Test set error}
 \textbf{\underline{Disclaimer: I'm very unsure about this part}}\\
-The error on the test set can be seen as a lower-bound error of the model.
+The error on the test set can be seen as a lower bound error of the model.
 If the test set error ratio is $x$, we can expect an error of $(x \pm  \text{confidence interval})$.
 
 Predicting the elements of the test set can be seen as a binomial process (i.e. a series of $N$ Bernoulli processes).
@@ -114,7 +114,7 @@ be between the $\frac{\alpha}{2}$ and $(1-\frac{\alpha}{2})$ quantiles of the ga
 We can estimate $p$ using the Wilson score interval\footnote{\url{https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval}}:
 \[ p = \frac{1}{1+\frac{1}{N}z^2} \left( f + \frac{1}{2N}z^2 \pm z\sqrt{\frac{1}{N}f(1-f) + \frac{z^2}{4N^2}} \right) \]
 where $z$ depends on the value of $\alpha$.
-For a pessimistic estimate, $\pm$ becomes a $+$. Vice versa, for a optimistic estimate, $\pm$ becomes a $-$.
+For a pessimistic estimate, $\pm$ becomes a $+$. Vice versa, for an optimistic estimate, $\pm$ becomes a $-$.
 
 As $N$ is at the denominator, this means that for large values of $N$, the uncertainty becomes smaller.
 \begin{center}
@@ -127,25 +127,25 @@ As $N$ is at the denominator, this means that for large values of $N$, the uncer
     \item[Holdout] \marginnote{Holdout}
         The dataset is split into train, test and, if needed, validation.
 
-    \item[Cross validation] \marginnote{Cross validation}
+    \item[Cross-validation] \marginnote{Cross-validation}
         The training data is partitioned into $k$ chunks.
-        For $k$ iterations, one of the chunks if used to test and the others to train a new model.
+        For $k$ iterations, one of the chunks is used to test and the others to train a new model.
         The overall error is obtained as the average of the errors of the $k$ iterations.
 
-        At the end, the final model is still trained on the entire training data, 
-        while cross validation results are used as an evaluation and comparison metric.
-        Note that cross validation is done on the training set, so a final test set can still be used to
-        evaluate the final model.
+        In the end, the final model is still trained on the entire training data, 
+        while cross-validation results are used as an evaluation and comparison metric.
+        Note that cross-validation is done on the training set, so a final test set can still be used to
+        evaluate the resulting model.
 
         \begin{figure}[h]
             \centering
             \includegraphics[width=0.6\textwidth]{img/cross_validation.png}
-            \caption{Cross validation example}
+            \caption{Cross-validation example}
         \end{figure}
 
     \item[Leave-one-out] \marginnote{Leave-one-out}
-        Extreme case of cross validation with $k=N$, the size of the training set.
-        In this case the whole dataset but one element is used for training and the remaining entry for testing.
+        Extreme case of cross-validation with $k=N$, the size of the training set.
+        In this case, the whole dataset but one element is used for training and the remaining entry for testing.
 
     \item[Bootstrap] \marginnote{Bootstrap}
         Statistical sampling of the dataset with replacement (i.e. an entry can be selected multiple times).
@@ -192,7 +192,7 @@ Given a test set of $N$ element, possible metrics are:
 
     \item[Recall/Sensitivity] \marginnote{Recall}
         Number of true positives among the real positives
-        (i.e. how many real positive the model predicted).
+        (i.e. how many real positives the model predicted).
         \[ \text{recall} = \frac{TP}{TP + FN} \]
 
     \item[Specificity] \marginnote{Specificity}
@@ -296,7 +296,7 @@ a macro (unweighted) average or a class-weighted average.
     \item[ROC curve] \marginnote{ROC curve}
         The ROC curve can be seen as a way to represent multiple confusion matrices of a classifier
         that uses different thresholds.
-        The x-axis of a ROC curve represent the false positive rate while the y-axis represent the true positive rate.
+        The x-axis of a ROC curve represents the false positive rate while the y-axis represents the true positive rate.
 
         A straight line is used to represent a random classifier.
         A threshold can be considered good if it is high on the y-axis and low on the x-axis.
@@ -314,7 +314,7 @@ A classifier may not perform well when predicting a minority class of the traini
 Possible solutions are:
 \begin{descriptionlist}
     \item[Undersampling] \marginnote{Undersampling}
-        Randomly reduce the number of example of the majority classes.
+        Randomly reduce the number of examples of the majority classes.
 
     \item[Oversampling] \marginnote{Oversampling}
         Increase the examples of the minority classes.
@@ -324,7 +324,7 @@ Possible solutions are:
                 \begin{enumerate}
                     \item Randomly select an example $x$ belonging to the minority class.
                     \item Select a random neighbor $z_i$ among its $k$-nearest neighbors $z_1, \dots, z_k$.
-                    \item Synthetize a new example by selecting a random point of the feature space between $x$ and $z_i$.
+                    \item Synthesize a new example by selecting a random point of the feature space between $x$ and $z_i$.
                 \end{enumerate}
         \end{description}
 
@@ -346,7 +346,7 @@ Possible solutions are:
 \begin{description}
     \item[Shannon theorem] \marginnote{Shannon theorem}
         Let $\matr{X} = \{ \vec{v}_1, \dots, \vec{v}_V \}$ be a data source where 
-        each of the possible value has probability $p_i = \prob{\vec{v}_i}$.
+        each of the possible values has probability $p_i = \prob{\vec{v}_i}$.
         The best encoding allows to transmit $\matr{X}$ with 
         an average number of bits given by the \textbf{entropy} of $X$: \marginnote{Entropy}
         \[ H(\matr{X}) = - \sum_j p_j \log_2(p_j) \]
@@ -354,7 +354,7 @@ Possible solutions are:
         If $p_j \sim 1$, then the surprise of observing $\vec{v}_j$ is low, vice versa,
         if $p_j \sim 0$, the surprise of observing $\vec{v}_j$ is high.
         
-        Therefore, when $H(\matr{X})$ is high, $\matr{X}$ is close to an uniform distribution.
+        Therefore, when $H(\matr{X})$ is high, $\matr{X}$ is close to a uniform distribution.
         When $H(\matr{X})$ is low, $\matr{X}$ is close to a constant.
 
         \begin{example}[Binary source] \phantom{}\\
@@ -382,7 +382,7 @@ Possible solutions are:
         It is computed as:
         \[ IG(c \,\vert\, d \,:\, t) = H(c) - H(c \,\vert\, d \,:\, t) \]
         When $H(c \,\vert\, d \,:\, t)$ is low, $IG(c \,\vert\, d \,:\, t)$ is high 
-        as splitting with threshold $t$ result in purer groups.
+        as splitting with threshold $t$ results in purer groups.
         Vice versa, when $H(c \,\vert\, d \,:\, t)$ is high, $IG(c \,\vert\, d \,:\, t)$ is low
         as splitting with threshold $t$ is not very useful.
 
@@ -520,7 +520,7 @@ each node requires to process all the attributes.
 Assuming an average height of $O(\log N)$, 
 the overall complexity for induction (parameters search) is $O(DN \log N)$.
 
-Moreover, The other operations of a binary tree have complexity:
+Moreover, the other operations of a binary tree have complexity:
 \begin{itemize}
     \item Threshold search and binary split: $O(N \log N)$ (scan the dataset for the threshold).
     \item Pruning: $O(N \log N)$ (requires to scan the dataset).
@@ -584,8 +584,8 @@ This has complexity $O(h)$, with $h$ the height of the tree.
     \item[Smooting] 
         If the value $e_{ij}$ of the domain of a feature $E_i$ never appears in the dataset, 
         its probability $\prob{e_{ij} \mid c}$ will be 0 for all classes.
-        This nullifies all the probabilities that uses this feature when 
-        computing the products chain during inference.
+        This nullifies all the probabilities that use this feature when 
+        computing the product chain during inference.
         Smoothing methods can be used to avoid this problem.
 
         \begin{description}
@@ -597,14 +597,14 @@ This has complexity $O(h)$, with $h$ the height of the tree.
                     \item[$\vert \mathbb{D}_{E_i} \vert$] The number of distinct values in the domain of $E_i$.
                     \item[\normalfont$\text{af}_{c}$] The absolute frequency of the class $c$.
                 \end{descriptionlist}
-                the smoothed frequency is computed as:
+                The smoothed frequency is computed as:
                 \[
                     \prob{e_{ij} \mid c} = \frac{\text{af}_{e_{ij}, c} + \alpha}{\text{af}_{c} + \alpha \vert \mathbb{D}_{E_i} \vert}    
                 \]
 
                 A common value of $\alpha$ is 1.
                 When $\alpha = 0$, there is no smoothing.
-                For higher values of $\alpha$, the smoothed feature gain more importance when computing the priors.
+                For higher values of $\alpha$, the smoothed feature gains more importance when computing the priors.
         \end{description}
 
     \item[Missing values] \marginnote{Missing values}
@@ -704,7 +704,7 @@ In practice, a maximum number of iterations is set.
             \end{split}    
         \]
         where $M$ is the margin, $w_i$ are the weights of the hyperplane and $c_i = \{-1, 1 \}$ is the class.
-        The second constraint imposes the hyperplane to have a large margine. 
+        The second constraint imposes the hyperplane to have a large margin. 
         For positive labels ($c_i=1$), this is true when the hyperplane is positive.
         For negative labels ($c_i=-1$), this is true when the hyperplane is negative.
 
@@ -736,7 +736,7 @@ Then, the data and the boundary is mapped back into the original space.
     \caption{Example of mapping from $\mathbb{R}^2$ to $\mathbb{R}^3$}
 \end{figure}
 
-The kernel trick allows to avoid to explicitly map the dataset into the new space by using kernel functions.
+The kernel trick allows to avoid explicitly mapping the dataset into the new space by using kernel functions.
 Known kernel functions are:
 \begin{descriptionlist}
     \item[Linear] $K(x, y) = \langle x, y \rangle$.
@@ -755,7 +755,7 @@ depending on the effectiveness of data caching.
 \begin{itemize}
     \item Training an SVM model is generally slower.
     \item SVM is not affected by local minimums.
-    \item SVM do not suffer the curse of dimensionality.
+    \item SVM does not suffer the curse of dimensionality.
     \item SVM does not directly provide probability estimates. 
         If needed, these can be computed using a computationally expensive method.
 \end{itemize}
@@ -771,10 +771,12 @@ depending on the effectiveness of data caching.
     \item[Activation function] \marginnote{Activation function}
         Activation functions are useful to add non-linearity.
 
-        In a linear system, if there is noise in the input, it is transferred to the output 
-        (i.e. linearity implies that $f(x + \text{noise}) = f(x) + f(\text{noise})$).
-        On the other hand, a non-linear system is generally more robust 
-        (i.e. non-linearity generally implies that $f(x + \text{noise}) \neq f(x) + f(\text{noise})$)
+        \begin{remark}
+            In a linear system, if there is noise in the input, it is transferred to the output 
+            (i.e. linearity implies that $f(x + \text{noise}) = f(x) + f(\text{noise})$).
+            On the other hand, a non-linear system is generally more robust 
+            (i.e. non-linearity generally implies that $f(x + \text{noise}) \neq f(x) + f(\text{noise})$)
+        \end{remark}
 
     \item[Feedforward neural network] \marginnote{Feedforward neural network}
         Network with the following flow:
@@ -791,7 +793,7 @@ Inputs are fed to the network and backpropagation is used to update the weights.
         Size of the step for gradient descent.
 
     \item[Epoch] \marginnote{Epoch} 
-        A round of training where the entire dataset has been processed.
+        A round of training where the entire dataset is processed.
 
     \item[Stopping criteria] \marginnote{Stopping criteria}
         Possible conditions to stop the training are:
@@ -874,7 +876,7 @@ Different strategies to train an ensemble classifier can be used:
 \subsection{Random forests}
 \marginnote{Random forests}
 
-Different decision trees trained on a different random sampling of the training set and different subset of features.
+Multiple decision trees trained on a different random sampling of the training set and different subsets of features.
 A prediction is made by averaging the output of each tree.
 
 \begin{description}
