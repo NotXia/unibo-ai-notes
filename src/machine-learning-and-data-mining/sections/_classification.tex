@@ -515,7 +515,7 @@ Possible solutions are:
 
 \subsection{Complexity}
 Given a dataset $\matr{X}$ of $N$ instances and $D$ attributes,
-each level of the tree requires to evaluate all the dataset and
+each level of the tree requires to evaluate the whole dataset and
 each node requires to process all the attributes.
 Assuming an average height of $O(\log N)$, 
 the overall complexity for induction (parameters search) is $O(DN \log N)$.
@@ -585,7 +585,7 @@ This has complexity $O(h)$, with $h$ the height of the tree.
         If the value $e_{ij}$ of the domain of a feature $E_i$ never appears in the dataset, 
         its probability $\prob{e_{ij} \mid c}$ will be 0 for all classes.
         This nullifies all the probabilities that use this feature when 
-        computing the product chain during inference.
+        computing the chain of products during inference.
         Smoothing methods can be used to avoid this problem.
 
         \begin{description}
