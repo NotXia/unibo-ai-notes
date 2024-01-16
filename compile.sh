@@ -23,24 +23,24 @@ mkdir -p $out_dir
 touch $hash_file
 
 # $1: path of the directory
-getDirLastHash () {
+getDirLastHash() {
     path="$1"
     echo `awk -F"," "\\$1 == \"$path\" { print \\$2 } " $hash_file`
 }
 
 # $1: path of the directory
-getDirCurrHash () {
+getDirCurrHash() {
     path="$1"
     echo `git log -n 1 --format='%h' $path/**/*.!(cls)`
 }
 
-getLastUpdateDate () {
+getLastUpdateDate() {
     # Get the last update date.
     # Ignores .cls and commits containing "<noupdate>"
     echo `LC_ALL="en_GB.UTF-8" git log -1 --grep="<noupdate>" --invert-grep --pretty="format:%ad" --date="format:%d %B %Y" ./**/*.!(cls)`
 }
 
-updateHashes () {
+updateHashes() {
     cd $work_dir
     echo "ainotes.cls,`git log -n 1 --format='%h' ./ainotes.cls`" > $new_hash_file
     for f in **/[!_]*.tex; do
@@ -74,18 +74,18 @@ for f in **/[!_]*.tex; do
     cd ${f_dir}
 
     # Save copy of source .tex
-    cp main.tex main.bkp.tex
+    cp $f_base $f_base.bkp
 
     # Insert last update date
     last_update=`getLastUpdateDate`
-    sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" main.tex
+    sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" $f_base
 
     # Compile
     latexmk -pdf -jobname=${f_nameonly} ${f_base}
     mv ${f_nameonly}.pdf $out_dir/${f_dir}/.
    
     # Restore source
-    mv main.bkp.tex main.tex
+    mv $f_base.bkp $f_base
 
     cd $work_dir
 done
