@@ -264,7 +264,7 @@ The symbols of propositional logic are:
                     \begin{prooftree}
                         \AxiomC{$\psi$}
                         \AxiomC{$\varphi$}
-                        \RightLabel{$\land$I}\BinaryInfC{$\varphi \land \psi$}
+                        \RightLabel{$\land_\text{i}$}\BinaryInfC{$\varphi \land \psi$}
                     \end{prooftree}
                 \end{minipage}
                 \begin{minipage}{.4\linewidth}
@@ -274,7 +274,7 @@ The symbols of propositional logic are:
                         \UnaryInfC{\vdots}
                         \noLine
                         \UnaryInfC{$\psi$}
-                        \RightLabel{$\Rightarrow$I}\UnaryInfC{$\varphi \Rightarrow \psi$}
+                        \RightLabel{$\Rightarrow_\text{i}$}\UnaryInfC{$\varphi \Rightarrow \psi$}
                     \end{prooftree}
                 \end{minipage}
             
@@ -283,20 +283,20 @@ The symbols of propositional logic are:
                 \begin{minipage}{.25\linewidth}
                     \begin{prooftree}
                         \AxiomC{$\varphi \land \psi$}
-                        \RightLabel{$\land$E}\UnaryInfC{$\varphi$}
+                        \RightLabel{$\land_\text{e}$}\UnaryInfC{$\varphi$}
                     \end{prooftree}
                 \end{minipage}
                 \begin{minipage}{.25\linewidth}
                     \begin{prooftree}
                         \AxiomC{$\varphi \land \psi$}
-                        \RightLabel{$\land$E}\UnaryInfC{$\psi$}
+                        \RightLabel{$\land_\text{e}$}\UnaryInfC{$\psi$}
                     \end{prooftree}
                 \end{minipage}
                 \begin{minipage}{.3\linewidth}
                     \begin{prooftree}
                         \AxiomC{$\varphi$}
                         \AxiomC{$\varphi \Rightarrow \psi$}
-                        \RightLabel{$\Rightarrow$E}\BinaryInfC{$\psi$}
+                        \RightLabel{$\Rightarrow_\text{e}$}\BinaryInfC{$\psi$}
                     \end{prooftree}
                 \end{minipage}
 
@@ -307,7 +307,7 @@ The symbols of propositional logic are:
                     \AxiomC{$\psi$}
                     \AxiomC{$\lnot \psi$}
                     \BinaryInfC{$\bot$}
-                    \RightLabel{$\bot$}\UnaryInfC{$\varphi$}
+                    \UnaryInfC{$\varphi$}
                 \end{prooftree}
 
             \item[Reductio ad absurdum] \marginnote{Reductio ad absurdum}
