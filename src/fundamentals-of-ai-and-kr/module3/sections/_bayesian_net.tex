@@ -97,7 +97,7 @@
                     it is possible to estimate \\$\texttt{Intelligence}$.
 
                     Note that if $\texttt{Grade}$ was not known, 
-                    $\texttt{Difficulty}$ and $\texttt{Intelligence}$ would be independent.
+                    $\texttt{Difficulty}$ and $\texttt{Intelligence}$ would have been independent.
                     \begin{center}
                         \includegraphics[width=0.75\linewidth]{img/_explainaway_example.pdf}
                     \end{center}
@@ -431,7 +431,7 @@ A node $X$ has $k$ parents $U_1, \dots, U_k$ and possibly a leak node $U_L$ to c
 
 Each node $U_i$ has a failure (inhibition) probability $q_i$:
 \[ q_i = \prob{\lnot x \mid u_i, \lnot u_j \text{ for } j \neq i} \]
-The CRT can be built by computing the probabilities as:
+The CPT can be built by computing the probabilities as:
 \[ \prob{\lnot x \mid \texttt{Parents($X$)}} = \prod_{j:\, U_j = \texttt{true}} q_j \]
 In other words:
 \[ \prob{\lnot x \mid u_1, \dots, u_n} = 
@@ -451,7 +451,7 @@ Because only the failure probabilities are required, the number of parameters is
         \end{split}    
     \]
 
-    Known the failure probabilities, the entire CRT can be computed:
+    Known the failure probabilities, the entire CPT can be computed:
     \begin{center}
         \begin{tabular}{c|c|c|rc|c}
             \hline
@@ -543,7 +543,7 @@ Possible approaches are:
         \end{figure}
 
     \item[Density estimation] \marginnote{Density estimation}
-        Parameters of the conditional distribution are learnt:
+        Parameters of the conditional distribution can be learned using:
         \begin{description}
             \item[Bayesian learning] calculate the probability of each hypothesis.
             \item[Approximations] using the maximum-a-posteriori and maximum-likelihood hypothesis.
