@@ -113,7 +113,7 @@ The probability $\mathcal{S}$ of sampling a specific event $\matr{Z}$ and eviden
 probability of the single events in $\matr{Z}$ knowing their parents:
 \[ \mathcal{S}(\matr{Z}, \matr{E}) = \prod_{z_i \in \matr{Z}} \prob{z_i | \texttt{parents}(z_i)} \]
 
-The weights of a sample $(\matr{Z}, \matr{E})$ is given by the
+The weight of a sample $(\matr{Z}, \matr{E})$ is given by the
 probability of the single events in $\matr{E}$ knowing their parents:
 \[ \text{w}(\matr{Z}, \matr{E}) = \prod_{e_i \in \matr{E}} \prob{e_i | \texttt{parents}(e_i)} \]
 
@@ -129,7 +129,7 @@ probability of the single events in $\matr{E}$ knowing their parents:
                 &= \prob{\matr{Z}, \matr{E}}
             \end{split}
         \]
-        This is consequence of the global semantics of Bayesian networks.
+        This is a consequence of the global semantics of Bayesian networks.
     \end{proof}
 \end{theorem}
 
@@ -148,7 +148,7 @@ probability of the single events in $\matr{E}$ knowing their parents:
     \[ \langle C=\texttt{true}, S=\texttt{true}, \prob{R | C=\texttt{true}}, W=\texttt{false} \rangle \]
     \[ \langle C=\texttt{true}, S=\texttt{true}, R=\texttt{true}, W=\texttt{false} \rangle \]
 
-    The weight associated to the sample is given by the probabilities of the evidence:
+    The weight associated to the sample is given by the probability of the evidence:
     \[ 
         \begin{split}
             \text{w} &= \prob{S=\texttt{true} | C=\texttt{true}} \cdot \prob{W=\texttt{false} | S=\texttt{true}, R=\texttt{true}} \\
