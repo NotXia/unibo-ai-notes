@@ -1,0 +1,88 @@
+\chapter{Introduction}
+
+\begin{description}
+    \item[Computational task] \marginnote{Computational task}
+        Description of a problem.
+
+    \item[Computational process] \marginnote{Computational process}
+        Algorithm to solve a task.
+
+        \begin{description}
+            \item[Algorithm (informal)] 
+                A finite description of 
+                elementary and deterministic computation steps. 
+        \end{description}
+\end{description}
+
+
+\section{Notations}
+
+\begin{description}
+    \item[Set of the first $n$ natural numbers]
+        Given $n \in \mathbb{N}$, we have that $[n] = \{ 1, \dots, n \}$.
+\end{description}
+
+
+\subsection{Strings}
+
+\begin{description}
+    \item[Alphabet] \marginnote{Alphabet} 
+        Finite set of symbols.
+    
+    \item[String] \marginnote{String} 
+        Finite, ordered, and possibly empty tuple of elements of an alphabet.
+
+        The empty string is denoted as $\varepsilon$.
+    
+    \item[Strings of given length]
+        Given an alphabet $S$ and $n \in \mathbb{N}$, we denote with $S^n$ the set of all the strings over $S$ of length $n$.
+
+    \item[Kleene star] \marginnote{Kleene star}
+        Given an alphabet $S$, we denote with $S^* = \bigcup_{n=0}^{\infty} S^n$ the set of all the strings over $S$.
+
+    \item[Language] \marginnote{Language}
+        Given an alphabet $S$, a language $\mathcal{L}$ is a subset of $S^*$.
+\end{description}
+
+
+\subsection{Tasks encoding}
+
+\begin{description}
+    \item[Encoding] \marginnote{Encoding}
+        Given a set $A$, any element $x \in A$ can be encoded into a string of the language $\{0, 1\}^*$.
+        The encoding of $x$ is denoted as $\enc{x}$ or simply $x$.
+
+    \item[Task function] \marginnote{Task}
+        Given two countable sets $A$ and $B$ representing the domain,
+        a task can be represented as a function $f: A \rightarrow B$.
+
+        When not stated, $A$ and $B$ are implicitly encoded into $\{0, 1\}^*$.
+
+    \item[Characteristic function] \marginnote{Characteristic function}
+        Boolean function of form $f: \{0, 1\}^* \rightarrow \{0, 1\}$.
+
+        Given a characteristic function $f$, the language $\mathcal{L}_f = \{ x \in \{0, 1\}^* \mid f(x) = 1 \}$
+        can be defined.
+
+    \item[Decision problem] \marginnote{Decision problem}
+        Given a language $\mathcal{M}$, a decision problem is the task of computing a boolean function $f$ 
+        able to determine if a string belongs to $\mathcal{M}$ (i.e. $\mathcal{L}_f = \mathcal{M}$).
+\end{description}
+
+
+\subsection{Asymptotic notation}
+
+\begin{description}
+    \item[Big O] \marginnote{Big O}
+        A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $O(g)$ if $g$ is an upper bound of $f$.
+        \[ f \in O(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}: f(n) \leq c \cdot g(n) \]
+    
+    \item[Big Omega] \marginnote{Big Omega}
+        A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $\Omega(g)$ if $g$ is a lower bound of $f$.
+        \[ f \in \Omega(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}: f(n) \geq c \cdot g(n) \]
+
+    \item[Big Theta]\marginnote{Big Theta}
+        A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $\Theta(g)$ if $g$ is both an upper and lower bound of $f$.
+        \[ f \in \Theta(g) \iff f \in O(g) \text{ and } f \in \Omega(g) \]
+    
+\end{description}
