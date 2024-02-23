@@ -1,0 +1,97 @@
+\chapter{Constraint programming}
+
+
+
+\section{Definitions}
+
+
+\begin{description}
+    \item[Constraint satisfaction problem (CSP)] \marginnote{Constraint satisfaction problem (CSP)}
+        Triple $\langle X, D, C \rangle$ where:
+        \begin{itemize}
+            \item $X$ is the set of decision variables $\{ x_1, \dots, x_n \}$.
+            \item $D$ is the set of domains $\{ D_1, \dots, D_n \}$ for $X$.
+            \item $C$ is the set of constraints $\{ C_1, \dots, C_m \}$.
+                Each $C_i$ is a relation over the domain of $X$ (i.e. $C_i \subseteq D_j \times \dots \times D_k$).
+        \end{itemize}
+
+
+    \item[Constraint optimization problem (COP)] \marginnote{Constraint optimization problem (COP)}
+        Tuple $\langle X, D, C, f \rangle$ where $\langle X, D, C \rangle$ is a CSP and 
+        $f$ is the objective variable to minimize or maximize.
+
+
+    \item[Constraint] \marginnote{Constraint}
+        \phantom{}
+        \begin{description}
+            \item[Extensional representation] List all allowed combinations. 
+            \item[Intensional representation] Declarative relations between variables.
+        \end{description}
+
+
+    \item[Symmetry] \marginnote{}
+        Search states that lead to the same result.    
+
+        \begin{description}
+            \item[Variable symmetry] \marginnote{Variable symmetry}
+                A permutation of the assignment order of the variables results in the same feasible or unfeasible solution.
+
+            \item[Value symmetry] \marginnote{Value symmetry}
+                A permutation of the values in the domain results in the same feasible or unfeasible solution.
+        \end{description}
+
+        \begin{remark}
+            Variable and value symmetries can be combined resulting in a total of $2n!$ possible symmetries.
+        \end{remark}
+\end{description}
+
+
+
+\section{Modeling techniques}
+
+\begin{description}
+    \item[Auxiliary variables] \marginnote{Auxiliary variables}
+        Add new variables to capture constraints difficult to model or 
+        to reduce the search space by collapsing multiple variables into one. 
+
+
+    \item[Global constraints] \marginnote{Global constraints}
+        Relation between an arbitrary number of variables.
+        It is usually computationally faster than listing multiple constraints.
+
+
+    \item[Implied constraints] \marginnote{Implied constraints}
+        Semantically redundant constraints with the advantage of pruning the search space earlier.
+
+        \begin{remark}
+            A purely redundant constraint is also an implied constraint but it does not give any computational improvement.
+        \end{remark}
+
+        
+    \item[Symmetry breaking constraints] \marginnote{Symmetry breaking constraints}
+        Constraints to avoid considering symmetric states. 
+        Usually, it is sufficient to fix an ordering of the variables.
+
+        \begin{remark}
+            When introducing symmetry breaking constraints, 
+            it might be possible to add new simplifications and implied constraints.
+        \end{remark}
+
+    
+    \item[Dual viewpoint] \marginnote{Dual viewpoint}
+        Modeling a problem from a different perspective might result in a more efficient search.
+        \begin{example}
+            Exploiting geometric symmetries.
+        \end{example}
+
+
+    \item[Combined model] \marginnote{Combined model}
+        Merging two or more models of the same problem by adding channeling constraints to guarantee consistency.
+
+        Combining two models can be useful for obtaining the advantages of both 
+        (e.g. one model uses global constraints, while the other handles symmetries).
+
+        \begin{remark}
+            When combining multiple models, some constraints might be simplified as one of the models already captures it natively.
+        \end{remark}
+\end{description}
