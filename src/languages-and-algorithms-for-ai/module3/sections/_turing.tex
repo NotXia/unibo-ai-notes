@@ -1,0 +1,251 @@
+\chapter{Turing Machine}
+
+
+
+\section{$k$-tape Turing Machine}
+
+\begin{description}
+    \item[Tape] \marginnote{Tape}
+        Infinite one-directional line of cells.
+        Each cell can hold a symbol from a finite alphabet $\Gamma$.
+
+        \begin{description}
+            \item[Tape head]
+                A tape head reads or writes one symbol at a time and 
+                can move left or right on the tape.
+
+            \item[Input tape]
+                Read-only tape where the input will be loaded.
+
+            \item[Work tape]
+                Read-write auxiliary tape used during computation.
+
+            \item[Output tape]
+                Read-write tape that will contain the output of the computation.
+
+                \begin{remark}
+                    Sometimes the output tape is not necessary and the final state of the computation can be used to determine a boolean outcome.
+                \end{remark}
+        \end{description}
+
+    \item[Instructions] \marginnote{Instructions}
+        Given a finite set of states $Q$, at each step, a machine can:
+        \begin{description}
+            \item[Read] from the $k$ tape heads.
+            \item[Replace] the symbols under the writable tape heads, or leave them unchanged.
+            \item[Change] state.
+            \item[Move] each of the $k$ tape heads to the left or right, or leave unchanged.
+        \end{description}
+
+
+    \item[$k$-tape Turing Machine (TM)] \marginnote{$k$-tape Turing Machine (TM)}
+        A Turing Machine working on $k$ tapes (one of which is the input tape) is a triple $(\Gamma, Q, \delta)$:
+        \begin{itemize}
+            \item $\Gamma$ is a finite set of tape symbols.
+                We assume that it contains a blank symbol ($\tapeblank$), a start symbol ($\tapestart$),
+                and the digits $0$, $1$.
+            
+            \item $Q$ is a finite set of states.
+                The initial state is $q_\text{init}$ and the final state is $q_\text{halt}$.
+
+            \item $\delta$ is the transition function that describes the instructions allowed at each step. 
+                It is defined as:
+                \[ \delta: Q \times \Gamma^k \rightarrow Q \times \Gamma^{k-1} \times \{ \texttt{L}, \texttt{S}, \texttt{R} \}^k \]
+
+                By convention, when the state is $q_\text{halt}$, the machine is stuck (i.e. it cannot change state or operate on the tapes):
+                \[ \delta(q_\text{halt}, \{ \sigma_1, \dots, \sigma_k \}) = \big( q_\text{halt}, \{ \sigma_1, \dots, \sigma_k \}, (\texttt{S}, \dots, \texttt{S}) \big) \]
+        \end{itemize}
+\end{description}
+
+\begin{theorem}[Turing Machine equivalence]
+    The following computational models have, with at most a polynomial overhead, the same expressive power:
+    1-tape TMs, $k$-tape TMs, non-deterministic TMs, 
+    random access machines, $\lambda$-calculus, unlimited register machines, programming languages (Böhm-Jacopini theorem), \dots
+\end{theorem}
+
+
+
+\section{Computation}
+
+\begin{description}
+    \item[Configuration] \marginnote{Configuration}
+        Given a TM $\mathcal{M} = (\Gamma, Q, \delta)$, a configuration $C$ is described by:
+        \begin{itemize}
+            \item The current state $q$.
+            \item The content of the tapes.
+            \item The position of the tape heads.
+        \end{itemize}
+
+        \begin{description}
+            \item[Initial configuration] 
+                Given the input $x \in \{ 0, 1 \}^*$, the initial configuration $\mathcal{I}_x$ is described as follows:
+                \begin{itemize}
+                    \item The current state is $q_\text{init}$.
+                    \item The first (input) tape contains $\tapestart x \tapeblank \dots$.
+                        The other tapes contain $\tapestart \tapeblank \dots$.
+                    \item The tape heads are positioned on the first symbol of each tape.
+                \end{itemize}
+
+            \item[Final configuration] 
+                Given an output $y \in \{0, 1\}^*$, the final configuration is described as follows:
+                \begin{itemize}
+                    \item The current state is $q_\text{halt}$.
+                    \item The output tape contains $\tapestart y \tapeblank \dots$.
+                \end{itemize} 
+        \end{description}
+
+    \item[Computation (string)] \marginnote{Computation (string)}
+        Given a TM $\mathcal{M} = (\Gamma, Q, \delta)$, 
+        $\mathcal{M}$ returns $y \in \{ 0, 1 \}^*$ on input $x \in \{ 0, 1 \}^*$ (i.e. $\mathcal{M}(x) = y$) in $t$ steps if:
+        \[ \mathcal{I}_x \xrightarrow{\delta} C_1 \xrightarrow{\delta} \dots \xrightarrow{\delta} C_t \]
+        where $C_t$ is a final configuration for $y$.
+
+    \item[Computation (function)] \marginnote{Computation (function)}
+        Given a TM $\mathcal{M} = (\Gamma, Q, \delta)$ and a function $f: \{0, 1\}^* \rightarrow \{0, 1\}^*$, 
+        $\mathcal{M}$ computes $f$ iff:
+        \[ \forall x \in \{0, 1\}^*: \mathcal{M}(x) = f(x) \]
+        If this holds, $f$ is a computable function.
+
+    \item[Computation in time $\mathbf{T}$] \marginnote{Computation in time $T$}
+        Given a TM $\mathcal{M}$ and 
+        the functions $f: \{0, 1\}^* \rightarrow \{0, 1\}^*$ and
+        $T: \mathbb{N} \rightarrow \mathbb{N}$,
+        $\mathcal{M}$ computes $f$ in time $T$ iff:
+        \[ \forall x \in \{0, 1\}^*: \text{$\mathcal{M}(x)$ returns $f(x)$ in at most $T(\vert x \vert)$ steps} \]
+
+    \item[Decidability in time $\mathbf{T}$] \marginnote{Decidability in time $T$}
+        Given a function $f: \{0, 1\}^* \rightarrow \{0, 1\}$,
+        the language $\mathcal{L}_f$ is decidable in time $T$ iff $f$ is computable in time $T$.
+\end{description}
+
+
+
+\section{Universal Turing Machine}
+
+\begin{description}
+    \item[Turing Machine encoding]
+        Given a TM $\mathcal{M} = (\Gamma, Q, \delta)$, 
+        the entire machine can be described by $\delta$ through tuples of form:
+        \[ Q \times \Gamma^k \times Q \times \Gamma^{k-1} \times \{ \texttt{L}, \texttt{S}, \texttt{R} \}^k \]
+        It is therefore possible to encode $\delta$ into a binary string and 
+        consequently create an encoding $\enc{\mathcal{M}}$ of $\mathcal{M}$.
+
+        The encoding should satisfy the following conditions:
+        \begin{enumerate}
+            \item For every $x \in \{0, 1\}^*$, there exists a TM $\mathcal{M}$ such that $x = \enc{\mathcal{M}}$.
+            \item Every TM is represented by an infinite number of strings. One of them is the canonical representation.
+        \end{enumerate}
+
+    \begin{theorem}[Universal Turing Machine (UTM)] \marginnote{Universal Turing Machine (UTM)}
+        There exists a TM $\mathcal{U}$ such that, for every binary strings $x$ and $\alpha$,
+        it emulates the TM defined by $\alpha$ on input $x$:
+        \[ \mathcal{U}(x, \alpha) = \mathcal{M}_\alpha(x) \]
+        where $\mathcal{M}_\alpha$ is the TM defined by $\alpha$.
+
+        Moreover, $\mathcal{U}$ simulates $\mathcal{M}_\alpha$ with at most $CT\log(T)$ time overhead,
+        where $C$ only depends on $\mathcal{M}_\alpha$.
+    \end{theorem}
+\end{description}
+
+
+
+\section{Computability}
+
+
+\subsection{Undecidable functions}
+
+\begin{theorem}[Existance of uncomputable functions] \label{th:uncomputable_fn} \marginnote{Uncomputable functions}
+    There exists a function $uc: \{0, 1\}^* \rightarrow \{0, 1\}^*$ that is not computable by any TM.
+
+    \begin{proof}
+        Consider the following function:
+        \[ uc(\alpha) = \begin{cases}
+            0 & \text{if $\mathcal{M}_\alpha(\alpha) = 1$} \\
+            1 & \text{if $\mathcal{M}_\alpha(\alpha) \neq 1$}
+        \end{cases} \]
+        If $uc$ was computable, there would be a TM $\mathcal{M}$ that computes it (i.e. $\forall \alpha \in \{0, 1\}^*: \mathcal{M}(\alpha) = uc(\alpha)$).
+        This will result in a contradiction:
+        \[ uc(\enc{\mathcal{M}}) = 0 \iff \mathcal{M}(\enc{\mathcal{M}}) = 1 \iff uc(\enc{\mathcal{M}}) = 1 \]
+
+        Therefore, $uc$ cannot be computed.
+    \end{proof}
+\end{theorem}
+
+
+\begin{description}
+    \item[Halting problem] \marginnote{Halting problem}
+        Given an encoded TM $\alpha$ and a string $x$,
+        the halting problem aims to determine if $\mathcal{M}_\alpha$ terminates on input $x$.
+        In other words:
+        \[
+            \texttt{halt}(\enc{(\alpha, x)}) = \begin{cases}
+                1 & \text{if $\mathcal{M}_\alpha$ stops on input $x$} \\
+                0 & \text{otherwise}
+            \end{cases}  
+        \]
+        \begin{theorem}
+            The halting problem is undecidable.
+        
+            \begin{proof}
+                Note: this proof is slightly different from the traditional proof of the halting problem.
+                
+                Assume that \texttt{halt} is decidable. Therefore, there exists a TM $\mathcal{M}_\texttt{halt}$ that decides it.
+
+                We can define a new TM $\mathcal{M}_{uc}$ that uses $\mathcal{M}_\texttt{halt}$ such that:
+                \[ \mathcal{M}_{uc}(\alpha) = \begin{cases}
+                    1 & \text{if $\mathcal{M}_\texttt{halt}(\alpha, \alpha) = 0$ (i.e. $\mathcal{M}_\alpha(\alpha)$ diverges)} \\
+                    \begin{cases}
+                        0 & \text{if $\mathcal{M}_\alpha(\alpha) = 1$} \\
+                        1 & \text{if $\mathcal{M}_\alpha(\alpha) \neq 1$}
+                    \end{cases} & \text{if $\mathcal{M}_\texttt{halt}(\alpha, \alpha) = 1$ (i.e. $\mathcal{M}_\alpha(\alpha)$ converges)}
+                \end{cases} \]
+
+                This results in a contradiction:
+                \begin{itemize}
+                    \item $\mathcal{M}_{uc}(\enc{\mathcal{M}_{uc}}) = 1 \Leftarrow 
+                        \mathcal{M}_\texttt{halt}(\enc{\mathcal{M}_{uc}}, \enc{\mathcal{M}_{uc}}) = 0 \iff
+                        \mathcal{M}_{uc}(\enc{\mathcal{M}_{uc}}) \text{ diverges}$
+                    \item $\mathcal{M}_\texttt{halt}(\enc{\mathcal{M}_{uc}}, \enc{\mathcal{M}_{uc}}) = 1$ $\Rightarrow$
+                        $\mathcal{M}_{uc}$ is not computable by \Cref{th:uncomputable_fn}.
+                \end{itemize}
+            \end{proof}
+        \end{theorem}
+
+    \item[Diophantine equation] \marginnote{Diophantine equation}
+        Polynomial equality with integer coefficients and a finite number of unknowns.
+
+        \begin{theorem}[MDPR]
+            Determining if an arbitrary diophantine equation has a solution is undecidable.
+        \end{theorem}
+\end{description}
+
+
+
+\subsection{Rice's theorem}
+
+\begin{description}
+    \item[Semantic language] \marginnote{Semantic language}
+        Given a language $\mathcal{L} \subseteq \{ 0, 1 \}^*$, $\mathcal{L}$ is semantic if:
+        \begin{itemize}
+            \item Any string in $\mathcal{L}$ is an encoding of a TM.
+            \item If $\enc{\mathcal{M}} \in \mathcal{L}$ and 
+                the TM $\mathcal{N}$ computes the same function of $\mathcal{M}$,
+                then $\enc{\mathcal{N}} \in \mathcal{L}$.
+        \end{itemize}
+
+        A semantic language can be seen as a set of TMs that have the same property.
+
+    \item[Trivial language]
+        A language $\mathcal{L}$ is trivial iff $\mathcal{L} = \varnothing$ or $\mathcal{L} = \{0, 1\}^*$
+\end{description}
+
+\begin{theorem}[Rice's theorem] \marginnote{Rice's theorem}
+    If a semantic language is non-trivial, then it is undecidable
+    (i.e. any decidable semantic language is trivial).
+
+    \begin{proof}[Proof idea]
+        Assuming that there exists a non-trivial decidable semantic language $\mathcal{L}$, 
+        it is possible to prove that the halting problem is decidable.
+        Therefore, $\mathcal{L}$ is undecidable.
+    \end{proof}
+\end{theorem}
