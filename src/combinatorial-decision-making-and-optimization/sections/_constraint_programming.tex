@@ -10,7 +10,7 @@
         Triple $\langle X, D, C \rangle$ where:
         \begin{itemize}
             \item $X$ is the set of decision variables $\{ x_1, \dots, x_n \}$.
-            \item $D$ is the set of domains $\{ D_1, \dots, D_n \}$ for $X$.
+            \item $D$ is the set of domains $\{ D(X_1), \dots, D(X_n) \}$ or $\{ D_1, \dots, D_n \}$ for $X$.
             \item $C$ is the set of constraints $\{ C_1, \dots, C_m \}$.
                 Each $C_i$ is a relation over the domain of $X$ (i.e. $C_i \subseteq D_j \times \dots \times D_k$).
         \end{itemize}
@@ -95,3 +95,258 @@
             When combining multiple models, some constraints might be simplified as one of the models already captures it natively.
         \end{remark}
 \end{description}
+
+
+
+\section{Constraints}
+
+
+\subsection{Local consistency}
+
+Examine individual constraints and detect inconsistent partial assignments.
+
+\begin{description}
+    \item[Generalized arc consistency (GAC)] \marginnote{Generalized arc consistency (GAC)}
+        \phantom{}
+        \begin{description}
+            \item[Support]
+                Given a constraint defined on $k$ variables $C \subseteq D(X_1)\times \dots \times D(X_k)$,
+                each tuple $(d_1, \dots, d_k) \in C$ (i.e. allowed variables assignment) is a support for $C$.
+        \end{description}
+
+        A constraint $C(X_1, \dots, X_k)$ is GAC (GAC($C$)) iff:
+        \[ \forall X_i \in \{ X_1, \dots, X_k \}, \forall v \in D(X_i): \text{$v$ belongs to a support for $C$} \]
+
+        \begin{remark}
+            A CSP is GAC when all its constraints are GAC.
+        \end{remark}
+
+        \begin{example}[Generalized arc consistency]
+            Given the variables $D(X_1) = \{ 1, 2, 3 \}$, $D(X_2) = \{ 1, 2 \}$, $D(X_3) = \{ 1, 2 \}$ and 
+            the constraint $C: \texttt{alldifferent}([X_1, X_2, X_3])$,
+            $C$ is not GAC as $1 \in D(X_1)$ and $2 \in D(X_2)$ do not have a support.
+            
+            By applying a constraint propagation algorithm, we can reduce the domain to: 
+            $D(X_1) = \{ \cancel{1}, \cancel{2}, 3 \}$ and $D(X_2) = D(X_3) = \{ 1, 2 \}$.
+            Now $C$ is GAC.
+        \end{example}
+
+        \begin{description}
+            \item[Arc consistency (AC)] \marginnote{Arc consistency (AC)}
+                A constraint is arc consistent when its binary constrains are GAC.
+
+                \begin{example}[Arc consistency]
+                    Given the variables $D(X_1) = \{ 1, 2, 3 \}$, $D(X_2) = \{ 2, 3, 4 \}$ and the constraint $C: X_1 = X_2$,
+                    $C$ is not arc consistent as $1 \in D(X_1)$ and $4 \in D(X_2)$ do not have a support.
+        
+                    By applying a constraint propagation algorithm, we can reduce the domain to: 
+                    $D(X_1) = \{ \cancel{1}, 2, 3 \}$ and $D(X_2) = \{ 2, 3, \cancel{4} \}$.
+                    Now $C$ is arc consistent.
+                \end{example}
+        \end{description}
+
+
+    \item[Bounds consistency (BC)] \marginnote{Bounds consistency (BC)}
+        Can be applied on totally ordered domains.
+        The domain of a variable $X_i$ is relaxed from $D(X_i)$ to the interval $[\min\{D(X_i)\}, \max\{D(X_i)\}]$.
+        
+        \begin{description}
+            \item[Bound support]
+                Given a constraint defined on $k$ variables $C(X_1, \dots, X_k)$,
+                each tuple $(d_1, \dots, d_k) \in C$, where $d_i \in [\min\{D(X_i)\}, \max\{D(X_i)\}]$, is a bound support for $C$.
+        \end{description}
+
+        A constraint $C(X_1, \dots, X_k)$ is BC (BC($C$)) iff:
+        \[ 
+            \begin{split}
+                \forall X_i &\in \{ X_1, \dots, X_k \}: \\
+                    &\text{$\min\{D(X_i)\}$ and $\max\{D(X_i)\}$ belong to a bound support for $C$} 
+            \end{split}
+        \]
+
+        \begin{remark}
+            BC might not detect all GAC inconsistencies, but it is computationally cheaper.
+        \end{remark}
+
+        \begin{remark}
+            On monotonic constraints, BC and GAC are equivalent.
+        \end{remark}
+
+        \begin{example}
+            Given the variables $D(X_1) = D(X_2) = D(X_3) = \{ 1, 3 \}$ and the constraint $C: \texttt{alldifferent}([X_1, X_2, X_3])$,
+            $C$ is BC as all $\min\{D(X_i)\}$ and $\max\{D(X_i)\}$ belong to the bound support $\{ (d_1, d_2, d_3) \mid d_i \in [1, 3] \land d_1 \neq d_2 \neq d_3 \}$
+
+            On the other hand, $C$ fails with GAC.
+        \end{example}
+\end{description}
+
+
+\subsection{Constraint propagation}
+
+\begin{description}
+    \item[Constraint propagation] \marginnote{Constraint propagation}
+        Algorithm that removes values from the domains of the variables to achieve a given level of consistency.
+
+        Constraint propagation algorithms interact with each other and already propagated constraints might be woke up again by another constraint.
+        Propagation will eventually reach a fixed point.
+
+
+    \item[Specialized propagation] \marginnote{Specialized propagation}
+        Propagation algorithm specific to a given constraint.
+        Allows to exploit the semantics of the constraint for a generally more efficient approach.
+\end{description}
+
+
+\subsection{Global constraints}
+
+Constraints to capture complex, non-binary, and recurring features of the variables.
+Usually, global constraints are enforced using specialized propagation algorithms.
+
+
+\subsubsection{Counting constraints}
+\marginnote{Counting constraints}
+Constrains the number of variables satisfying a condition
+or the occurrences of certain values.
+
+\begin{descriptionlist}
+    \item[All-different] 
+        Enforces that all variables assume a different value.
+        \[ \texttt{alldifferent}([X_1, \dots, X_k]) \iff \forall i, j, \in \{ 1, \dots, k\}, i \neq j: X_i \neq X_j \]
+
+    \item[Global cardinality]
+        Enforces the number of times some values should appear among the variables.
+        \[ 
+            \begin{split}
+                \texttt{gcc}([X_1, \dots, X_k], &[v_1, \dots, v_m], [O_1, \dots, O_m]) \iff \\
+                & \forall j \in \{1, \dots, m\}: \left\vert \{ X_i \mid X_i = v_j \} \right\vert = O_j
+            \end{split}
+        \]
+
+    \item[Among]
+        Constrains the number of occurrences of certain values among the variables.
+        \[
+            \texttt{among}([X_1, \dots, X_k], \{v_1, \dots, v_n\}, l, u) \iff l \leq \left\vert \{ X_i \mid X_i \in \{v_1, \dots, v_n\} \} \right\vert \leq u
+        \]
+\end{descriptionlist}
+
+
+\subsubsection{Sequencing constraints}
+\marginnote{Sequencing constraints}
+Enforces a pattern on a sequence of variables.
+
+\begin{descriptionlist}
+    \item[Sequence]
+        Enforces the number of times certain values can appear in a subsequence of a given length $q$.
+        \[ 
+            \begin{split}
+                \texttt{sequence}(l, u, q, &[X_1, \dots, X_k], \{v_1, \dots, v_n\}) \iff \\
+                & \forall i \in [1, \dots, k-q+1]: \texttt{among}([X_1, \dots, X_{i+q-1}], \{v_1, \dots, v_n\}, l, u) 
+            \end{split}
+        \]
+\end{descriptionlist}
+
+
+\subsubsection{Scheduling constraints}
+\marginnote{Scheduling constraints}
+Useful to schedule tasks with release times, duration, deadlines, and resource limitations.
+
+\begin{descriptionlist}
+    \item[Disjunctive resource] 
+        Enforces that the tasks do not overlap over time.
+        Given the start time $S_i$ and the duration $D_i$ of $k$ tasks:
+        \[ 
+            \begin{split}
+                \texttt{disjunctive}([S_1, \dots, S_k], &[D_1, \dots, D_k]) \iff \\
+                & \forall i < j: (S_i + D_i \leq S_j) \vee (S_j + D_j \leq S_i)
+            \end{split}
+        \]
+
+    \item[Cumulative resource] 
+        Constrains the usage of a shared resource.
+        Given a resource with capacity $C$ and the start time $S_i$, the duration $D_i$, and the resource requirement $R_i$ of $k$ tasks:
+        \[ 
+            \begin{split}
+                \texttt{cumulative}([S_1, \dots, S_k], &[D_1, \dots, D_k], [R_1, \dots, R_k], C) \iff \\
+                & \forall u \in \{ D_1, \dots, D_k \}: \sum_{\text{$i$ s.t. $S_i \leq u < S_i+D_i$}} R_i \leq C
+            \end{split}
+        \]
+\end{descriptionlist}
+
+
+\subsubsection{Ordering constraints}
+\marginnote{Ordering constraints}
+
+Enforce an ordering between variables or values.
+
+\begin{descriptionlist}
+    \item[Lexicographic ordering] 
+        Enforces that a sequence of variables is lexicographically less than or equal to another sequence.
+        \[ 
+            \begin{split}
+                \texttt{lex$\leq$}([X_1, \dots, X_k], [Y_1, \dots, Y_k]) \iff & X_1 \leq Y_1 \land \\
+                &(X_1 = Y_1 \Rightarrow X_2 \leq Y_2) \land \\
+                & \dots \land \\
+                &((X_1 = Y_1 \land \dots \land X_{k-1} = Y_{k-1}) \Rightarrow X_k \leq Y_k)
+            \end{split}
+        \]
+\end{descriptionlist}
+
+
+\subsubsection{Generic purpose constraints}
+\marginnote{Generic purpose constraints}
+
+Define constraints in an extensive way.
+
+\begin{descriptionlist}
+    \item[Table]
+        Associate to the variables their allowed assignments.
+\end{descriptionlist}
+
+
+\subsubsection{Specialized propagation}
+
+\begin{descriptionlist}
+    \item[Constraint decomposition] \marginnote{Constraint decomposition}
+        A global constraint is decomposed into smaller and simpler constraints with known propagation algorithms.
+        \begin{remark}
+            As the problem is decomposed, some inconsistencies may not be detected.
+        \end{remark}
+
+        \begin{example}(Decomposition of \texttt{among})
+            The \texttt{among} constraint can be decomposed as follows:
+            \begin{descriptionlist}
+                \item[Variables]
+                    $B_i$ with $D(B_i) = \{ 0, 1 \}$ for $1 \leq i \leq k$.
+                \item[Constraints] \phantom{}
+                    \begin{itemize}
+                        \item $C_i: B_i = 1 \iff X_i \in v$ for $1 \leq i \leq k$.
+                        \item $C_{k+1}: \sum_{i} B_i = N$.
+                    \end{itemize}
+            \end{descriptionlist}
+            AC($C_i$) and BC($C_{k+1}$) ensures GAC on \texttt{among}.
+        \end{example}
+    
+    \item[Dedicated propagation algorithm] \marginnote{Dedicated propagation algorithm}
+        Ad-hoc algorithm that implements an efficient propagation.
+
+        \begin{example}(\texttt{alldifferent} through maximal matching)
+            \begin{descriptionlist}
+                \item[Bipartite graph] 
+                    Graph where the edges are partitioned in two groups $U$ and $V$.
+                    Nodes in $U$ can only connect to nodes in $V$.
+
+                \item[Maximal matching]
+                    Largest subsets of edges such that there are no edges with nodes in common.
+            \end{descriptionlist}
+
+            Define a bipartite graph $G=(U \cup V, E)$ where:
+            \begin{itemize}
+                \item $U = \{ X_1, \dots, X_k \}$ are the variables.
+                \item $V = D(X_1) \cup \dots \cup D(X_k)$ are the possible values of the variables.
+                \item $E = \{ (X_i, v) \mid X_i \in U, v \in V: v \in D(X_i) \}$ 
+                    contains the edges that connect every variable in $U$ to its possible values in $V$.
+            \end{itemize} 
+
+            All the possible variable assignments of $X_1, \dots, X_k$ are the maximal matchings in $G$.
+        \end{example}
+\end{descriptionlist}
