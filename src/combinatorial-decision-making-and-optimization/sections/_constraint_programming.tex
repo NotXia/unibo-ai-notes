@@ -388,16 +388,16 @@ Define constraints in an extensive way.
     \item[Fail-first (FF)] \marginnote{Fail-first (FF)}
         Try the variables that are most likely to fail in order to maximize propagation.
         \begin{description}
-            \item[Minimum domain]
+            \item[Minimum domain] \marginnote{Minimum domain}
                 Assign the variable with the minimum domain size.
 
-            \item[Most constrained]
+            \item[Most constrained] \marginnote{Most constrained}
                 Assign the variable with the maximum degree (i.e. number of constraints that involve it).
 
-            \item[Combination] 
+            \item[Combination] \marginnote{Combination}
                 Combine both minimum domain and most constrained to minimize the value $\frac{\text{domain size}}{\text{degree}}$.
         
-            \item[Weighted degree]
+            \item[Weighted degree] \marginnote{Weighted degree}
                 Each constraint $C$ starts with a weight $w(C) = 1$.
                 During propagation, when a constraint $C$ fails, its weight is increased by 1.
 
@@ -412,14 +412,14 @@ Define constraints in an extensive way.
         Instances of a problem that are particularly hard and expensive to solve.
 
         \begin{description}
-            \item[Randomization]
+            \item[Randomization] \marginnote{Randomization}
                 Sometimes, make a random choice:
                 \begin{itemize}
                     \item Randomly choose the variable or value to assign.
                     \item Break ties randomly.
                 \end{itemize}
 
-            \item[Restarting]
+            \item[Restarting] \marginnote{Restarting}
                 Restart the search after a certain amount of resources (e.g. search steps) have been consumed.
                 The new search can exploit past knowledge, change heuristics, or use randomization.
 
@@ -462,7 +462,7 @@ Define constraints in an extensive way.
 \subsection{Constraint optimization problems}
 
 \begin{description}
-    \item[Branch and bound]
+    \item[Branch and bound] \marginnote{Branch and bound}
         Solves a COP by solving a sequence of CSPs.
         \begin{enumerate}
             \item Find a feasible solution and add a bounding constraint 
@@ -474,6 +474,7 @@ Define constraints in an extensive way.
 
 
 \subsection{Local neighborhood search (LNS)}
+\marginnote{Local neighborhood search (LNS)}
 
 Hybrid between constraint programming and heuristic search.
 \begin{enumerate}
