@@ -350,3 +350,134 @@ Define constraints in an extensive way.
             All the possible variable assignments of $X_1, \dots, X_k$ are the maximal matchings in $G$.
         \end{example}
 \end{descriptionlist}
+
+
+
+\section{Search}
+
+
+\begin{description}
+    \item[Backtraking tree search] \marginnote{Backtraking tree search}
+        Tree where nodes are variables and branches are variable assignments.
+
+    \item[Systematic search] \marginnote{Systematic search}
+        Instantiate and explore the tree depth first.
+        Constraints are checked when all variables are assigned (i.e. when a leaf is reached)
+        and the search backtracks of one decision if it fails.
+
+        This approach has exponential complexity.
+
+    \item[Search and propagation] \marginnote{Search and propagation}
+        Propagate the constraints after an assignment to 
+        remove inconsistent values from the domain of yet unassigned variables.
+\end{description}
+
+
+\subsection{Search heuristics}
+
+\begin{descriptionlist}
+    \item[Static heuristic] \marginnote{Static heuristic}
+        The order of exploration of the variables is fixed before search.
+
+    \item[Dynamic heuristic] \marginnote{Dynamic heuristic} 
+        The order of exploration of the variables is determined during search.
+\end{descriptionlist}
+
+
+\begin{description}
+    \item[Fail-first (FF)] \marginnote{Fail-first (FF)}
+        Try the variables that are most likely to fail in order to maximize propagation.
+        \begin{description}
+            \item[Minimum domain]
+                Assign the variable with the minimum domain size.
+
+            \item[Most constrained]
+                Assign the variable with the maximum degree (i.e. number of constraints that involve it).
+
+            \item[Combination] 
+                Combine both minimum domain and most constrained to minimize the value $\frac{\text{domain size}}{\text{degree}}$.
+        
+            \item[Weighted degree]
+                Each constraint $C$ starts with a weight $w(C) = 1$.
+                During propagation, when a constraint $C$ fails, its weight is increased by 1.
+
+                The weighted degree of a variable $X_i$ is:
+                \[ w(X_i) = \sum_{\text{$C$ s.t. $C$ involves $X_i$}} w(C) \]
+
+                Assign the variable with minimum $\frac{\vert D(X_i) \vert}{w(X_i)}$.
+        \end{description}
+
+
+    \item[Heavy tail behavior]
+        Instances of a problem that are particularly hard and expensive to solve.
+
+        \begin{description}
+            \item[Randomization]
+                Sometimes, make a random choice:
+                \begin{itemize}
+                    \item Randomly choose the variable or value to assign.
+                    \item Break ties randomly.
+                \end{itemize}
+
+            \item[Restarting]
+                Restart the search after a certain amount of resources (e.g. search steps) have been consumed.
+                The new search can exploit past knowledge, change heuristics, or use randomization.
+
+                \begin{description}
+                    \item[Constant restart] 
+                        Restart after a fixed number $L$ of resources have been used.
+                    
+                    \item[Geometric restart]  
+                        At each restart, the resource limit $L$ is multiplied by a factor $\alpha$.
+                        This will result in a sequence $L, \alpha L, \alpha^2 L, \dots$.
+
+                    \item[Luby restart]
+                        \phantom{}
+                        \begin{descriptionlist}
+                            \item[Luby sequence] 
+                                The first element of the sequence is 1. Then, the sequence is iteratively computed as follows:
+                                \begin{itemize}
+                                    \item Repeat the current sequence.
+                                    \item Add $2^{i+1}$ at the end of the sequence.
+                                \end{itemize}
+                                \begin{example}
+                                    $[1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, \dots]$
+                                \end{example}
+                        \end{descriptionlist}
+                        At the $i$-th restart, the resource limit $L$ is multiplied by a factor determined by the $i$-th element of the Luby sequence.
+                \end{description}
+
+                \begin{remark}
+                    Weighted degree and restarts work well together when weights are carried over.
+                \end{remark}
+
+                \begin{remark}
+                    Restarting on deterministic heuristics does not give any advantage.
+                \end{remark}
+        \end{description}
+\end{description}
+
+
+
+\subsection{Constraint optimization problems}
+
+\begin{description}
+    \item[Branch and bound]
+        Solves a COP by solving a sequence of CSPs.
+        \begin{enumerate}
+            \item Find a feasible solution and add a bounding constraint 
+                to enforce that future solutions are better than this one.
+            \item Backtrack the last decision and look for a new solution on the same tree with the new constraint.
+            \item Repeat until the problem becomes unfeasible. The last solution is optimal.
+        \end{enumerate}
+\end{description}
+
+
+\subsection{Local neighborhood search (LNS)}
+
+Hybrid between constraint programming and heuristic search.
+\begin{enumerate}
+    \item Find an initial solution $s$ using CP.
+    \item Create a partial solution $N(s)$ by taking some assignments from the solution $s$ and leaving the other unassigned.
+    \item Explore the large neighborhood using CP starting from $N(s)$.
+\end{enumerate}
