@@ -1,0 +1,46 @@
+\chapter{Spatial filtering}
+
+
+\section{Noise}
+
+The noise added to a pixel $p$ is defined by $n_k(p)$, 
+where $k$ indicates the time step (i.e. noise is different at each time step).
+It is assumed that $n_k(p)$ is i.i.d and $n_k(p) \sim \mathcal{N}(0, \sigma)$.
+
+The information of a pixel $p$ is therefore defined as:
+\[ I_k(p) = \tilde{I}(p) + n_k(p) \]
+where $\tilde{I}(p)$ is the real information.
+
+\begin{description}
+    \item[Temporal mean denoising] \marginnote{Temporal mean denoising}
+        Averaging $N$ images taken at different time steps.
+        \[ 
+            \begin{split}
+                O(p) &= \frac{1}{N} \sum_{k=1}^{N} I_k(p) \\
+                    &= \frac{1}{N} \sum_{k=1}^{N} \Big( \tilde{I}(p) + n_k(p) \Big) \\
+                    &= \frac{1}{N} \sum_{k=1}^{N} \tilde{I}(p) + \overbrace{\frac{1}{N} \sum_{k=1}^{N} n_k(p)}^{\mathclap{\text{$\mu = 0$}}} \\
+                    &\approx \tilde{I}(p)
+            \end{split}
+        \]
+
+        \begin{remark}
+            As multiple images of the same object are required, this method is only suited for static images.
+        \end{remark}
+
+    \item[Spatial mean denoising] \marginnote{Spatial mean denoising}
+        Given one image, average across neighboring pixels.
+
+        Let $K_p$ be the pixels in a window around $p$ (included):
+        \[ 
+            \begin{split}
+                O(p) &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} I(p) \\
+                    &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \Big( \tilde{I}(q) + n(q) \Big) \\
+                    &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \tilde{I}(q) + \frac{1}{\vert K_p \vert} \sum_{q \in K_p} n(q) \\
+                    &\approx \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \tilde{I}(q)
+            \end{split}
+        \]
+
+        \begin{remark}
+            As the average of neighboring pixels is considered, this method is only suited for uniform regions.
+        \end{remark}
+\end{description}

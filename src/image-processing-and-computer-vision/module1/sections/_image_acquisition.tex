@@ -48,7 +48,7 @@ Geometric model of a pinhole camera.\\
 
 \begin{minipage}{0.65\textwidth}
     \begin{description}
-        \setlength\itemsep{0.2em}
+        \setlength\itemsep{0em}
         \item[Scene point] $M$ (the object in the real world).
         \item[Image point] $m$ (the object in the image).
         \item[Image plane] $I$.
@@ -261,7 +261,7 @@ the ratios of lengths and the parallelism of lines are not preserved.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\textwidth]{./img/_perspective_projection_ratio.pdf}
+    \includegraphics[width=0.25\textwidth]{./img/_perspective_projection_ratio.pdf}
     \caption{Example of not preserved ratios. It holds that $\frac{\overline{AB}}{\overline{BC}} \neq \frac{\overline{ab}}{\overline{bc}}$.}
 \end{figure}
 
@@ -271,7 +271,7 @@ the ratios of lengths and the parallelism of lines are not preserved.
 
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.7\textwidth]{./img/_vanishing_point.pdf}
+            \includegraphics[width=0.6\textwidth]{./img/_vanishing_point.pdf}
             \caption{Example of vanishing point}
         \end{figure}
 \end{description}
@@ -282,20 +282,251 @@ the ratios of lengths and the parallelism of lines are not preserved.
 
 \begin{description}
     \item[Depth of field (DOF)] \marginnote{Depth of field (DOF)}
-        Distance at which a scene point is on focus (i.e. when all its light rays gathered by the imaging device hit the image plane at the same point).
+        Distance at which a scene point is in focus (i.e. when all its light rays gathered by the imaging device hit the image plane at the same point).
 
         \begin{remark}
             Because of the small size of the aperture, a pinhole camera has infinite depth of field
             but requires a long exposure time making it only suitable for static scenes.
         \end{remark}
 
+
     \item[Lens] \marginnote{Lens}
         A lens gathers more light from the scene point and focuses it on a single image point.
 
-        This allows for a smaller exposure time but limits the depth of field (i.e. only a limited range of distances in the image can be on focus at the same time).
+        This allows for a smaller exposure time but limits the depth of field (i.e. only a limited range of distances in the image can be in focus at the same time).
+
+
+    \item[Thin lens] \marginnote{Thin lens}
+        Approximate model for lenses.
+
+        \begin{minipage}{0.65\textwidth}
+            \begin{description}
+                \setlength\itemsep{0em}
+                \item[Scene point] $P$ (the object in the real world).
+                \item[Image point] $p$ (the object in the image).
+                \item[Object--lens distance] $o$.
+                \item[Image--lens distance] $i$ (i.e. focal length of the camera).
+                \item[Center of the lens] $C$.
+                \item[Focal length of the lens] $f$.
+                \item[Focal plane/focus of the lens] $F$.
+            \end{description}
+        \end{minipage}
+        \begin{minipage}{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{./img/_thin_lens.pdf}
+        \end{minipage}
+
+        A thin lens has the following properties:
+        \begin{itemize}
+            \item Rays hitting the lens parallel to the optical axis are deflected to pass through the focal plane of the lens $F$.
+            \item Rays passing through the center of the lens $C$ are undeflected.
+            \item The following equation holds: \marginnote{Thin lens equation}
+                \[ \frac{1}{o} + \frac{1}{i} = \frac{1}{f} \] 
+        \end{itemize}
+
+    \item[Image formation]
+        When the image is in focus, the image formation process follows the normal rules of the perspective projection model where:
+        \begin{itemize}
+            \item $C$ is the optical center.
+            \item $i$ is the focal length of the camera.
+        \end{itemize}
+
+        By fixing the focal length of the lens ($f$),
+        we can determine the distance of the scene point ($o$) or the image point ($i$) required to have the object in focus.
+        \[ \frac{1}{o}+\frac{1}{i} = \frac{1}{f} \iff o = \frac{if}{i - f} \hspace{3em} \frac{1}{o}+\frac{1}{i} = \frac{1}{f} \iff i = \frac{of}{o - f} \]
+
+        \begin{remark}
+            Points projected in front or behind the image plane will create a circle of confusion (blur).
+
+            \begin{figure}[H]
+                \centering
+                \begin{subfigure}{0.3\textwidth}
+                    \centering
+                    \includegraphics[width=\textwidth]{./img/thin_lens_formation1.png}
+                    \caption{Image in focus}
+                \end{subfigure}
+                \begin{subfigure}{0.3\textwidth}
+                    \centering
+                    \includegraphics[width=0.8\textwidth]{./img/thin_lens_formation2.png}
+                    \caption{Projection behind the image plane}
+                \end{subfigure}
+                \begin{subfigure}{0.3\textwidth}
+                    \centering
+                    \includegraphics[width=\textwidth]{./img/thin_lens_formation3.png}
+                    \caption{Projection in front of the image plane}
+                \end{subfigure}
+            \end{figure}
+        \end{remark}
+
+    \item[Adjustable diaphragm] \marginnote{Adjustable diaphragm}
+        Device to control the light gathered by the effective aperture of the lens.
+
+        Reducing the aperture will result in less light and an increased depth of field.
+
+        \begin{remark}
+            On a theoretical level, images that are not in focus appear blurred (circles of confusion).
+            Despite that, if the circle is smaller than the photo-sensing elements (i.e. pixels), it will appear in focus.
+        \end{remark}
+
+    \item[Focusing mechanism] \marginnote{Focusing mechanism}
+        Allows the lens to translate along the optical axis to increase its distance to the image plane.
+
+        At the minimum extension (\Cref{fig:focus_mechanism_min}), we have that:
+            \[ i = f \text{ and } o = \infty \text{ as the thin lens equation states that } \frac{1}{o} + \frac{1}{i} = \frac{1}{f} \]
+        By increasing the extension (i.e. increase $i$), we have that the distance to the scene point $o$ decreases.
+        The maximum extension determines the minimum focusing distance.
+
+            
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.4\textwidth}
+                \centering
+                \includegraphics[width=0.45\textwidth]{./img/_focus_mechanism1.pdf}
+                \caption{Minimum extension} \label{fig:focus_mechanism_min}
+            \end{subfigure}
+            \begin{subfigure}{0.4\textwidth}
+                \centering
+                \includegraphics[width=0.45\textwidth]{./img/_focus_mechanism2.pdf}
+                \caption{Maximum extension} \label{fig:focus_mechanism_max}
+            \end{subfigure}
+            \caption{Extension of a focusing mechanism}
+        \end{figure}
+\end{description}
+
+
+
+\section{Image digitalization}
+
+
+\subsection{Sampling and quantization}
+
+The image plane of a camera converts the received irradiance into electrical signals.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./img/_digitalization.pdf}
+    \caption{Image digitalization steps}
+\end{figure}
+
+\begin{description}
+    \item[Sampling] \marginnote{Sampling} 
+        The continuous electrical signal is sampled to produce a $N \times M$ matrix of pixels:
+        \[ 
+            I(x, y) = \begin{pmatrix}
+                I(0, 0) & \hdots & I(0, M-1) \\
+                \vdots & \ddots & \vdots \\
+                I(N-1, 0) & \hdots & I(N-1, M-1) \\
+            \end{pmatrix}    
+        \]
+
+    \item[Quantization] \marginnote{Quantization}
+        Let $m$ be the number of bits used to encode a pixel.
+        The value of each pixel is quantized into $2^m$ discrete gray levels.
+        
+        \begin{remark}
+            A grayscale image usually uses $8$ bits
+
+            An RGB image usually uses $3 \cdot 8$ bits.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    The more bits are used for the representation, the higher the quality of the image will be.
+    \begin{itemize}
+        \item Sampling with fewer bits will result in a lower resolution (aliasing).
+        \item Quantization with fewer bits will result in less representable colors.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{./img/_digitalization_quality.pdf}
+        \caption{Sampling and quantization using fewer bits}
+    \end{figure}
+\end{remark}
+
+
+\subsection{Camera sensors}
+
+\begin{description}
+    \item[Photodetector] \marginnote{Photodetector}
+        Sensor that, during the exposure time, converts the light into a proportional electrical charge that 
+        will be processed by a circuit and converted into a digital or analog signal.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\textwidth]{./img/_camera_sensors.pdf}
+            \caption{Components of a camera}
+        \end{figure}
+
+        The two main sensor technologies are:
+        \begin{descriptionlist}
+            \item[Charge Coupled Device (CCD)] \marginnote{Charge Coupled Device (CCD)}
+                Typically produces higher quality images but are more expensive.
+
+            \item[Complementary Metal Oxide Semiconductor (CMOS)] \marginnote{Complementary Metal Oxide Semiconductor (CMOS)}
+                Generally produces lower quality images but is more compact and less expensive.
+                Each sensor has integrated its own circuitry that allows to read an arbitrary window of the sensors.
+        \end{descriptionlist}
+
+    \item[Color sensors] \marginnote{Color sensors}
+        CCD and CMOS sensors are sensitive to a wide spectrum of light frequencies (both visible and invisible) but
+        are unable to sense colors as they produce a single value per pixel.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\textwidth]{./img/sensors_sensitivity.png}
+            \caption{CCD and CMOS spectral sensitivity}
+        \end{figure}
 
         \begin{description}
-            \item[Thin lens equation] \marginnote{Thin lens equation}
-                $\frac{1}{u} + \frac{1}{v} = \frac{1}{f}$
+            \item[Color Filter Array (CFA)] \marginnote{Color Filter Array (CFA)}
+                Filter placed in front of a photodetector to allow it to detect colors.
+
+                Possible approaches are:
+                \begin{descriptionlist}
+                    \item[Bayer CFA] 
+                        A grid of green, blue, and red filters with the greens being twice as much as the others (the human eye is more sensible to the green range).
+                        To determine the RGB value of each pixel, missing color channels are sampled from neighboring pixels (demosaicking).
+                        
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.15\textwidth]{./img/_bayer_cfa.pdf}
+                            \caption{Example of Bayer filter}
+                        \end{figure}
+
+                    \item[Optical prism] 
+                        A prism splits the incoming light into 3 RGB beams, each directed to a different sensor.
+                        It is more expensive than Bayer CFA.
+                \end{descriptionlist}
         \end{description}
+\end{description}
+
+
+\subsection{Metrics}
+
+\begin{description}
+    \item[Signal to Noise Ratio (SNR)] \marginnote{Signal to Noise Ratio (SNR)}
+        Quantifies the strength of the actual signal with respect to unwanted noise.
+
+        Sources of noise are:
+        \begin{descriptionlist}
+            \item[Photon shot noise] Number of photons captured during exposure time.
+            \item[Elecronic circuitry noise] Generated by the electronics that read the sensors.
+            \item[Quantization noise] Caused by the digitalization of the image (ADC conversion).
+            \item[Dark current noise] Random charge caused by thermal excitement.
+        \end{descriptionlist}
+
+        SNR is usually expressed in decibels or bits:
+        \[ \texttt{SNR}_\text{db} = 20 \cdot \log_{10}(\texttt{SNR}) \hspace{3em} \texttt{SNR}_\text{bit} = \log_{2}(\texttt{SNR}) \]
+
+    \item[Dynamic Range (DR)] \marginnote{Dynamic Range (DR)}
+        Measures the ability of a sensor to capture both the dark and bright structure of the scene.
+
+        Let:
+        \begin{itemize}
+            \item $E_\text{min}$ be the minimum detectable irradiation. This value depends on the noise.
+            \item $E_\text{max}$ be the saturation irradiation (i.e. the maximum amount of light that fills the capacity of the photodetector).
+        \end{itemize}
+        DR is defined as:
+        \[ \texttt{DR} = \frac{E_\text{max}}{E_\text{mix}} \]
+        As with SNR, DR can be expressed in decibels or bits.
 \end{description}
