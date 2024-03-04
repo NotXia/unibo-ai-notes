@@ -75,11 +75,11 @@
 \begin{description}
     \item[Big O] \marginnote{Big O}
         A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $O(g)$ if $g$ is an upper bound of $f$.
-        \[ f \in O(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}: f(n) \leq c \cdot g(n) \]
+        \[ f \in O(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}^+: f(n) \leq c \cdot g(n) \]
     
     \item[Big Omega] \marginnote{Big Omega}
         A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $\Omega(g)$ if $g$ is a lower bound of $f$.
-        \[ f \in \Omega(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}: f(n) \geq c \cdot g(n) \]
+        \[ f \in \Omega(g) \iff \exists \bar{n} \in \mathbb{N} \text{ such that } \forall n > \bar{n}, \exists c \in \mathbb{R}^+: f(n) \geq c \cdot g(n) \]
 
     \item[Big Theta]\marginnote{Big Theta}
         A function $f: \mathbb{N} \rightarrow \mathbb{N}$ is $\Theta(g)$ if $g$ is both an upper and lower bound of $f$.
