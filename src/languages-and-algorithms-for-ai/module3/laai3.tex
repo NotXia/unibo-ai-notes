@@ -1,4 +1,5 @@
 \documentclass[11pt]{ainotes}
+\usepackage{xspace}
 
 \title{Languages and Algorithms for\\Artificial Intelligence\\(Module 3)}
 \date{2023 -- 2024}
@@ -6,11 +7,18 @@
 \newcommand{\enc}[1]{{\llcorner{#1}\lrcorner}}
 \newcommand{\tapestart}[0]{\triangleright}
 \newcommand{\tapeblank}[0]{\square}
+\def\P{\textbf{P}\xspace}
+\def\DTIME{\textbf{DTIME}\xspace}
+\def\FP{\textbf{FP}\xspace}
+\def\FDTIME{\textbf{FDTIME}\xspace}
+\def\EXP{\textbf{EXP}\xspace}
+\def\FEXP{\textbf{FEXP}\xspace}
 
 \begin{document}
 
     \makenotesfront
     \input{sections/_intro.tex}
     \input{sections/_turing.tex}
+    \input{sections/_complexity.tex}
 
 \end{document}

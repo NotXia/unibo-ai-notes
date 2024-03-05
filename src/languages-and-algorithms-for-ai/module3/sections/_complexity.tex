@@ -1,0 +1,81 @@
+\chapter{Complexity}
+
+
+\begin{description}
+    \item[Complexity class] \marginnote{Complexity class}
+        Set of tasks that can be computed within some fixed resource bounds.
+\end{description}
+
+
+
+\section{Polynomial time}
+
+\begin{description}
+    \item[Deterministic time (\DTIME)] \marginnote{Deterministic time (\DTIME)}
+        Let $T: \mathbb{N} \rightarrow \mathbb{N}$ and $\mathcal{L}$ be a language.
+        $\mathcal{L}$ is in $\DTIME(T(n))$ iff
+        there exists a TM that decides $\mathcal{L}$ in time $O(T(n))$.
+
+    \item[Polynomial time (\P)] \marginnote{Polynomial time (\P)}
+        The class \P contains all the tasks computable in polynomial time:
+        \[ \P = \bigcup_{c \geq 1} \DTIME(n^c) \]
+
+        \begin{remark}
+            \P is closed to various operations on programs (e.g. composition of programs)
+        \end{remark}
+
+        \begin{remark}
+            In practice, the exponent is often small.
+        \end{remark}
+
+        \begin{remark}
+            \P considers the worst case and is not always realistic.
+            Other alternative computational models exist.
+        \end{remark}
+    
+    \item[Church-Turing thesis] \marginnote{Church-Turing thesis}
+        Any physically realizable computer can be simulated by a TM with an arbitrary time overhead.
+
+    \item[Strong Church-Turing thesis] \marginnote{Strong Church-Turing thesis}
+        Any physically realizable computer can be simulated by a TM with a polynomial time overhead.
+
+        \begin{remark}
+            If this thesis holds, the class \P is robust 
+            (i.e. does not depend on the computational device)
+            and is therefore the smallest class of bounds.
+        \end{remark}
+
+    \item[Deterministic time for functions (\FDTIME)] \marginnote{Deterministic time for functions (\FDTIME)}
+        Let $T: \mathbb{N} \rightarrow \mathbb{N}$ and 
+        $f: \{0, 1\}^* \rightarrow \{0, 1\}^*$.
+        $f$ is in $\FDTIME(T(n))$ iff
+        there exists a TM that computes it in time $O(T(n))$.
+
+    \item[Polynomial time for functions (\FP)] \marginnote{Polynomial time for functions (\FP)}
+        The class \FP is defined as:
+        \[ \FP = \bigcup_{c \geq 1} \FDTIME(n^c) \]
+        
+        \begin{remark}
+            It holds that $\forall \mathcal{L} \in \P \Rightarrow f_\mathcal{L} \in \FP$,
+            where $f_\mathcal{L}$ is the characteristic function of $\mathcal{L}$.
+            Generally, the contrary does not hold.
+        \end{remark}
+\end{description}
+
+
+
+\section{Exponential time}
+
+\begin{description}
+    \item[Exponential time (\EXP/\FEXP)] \marginnote{Exponential time (\EXP/\FEXP)}
+        The \EXP and \FEXP classes are defined as:
+        \[
+            \EXP = \bigcup_{c \geq 1} \DTIME\big( 2^{n^c} \big) \hspace{3em} 
+            \FEXP = \bigcup_{c \geq 1} \FDTIME\big( 2^{n^c} \big)
+        \]
+
+        \begin{theorem}
+            The following hold:
+            \[ \P \subset \EXP \hspace{3em} \FP \subset \FEXP \]
+        \end{theorem}
+\end{description}
