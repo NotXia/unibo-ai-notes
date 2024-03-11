@@ -1,0 +1,186 @@
+\chapter{Training}
+
+
+\section{Gradient descent}
+
+\begin{enumerate} 
+    \item 
+        \marginnote{Gradient descent}
+        Start from a random set of weights $w$.
+    \item Compute the gradient $\nabla \mathcal{L}$ of the loss function.
+    \item Make a small step of size $-\nabla \mathcal{L}(w)$.
+    \item Go to 2., until convergence.
+\end{enumerate}
+
+\begin{description}
+    \item[Learning rate] \marginnote{Learning rate}
+        Size of the step. Usually denoted with $\mu$.
+        \[ w = w - \mu \nabla \mathcal{L}(w) \]
+
+    \item[Optimizer] \marginnote{Optimizer}
+        Algorithm that tunes the learning rate during training.
+
+    \item[Stochastic gradient descent] \marginnote{Stochastic gradient descent}
+        Use a subset of the training data to compute the gradient.
+        \begin{description}
+            \item[Full-batch] Use the entire dataset.
+            \item[Mini-batch] Use a subset of the training data.
+            \item[Online] Use a single sample.
+        \end{description}
+
+        \begin{remark}
+            SGD with mini-batch converges to the same result obtained using a full-batch approach.
+        \end{remark}
+
+    \item[Momentum] \marginnote{Momentum}
+        Correct the update $v_t$ at time $t$ considering the update $v_{t-1}$ of time $t-1$.
+        \[ 
+            \begin{split}
+                w_{t+1} &= w_t - v_t\\
+                v_t &= \mu \nabla \mathcal{L}(w_t) + \alpha v_{t-1} 
+            \end{split}    
+        \]
+
+        \begin{description}
+            \item[Nesterov momentum] \marginnote{Nesterov momentum}
+                Apply the momentum before computing the gradient.
+        \end{description}
+\end{description}
+
+
+
+\section{Backpropagation}
+
+\begin{description}
+    \item[Chain rule] \marginnote{Chain rule}
+        Refer to \href{\gitSMM{}}{\texttt{SMM for AI (Section 5.1.1)}}.
+    
+    \item[Backpropagation] \marginnote{Backpropagation}
+        Algorithm to compute the gradient at each layer of a neural network.
+
+        The output of the $i$-th neuron in the layer $l$ of a neural network can be defined as:
+        \[ a_{l,i} = \sigma_{l,i}( \vec{w}_{l,i}^T \vec{a}_{l-1} + b_{l,i} ) = \sigma_{l,i}(z_{l,i})\]
+        where:
+        \begin{itemize}
+            \item $a_{l,i} \in \mathbb{R}$ is the output of the neuron.
+            \item $\vec{w}_{l,i} \in \mathbb{R}^{n_{l-1}}$ is the vector of weights.
+            \item $\vec{a}_{l-1} \in \mathbb{R}^{n_{l-1}}$ is the vector of the outputs of the previous layer.
+            \item $b_{l,i} \in \mathbb{R}$ is the bias.
+            \item $\sigma_{l,i}: \mathbb{R} \rightarrow \mathbb{R}$ is the activation function\footnote{Even if it is possible to have a different activation function in each neuron, in practice, each layer has the same activation function.}.
+            \item $z_{l,i}(\vec{w}_{l,i}, b_{l,i} | \vec{a}_{l-1}) = \vec{w}_{l,i}^T \vec{a}_{l-1} + b_{l,i}$ is the argument of the activation function and is parametrized on $\vec{w}_{l,i}$ and $b_{l,i}$.
+        \end{itemize}
+
+        Hence, the outputs of the $l$-th layer can be defined as:
+        \[ \vec{a}_l = \sigma_l( \matr{W}_l^T \vec{a}_{l-1} + \vec{b}_l ) = \sigma_l( \vec{z}_l(\matr{W}_l, \vec{b}_l | \vec{a}_{l-1}) ) \]
+        where: 
+        \begin{itemize}
+            \item $\sigma_l: \mathbb{R}^{n_l} \rightarrow \mathbb{R}^{n_l}$ is the element-wise activation function.
+            \item 
+                $\matr{W}_l \in \mathbb{R}^{n_l \times n_{l-1}}$, 
+                $\vec{a}_{l-1} \in \mathbb{R}^{n_{l-1}}$,
+                $\vec{b}_l \in \mathbb{R}^{n_l}$,
+                $\vec{a}_l \in \mathbb{R}^{n_l}$.
+        \end{itemize}
+
+        Finally, a neural network with input $\vec{x}$ can be expressed as:
+        \[ 
+            \begin{split}
+                \vec{a}_0 &= \vec{x} \\
+                \vec{a}_i &= \sigma_i( \vec{z}_i(\matr{W}_i, \vec{b}_i | \vec{a}_{i-1}) )
+            \end{split}
+        \]
+
+        Given a neural network with $K$ layers and a loss function $\mathcal{L}$, 
+        we want to compute the derivative of $\mathcal{L}$ w.r.t. the weights of each layer to tune the parameters.
+
+        First, we highlight the parameters of each of the functions involved:
+        \begin{descriptionlist}
+            \item[Loss] $\mathcal{L}(a_K) = \mathcal{L}(\sigma_K)$ takes as input the output of the network (i.e. the output of the last activation function).
+            \item[Activation function] $\sigma_i(\vec{z}_i)$ takes as input the value of the neurons at the $i$-th layer.
+            \item[Neurons] $\vec{z}_i(\matr{W}_i, \vec{b}_i)$ takes as input the weights and biases at the $i$-th layer.
+        \end{descriptionlist}
+
+        Let $\odot$ be the Hadamard product.
+        By exploiting the chain rule, we can compute the derivatives w.r.t. the weights going backward:
+        \[
+            \frac{\partial\mathcal{L}}{\partial\matr{W}_K} = 
+                \frac{\partial\mathcal{L}}{\partial\sigma_K} \frac{\partial\sigma_K}{\partial\vec{z}_K} \frac{\partial\vec{z}_K}{\partial\matr{W}_K} =
+                    \underset{\mathbb{R}^{n_K} \times 1}{\nabla\mathcal{L}(\vec{a}_K)} \odot 
+                    \underset{\mathbb{R}^{n_K} \times 1}{\nabla\sigma_K(\vec{z}_K)} \cdot 
+                    \underset{1 \times \mathbb{R}^{n_{K-1}}}{\vec{a}_{K-1}^T}
+            \in \mathbb{R}^{n_K \times n_{K-1}}
+        \]
+        \[
+            \begin{split}
+                \frac{\partial\mathcal{L}}{\partial\matr{W}_{K-1}} &= 
+                    \frac{\partial\mathcal{L}}{\partial\sigma_K} \frac{\partial\sigma_K}{\partial\vec{z}_{K}} \frac{\partial\vec{z}_{K}}{\partial\sigma_{K-1}} 
+                    \frac{\partial\sigma_{K-1}}{\partial\vec{z}_{K-1}} \frac{\partial\vec{z}_{K-1}}{\partial\matr{W}_{K-1}} \\
+                    &= (
+                            \underset{\mathbb{R}^{n_K} \times 1}{\nabla\mathcal{L}(\vec{a}_K)} \odot 
+                            \underset{\mathbb{R}^{n_K} \times 1}{\nabla\sigma_K(\vec{z}_K)} 
+                        )^T \cdot 
+                        \underset{\mathbb{R}^{n_K} \times \mathbb{R}^{n_{K-1}}}{\matr{W}_K} \odot 
+                        \underset{\mathbb{R}^{n_{K-1}} \times 1}{\nabla\sigma_{K-1}(\vec{z}_{K-1})} \cdot 
+                        \underset{1 \times \mathbb{R}^{n_{K-2}}}{\vec{a}_{K-2}^T}
+                \in \mathbb{R}^{n_{K-1} \times n_{K-2}}
+            \end{split}
+        \]
+        \[ \vdots \]
+        In the same way, we can compute the derivatives w.r.t. the biases:
+        \[
+            \frac{\partial\mathcal{L}}{\partial\vec{b}_K} = 
+                \frac{\partial\mathcal{L}}{\partial\sigma_K} \frac{\partial\sigma_K}{\partial\vec{z}_K} \frac{\partial\vec{z}_K}{\partial\vec{b}_K} =
+                \underset{\mathbb{R}^{n_K} \times 1}{\nabla\mathcal{L}(\vec{a}_K)} \odot 
+                \underset{\mathbb{R}^{n_K} \times 1}{\nabla\sigma_K(\vec{z}_K)} \cdot 
+                1
+            \in \mathbb{R}^{n_K}
+        \]
+        \[
+            \begin{split}
+                \frac{\partial\mathcal{L}}{\partial\vec{b}_{K-1}} &= 
+                    \frac{\partial\mathcal{L}}{\partial\sigma_K} \frac{\partial\sigma_K}{\partial\vec{z}_{K}} \frac{\partial\vec{z}_{K}}{\partial\sigma_{K-1}} 
+                    \frac{\partial\sigma_{K-1}}{\partial\vec{z}_{K-1}} \frac{\partial\vec{z}_{K-1}}{\partial\vec{b}_{K-1}} \\
+                    &= (
+                            \underset{\mathbb{R}^{n_K} \times 1}{\nabla\mathcal{L}(\vec{a}_K)} \odot 
+                            \underset{\mathbb{R}^{n_K} \times 1}{\nabla\sigma_K(\vec{z}_K)} 
+                        )^T \cdot 
+                        \underset{\mathbb{R}^{n_K} \times \mathbb{R}^{n_{K-1}}}{\matr{W}_K} \odot
+                        \underset{\mathbb{R}^{n_{K-1}} \times 1}{\nabla\sigma_{K-1}(\vec{z}_{K-1})} \cdot 
+                        1
+                \in \mathbb{R}^{n_{K-1}}
+            \end{split}
+        \]
+        \[ \vdots \]
+
+    It can be noticed that many terms are repeated from one layer to another.
+    By exploiting this, we can store the following intermediate values:
+    \[  
+        \begin{split}
+            \delta_K &= \frac{\partial\mathcal{L}}{\partial\vec{z}_K} = \frac{\partial\mathcal{L}}{\partial\sigma_K} \frac{\partial\sigma_K}{\partial\vec{z}_K} =
+                \nabla\mathcal{L}(\vec{a}_K) \odot \nabla\sigma_K(\vec{z}_K) \\
+            \delta_l &= \frac{\partial\mathcal{L}}{\partial\vec{z}_l} = \delta_{l+1}^T \cdot \matr{W}_{l+1} \odot \nabla\sigma_l(\vec{z}_l)
+        \end{split}
+    \]
+    and reused them to compute the derivatives as follows:
+    \[
+        \begin{split}
+            \frac{\partial\mathcal{L}}{\partial\matr{W}_l} &= \frac{\partial\mathcal{L}}{\partial\vec{z}_l}\frac{\partial\vec{z}_l}{\partial\matr{W}_l} =
+                \delta_l \cdot \vec{a}_{l-1}^T \\
+            \frac{\partial\mathcal{L}}{\partial\vec{b}_l} &= \frac{\partial\mathcal{L}}{\partial\vec{z}_l}\frac{\partial\vec{z}_l}{\partial\vec{b}_l} =
+                \delta_l \cdot 1
+        \end{split}  
+    \]
+\end{description}
+
+
+\begin{description}
+    \item[Vanishing gradient] \marginnote{Vanishing gradient}
+        As backpropagation consists of a chain of products, 
+        when a component is small (i.e. $< 1$), it will gradually cancel out the gradient when backtracking, 
+        causing the first layers to learn much slower than the last layers.
+
+        \begin{remark}
+            This is an issue of the sigmoid function.
+            ReLU was designed to solve this problem.
+        \end{remark}
+\end{description}
