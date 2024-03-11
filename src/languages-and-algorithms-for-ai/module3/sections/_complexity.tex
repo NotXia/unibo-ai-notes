@@ -79,3 +79,59 @@
             \[ \P \subset \EXP \hspace{3em} \FP \subset \FEXP \]
         \end{theorem}
 \end{description}
+
+
+
+\section{\NP class}
+
+\begin{description}
+    \item[Certificate] \marginnote{Certificate}
+        Given a set of pairs $\mathcal{C}_\mathcal{L}$ and a polynomial $p: \mathbb{N} \rightarrow \mathbb{N}$, 
+        we can define the language $\mathcal{L}$ such that:
+        \[ \mathcal{L} = \{ x \in \{0, 1\}^* \mid \exists y \in \{0, 1\}^{p(\vert x \vert)}: (x, y) \in \mathcal{C}_\mathcal{L} \} \]
+
+        Given a string $w$ and a certificate $y$,
+        we can exploit $\mathcal{C}_\mathcal{L}$ as a test to check whether $y$ is a certificate for $w$:
+        \[ w \in \mathcal{L} \iff (w, y) \in \mathcal{C}_\mathcal{L} \]
+
+    \item[Nondeterministic TM (NDTM)] \marginnote{Nondeterministic TM (NDTM)}
+        TM that has two transition functions $\delta_0$, $\delta_1$ and, at each step, non-deterministically chooses which one to follow.
+        A state $q_\text{accept}$ is always present:
+        \begin{itemize}
+            \item A NDTM accepts a string iff one of the possible computations reaches $q_\text{accept}$.
+            \item A NDTM rejects a string iff none of the possible computations reach $q_\text{accept}$.
+        \end{itemize}
+
+    \item[Nondeterministic time (\NDTIME)] \marginnote{Nondeterministic time (\NDTIME)}
+        Let  $T: \mathbb{N} \rightarrow \mathbb{N}$ and $\mathcal{L}$ be a language.
+        $\mathcal{L}$ is in $\NDTIME(T(n))$ iff
+        there exists a NDTM that decides $\mathcal{L}$ in time $O(T(n))$.
+
+        \begin{remark}
+            A NDTM $\mathcal{M}$ runs in time $T: \mathbb{N} \rightarrow \mathbb{N}$ iff
+            for every input, any possible computation terminates in time $O(T(n))$.
+        \end{remark}
+    
+    \item[Complexity class \NP] \marginnote{Complexity class \NP}
+        \phantom{}
+        \begin{description}
+            \item[NDTM formulation] 
+                The class \NP contains all the tasks computable in polynomial time by a nondeterministic TM:
+                \[ \NP = \bigcup_{c \geq 1} \NDTIME(n^c) \]
+
+            \item[Verifier formulation] 
+                Let $\mathcal{L} \in \{0, 1\}^*$ be a language.
+                $\mathcal{L}$ is in \NP iff there exists 
+                a polynomial $p: \mathbb{N} \rightarrow \mathbb{N}$ and 
+                a polynomial TM $\mathcal{M}$ (verifier) such that:
+                \[ \mathcal{L} = \{ x \in \{0, 1\}^* \mid \exists y \in \{0, 1\}^{p(\vert x \vert)}: \mathcal{M}(\enc{(x, y)}) = 1 \} \]
+        
+                In other words, $\mathcal{L}$ is the language of the strings that can be verified by $\mathcal{M}$ in polynomial time
+                using a certificate $y$ of polynomial length.
+        \end{description}
+        
+\end{description}
+
+\begin{theorem}
+    $\P \subseteq \NP \subseteq \EXP$
+\end{theorem}
