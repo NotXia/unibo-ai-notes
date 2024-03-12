@@ -15,7 +15,7 @@
 \begin{description}
     \item[Learning rate] \marginnote{Learning rate}
         Size of the step. Usually denoted with $\mu$.
-        \[ w = w - \mu \nabla \mathcal{L}(w) \]
+        \[ w = w + \mu \nabla \mathcal{L}(w) \]
 
     \item[Optimizer] \marginnote{Optimizer}
         Algorithm that tunes the learning rate during training.
@@ -36,7 +36,7 @@
         Correct the update $v_t$ at time $t$ considering the update $v_{t-1}$ of time $t-1$.
         \[ 
             \begin{split}
-                w_{t+1} &= w_t - v_t\\
+                w_{t+1} &= w_t + v_t\\
                 v_t &= \mu \nabla \mathcal{L}(w_t) + \alpha v_{t-1} 
             \end{split}    
         \]
@@ -45,6 +45,23 @@
             \item[Nesterov momentum] \marginnote{Nesterov momentum}
                 Apply the momentum before computing the gradient.
         \end{description}
+
+
+    \item[Overfitting] \marginnote{Overfitting}
+        Model too specialized on the training data.
+
+        Methods to reduce overfitting are:
+        \begin{itemize}
+            \item Increasing the dataset size.
+            \item Simplifying the model.
+            \item Early stopping.
+            \item Regularization.
+            \item Model averaging.
+            \item Neurons dropout.
+        \end{itemize}
+
+    \item[Underfitting] \marginnote{Underfitting}
+        Model too simple and unable to capture features of the training data.
 \end{description}
 
 
