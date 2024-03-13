@@ -193,8 +193,9 @@ The algorithm works as follows:
 
 \subsection{Linear interpolation}
 
-As there might not be two points $A$, $B$ along the direction $\theta$ belonging the the discrete pixel grid,
-it is possible to use linear interpolation to estimate the gradient of these points even if off-grid of an offset $\Delta x$:\\
+As there might not be two points $A$ and $B$ along the direction $\theta$ belonging the the discrete pixel grid
+and because one doesn't want to consider two points too far from $(i, j)$,
+it is possible to use linear interpolation to estimate the gradients of $A$ and $B$ even if off-grid by an offset $\Delta x$:\\
 \begin{minipage}{0.6\linewidth}
     \[
         \begin{split}
