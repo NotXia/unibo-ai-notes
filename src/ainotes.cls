@@ -15,7 +15,7 @@
 \usepackage{marginnote}
 \usepackage{scrlayer-scrpage}
 \usepackage{scrhack, algorithm, listings}
-\usepackage{array, makecell, multirow}
+\usepackage{array, makecell, multirow, booktabs}
 \usepackage{acro}
 \usepackage{subcaption}
 \usepackage{eurosym}

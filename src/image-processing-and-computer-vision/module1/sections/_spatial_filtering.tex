@@ -427,7 +427,36 @@ where $\tilde{I}(p)$ is the real information.
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.95\textwidth]{./img/_bilateral_filter_example.pdf}
+            \includegraphics[width=0.9\textwidth]{./img/_bilateral_filter_example.pdf}
             \caption{Example of bilateral filter application}
         \end{figure}
+
+    
+    \item[Non-local means filter] \marginnote{Non-local means filter}
+        Exploits patches with similar pixels to denoise the image.
+
+        \begin{minipage}{0.75\textwidth}
+            Let:
+            \begin{itemize}
+                \item $I$ be the image plane.
+                \item $\mathcal{N}_i$ be the intensity matrix of a patch centered on the pixel $i$.
+                \item $S_i$ be a neighborhood of the pixel $i$.
+                \item $h$ be the bandwidth (a hyperparameter).
+            \end{itemize}
+            The intensity of a pixel $p$ is computed as follows:
+            \[
+                \begin{split}
+                    O(p) &= \sum_{q \in S_p} w(p, q) \cdot \texttt{intensity}(q) \\
+                    \text{where }& w(p, q) = \frac{1}{Z(p)} e^{-\frac{\Vert \mathcal{N}_p - \mathcal{N}_q \Vert_2^2}{h^2}} \\
+                                & Z(p) = \sum_{q \in I} e^{\frac{\Vert \mathcal{N}_p - \mathcal{N}_q \Vert_2^2}{h^2}}
+                \end{split}
+            \]
+        \end{minipage}
+        \begin{minipage}{0.25\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{./img/non_local_means_filter.png}
+        \end{minipage}
+
+        Instead of using the full image plane $I$, a neighborhood $S_p$ is used for computational purposes.
+        $Z(p)$ is a normalization factor.
 \end{description}
