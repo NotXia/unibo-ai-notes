@@ -1,0 +1,206 @@
+\chapter{SAT solvers}
+
+
+\begin{description}
+    \item[Satifiability (SAT)] \marginnote{SAT}
+        Given a propositional formula $f$, 
+        find an assignment of the variables to make the formula true.
+
+        If $f$ is satisfiable, we say that it is SAT. Otherwise, it is UNSAT.
+\end{description}
+
+\begin{theorem}(Cook-Levin) \marginnote{Cook-Levin theorem}
+    SAT is NP-complete.
+
+    \begin{descriptionlist}
+        \item[NP-complete]
+            A problem is NP-complete iff it is in NP and every NP problem can be reduced to it.
+            \begin{remark}
+                All problems in NP can be reduced to SAT.
+            \end{remark}
+    \end{descriptionlist}
+\end{theorem}
+
+
+\begin{description}
+    \item[Satisfiable formula] \marginnote{Satisfiable formula}
+        A formula $f$ is satisfiable iff there is an assignment of the variables that makes it true.
+
+
+    \item[Valid formula] \marginnote{Valid formula}
+        A formula $f$ is valid iff any assignment of the variables makes it true.
+
+        \begin{remark}
+            $f$ is valid iff $\lnot f$ is UNSAT.
+        \end{remark}
+
+
+    \item[SAT solver] \marginnote{SAT solver}
+        Given a problem, the following steps should be followed to solve it using a SAT solver:
+        \begin{enumerate}
+            \item Formalize the problem into a propositional formula.
+            \item Depending on the solver, it might be necessary to convert in into CNF.
+            \item Feed the formula to a SAT solver.
+            \item The result can be an assignment of the variables (SAT) or a failure (UNSAT).
+        \end{enumerate}
+\end{description}
+
+
+
+\section{Resolution}
+
+\begin{description}
+    \item[Resolution] \marginnote{Resolution}
+        Basic approach for SAT.
+        Prove that a set of CNF clauses is UNSAT by deriving new clauses until a contradiction is reached.
+
+        Resolution rules to derive new clauses are:
+        \begin{descriptionlist}
+            \item[Resolution rule] \marginnote{Resolution rule} 
+                \phantom{}
+                \begin{minipage}{0.4\linewidth}
+                    \begin{prooftree}
+                        \AxiomC{$p \vee V$}
+                        \AxiomC{$\lnot p \vee W$}
+                        \BinaryInfC{$V \vee W$}
+                    \end{prooftree}
+                \end{minipage}
+
+            \item[Unit resolution] \marginnote{Unit resolution}
+                \begin{minipage}{0.4\linewidth}
+                    \begin{prooftree}
+                        \AxiomC{$p$}
+                        \AxiomC{$\lnot p \vee W$}
+                        \BinaryInfC{$W$}
+                    \end{prooftree}
+                \end{minipage}
+                \begin{minipage}{0.4\linewidth}
+                    \begin{prooftree}
+                        \AxiomC{$\lnot p$}
+                        \AxiomC{$p \vee V$}
+                        \BinaryInfC{$V$}
+                    \end{prooftree}
+                \end{minipage}
+
+                Note that this is equivalent to the rule of implication elimination:\\
+                \begin{minipage}{0.4\linewidth}
+                    \begin{prooftree}
+                        \AxiomC{$p$}
+                        \AxiomC{$p \Rightarrow W$}
+                        \BinaryInfC{$W$}
+                    \end{prooftree}
+                \end{minipage}
+                \begin{minipage}{0.4\linewidth}
+                    \begin{prooftree}
+                        \AxiomC{$\lnot p$}
+                        \AxiomC{$\lnot p \Rightarrow V$}
+                        \BinaryInfC{$V$}
+                    \end{prooftree}
+                \end{minipage}
+        \end{descriptionlist}
+\end{description}
+
+\begin{example}
+    Given the CNF formula:
+    \[ (p \vee q) \land (\lnot r \vee s) \land (\lnot q \vee r) \land (\lnot r \vee \lnot s) \land (\lnot p \vee r) \]
+    Resolution can be applied as follows:
+    \begin{itemize}
+        \item The starting clauses are:
+            $(p \vee q) \cdot (\lnot r \vee s) \cdot (\lnot q \vee r) \cdot (\lnot r \vee \lnot s) \cdot (\lnot p \vee r)$
+        \item From $(p \vee q)$ and $(\lnot q \vee r)$, one can derive $(p \vee r)$.
+        \item From $(\lnot p \vee r)$ and $(p \vee r)$, one can derive $r$.
+        \item From $(\lnot r \vee s)$ and $r$, one can derive $s$.
+        \item From $(\lnot r \vee \lnot s)$ and $s$, one can derive $\lnot r$.
+        \item From $r$ and $\lnot r$, one reaches $\bot$.
+    \end{itemize}
+\end{example}
+
+
+
+\section{DPLL}
+
+\begin{description}
+    \item[DPLL] \marginnote{DPLL} 
+        Algorithm based on unit resolution.
+        Given a set of clauses, DPLL is applied as follows:
+        \begin{enumerate}
+            \item Apply unit resolution as long as possible 
+                (i.e. for every clause containing a single literal $l$, remove $\lnot l$ from all clauses. 
+                Clauses containing $l$ can also be removed as they are redundant).
+            \item Choose a variable $p$.
+            \item Recursively apply DPLL by assuming $p$ in one call and $\lnot p$ in another.
+        \end{enumerate}
+
+        \begin{theorem}
+            DPLL is complete.
+        \end{theorem}
+
+        \begin{remark}
+            DPLL efficiency strongly depends on the variables.
+        \end{remark}
+\end{description}
+
+\begin{example}
+    Given a CNF formula with clauses:
+    \[ (\lnot p \vee \lnot s) \cdot (\lnot p \vee \lnot r) \cdot (\lnot q \vee \lnot t) \cdot (p \vee r) \cdot (p \vee s) \cdot (r \vee t) \cdot (\lnot s \vee t) \cdot (q \vee s) \]
+    There are no unit clauses, so we choose the variable $p$ and consider the cases where $p$ and where $\lnot p$.
+
+    By assuming $p$, unit resolution can be applied as follows:
+    \begin{itemize}
+        \item $p$ with $(\lnot p \vee \lnot s)$ derives $\lnot s$.
+        \item $p$ with $(\lnot p \vee \lnot r)$ derives $\lnot r$.
+        \item $\lnot s$ with $(q \vee s)$ derives $q$.
+        \item $\lnot r$ with $(r \vee t)$ derives $t$.
+        \item $q$ with $(\lnot q \vee \lnot t)$ derives $\not t$.
+        \item $t$ and $\lnot t$ bring to $\bot$. This branch is UNSAT.
+    \end{itemize}
+
+    By assuming $\lnot p$, unit resolution can be applied as follows:
+    \begin{itemize}
+        \item $\lnot p$ with $(p \vee r)$ derives $r$.
+        \item $\lnot p$ with $(p \vee s)$ derives $s$.
+        \item $s$ with $(\lnot s \vee t)$ derives $t$.
+        \item $t$ with $(\lnot q \vee \lnot t)$ derives $\lnot q$.
+    \end{itemize}
+    We reached a full assignment $\langle \lnot p, r, s, t, \lnot q \rangle$. The formula is SAT.
+\end{example}
+
+\begin{description}
+    \item[DPLL implementation] \marginnote{DPLL algorithm}
+        An efficient implementation of DPLL uses a list $M$ of the literals that have been decided or derived.
+
+        \begin{description}
+            \item[Notations] \phantom{}
+                \begin{itemize}[leftmargin=*]
+                    \item A literal $l$ holds in $M$ ($M \models l$) iff $l$ is in $M$.
+                    \item $M$ contradicts a clause $C$ ($M \models \lnot C$) iff for every literal $l$ in $C$, $M \models \lnot l$.
+                    \item A literal $l$ is undefined iff $M \cancel{\models} l$ and $M \cancel{\models} \lnot l$.
+                    \item A decision literal (i.e. literal assumed to hold) is denoted as $l^\mathcal{D}$.
+                \end{itemize}
+        \end{description}
+
+        The algorithm follows four rules:
+        \begin{descriptionlist}
+            \item[\texttt{UnitPropagate}] 
+                If the CNF contains a clause $(A \vee l)$ such that $M \models \lnot A$ and $l$ is an undefined literal,
+                then there is a transition:
+                \[ M \rightarrow Ml \]
+
+            \item[\texttt{Decide}] 
+                When \texttt{UnitPropagate} it not possible, an undefined literal $l$ is assumed to hold (it becomes a decision literal):
+                \[ M \rightarrow Ml^\mathcal{D} \]
+
+            \item[\texttt{Backtrack}] 
+                When a branch is UNSAT, the algorithm backtracks to the nearest decision literal and negates it.
+                Given a clause $C$ of the CNF, if $Ml^\mathcal{D}N \models \lnot C$ and $N$ does not contain other decision literals,
+                then there is a transition:
+                \[ Ml^\mathcal{D}N \rightarrow M \lnot l \]
+
+            \item[\texttt{Fail}] 
+                Given a clause $C$ of the CNF, if $M \models \lnot C$ and $M$ contains a definitive assignment of all the variables (i.e. no decision literals),
+                then there is a transition:
+                \[ M \rightarrow \text{fail} \]
+        \end{descriptionlist}
+
+        In the end, if the formula is SAT, $M$ contains an assignment of the variables.
+\end{description}
