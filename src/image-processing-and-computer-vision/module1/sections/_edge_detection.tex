@@ -214,3 +214,178 @@ it is possible to use linear interpolation to estimate the gradients of $A$ and 
     \centering
     \includegraphics[width=\linewidth]{./img/_nms_interpolation.pdf}
 \end{minipage}
+
+
+
+\section{Canny's edge detector}
+
+Method based on three criteria:
+\begin{descriptionlist}
+    \item[Good detection] Correctly detect edges in noisy images.
+    \item[Good localization] Minimize the distance between the found edges and the true edges.
+    \item[One response to one edge] Detect only one pixel at each true edge.
+\end{descriptionlist}
+
+In the 1D case, the optimal operator consists in finding the local extrema of the
+signal obtained by convolving the image and the Gaussian first-order derivative. 
+
+Generalized for the 2D case, Canny's edge detector does the following: \marginnote{Canny's edge detector}
+\begin{enumerate}
+    \item Gaussian smoothing.
+    \item Gradient computation.
+    \item NMS and thresholding.
+\end{enumerate}
+
+It is possible to exploit the convolutions property of being commutative w.r.t. differentiation
+and simplify the smoothing and gradient computation:
+\[  
+    \begin{split}
+        \partial_x I(x, y) &= \frac{\partial}{\partial x} ( I(x, y) * G(x, y) ) = I(x, y) * \frac{\partial G(x, y)}{\partial x} \\
+        \partial_y I(x, y) &= \frac{\partial}{\partial y} ( I(x, y) * G(x, y) ) = I(x, y) * \frac{\partial G(x, y)}{\partial y}
+    \end{split}
+\]
+By leveraging the separability of a 2D Gaussian ($G(x, y) = G_1(x)G_2(y)$),
+the computation can be reduced to 1D convolutions:
+\[
+    \begin{split}
+        \partial_x I(x, y) &= I(x, y) * (G_1'(x)G_2(y)) = (I(x, y) * G_1'(x)) * G_2(y) \\
+        \partial_y I(x, y) &= I(x, y) * (G_1(x)G_2'(y)) = (I(x, y) * G_1(x)) * G_2'(y) 
+    \end{split}  
+\]
+
+\begin{remark}
+    When magnitude varies along the object contour, thresholding might remove true edges (edge streaking).
+\end{remark}
+
+\begin{description}
+    \item[Hysteresis thresholding] \marginnote{Hysteresis thresholding}
+        Given a high threshold $T_\text{h}$ and a low threshold $T_\text{l}$,
+        depending on its magnitude, a pixel $(i, j)$ can be considered a:
+        \begin{descriptionlist}
+            \item[Strong edge] $\nabla I(i, j) > T_h$.
+            \item[Weak edge] $\nabla I(i, j) > T_l$ and the pixel $(i, j)$ is a neighbor of a strong/weak edge.
+        \end{descriptionlist}
+        In practice, the algorithm starts from strong edges and "propagates" them.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/hysteresis thresholding.png}
+            \caption{Application of hysteresis thresholding}
+        \end{figure}
+\end{description}
+
+\begin{remark}
+    The output of Canny's edge detector is not an image with edges but a list of edges.
+
+    Note that if the edges of two objects intersect, this will be recognized as a single edge.
+\end{remark}
+
+
+
+\section{Zero-crossing edge detector}
+
+\begin{description}
+    \item[Zero-crossing edge detector] \marginnote{Zero-crossing}
+        Detect edges by finding zero-crossing of the second derivative of the signal.
+
+        \begin{remark}
+            A zero-crossing is a point at 0 where the function changes sign.
+        \end{remark}
+
+        \begin{remark}
+            This approach does not require a threshold anymore but is computationally more expensive.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{./img/zero_crossing_example1.png}
+                \caption{Input signal}
+            \end{subfigure}
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{./img/zero_crossing_example2.png}
+                \caption{First-order derivative}
+            \end{subfigure}
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{./img/zero_crossing_example3.png}
+                \caption{Second-order derivative}
+            \end{subfigure}
+        \end{figure}
+
+
+    \item[Laplacian] \marginnote{Laplacian}
+        Approximation of the second-order derivative:
+        \[ \nabla^2 I(x, y) \approx \frac{\partial^2 I(x, y)}{\partial x^2} + \frac{\partial^2 I(x, y)}{\partial y^2} = \partial_{x,x} I + \partial_{y, y} I \]
+
+
+    \item[Discrete Laplacian] \marginnote{Discrete Laplacian}
+        Use forward difference to compute first-order derivatives,
+        followed by backward difference to compute second-order derivatives.
+        \[
+            \begin{split}
+                \partial_{x,x} I(i, j) &\approx \partial_x I(i, j) - \partial_x I(i, j-1) \\
+                    &= \big ( I(i, j+1) - I(i, j) \big) - \big ( I(i, j) - I(i, j-1) \big) \\
+                    &= I(i, j+1) - 2I(i, j) + I(i, j-1)
+            \end{split}            
+        \]
+        \[
+            \begin{split}
+                \partial_{y,y} I(i, j) &\approx \partial_y I(i, j) - \partial_y I(i-1, j) \\
+                    &= \big ( I(i+1, j) - I(i, j) \big) - \big ( I(i, j) - I(i-1, j) \big) \\
+                    &= I(i+1, j) - 2I(i, j) + I(i-1, j)
+            \end{split}            
+        \]
+
+        This is equivalent to applying the cross-correlation kernel:
+        \[
+            \nabla^2 = \begin{pmatrix}
+                0 & 1 & 0 \\
+                1 & -4 & 1 \\
+                0 & 1 & 0 \\
+            \end{pmatrix}    
+        \]
+
+        \begin{remark}
+            It can be shown that zero-crossings of the Laplacian typically lay close to those of the second-order derivative.
+        \end{remark}
+\end{description}
+
+
+\subsection{Laplacian of Gaussian (LOG)}
+
+Laplacian of Gaussian (LOG) does the following: \marginnote{Laplacian of Gaussian (LOG)}
+\begin{enumerate}
+    \item Gaussian smoothing.
+    \item Second-order differentiation using the Laplacian filter.
+    \item Zero-crossings extraction.
+\end{enumerate}
+
+\begin{description}
+    \item[Discrete zero-crossing]
+        As the image consists of a discrete grid of pixels, finding a zero-crossing as per definition is not always possible.
+        Instead, an edge is detected when there is a change of sign in the magnitude.
+        The edge pixel can be identified as:
+        \begin{itemize}
+            \item The pixel where the magnitude is positive.
+            \item The pixel where the magnitude is negative.
+            \item The pixel where the absolute value of the magnitude is smaller. 
+                This is usually the best choice as it is closer to the true zero-crossing.
+        \end{itemize}
+\end{description}
+
+\begin{remark}
+    A final thresholding might still be useful to remove uninteresting edges.
+\end{remark}
+
+\begin{remark}
+    Smaller values of $\sigma$ of the smoothing operator detect more detailed edges, 
+    while higher $\sigma$ captures more general edges.
+\end{remark}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./img/_example_laplacian_gaussian.pdf}
+\end{figure}

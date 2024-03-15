@@ -1,0 +1,49 @@
+\chapter{Local features}
+
+\begin{description}
+    \item[Correspondence points] \marginnote{Correspondence points}
+        Image points projected from the same 3D point from different views of the scene.
+
+        \begin{example}[Homography]
+            Align two images of the same scene to create a larger image.
+            Homography requires at least 4 correspondences. 
+            To find them, it does the following:
+            \begin{itemize}
+                \item Independently find salient points in the two images.
+                \item Compute a local description of the salient points.
+                \item Compare descriptions to find matching points.
+            \end{itemize}
+        \end{example}
+
+
+    \item[Local invariant features] \marginnote{Local invariant features}
+        Find correspondences in three steps:
+        \begin{descriptionlist}
+            \item[Detection] \marginnote{Detection}
+                Find salient points (keypoints).
+            
+                The detector should have the following properties:
+                \begin{descriptionlist}
+                    \item[Repeatability] Find the same keypoints across different images.
+                    \item[Saliency] Find keypoints surrounded by informative patterns.
+                    \item[Fast] As it must scan the entire image. 
+                \end{descriptionlist}
+            
+
+            \item[Description] \marginnote{Description}
+                Compute a descriptor for each salient point based on its neighborhood.
+            
+                A descriptor should have the following properties:
+                \begin{descriptionlist}
+                    \item[Invariant] Robust to as many transformations as possible (i.e. illumination, weather, scaling, viewpoint, \dots).
+                    \item[Distinctiveness/robustness trade-off] The description should only capture important information around a keypoint and 
+                        ignore irrelevant features or noise.
+                    \item[Compactness] The description should be concise.
+                \end{descriptionlist}
+
+
+            \item[Matching] \marginnote{Matching}
+                Identify the same descriptor across different images.
+        \end{descriptionlist}
+\end{description}
+
