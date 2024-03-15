@@ -117,7 +117,7 @@
 
 
 
-\section{DPLL}
+\section{DPLL algorithm}
 
 \begin{description}
     \item[DPLL] \marginnote{DPLL} 
@@ -203,4 +203,117 @@
         \end{descriptionlist}
 
         In the end, if the formula is SAT, $M$ contains an assignment of the variables.
+\end{description}
+
+\begin{remark}
+    Compared to resolution, DPLL is more memory efficient.
+\end{remark}
+
+
+
+\section{Conflict-driven clause learning (CDCL)}
+
+DPLL with two improvements:
+\begin{descriptionlist}
+    \item[Clause learning] 
+        When a contradiction is found, augment the original CNF with a conflict clause
+        to prune the search space.
+
+        The conflict clause is obtained through resolution by combining two clauses that cause the contradiction.
+
+    \item[\texttt{Backjumping}]
+        Depending on the type of contradiction, skip decision literals that are not causing the conflict
+        and directly backtrack to an earlier relevant decision literal.
+
+        Given a clause $C$ of the CNF, if $Ml^\mathcal{D}N \models \lnot C$ and 
+        there is a clause $(C' \vee l')$ derivable from the CNF such that $M \models \lnot C'$ and
+        $l'$ is undefined, then there is a transition:
+        \[ Ml^\mathcal{D}N \rightarrow Ml' \] 
+        Note that $N$ might contain other decision literals and $(C' \vee l')$ is a conflict clause.
+
+        \begin{remark}
+            \texttt{Backjumping} can be seen as \texttt{UnitPropagate} applied on conflict clauses.
+        \end{remark}
+\end{descriptionlist}
+
+\begin{description}
+    \item[Implication graph]
+        DAG $G=(V, E)$ to record the history of decisions and unit resolutions.
+        \begin{descriptionlist}
+            \item[Vertex] Can be:
+                \begin{itemize}
+                    \item A decision or derived literal (denoted as $l@d$, where $l$ is the literal and $d$ the decision level it originated from).
+                    \item A marker to indicate a conflict (denoted as $\kappa@d$, where $d$ is the decision level it originated from).
+                \end{itemize}
+
+            \item[Edge] 
+                Has form $v \xrightarrow{c_i} w$ and indicates that $w$ is obtained using the clause $c_i$ and the literal $v$.
+        \end{descriptionlist}
+        
+        \begin{example}
+            Starting from the clauses $c_1, \dots, c_6$ of a CNF, one can build the implication graph while running DPLL/CDCL.
+
+            In this example, the decision literals (green nodes) are assigned following this order: $x_1 \rightarrow x_8 \rightarrow \lnot x_7$:
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{./img/_cdcl_example1.pdf}
+            \end{center}
+            \[ M \rightarrow M x_1^\mathcal{D} x_8^\mathcal{D} \lnot x_7^\mathcal{D} \]
+
+            Then, it is possible to derive implied variables using unit resolution starting from the decision literals:
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{./img/_cdcl_example2.pdf}
+            \end{center}
+            \[ M \rightarrow M \lnot x_6 \lnot x_5 \]
+            And so on:
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{./img/_cdcl_example3.pdf}
+            \end{center}
+            \[ M \rightarrow M x_4 x_2 \lnot x_3 \]
+
+            As $c_2$ is UNSAT, we reached a contradiction:
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{./img/_cdcl_example4.pdf}
+            \end{center}
+        \end{example}
+
+    \begin{remark}
+        Any cut that separates sources (decision literals) and the sink (contradiction node) is a valid conflict clause for backjumping.
+
+        \begin{example} \phantom{}
+            \begin{center}
+                \includegraphics[width=0.55\linewidth]{./img/_cdcl_cut.pdf}
+            \end{center}
+        \end{example}
+    \end{remark}
+
+    \item[Unit implication point (UIP)]
+        Given an implication graph where the latest decision node is $(l@d)$ and the conflict node is $(\kappa@d)$,
+        a node is a unit implication point iff it appears in all the paths from $(l@d)$ to $(\kappa@d)$.
+
+        The UIP closest to the conflict is denoted as 1UIP.
+
+        \begin{remark}
+            The decision node $(l@d)$ itself is a UIP.
+        \end{remark}
+
+    \item[1UIP-based backjumping]
+        In case of conflict, use the conflict clause obtained by cutting in front of the 1UIP.
+
+        \begin{remark}
+            This allows to:
+            \begin{itemize}
+                \item Reduce the size of the conflict clause.
+                \item Guarantee the highest backtrack jump.
+            \end{itemize}
+        \end{remark}
+
+        \begin{example}
+            \phantom{}
+            \begin{center}
+                \includegraphics[width=0.75\linewidth]{./img/_cdcl_1uip.pdf}
+            \end{center}
+            By adding the conflict clause $(\lnot x_1 \vee \lnot x_4)$, we can backjump up to $x_8^\mathcal{D}$ 
+            (not to $x_1^\mathcal{D}$ as it makes the conflict clause a unit).
+            \[ x_1^\mathcal{D} x_8^\mathcal{D} \lnot x_7^\mathcal{D} \lnot x_6 \lnot x_5 x_4 x_2 \lnot x_3 \rightarrow x_1^\mathcal{D} \lnot x_4\]
+        \end{example}
 \end{description}
