@@ -22,14 +22,14 @@ work_dir=`realpath src`
 mkdir -p $out_dir
 touch $hash_file
 
-# $1: path of the directory
 getDirLastHash() {
+    # $1: path of the directory
     path="$1"
     echo `awk -F"," "\\$1 == \"$path\" { print \\$2 } " $hash_file`
 }
 
-# $1: path of the directory
 getDirCurrHash() {
+    # $1: path of the directory
     path="$1"
     echo `git log -n 1 --format='%h' $path/**/*.!(cls)`
 }
@@ -47,6 +47,19 @@ updateHashes() {
         f_dir=$(dirname $f)
         echo "$f_dir,`getDirCurrHash $f_dir`" >> $new_hash_file
     done
+}
+
+moveHierarchyUp() {
+    # Recursively moves the content of a directory up of a level.
+    # $1: starting directory
+    cd $1
+    mv ./*.* ../
+    for dir in */; do
+        [ "$dir" == "*/" ] && continue
+        moveHierarchyUp $dir
+    done
+    cd ..
+    rmdir $1 2> /dev/null
 }
 
 
@@ -91,3 +104,15 @@ for f in **/[!_]*.tex; do
 done
 
 updateHashes
+
+# Moves the content of each output directory up of a level
+cd $out_dir
+for course_dir in */; do
+    [ "$course_dir" == "*/" ] && continue
+    cd $course_dir
+    for dir in */; do
+        [ "$dir" == "*/" ] && continue
+        moveHierarchyUp $dir
+    done
+    cd ..
+done
