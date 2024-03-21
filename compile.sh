@@ -106,13 +106,13 @@ done
 updateHashes
 
 # Moves the content of each output directory up of a level
-cd $out_dir
-for course_dir in */; do
-    [ "$course_dir" == "*/" ] && continue
-    cd $course_dir
-    for dir in */; do
-        [ "$dir" == "*/" ] && continue
-        moveHierarchyUp $dir
-    done
-    cd ..
-done
+# cd $out_dir
+# for course_dir in */; do
+#     [ "$course_dir" == "*/" ] && continue
+#     cd $course_dir
+#     for dir in */; do
+#         [ "$dir" == "*/" ] && continue
+#         moveHierarchyUp $dir
+#     done
+#     cd ..
+# done
