@@ -1,4 +1,4 @@
-\chapter{SAT solvers}
+\chapter{SAT solver}
 
 
 \begin{description}
@@ -39,7 +39,7 @@
         Given a problem, the following steps should be followed to solve it using a SAT solver:
         \begin{enumerate}
             \item Formalize the problem into a propositional formula.
-            \item Depending on the solver, it might be necessary to convert in into CNF.
+            \item Depending on the solver, it might be necessary to convert it into CNF.
             \item Feed the formula to a SAT solver.
             \item The result can be an assignment of the variables (SAT) or a failure (UNSAT).
         \end{enumerate}
@@ -47,7 +47,9 @@
 
 
 
-\section{Resolution}
+\section{Solvers}
+
+\subsection{Resolution}
 
 \begin{description}
     \item[Resolution] \marginnote{Resolution}
@@ -117,7 +119,7 @@
 
 
 
-\section{DPLL algorithm}
+\subsection{DPLL algorithm}
 
 \begin{description}
     \item[DPLL] \marginnote{DPLL} 
@@ -211,7 +213,7 @@
 
 
 
-\section{Conflict-driven clause learning (CDCL)}
+\subsection{Conflict-driven clause learning (CDCL)}
 
 DPLL with two improvements:
 \begin{descriptionlist}
@@ -316,4 +318,165 @@ DPLL with two improvements:
             (not to $x_1^\mathcal{D}$ as it makes the conflict clause a unit).
             \[ x_1^\mathcal{D} x_8^\mathcal{D} \lnot x_7^\mathcal{D} \lnot x_6 \lnot x_5 x_4 x_2 \lnot x_3 \rightarrow x_1^\mathcal{D} \lnot x_4\]
         \end{example}
+\end{description}
+
+
+
+\section{Encodings}
+
+\begin{description}
+    \item[Cardinality constraints] \marginnote{Cardinality constraints}
+        Constraints of the form:
+        \[ \sum_{1 \leq i \leq n} x_i \bowtie k \]
+        where $k \in \mathbb{N}$ and $\bowtie\,\, \in \{ <, \leq, =, \neq, \geq, > \}$.
+
+    \item[$\mathbf{k=1}$ constraints] \marginnote{$k=1$ constraints}
+        Constraints of the form:
+        \[ \sum_{1 \leq i \leq n} x_i \bowtie 1 \]
+
+        \begin{description}
+            \item[\texttt{ExactlyOne}] \marginnote{\texttt{ExactlyOne}}
+                \[
+                    \begin{split}
+                        \texttt{ExactlyOne}([x_1, \dots, x_n]) &\iff \\
+                        &\texttt{AtMostOne}([x_1, \dots, x_n]) \land \texttt{AtLeastOne}([x_1, \dots, x_n]) 
+                    \end{split}
+                \]
+
+            \item[\texttt{AtLeastOne}] \marginnote{\texttt{AtLeastOne}}
+                \[ \texttt{AtLeastOne}([x_1, \dots, x_n]) \iff x_1 \vee x_2 \vee \dots \vee x_n \]
+
+            \item[\texttt{AtMostOne}] \marginnote{\texttt{AtMostOne}}
+                There are different encoding approaches:
+
+                \begin{description}
+                    \item[Pairwise encoding] \marginnote{\texttt{AtMostOne} pairwise encoding}
+                        Constrains the fact that any pair of variables cannot be both true:
+                        \[ \texttt{AtMostOne}([x_1, \dots, x_n]) \iff \bigwedge_{1 \leq i < j \leq n} \lnot (x_i \land x_j) \]
+                        This encoding does not require auxiliary variables and introduces $O(n^2)$ new clauses.
+
+                    \item[Sequential encoding] \marginnote{\texttt{AtMostOne} sequential encoding}
+                        Introduces $n$ new variables $s_i$ such that:
+                        \begin{itemize}
+                            \item If $s_i = 1$ and $s_{i-1} = 0$, then $x_i = 1$.
+                            \item If $s_i = 1$ and $s_{i-1} = 1$, then $x_i = 0$.
+                        \end{itemize}
+                        \[ 
+                            \begin{split}
+                                \texttt{AtMostOne}([x_1, \dots, x_n]) &\iff \\
+                                & (x_1 \Rightarrow s_1) \\
+                                & \land \bigwedge_{1 < i < n} \left[ \big( (x_i \vee s_{i-1}) \Rightarrow s_i \big) \land (s_{i-1} \Rightarrow \lnot x_i) \right] \\
+                                & \land (s_{n-1} \Rightarrow \lnot x_n)
+                            \end{split}
+                        \]
+                        By expanding the implications, it becomes:
+                        \[ 
+                            \begin{split}
+                                \texttt{AtMostOne}([x_1, \dots, x_n]) &\iff \\
+                                & (\lnot x_1 \vee s_1) \\
+                                & \land \bigwedge_{1 < i < n} \left[ (\lnot x_i \vee s_i) \land (\lnot s_{i-1} \vee s_i) \land (\lnot s_{i-1} \vee \lnot x_i) \right] \\
+                                & \land (\lnot s_{n-1} \vee \lnot x_n)
+                            \end{split}
+                        \]
+                        This encoding requires $O(n)$ auxiliary variables and $O(n)$ new clauses.
+
+                    \item[Bitwise encoding] \marginnote{\texttt{AtMostOne} bitwise encoding}
+                        Introduces $m = \log_2n$ new variables $r_i$ such that 
+                        if the variable $x_i$ is set to true, then $r_1, \dots, r_m$ contain the binary encoding of the index $i-1$.
+                        
+                        Let $b_{i,1}, \dots, b_{i,m}$ be the $m$ bits of the binary representation of $i$, the encoding is the following:
+                        \[
+                            \begin{split}
+                                \texttt{AtMostOne}([x_1, \dots, x_n]) &\iff \\
+                                & \bigwedge_{1 \leq i \leq n} \big( x_i \Rightarrow (r_1 = b_{i-1,1} \land \dots \land r_m = b_{i-1,m}) \big)
+                            \end{split}
+                        \]
+                        By expanding the implications, it becomes:
+                        \[
+                            \begin{split}
+                                \texttt{AtMostOne}([x_1, \dots, x_n]) &\iff \\
+                                & \bigwedge_{1 \leq i \leq n} \bigwedge_{1 \leq j \leq m} \big( \lnot x_i \vee (r_j = b_{i-1, j}) \big)
+                            \end{split}
+                        \]
+                        This encoding requires $O(\log_2n)$ auxiliary variables and $O(n \log_2 n)$ new clauses.
+
+                    \item[Heule encoding] \marginnote{\texttt{AtMostOne} Heule encoding}
+                        Defines the encoding recursively:
+                        \begin{itemize}
+                            \item When $n \leq 4$, apply the pairwise encoding (which requires 6 clauses):
+                                \[ \texttt{AtMostOne}([x_1, \dots, x_4]) \iff \bigwedge_{1 \leq i < j \leq n} \lnot (x_i \land x_j) \]
+                            \item When $n > 4$, introduce a new variable $y$:
+                                \[ 
+                                    \begin{split}
+                                        \texttt{AtMostOne}&([x_1, \dots, x_n]) \iff \\
+                                        &\texttt{AtMostOne}([x_1, x_2, x_3, y]) \land \texttt{AtMostOne}([\lnot y, x_4, \dots, x_n]) 
+                                    \end{split}
+                                \]
+                        \end{itemize}
+                        This encoding requires $O(n)$ auxiliary variables and $O(n)$ new clauses.
+                \end{description}
+        \end{description}
+
+    \item[$\mathbf{k \in \mathbb{N}}$ constraints] \marginnote{$k \in \mathbb{N}$ constraints}
+        Constraints of the form:
+        \[ \sum_{1 \leq i \leq n} x_i \bowtie k \text{ where } k \in \mathbb{N} \]
+
+        \begin{theorem}
+            All the cardinality constraints can be expressed using \texttt{AtMostK} (i.e. $\leq$ relationship).
+            \begin{proof}
+                \[
+                    \begin{split}
+                        \sum_{1 \leq i \leq n} x_i = k &\iff \sum_{1 \leq i \leq n} (x_i \geq k ) \land \sum_{1 \leq i \leq n} (x_i \leq k) \\
+                        \sum_{1 \leq i \leq n} x_i \neq k &\iff \sum_{1 \leq i \leq n} (x_i < k) \vee \sum_{1 \leq i \leq n} (x_i > k) \\
+                        \sum_{1 \leq i \leq n} x_i \geq k &\iff \sum_{1 \leq i \leq n} (\lnot x_i \leq n-k) \\
+                        \sum_{1 \leq i \leq n} x_i > k &\iff \sum_{1 \leq i \leq n} (\lnot x_i \leq n-k-1) \\
+                        \sum_{1 \leq i \leq n} x_i < k &\iff \sum_{1 \leq i \leq n} (x_i \leq k-1)
+                    \end{split}
+                \]
+            \end{proof}
+        \end{theorem}
+
+        \begin{description}
+            \item[\texttt{AtMostK}] \marginnote{\texttt{AtMostK}}
+                There are different encoding approaches:
+                \begin{description}
+                    \item[Generalized pairwise encoding] \marginnote{\texttt{AtMostK} generalized pairwise encoding}
+                        Constrains the fact that any pair of $(k+1)$ variables cannot be all true:
+                        \[ 
+                            \texttt{AtMostK}([x_1, \dots, x_n], k) \iff \bigwedge_{\substack{ M \subseteq \{ 1, \dots, n \}\\\vert M \vert = k+1 }} \bigvee_{i \in M} \lnot x_i
+                        \]
+                        This encoding does not require auxiliary variables and introduces $O(n^{k+1})$ new clauses.
+                    
+                    \item[Sequential encoding] \marginnote{\texttt{AtMostK} sequential encoding}
+                        Introduces $n \cdot k$ new variables $s_{i,j}$ such that:
+                        \begin{itemize}
+                            \item If $s_{i,j} = 1$ and $s_{i-1,j} = 0$, then $x_i$ is the $j$-th variable assigned to true.
+                            \item If $s_{i,j} = 1$ and $s_{i-1,j} = 1$, then $x_i = 0$ and there are $j$ variables assigned to true among $x_1, \dots, x_{i-1}$.
+                        \end{itemize}
+                        \[ 
+                            \begin{split}
+                                \texttt{AtMostK}&([x_1, \dots, x_n], k) \iff \\
+                                & (x_1 \Rightarrow s_{1,1}) \land \bigwedge_{2 \leq j \leq k} \lnot s_{1,j} \\
+                                & \land \bigwedge_{1 < i < n} \left[
+                                    \begin{split}
+                                        & \big( (x_i \vee s_{i-1,1}) \Rightarrow s_{i,1} \big) \\
+                                        & \land \bigwedge_{2 \leq j \leq k} \Big( \big( (x_i \land s_{i-1, j-1}) \vee s_{i-1,j} \big) \Rightarrow s_{i,j} \Big) \\
+                                        & \land (s_{i-1,k} \Rightarrow \lnot x_i)
+                                    \end{split}
+                                \right] \\
+                                & \land (s_{n-1, k} \Rightarrow \lnot x_n)
+                            \end{split}
+                        \]
+                        This encoding requires $O(nk)$ auxiliary variables and $O(nk)$ new clauses.
+
+                \end{description}
+        \end{description}
+
+    \item[Arc-consistency] \marginnote{Arc-consistency}
+        Given a SAT encoding $E$ of a normal constraint $C$,
+        $E$ is arc-consistent if:
+        \begin{itemize}
+            \item Whenever a partial assignment is inconsistent in $C$, unit resolution in $E$ causes a contradiction.
+            \item Otherwise, unit resolution in $E$ discards arc-inconsistent values.
+        \end{itemize}
 \end{description}
