@@ -133,5 +133,95 @@
 \end{description}
 
 \begin{theorem}
-    $\P \subseteq \NP \subseteq \EXP$
+    $\P \subseteq \NP \subseteq \EXP$.
+
+    \begin{proof}
+        \phantom{}
+        \begin{description}
+            \item[$\P \subseteq \NP$)] 
+                Given a language $\mathcal{L} \in \P$, we want to prove that $\mathcal{L} \in \NP$.
+                
+                By hypothesis, there is a polynomial time TM $\mathcal{N}$ that decides $\mathcal{L}$.
+                To prove that $\mathcal{L}$ is in $\NP$, 
+                we show that there is a polynomial verifier $\mathcal{M}$ that certifies $\mathcal{L}$ with a polynomial certificate.
+                We can use any constant certificate (e.g. of length 1) and 
+                use $\mathcal{N}$ as the verifier $\mathcal{M}$:
+                \[  
+                    \mathcal{M}(x, y) = \begin{cases}
+                        1 & \text{if $\mathcal{N}(x) = 1$} \\
+                        0 & \text{otherwise}
+                    \end{cases}    
+                \]
+                $\mathcal{M}$ can ignore the polynomial certificate and it "verifies" a string in polynomial time through $\mathcal{N}$.
+            
+            \item[$\NP \subseteq \EXP$)]
+                Given a language $\mathcal{L} \in \NP$, we want to prove that $\mathcal{L} \in \EXP$.
+                
+                By hypothesis, there is a polynomial time TM $\mathcal{N}$ that is able to certify any string in $\mathcal{L}$ with a polynomial certificate.
+                Given a polynomial $p$, can define the following algorithm:
+                \begin{lstlisting}[mathescape=true]
+                    def np_to_exp($x \in \{0, 1\}^*$):
+                        foreach $y \in \{0, 1\}^{p(\vert x \vert)}$:
+                            if $\mathcal{M}(x, y) == 1$:
+                                return 1
+                        return 0
+                \end{lstlisting}
+                The algorithm has complexity 
+                $O(2^{p(\vert x \vert)}) \cdot O(q(\vert x \vert + \vert y \vert)) = O(2^{p(\vert x \vert) + \log(q(\vert x \vert + \vert y \vert))})$,
+                where $q$ is a polynomial.
+                Therefore, the complexity is exponential.
+        \end{description}
+    \end{proof}
+\end{theorem}
+
+
+\begin{description}
+    \item[Polynomial-time reducibility] \marginnote{Polynomial-time reducibility}
+        A language $\mathcal{L}$ is poly-time reducible to $\mathcal{H}$ ($\mathcal{L} \leq_p \mathcal{H}$) iff:
+        \[ 
+            \begin{split}
+                \exists f: \{0, 1\}^* \rightarrow \{0, 1\}^* \text{ such that } &(x \in \mathcal{L} \iff f(x) \in \mathcal{H}) \text{ and} \\
+                &\text{$f$ is computable in poly-time}
+            \end{split}
+        \]
+        $f$ can be seen as a mapping function.
+
+        \begin{remark}
+            Intuitively, when $\mathcal{L} \leq_p \mathcal{H}$, $\mathcal{H}$ is at least as difficult as $\mathcal{L}$.
+        \end{remark}
+
+        \begin{theorem}
+            The relation $\leq_p$ is a pre-order (i.e. reflexive and transitive).
+        \end{theorem}
+
+    \item[\NP-hard] \marginnote{\NP-hard}
+        Given a language $\mathcal{H} \in \{0, 1\}^*$, $\mathcal{H}$ is \NP-hard iff:
+        \[ \forall \mathcal{L} \in \NP: \mathcal{L} \leq_p \mathcal{H} \]
+    
+    \item[\NP-complete] \marginnote{\NP-complete}
+        Given a language $\mathcal{H} \in \{0, 1\}^*$, $\mathcal{H}$ is \NP-complete iff:
+        \[ \mathcal{H} \in \NP \text{ and } \mathcal{H} \text{ is \NP-hard} \]
+\end{description}
+
+\begin{theorem}
+    \phantom{}
+    \begin{enumerate}
+        \item If $\mathcal{L}$ is \NP-hard and $\mathcal{L} \in \P$, then $\P = \NP$.
+        \item If $\mathcal{L}$ is \NP-complete, then $\mathcal{L} \in \P \iff \P = \NP$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+    The problem \texttt{TMSAT} of simulating any TM is \NP-complete:
+    \[ \texttt{TMSAT} = \{ (\alpha, x, 1^n, 1^t) \mid \exists u \in \{0, 1\}^n: \mathcal{M}_\alpha(x, u) = 1 \text{ within $t$ steps} \} \]
+\end{theorem}
+
+\begin{theorem}[Cook-Levin] \marginnote{Cook-Levin theorem}
+    The following languages are \NP-complete:
+    \[
+        \begin{split}
+            \texttt{SAT}  &= \{ \enc{F} \mid F \text{ is a satisfiable CNF} \} \\
+            \texttt{3SAT} &= \{ \enc{F} \mid F \text{ is a satisfiable 3CNF} \} \\
+        \end{split}  
+    \]
 \end{theorem}
