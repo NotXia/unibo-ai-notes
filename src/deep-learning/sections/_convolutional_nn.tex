@@ -1,0 +1,88 @@
+\chapter{Convolutional neural networks}
+
+
+\begin{description}
+    \item[Convolution neuron] \marginnote{Convolution neuron}
+        Neuron influenced by only a subset of neurons in the previous layer.
+        
+    \item[Receptive field] \marginnote{Receptive field}
+        Dimension of the input image influencing a neuron.
+
+    \item[Convolutional layer] \marginnote{Convolutional layer}
+        Layer composed of convolutional neurons.
+        Neurons in the same convolutional layer share the same weights and work as a convolutional filter.
+
+        \begin{remark}
+            The weights of the filters are learned.
+        \end{remark}
+
+        A convolutional layer has the following parameters:
+        \begin{descriptionlist}
+            \item[Kernel size] \marginnote{Kernel size}
+                Dimension (i.e. width and height) of the filter.
+
+            \item[Stride] \marginnote{Stride}
+                Offset between each filter application (i.e. stride $>1$ reduces the size of the output image).
+
+            \item[Padding] \marginnote{Padding}
+                Artificial enlargement of the image.
+                
+                In practice, there are two modes of padding:
+                \begin{descriptionlist}
+                    \item[Valid] No padding applied.
+                    \item[Same] Apply the minimum padding needed.
+                \end{descriptionlist}
+
+            \item[Depth] \marginnote{Depth}
+                Number of different kernels to apply (i.e. augment the number of channels in the output image).
+        \end{descriptionlist}
+
+        The dimension along each axis of the output image is given by:
+        \[ \frac{W + P - K}{S} + 1 \]
+        where:
+        \begin{itemize}
+            \item $W$ is the size of the image (width or height).
+            \item $P$ is the padding.
+            \item $K$ is the kernel size.
+            \item $S$ is the stride.
+        \end{itemize}
+
+        \begin{remark}
+            If not specified, a kernel is applied to all the channels of the input image in parallel (but the weights of the kernel change at each channel).
+        \end{remark}
+\end{description}
+
+
+\begin{description}
+    \item[Pooling]
+        Layer that applies a function as a filter.
+
+        \begin{descriptionlist}
+            \item[Max-pooling] \marginnote{Max-pooling}
+                Filter that computes the maximum of the pixels within the kernel.
+
+            \item[Mean-pooling] \marginnote{Mean-pooling}
+                Filter that computes the average of the pixels within the kernel.
+        \end{descriptionlist}
+\end{description}
+
+
+\section{Parameters}
+
+The number of parameters of a layer is given by:
+\[ (K_\text{w} \cdot K_\text{h}) \cdot D_\text{in} \cdot D_\text{out} + D_\text{out} \]
+where:
+\begin{itemize}
+    \item $K_\text{w}$ is the width of the kernel.
+    \item $K_\text{h}$ is the height of the kernel.
+    \item $D_\text{in}$ is the input depth.
+    \item $D_\text{out}$ is the output depth.
+\end{itemize}
+
+Therefore, the number of FLOPS is of order:
+\[ (K_\text{w} \cdot K_\text{h}) \cdot D_\text{in} \cdot D_\text{out} \cdot (O_\text{w} \cdot O_\text{h}) \]
+where:
+\begin{itemize}
+    \item $O_\text{w}$ is the width of the output image.
+    \item $O_\text{h}$ is the height of the output image.
+\end{itemize}

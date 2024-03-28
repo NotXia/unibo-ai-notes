@@ -56,3 +56,17 @@ Composition of perceptrons.
             Still, deep neural networks allow to use less neural units.
         \end{remark}
 \end{description}
+
+
+\subsection{Parameters}
+
+The number of parameters of a layer is given by:
+\[ S_\text{in} \cdot S_\text{out} + S_\text{out} \]
+where:
+\begin{itemize}
+    \item $S_\text{in}$ is the dimension of the input of the layer.
+    \item $S_\text{out}$ is the dimension of the output of the layer.
+\end{itemize}
+
+Therefore, the number of FLOPS is of order:
+\[ S_\text{in} \cdot S_\text{out} \]
