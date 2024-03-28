@@ -132,11 +132,11 @@
         
 \end{description}
 
-\begin{theorem}
+\begin{theorem} \label{th:P_NP_EXP_relationship}
     $\P \subseteq \NP \subseteq \EXP$.
 
     \begin{proof}
-        \phantom{}
+        We have to prove that $\P \subseteq \NP$ and $\NP \subseteq \EXP$:
         \begin{description}
             \item[$\P \subseteq \NP$)] 
                 Given a language $\mathcal{L} \in \P$, we want to prove that $\mathcal{L} \in \NP$.
@@ -192,6 +192,28 @@
 
         \begin{theorem}
             The relation $\leq_p$ is a pre-order (i.e. reflexive and transitive).
+
+            \begin{proof}
+                We want to prove that $\leq_p$ is reflexive and transitive:
+                \begin{descriptionlist}
+                    \item[Reflexive)] 
+                        Given a language $\mathcal{L}$, we want to prove that $\mathcal{L} \leq_p \mathcal{L}$.
+                        
+                        We have to find a poly-time function $f: \{0, 1\}^* \rightarrow \{0, 1\}^*$ such that:
+                        \[ x \in \mathcal{L} \iff f(x) \in \mathcal{L} \]
+                        We can choose $f$ as the identity function.
+
+                    \item[Transitive)] 
+                        Given the languages $\mathcal{L}, \mathcal{H}, \mathcal{J}$, we want to prove that:
+                        \[ (\mathcal{L} \leq_p \mathcal{H}) \land (\mathcal{H} \leq_p \mathcal{J}) \Rightarrow (\mathcal{L} \leq_p \mathcal{J}) \]
+
+                        By hypothesis, it holds that $\mathcal{L} \leq_p \mathcal{H}$ and $\mathcal{H} \leq_p \mathcal{J}$.
+                        Therefore, there are two poly-time functions $f, g: \{0, 1\}^* \rightarrow \{0, 1\}^*$ such that:
+                        \[ x \in \mathcal{L} \iff f(x) \in \mathcal{H} \text{ and } y \in \mathcal{H} \iff f(y) \in \mathcal{J} \]
+                        We want to find a poly-time mapping from $\mathcal{L}$ to $\mathcal{J}$. This function can be the composition $(g \circ f)(z) = g(f(z))$.
+                        $(g \circ f)$ is poly-time as $f$ and $g$ are poly-time.
+                \end{descriptionlist}
+            \end{proof}
         \end{theorem}
 
     \item[\NP-hard] \marginnote{\NP-hard}
@@ -206,9 +228,36 @@
 \begin{theorem}
     \phantom{}
     \begin{enumerate}
-        \item If $\mathcal{L}$ is \NP-hard and $\mathcal{L} \in \P$, then $\P = \NP$.
+        \item\label{th:np_hard_p} If $\mathcal{L}$ is \NP-hard and $\mathcal{L} \in \P$, then $\P = \NP$.
         \item If $\mathcal{L}$ is \NP-complete, then $\mathcal{L} \in \P \iff \P = \NP$.
     \end{enumerate}
+
+    \begin{proof}
+        \phantom{}
+        \begin{enumerate}
+            \item Let $\mathcal{L}$ be \NP-hard and $\mathcal{L} \in \P$.
+                We want to prove that $\P = \NP$:
+                \begin{descriptionlist}
+                    \item[$\P \subseteq \NP$)] Proved in \Cref{th:P_NP_EXP_relationship}.
+                    \item[$\NP \subseteq \P$)]
+                        Let $\mathcal{H}$ be a language in $\NP$.
+                        As $\mathcal{L}$ is \NP-hard, by definition it holds that $\mathcal{H} \leq_p \mathcal{L}$.
+                        Moreover, by hypothesis, it holds that $\mathcal{L} \in \P$. 
+                        Therefore, we can conclude that $\mathcal{H} \in \P$ as it can be reduced to a language in $\P$.
+                \end{descriptionlist}
+
+            \item Let $\mathcal{L}$ be \NP-complete.
+                We want to prove that $\mathcal{L} \in \P \iff \P = \NP$:
+                \begin{descriptionlist}
+                    \item[$(\mathcal{L} \in \P) \Rightarrow (\P = \NP)$)] 
+                        Trivial for \hyperref[th:np_hard_p]{Point 1} as $\mathcal{L}$ is also \NP-hard.
+                    \item[$(\mathcal{L} \in \P) \Leftarrow (\P = \NP)$)] 
+                        Let $\P = \NP$.
+                        As $\mathcal{L}$ is \NP-complete, it holds that 
+                        $\mathcal{L} \in \NP=\P$.
+                \end{descriptionlist}
+        \end{enumerate}        
+    \end{proof}
 \end{theorem}
 
 \begin{theorem}
