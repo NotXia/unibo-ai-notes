@@ -267,7 +267,7 @@ Scale-normalized LOG allows the detection of blobs (circles) in an image.
         \begin{enumerate}
             \item Create a Gaussian scale-space by applying the scale-normalized Laplacian of Gaussian with different values of $\sigma$.
             \item For each pixel, find the characteristic scale and its corresponding Laplacian response across the scale-space (automatic scale selection).
-            \item Filter out the pixels whose response is lower than a threshold.
+            \item Filter out the pixels whose response is lower than a threshold and apply NMS.
             \item The remaining pixels are the centers of the blobs. 
                 It can be shown that the radius is given by $r = \sigma\sqrt{2}$.
         \end{enumerate}
