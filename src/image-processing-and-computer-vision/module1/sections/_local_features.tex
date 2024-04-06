@@ -246,24 +246,21 @@ but this is not always able to capture the same features due to the details diff
                     \caption{Gaussian scale-space example}
                 \end{figure}
         \end{description}
-
-    \item[Scale-normalized Laplacian of Gaussian] \marginnote{Scale-normalized Laplacian of Gaussian}
-        LOG scaled by a factor of $\sigma^2$:
-        \[ F(x, y, \sigma) = \sigma^2 \nabla^2 L(x, y, \sigma) = \sigma^2 (I(x, y) * \nabla^2 G(x, y, \sigma)) \]
-        $\sigma^2$ avoids small derivatives when the scaling ($\sigma$) is large.
 \end{description}
 
 
-\subsection{Blob detection}
-\marginnote{Scale-normalized LOG blob detection}
-
-Scale-normalized LOG allows the detection of blobs (circles) in an image.
+\subsection{Scale-normalized LoG blob detection}
 
 \begin{description}
+    \item[Scale-normalized Laplacian of Gaussian] \marginnote{Scale-normalized Laplacian of Gaussian}
+        LoG scaled by a factor of $\sigma^2$:
+        \[ F(x, y, \sigma) = \sigma^2 \nabla^{(2)} L(x, y, \sigma) = \sigma^2 (I(x, y) * \nabla^{(2)} G(x, y, \sigma)) \]
+        $\sigma^2$ avoids small derivatives when the scaling ($\sigma$) is large.
+
     \item[Characteristic scale] Scale $\sigma$ that produces a peak in the Laplacian response at a given pixel \cite{slides:scale_normalized_log}.
     
-    \item[Algorithm]
-        Blob detection using scale-normalized LOG works as follows \cite{slides:scale_normalized_log}:
+    \item[Algorithm] \marginnote{Scale-normalized LoG blob detection}
+        Blob (circle) detection using scale-normalized LoG works as follows \cite{slides:scale_normalized_log}:
         \begin{enumerate}
             \item Create a Gaussian scale-space by applying the scale-normalized Laplacian of Gaussian with different values of $\sigma$.
             \item For each pixel, find the characteristic scale and its corresponding Laplacian response across the scale-space (automatic scale selection).
@@ -291,7 +288,7 @@ When detecting a peak, there are two cases:
     \begin{itemize}
         \item $F(x, y, \sigma)$ keeps growing for $\sigma$s that capture areas within the blob (i.e. with similar intensity).
         \item The Laplacian reaches its peak when its weights capture the entire blob (virtually it detects an edge).
-        \item After the peak, the LOG filter will also capture intensities outside the blob and therefore decrease.
+        \item After the peak, the LoG filter will also capture intensities outside the blob and therefore decrease.
     \end{itemize}
 \end{remark}
 
@@ -300,18 +297,243 @@ When detecting a peak, there are two cases:
 \end{remark}
 
 \begin{remark}
+    Scale-normalized LoG blob detection is scale and rotation invariant.
+\end{remark}
+
+\begin{remark}
     It empirically holds that, given two points representing the centers of two blobs,
     the ratio between the two characteristic scales is approximately the ratio between the diameters of the two blobs.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\linewidth]{./img/_scaled_log_blob_diameter.pdf}
+        \caption{
+            \begin{varwidth}[t]{0.55\linewidth}
+                Scale-normalized LoG computed on varying $\sigma$.\\
+                Note that, in the second image, the characteristic scale is
+                higher as the scale is larger.
+            \end{varwidth}
+        }
+    \end{figure}
 \end{remark}
+
+
+
+\subsection{Difference of Gaussians blob detection}
+
+\begin{description}
+    \item[Difference of Gaussians (DoG)] \marginnote{Difference of Gaussians (DoG)}
+        Approximation of the scale-normalized LoG computed as:
+        \[ 
+            \begin{split}
+                \texttt{DoG}(x, y, \sigma) &= \big( G(x, y, k\sigma) - G(x, y, \sigma) \big) * I(x, y) \\
+                    &= L(x, y, k\sigma) - L(x, y, \sigma) 
+            \end{split}
+        \]
+
+        \begin{theorem}
+            It can be proven that the DoG kernel is a scaled version of the LoG kernel:
+            \[ G(x, y, k\sigma) - G(x, y, \sigma) \approx (k-1)\sigma^2 \nabla^{(2)}G(x, y, \sigma) \]
+
+            \begin{remark}
+                As we are interested in extrema, the scaling factor is irrelevant.
+            \end{remark}
+        \end{theorem}
+
+    \item[Extrema detection] \marginnote{DoG extrema}
+        Given three DoG images with scales $\sigma_i$, $\sigma_{i-1}$ and $\sigma_{i+1}$,
+        a pixel $(x, y, \sigma_i)$ is an extrema (i.e. keypoint) iff:
+        \begin{itemize}
+            \item It is an extrema in a $3 \times 3$ patch centered on it (8 pixels as $(x, y, \sigma_i)$ is excluded).
+            \item It is an extrema in a $3 \times 3$ patch centered on the pixels at $(x, y, \sigma_{i-1})$ and at $(x, y, \sigma_{i+1})$ ($9+9$ pixels).
+        \end{itemize}
+
+        \begin{center}
+            \includegraphics[width=0.35\linewidth]{./img/_DoG_extrema.pdf}
+        \end{center}
+
+    \item[Algorithm] \marginnote{DoG blob detection}
+        To detect blob centers (i.e. a DoG extrema), an octave of $s$ DoG images is computed as follows:
+        \begin{enumerate}
+            \item Compute a scale-space $L$ of $s+1$ Gaussian smoothed images with $\sigma$ varying by a factor $k = 2^{1/s}$.
+                As the extrema detection method requires checking the DoG images above and below, 
+                two additional Gaussians (with scales $k^{-1}\sigma$ and $k^{s+1}\sigma$) are computed.
+            \item The DoG image $\texttt{DoG}(\cdot, \cdot, k^i\sigma)$ is obtained as the difference between the 
+                images $L(\cdot, \cdot, k^{i+1}\sigma)$ and $L(\cdot, \cdot, k^i\sigma)$ of the Gaussian scale-space.
+                \begin{figure}[H]
+                    \small
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{./img/_DoG_octave.pdf}
+                    \caption{Example of octave computation with $s=4$}
+                \end{figure}
+            \item Extrema detection is done as described above across the $s$ DoG images.
+            \item Points with a weak DoG response can be pruned through thresholding. 
+                Furthermore, it has been observed that strong DoG points along edges are unstable and can be also pruned.
+        \end{enumerate}
+
+        Octaves should be computed using different starting $\sigma$s.
+        Instead of recomputing the Gaussian scale-space, 
+        it is possible to simply down-sample the already computed Gaussians and compute the DoG images starting from shrunk smoothed images.
+
+        \begin{remark}
+            In the original work, the input image is first enlarged by a factor of 2.
+            Then, four octaves are computed starting from the enlarged image 
+            (i.e. images of size factor $\times 2$, $\times 1$, $\times \frac{1}{2}$ and $\times \frac{1}{4}$ are considered).
+        \end{remark}
+
+        \begin{remark}
+            The original work found out that the best hyperparameters are $s=3$ and $\sigma=1.6$.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    DoG blob detection is scale and rotation invariant.
+\end{remark}
+
+
+
+\section{Descriptor}
+
+After finding the keypoints, a descriptor of a keypoint is computed from the pixels within a patch centered on it.
+
+
+\subsection{DoG descriptor}
+
+\begin{description}
+    \item[Canonical / Characteristic orientation] \marginnote{Canonical / Characteristic orientation}
+        Direction along which the magnitudes of the gradients of the neighboring pixels of a keypoint are the highest.
+
+        Given a pixel $(x, y)$, its gradient magnitude and direction is computed from the Gaussian smoothed image $L$:
+        \[ 
+            \begin{split}
+                \vert \nabla L(x, y) \vert &= \sqrt{ \big( L(x+1, y) - L(x-1, y) \big)^2 + \big( L(x, y+1) - L(x, y-1) \big)^2 } \\
+                \theta_L(x, y) &= \tan^{-1}\left( \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)} \right)
+            \end{split}
+        \] 
+
+        \begin{description}
+            \item[Orientation histogram] \marginnote{Orientation histogram}
+                By dividing the directions into bins (e.g. bins of size $10^\circ$),
+                it is possible to define for each keypoint a histogram by considering its neighboring pixels within a patch.
+                For each pixel $(x, y)$ neighboring a keypoint $(x_k, y_k)$, its contribution to the histogram along the direction $\theta_L(x, y)$ is given by:
+                \[ G_{(x_k, y_k)}(x, y, \frac{3}{2} \sigma_s(x_k, y_k)) \cdot \vert \nabla L(x, y) \vert \]
+                where $G_{(x_k, y_k)}$ is a Gaussian centered on the keypoint and  $\sigma_s(x_k, y_k)$ is the scale of the keypoint.
+
+                The characteristic orientation of a keypoint is given by the highest peak of the orientation histogram.
+                Other peaks that are higher than at least $80\%$ of the main one are also considered characteristic orientations
+                (i.e. a keypoint might have multiple canonical orientations and, therefore, multiple descriptors).
+
+                For a more accurate estimation, a parabola is interpolated on the neighborhood of each peak and
+                the two bins adjacent to the peak of the parabola are considered.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.45\linewidth]{./img/_canonical_histogram.pdf}
+                    \caption{Orientation histogram and parabola interpolation}
+                \end{figure}
+        \end{description}
+\end{description}
+
+\begin{description}
+    \item[DoG descriptor] \marginnote{DoG descriptor}
+        Keypoints are found using the DoG detector and the descriptors are computed through patches along the canonical orientations.
+
+        \begin{remark}
+            DoG descriptor is scale and rotation invariant.
+        \end{remark}
+\end{description}
+
+
+\subsection{Scale invariant feature transform (SIFT) descriptor}
+\marginnote{SIFT descriptor}
+
+Given a keypoint, SIFT detector works as follows:
+\begin{enumerate}
+    \item Center on the keypoint a $16 \times 16$ grid divided into $4 \times 4$ regions.
+    \item Compute for each region its orientation histogram with eight bins (i.e. bins of size $45^\circ$).
+        The Gaussian weighting function is centered on the keypoint and has $\sigma$ equal to half the grid size.
+    \item The descriptor is obtained by concatenating the histograms of each region. 
+        This results in a feature vector with $128$ elements ($(4 \cdot 4) \cdot 8$).
+    \item Normalize the descriptor to unit length. Pixels larger than $0.2$ are saturated and normalized again (for illumination invariance).
+\end{enumerate}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\linewidth]{./img/_scaled_log_blob_diameter.pdf}
-    \caption{
-        \begin{varwidth}[t]{0.55\linewidth}
-            Scale-normalized LOG computed on varying $\sigma$.\\
-            Note that, in the second image, the characteristic scale is
-            higher as the scale is larger.
-        \end{varwidth}
-    }
+    \includegraphics[width=0.6\linewidth]{./img/sift.png}
+    \caption{SIFT detector example}
 \end{figure}
+
+\begin{description}
+    \item[Trilinear interpolation] 
+        Bins are assigned in a soft manner to avoid boundary effects.
+        The contribution of a pixel is spread between its two adjacent bins weighted by the distance to the bin centers:\\
+        \begin{minipage}{0.55\linewidth}
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_sift_interpolation.pdf}
+        \end{minipage}
+        \begin{minipage}{0.3\linewidth}
+            \[ 
+                \begin{cases}
+                    \text{weight}_k = 1 - d_k \\
+                    \text{weight}_{k+1} = 1 - d_{k+1} \\
+                \end{cases}
+            \]
+        \end{minipage}
+
+        This is done both on the histogram within a region and on the histograms between the four neighboring regions.
+\end{description}
+
+\begin{remark}
+    SIFT descriptor is scale, rotation and affine intensity change invariant.
+\end{remark}
+
+
+
+\section{Matching}
+
+Matching the keypoints across different views is a nearest-neighbor search problem. \marginnote{Nearest-neighbor search problem}
+
+Given a target image $T$ and a reference image $R$,
+we want to match each keypoint in $T$ to the most similar one in $R$ (usually using the Euclidean distance).
+
+\begin{description}
+    \item[Matching criteria] \marginnote{Matching criteria}
+        Given the distance $d_\text{NN}$ to the nearest-neighbor of a keypoint of $T$ in $R$,
+        the match is accepted by respecting one of the following criteria:
+        \begin{descriptionlist}
+            \item[Threshold] 
+                Given a threshold $T$, the match is accepted iff:
+                \[ d_\text{NN} \leq T \]
+
+            \item[Ratio of distances] 
+                Given a threshold $T$ and the distance to the second nearest-neighbor $d_\text{NN2}$, the match is accepted iff:
+                \[ \frac{d_\text{NN}}{d_\text{NN2}} \leq T \]
+                This method allows to avoid ambiguity if two neighbors are too close.
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.4\linewidth}
+                        \centering
+                        \includegraphics[width=0.2\linewidth]{./img/_nn_matching_example1.pdf}
+                        \caption{Non ambiguous match}
+                    \end{subfigure}
+                    \begin{subfigure}{0.4\linewidth}
+                        \centering
+                        \includegraphics[width=0.2\linewidth]{./img/_nn_matching_example2.pdf}
+                        \caption{Ambiguous match}
+                    \end{subfigure}
+                \end{figure}
+        \end{descriptionlist}
+
+        \begin{remark}
+            It has been empirically shown that a threshold $T=0.8$ allows to reject $90\%$ of wrong matches while missing $5\%$ of correct matches.
+        \end{remark}
+
+    \item[Efficient NN search] \marginnote{Efficient NN search}
+        As an exhaustive search is inefficient, indexing techniques may be employed.
+
+        The main indexing technique applied for feature matching is the k-d tree in the best bin first (BBF) variant.
+
+        \begin{remark}
+            Best bin first is not optimal.
+        \end{remark}
+\end{description}
