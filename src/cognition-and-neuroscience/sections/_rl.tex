@@ -27,7 +27,7 @@
         \begin{descriptionlist}
             \item[Ego]
                 Mainly works at the conscious level.
-                Rational part of the mind that mediates id impulses and superego inhibitions.
+                Rational part of the mind that mediates \textit{id} impulses and \textit{superego} inhibitions.
 
             \item[Superego] 
                 Mainly works at the preconscious level.
@@ -54,7 +54,7 @@
             \item[Habituation] 
                 A decrease in response to a stimulus that is presented repeatedly.
                 \begin{example}
-                    The first explosion of a firework causes a strong response but the following ones do not cause much response.
+                    The first explosion of a firework causes a strong response but the responses to the following ones are much weaker.
                 \end{example}
 
             \item[Sensitization] 
@@ -121,25 +121,25 @@
 \section{Learning at the neuronal level}
 
 \begin{description}
-    \item[Plasticity]
+    \item[Hebbian plasticity] \marginnote{Hebbian plasticity}
         Learning and experience change the connections of a neural system.
 
-    \item[Short-term change]
+    \item[Short-term change] \marginnote{Short-term neuronal change}
         Functional physiological change that modifies the effectiveness of existing synaptic connections (i.e. amount of neurotransmitters).
         Lasts from seconds up to hours.
 
-    \item[Long-term change]
+    \item[Long-term change] \marginnote{Long-term neuronal change}
         Structural change that leads to anatomical alterations such as pruning or growth of synapses.
         Lasts days and can cause further short-term changes.
 \end{description}
 
 \begin{remark}
-    Neuronal changes follow a "use it or lose it" policy.
-    Only useful changes will last.
+    Neuronal changes follow a "use it or lose it" policy:
+    only useful changes will last.
 \end{remark}
 
 \begin{example}[Phantom limb pain]
-    In amputees, the area of the brain responsible for the missing part of the body is overrun by the neighboring section.
+    In amputees, the area of the brain responsible for the missing part of the body is overrun by the neighboring sections.
     In the case of an arm, the area responsible for the face might "conquer" what once was the area of the arm.
 \end{example}
 
@@ -226,7 +226,7 @@ There are two types of learning:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{./img/pavlovian_extinction.png}
+    \includegraphics[width=0.95\linewidth]{./img/pavlovian_extinction.png}
     \caption{Example of acquisition, extinction, and \ac{cr} return}
 \end{figure}
 
@@ -234,6 +234,52 @@ There are two types of learning:
     \item[Generalization] \marginnote{Generalization} 
         A new stimulus that is similar to a learned \acl{cs} can elicit a \acl{cr}.
 \end{description}
+
+\begin{example}[Aplysia Californica] \phantom{}\\
+    \begin{minipage}{0.8\linewidth}
+        \begin{enumerate}
+            \item Before conditioning, a stimulus to the siphon of an aplysia californica results in a weak withdrawal of the gill.
+            \item During conditioning, a stimulus to the siphon is paired with a shock to the tail which results in a large withdrawal of the gill.
+            \item After conditioning, a stimulus to the siphon alone results in a large withdrawal response.
+        \end{enumerate}
+    \end{minipage}
+    \begin{minipage}{0.18\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{./img/aplysia.png}
+    \end{minipage}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\linewidth]{./img/gill_pavlovian.png}
+        \caption{Conditioning process}
+    \end{figure}
+
+    The learned response lasts for days.
+    It can be observed that without training, the response disappears faster.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\linewidth]{./img/gill_pavlovian_graph.png}
+        \caption{Withdrawal response decay}
+    \end{figure}
+\end{example}
+
+\begin{remark} \marginnote{Amygdala in Pavlovian learning}
+    In mammals, aversive Pavlovian conditioning involves the amygdala.
+    The \ac{cs} and \ac{us} are relayed from the thalamus and the cerebral cortex to the amygdala, 
+    which in turn connects to various motor responses such as:
+    \begin{descriptionlist}
+        \item[Central gray region (CG)] Controls the freezing behavior.
+        \item[Lateral hypothalamus (LH)] Controls autonomic responses.
+        \item[Paraventricular hypothalamus (PVN)] Controls stress hormones.
+    \end{descriptionlist}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{./img/amygdala_pavlovian.png}
+        \caption{Neural circuits during aversive conditioning}
+    \end{figure}
+\end{remark}
 
 
 
@@ -318,3 +364,158 @@ There are two types of learning:
                 This results in a slow and steady rate of response.
         \end{descriptionlist}
 \end{descriptionlist}
+
+\begin{example}[Aplysia Californica]
+    An Aplysia Californica will withdraw its gill upon stimulating the siphon.
+    \begin{itemize}
+        \item Repeated mild stimulations will induce a habituation of the reflex.
+        \item Repeated intense stimulations will induce a sensitization of the reflex.
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\linewidth]{./img/gill_habituation.png}
+        \caption{Example of habituation}
+    \end{figure}
+\end{example}
+
+
+
+\section{Memory}
+\marginnote{Memory}
+
+Memory is vulnerable to alteration.
+Once reactivated, the subsequent reconsolidation phase might store a modified version of the memory.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{./img/memory.png}
+    \caption{Memory flow}
+\end{figure}
+
+\begin{remark}
+    This mechanism is useful against traumatic memories.
+\end{remark}
+
+\begin{remark}
+    The amygdala is responsible for storing conditioned responses while the hippocampus recognizes conditioned stimuli.
+
+    Patients with a damaged amygdala only recognize \ac{cs} but do not act with any \ac{cr}.
+    On the other hand, a damaged hippocampus results in patients that present a \ac{cr} without recognizing the \ac{cs}.
+\end{remark}
+
+\begin{example}[Reconsolidation disruption]
+    Propranolol is a drug that disrupts amygdala-specific memory reconsolidation (i.e. the physiological response).
+    A possible therapy to suppress a phobia is to trigger the fear memory and then administer propranolol to prevent its reconsolidation.
+\end{example}
+
+
+
+\section{Learning preconditions}
+
+\subsection{Contiguity}
+\marginnote{Contiguity}
+
+Closeness between the \acl{cs} and the \acl{us}.
+
+\begin{remark}
+    The closer in time the stimuli are presented, the more likely the association will be created.
+\end{remark}
+
+Depending on when the \ac{cs} and \ac{us} are presented, conditioning can be:
+\begin{descriptionlist}
+    \item[Delay conditioning] \marginnote{Delay conditioning}
+        The \ac{cs} is extended through the interstimulus interval (ISI) (i.e. time between the start of the \ac{cs} and the \ac{us}).
+
+    \item[Trace conditioning] \marginnote{Trace conditioning}
+        There is a delay (trace interval) between the \ac{cs} end and the \ac{us} start.
+
+        Learning requires more trials and might be impossible if the trace interval is too long as the mental representation of the \ac{cs} decays.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.45\linewidth]{./img/contiguity.png}
+    \end{figure}
+\end{descriptionlist}
+
+\begin{example}
+    Two groups of rats were exposed to a 6 seconds tone (\ac{cs}) followed by food delivery (\ac{us}) with a delay of: 
+    \begin{itemize}
+        \item 6 seconds (red).
+        \item 18 seconds (purple).
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{./img/contiguity_rats.png}
+        \caption{Number of entries (i.e. the rat checks the food tray) per second}
+    \end{figure}
+\end{example}
+
+
+\subsection{Contingency}
+\marginnote{Contingency}
+
+Causal relationship between the \acl{cs} and the \acl{us}.
+
+\begin{remark}
+    Learning happens when:
+    \[ \prob{\text{\ac{us} with \ac{cs}}} > \prob{\text{\ac{us} with no \ac{cs}}} \]
+    In other words, the \ac{cs} should provide information regarding the \ac{us}.
+\end{remark}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{./img/contingency.png}
+    \caption{Example of contingent and random group}
+\end{figure}
+
+\begin{example}
+    Two groups of rats are exposed to a shock paired with a bell ring.
+    Contiguity is the same but contingency differs.
+
+    Only the group where the shock is more likely with the bell learns the association.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{./img/contingency_rats.png}
+        \caption{Representation of the experiment}
+    \end{figure}
+\end{example}
+
+
+\subsection{Surprise}
+
+\begin{description}
+    \item[Prediction error] \marginnote{Prediction error}
+        Quantitative discrepancy between the expected and experienced outcome.
+\end{description}
+
+\begin{remark}
+    Learning happens when the outcome is different from what was expected.
+\end{remark}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{./img/surprise.png}
+    \caption{Learning outcome due to surprise}
+\end{figure}
+
+\begin{example}
+    \phantom{}\\
+    \begin{minipage}{0.65\linewidth}
+        \begin{enumerate}
+            \item A rat is taught that a hissing sound (\ac{cs}) is paired with a sexually receptive mate (\ac{us}).
+            \item A light is added together with the hissing sound.
+            \item When only the light is presented, the rat does not provide a response.
+        \end{enumerate}
+
+        The light is not learned as a \ac{cs} as it does not provide any new information on the \ac{us}.
+    \end{minipage}
+    \begin{minipage}{0.3\linewidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=\linewidth]{./img/surprise_rats.png}
+        \end{figure}
+    \end{minipage}
+\end{example}
