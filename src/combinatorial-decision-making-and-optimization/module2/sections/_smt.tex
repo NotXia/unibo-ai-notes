@@ -1,0 +1,148 @@
+\chapter{Satisfiability modulo theory (SMT)}
+
+
+\section{First-order logic for SMT}
+
+
+\subsection{Syntax}
+
+\begin{remark}
+    Only quantifier-free fragments will be considered in this course.
+\end{remark}
+
+\begin{description}
+    \item[Functions] \marginnote{Functions}
+        The set of all the functions is denoted as $\Sigma^F = \bigcup_{k \geq 0} \Sigma^F_k$
+        where $\Sigma^F_k$ denotes the set of $k$-ary functions.
+
+        \begin{description}
+            \item[Constants] $\Sigma^F_0$
+        \end{description}
+
+    \item[Predicates] \marginnote{Predicates}
+        The set of all the predicates is denoted as $\Sigma^P = \bigcup_{k \geq 0} \Sigma^P_k$
+        where $\Sigma^P_k$ denotes the set of $k$-ary predicates.
+
+        \begin{description}
+            \item[Propositional symbols] $\Sigma^P_0$
+        \end{description}
+
+    \item[Signature] \marginnote{Signature}
+        The set of the non-logical symbols of FOL is denoted as:
+        \[ \Sigma = \Sigma^F \cup \Sigma^P \]
+
+    \item[Terms] \marginnote{Terms}
+        The set of terms over $\Sigma$ is denoted as $\mathbb{T}^\Sigma$.
+
+    \item[Formulas] \marginnote{Formulas}
+        The set of formulas over $\Sigma$ is denoted as $\mathbb{F}^\Sigma$.
+\end{description}
+
+
+\subsection{Semantics}
+
+\begin{description}
+    \item[$\mathbf{\Sigma}$-model] \marginnote{$\Sigma$-model}
+        Pair $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ defined on a given $\Sigma$ where:
+        \begin{itemize}
+            \item $M$ is the universe of $\mathcal{M}$.
+            \item $(\cdot)^\mathcal{M}$ is a mapping such that:
+            \begin{itemize}
+                \item $\forall f \in \Sigma^F_k: f^\mathcal{M} \in \{ \varphi \mid \varphi: M^k \rightarrow M \}$.
+                \item $\forall p \in \Sigma^P_k: p^\mathcal{M} \in \{ \varphi \mid \varphi: M^k \rightarrow \{ \texttt{true}, \texttt{false} \} \}$.
+            \end{itemize}
+        \end{itemize} 
+
+    \item[Interpretation] \marginnote{Interpretation}
+        Extension of the mapping function $(\cdot)^\mathcal{M}$ to terms and formulas:
+        \begin{itemize}
+            \item $\top^\mathcal{M} = \texttt{true}$ and $\bot^\mathcal{M} = \texttt{false}$.
+            \item $(f(t_1, \dots, t_k))^\mathcal{M} = f^\mathcal{M}(t_1^\mathcal{M}, \dots, t_k^\mathcal{M})$ and 
+                $(p(t_1, \dots, t_k))^\mathcal{M} = p^\mathcal{M}(t_1^\mathcal{M}, \dots, t_k^\mathcal{M})$.
+            \item $\texttt{ite}(\varphi, t_1, t_2)^\mathcal{M} = \begin{cases}
+                t_1^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{true}$} \\
+                t_2^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{false}$}
+            \end{cases}$
+        \end{itemize}
+
+        \begin{remark}
+            \texttt{ite} is an auxiliary function to capture the if-else construct.
+        \end{remark}
+\end{description}
+
+
+\subsection{$\mathbf{\Sigma}$-theory}
+
+\begin{description}
+    \item[Satisfiability] \marginnote{Satisfiability}
+        A model $\mathcal{M}$ satisfies a formula $\varphi \in \mathcal{F}^\Sigma$ if $\varphi^\mathcal{M} = \texttt{true}$.
+
+    \item[$\mathbf{\Sigma}$-theory] \marginnote{$\Sigma$-theory}
+        Possibly infinite set $\mathcal{T}$ of $\Sigma$-models.
+
+    \item[$\mathbf{\mathcal{T}}$-satisfiability] \marginnote{$\mathcal{T}$-satisfiability}
+        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\mathcal{T}$-satisfiable if there exists a model $\mathcal{M} \in \mathcal{T}$ that satisfies it.
+
+    \item[$\mathbf{\mathcal{T}}$-consistency] \marginnote{$\mathcal{T}$-consistency}
+        A set of formulas $\{ \varphi_1, \dots, \varphi_k \} \subseteq \mathbb{F}^\Sigma$ is $\mathcal{T}$-consistent iff 
+        $\varphi_1 \land \dots \land \varphi_k$ is $\mathcal{T}$-satisfiable.
+
+    \item[$\mathbf{\mathcal{T}}$-entailment] \marginnote{$\mathcal{T}$-entailment}
+        A set of formulas $\Gamma \subseteq \mathbb{F}^\Sigma$ $\mathcal{T}$-entails a formula $\varphi \in \mathbb{F}^\Sigma$ ($\Gamma \models_\mathcal{T} \varphi$) iff
+        in every model $\mathcal{M} \in \mathcal{T}$ that satisfies $\Gamma$, $\varphi$ is also satisfied.
+
+        \begin{remark}
+            $\Gamma$ is $\mathcal{T}$-consistent iff $\Gamma \cancel{\models_\mathcal{T}} \bot$.
+        \end{remark}
+
+    \item[$\mathbf{\mathcal{T}}$-validity] \marginnote{$\mathcal{T}$-validity}
+        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\mathcal{T}$-valid iff $\varnothing \models_\mathcal{T} \varphi$.
+
+        \begin{remark}
+            $\varphi$ is $\mathcal{T}$-consistent iff $\lnot\varphi$ is not $\mathcal{T}$-valid.
+        \end{remark}
+
+        \begin{description}
+            \item[Theory lemma] \marginnote{Theory lemma}
+                $\mathcal{T}$-valid clause $c = l_1 \vee \dots \vee l_k$.
+        \end{description}
+
+    \item[$\mathbf{\mathcal{T}}$-expansion] \marginnote{$\mathcal{T}$-expansion}
+        Given a $\Sigma$-model $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ and $\Sigma' \supseteq \Sigma$,
+        an expansion $\mathcal{M}' = \langle M', (\cdot)^{\mathcal{M}'} \rangle$ to $\Sigma'$ is any $\Sigma'$-model such that:
+        \begin{itemize}
+            \item $M' = M$.
+            \item $\forall s \in \Sigma: s^{\mathcal{M}'} = s^\mathcal{M}$
+        \end{itemize}
+
+        \begin{remark}
+            Given a $\Sigma$-theory $\mathcal{T}$, we implicitly consider the theory $\mathcal{T}'$ as:
+            \[ \mathcal{T}' = \{ \mathcal{M}' \mid \mathcal{M}' \text{ is an expansion of a $\Sigma$-model } \mathcal{M} \} \]
+        \end{remark}
+
+    \item[Ground $\mathbf{\mathcal{T}}$-satisfiability] \marginnote{Ground $\mathcal{T}$-satisfiability}
+        Given a $\Sigma$-theory $\mathcal{T}$, determine if a ground formula is $\mathcal{T}$-satisfiable over a $\Sigma$-expansion $\mathcal{T}'$.
+
+    \item[Axiomatically defined theory] \marginnote{Axiomatically defined theory}
+        Given a minimal set of formulas (axioms) $\Lambda \subseteq \mathbb{F}^\Sigma$,
+        its corresponding theory is the set of all the models of $\Lambda$.
+\end{description}
+
+\begin{example}
+    Let $\Sigma$ be defined as:
+    \[ \Sigma^F_0 = \{ a, b, c, d \} \hspace{2em} \Sigma^F_1 = \{ f, g \} \hspace{2em} \Sigma^P_2 = \{ p \} \]
+    A $\Sigma$-model $\mathcal{M} = \langle [0, 2\pi[, (\cdot)^\mathcal{M} \rangle$ can be defined as follows:
+    \[ a^\mathcal{M} = 0 \hspace{2em} b^\mathcal{M} = \frac{\pi}{2} \hspace{2em} c^\mathcal{M} = \pi \hspace{2em} d^\mathcal{M} = \frac{3\pi}{2} \]
+    \[ f^\mathcal{M} = \sin \hspace{2em} g^\mathcal{M} = \cos \hspace{2em} p^\mathcal{M}(x, y) \iff x > y \]
+
+    To determine if $p(g(x), f(d))$ is $\mathcal{M}$-satisfiable, we have to expand $\mathcal{M}$.
+    Let $\Sigma' = \Sigma \cup \{ x \}$. The expansion $\mathcal{M}'$ such that $x^{\mathcal{M}'} = \frac{\pi}{2}$ makes the formula satisfiable.
+\end{example}
+
+
+% \begin{description}
+%     \item[Satisfiability modulo theory (SMT)] \marginnote{Satisfiability modulo theory (SMT)}
+%         Satisfiability of a formula with respect to some background theory.
+
+%         SMT extends SAT and exploits domain-specific reasoning (possibly with infinite domains).
+% \end{description}
