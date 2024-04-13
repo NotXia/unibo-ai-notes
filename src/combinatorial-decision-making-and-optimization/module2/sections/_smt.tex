@@ -1,4 +1,12 @@
-\chapter{Satisfiability modulo theory (SMT)}
+\chapter{Satisfiability modulo theory}
+
+\begin{description}
+    \item[Satisfiability modulo theory (SMT)] \marginnote{Satisfiability modulo theory (SMT)}
+        Satisfiability of a formula with respect to some background formal theory/theories.
+
+        SMT extends SAT and exploits domain-specific reasoning (possibly with infinite domains).
+\end{description}
+
 
 
 \section{First-order logic for SMT}
@@ -7,7 +15,7 @@
 \subsection{Syntax}
 
 \begin{remark}
-    Only quantifier-free fragments will be considered in this course.
+    Only quantifier-free formulas (q.f.f.) are considered in SMT.
 \end{remark}
 
 \begin{description}
@@ -32,10 +40,32 @@
         \[ \Sigma = \Sigma^F \cup \Sigma^P \]
 
     \item[Terms] \marginnote{Terms}
-        The set of terms over $\Sigma$ is denoted as $\mathbb{T}^\Sigma$.
+        The set of terms over $\Sigma$ is denoted as $\mathbb{T}^\Sigma$:
+        \[ 
+            \begin{split}
+                \mathbb{T}^\Sigma = &\,
+                    \Sigma^F_0 \,\cup \\
+                    & \{ f(t_1, \dots, t_k) \mid f \in \Sigma^F_k \land t_1, \dots, t_k \in \mathbb{T}^\Sigma \} \,\cup \\
+                    & \{ \texttt{ite}(\varphi, t_1, t_2) \mid \varphi \in \mathbb{F}^\Sigma \land t_1, t_2 \in \mathbb{T}^\Sigma \}
+            \end{split}
+        \]
+
+        \begin{remark}
+            \texttt{ite} is an auxiliary function to capture the if-then-else construct.
+        \end{remark}
 
     \item[Formulas] \marginnote{Formulas}
-        The set of formulas over $\Sigma$ is denoted as $\mathbb{F}^\Sigma$.
+        The set of formulas over $\Sigma$ is denoted as $\mathbb{F}^\Sigma$:
+        \[ 
+            \begin{split}
+                \mathbb{F}^\Sigma = &\,
+                    \{ \bot, \top \} \,\cup\, \Sigma^P_0 \,\cup \\
+                    &\{ t_1 = t_2 \mid t_1, t_2 \in \mathbb{T}^\Sigma \} \,\cup \\
+                    & \{ p(t_1, \dots, t_k) \mid p \in \Sigma^P_k \land t_1, \dots, t_k \in \mathbb{T}^\Sigma \} \,\cup \\
+                    & \{ \lnot \varphi \mid \varphi \in \mathbb{F}^\Sigma \} \,\cup \\
+                    & \{ (\varphi_1 \Rightarrow \varphi_2), (\varphi_1 \iff \varphi_2), (\varphi_1 \land \varphi_2), (\varphi_1 \vee \varphi_2) \mid \varphi_1, \varphi_2 \in \mathbb{F}^\Sigma \}
+            \end{split}
+        \]
 \end{description}
 
 
@@ -43,7 +73,7 @@
 
 \begin{description}
     \item[$\mathbf{\Sigma}$-model] \marginnote{$\Sigma$-model}
-        Pair $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ defined on a given $\Sigma$ where:
+        Pair $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ defined on a given signature $\Sigma$ where:
         \begin{itemize}
             \item $M$ is the universe of $\mathcal{M}$.
             \item $(\cdot)^\mathcal{M}$ is a mapping such that:
@@ -60,14 +90,10 @@
             \item $(f(t_1, \dots, t_k))^\mathcal{M} = f^\mathcal{M}(t_1^\mathcal{M}, \dots, t_k^\mathcal{M})$ and 
                 $(p(t_1, \dots, t_k))^\mathcal{M} = p^\mathcal{M}(t_1^\mathcal{M}, \dots, t_k^\mathcal{M})$.
             \item $\texttt{ite}(\varphi, t_1, t_2)^\mathcal{M} = \begin{cases}
-                t_1^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{true}$} \\
-                t_2^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{false}$}
-            \end{cases}$
+                    t_1^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{true}$} \\
+                    t_2^\mathcal{M} & \text{if $\varphi^\mathcal{M} = \texttt{false}$}
+                \end{cases}$.
         \end{itemize}
-
-        \begin{remark}
-            \texttt{ite} is an auxiliary function to capture the if-else construct.
-        \end{remark}
 \end{description}
 
 
@@ -75,7 +101,7 @@
 
 \begin{description}
     \item[Satisfiability] \marginnote{Satisfiability}
-        A model $\mathcal{M}$ satisfies a formula $\varphi \in \mathcal{F}^\Sigma$ if $\varphi^\mathcal{M} = \texttt{true}$.
+        A model $\mathcal{M}$ satisfies a formula $\varphi \in \mathbb{F}^\Sigma$ if $\varphi^\mathcal{M} = \texttt{true}$.
 
     \item[$\mathbf{\Sigma}$-theory] \marginnote{$\Sigma$-theory}
         Possibly infinite set $\mathcal{T}$ of $\Sigma$-models.
@@ -107,17 +133,17 @@
                 $\mathcal{T}$-valid clause $c = l_1 \vee \dots \vee l_k$.
         \end{description}
 
-    \item[$\mathbf{\mathcal{T}}$-expansion] \marginnote{$\mathcal{T}$-expansion}
+    \item[$\Sigma$-expansion] \marginnote{$\Sigma$-expansion}
         Given a $\Sigma$-model $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ and $\Sigma' \supseteq \Sigma$,
-        an expansion $\mathcal{M}' = \langle M', (\cdot)^{\mathcal{M}'} \rangle$ to $\Sigma'$ is any $\Sigma'$-model such that:
+        an expansion $\mathcal{M}' = \langle M', (\cdot)^{\mathcal{M}'} \rangle$ over $\Sigma'$ is any $\Sigma'$-model such that:
         \begin{itemize}
             \item $M' = M$.
             \item $\forall s \in \Sigma: s^{\mathcal{M}'} = s^\mathcal{M}$
         \end{itemize}
 
         \begin{remark}
-            Given a $\Sigma$-theory $\mathcal{T}$, we implicitly consider the theory $\mathcal{T}'$ as:
-            \[ \mathcal{T}' = \{ \mathcal{M}' \mid \mathcal{M}' \text{ is an expansion of a $\Sigma$-model } \mathcal{M} \} \]
+            Given a $\Sigma$-theory $\mathcal{T}$, we implicitly consider it to be the theory $\mathcal{T}'$ defined as:
+            \[ \mathcal{T}' = \{ \mathcal{M}' \mid \mathcal{M}' \text{ is an expansion of a $\Sigma$-model } \mathcal{M} \text{ in } \mathcal{T}\} \]
         \end{remark}
 
     \item[Ground $\mathbf{\mathcal{T}}$-satisfiability] \marginnote{Ground $\mathcal{T}$-satisfiability}
@@ -125,24 +151,271 @@
 
     \item[Axiomatically defined theory] \marginnote{Axiomatically defined theory}
         Given a minimal set of formulas (axioms) $\Lambda \subseteq \mathbb{F}^\Sigma$,
-        its corresponding theory is the set of all the models of $\Lambda$.
+        its corresponding theory is the set of all the models that respect $\Lambda$.
 \end{description}
 
 \begin{example}
     Let $\Sigma$ be defined as:
     \[ \Sigma^F_0 = \{ a, b, c, d \} \hspace{2em} \Sigma^F_1 = \{ f, g \} \hspace{2em} \Sigma^P_2 = \{ p \} \]
     A $\Sigma$-model $\mathcal{M} = \langle [0, 2\pi[, (\cdot)^\mathcal{M} \rangle$ can be defined as follows:
-    \[ a^\mathcal{M} = 0 \hspace{2em} b^\mathcal{M} = \frac{\pi}{2} \hspace{2em} c^\mathcal{M} = \pi \hspace{2em} d^\mathcal{M} = \frac{3\pi}{2} \]
-    \[ f^\mathcal{M} = \sin \hspace{2em} g^\mathcal{M} = \cos \hspace{2em} p^\mathcal{M}(x, y) \iff x > y \]
+    \begin{gather*}
+        a^\mathcal{M} = 0 \hspace{2em} b^\mathcal{M} = \frac{\pi}{2} \hspace{2em} c^\mathcal{M} = \pi \hspace{2em} d^\mathcal{M} = \frac{3\pi}{2} \\
+        f^\mathcal{M} = \sin \hspace{2em} g^\mathcal{M} = \cos \hspace{2em} p^\mathcal{M}(x, y) \iff x > y 
+    \end{gather*}
 
-    To determine if $p(g(x), f(d))$ is $\mathcal{M}$-satisfiable, we have to expand $\mathcal{M}$.
+    To determine if $p(g(x), f(d))$ is $\mathcal{M}$-satisfiable, we have to expand $\mathcal{M}$ as there are free variables ($x$).
     Let $\Sigma' = \Sigma \cup \{ x \}$. The expansion $\mathcal{M}'$ such that $x^{\mathcal{M}'} = \frac{\pi}{2}$ makes the formula satisfiable.
 \end{example}
 
 
-% \begin{description}
-%     \item[Satisfiability modulo theory (SMT)] \marginnote{Satisfiability modulo theory (SMT)}
-%         Satisfiability of a formula with respect to some background theory.
+\subsection{Theories of interest}
 
-%         SMT extends SAT and exploits domain-specific reasoning (possibly with infinite domains).
-% \end{description}
+\begin{description}
+    \item[Equality with Uninterpreted Functions theory (EUF)] \marginnote{Equality with Uninterpreted Functions theory (EUF)}
+        Theory $\mathcal{T}_\text{EUF}$ containing all the possible $\Sigma$-models.
+        
+        \begin{remark}
+            Also called empty theory as its axiom set is $\varnothing$ (i.e. allows any model).
+        \end{remark}
+        
+        \begin{remark}
+            Useful to deal with black-box functions (i.e. prove satisfiability without a specific theory).
+            \begin{example}
+                The following formula can be proved to be unsatisfiable by only using syntactic manipulations of basic FOL concepts:
+                \begin{gather*}
+                    \big( a * (f(b) + f(c)) = d \big) \land \big( b * (f(a) + f(c)) \neq d \big) \land \underline{\big( a = b \big)} \\
+                    \big( \underline{a * (f(a) + f(c))} = d \big) \land \big( \underline{a * (f(a) + f(c))} \neq d \big) \\
+                    \big( g(a, c) = d \big) \land \big( g(a, c) \neq d \big)
+                \end{gather*}
+            \end{example}
+        \end{remark}
+
+
+    \item[Arithmetic theories] \marginnote{Arithmetic theories}
+        Theories with $\Sigma = (0, 1, +, -, \leq)$.
+
+        \begin{description}
+            \item[Presburger arithmetic]
+                Theory $\mathcal{T}_\mathbb{Z}$ that interprets $\Sigma$-symbols over integers.
+                \begin{itemize}
+                    \item Ground $\mathcal{T}_\mathbb{Z}$-satisfiability is \textbf{NP}-complete.
+                    \item Extended with multiplication, $\mathcal{T}_\mathbb{Z}$-satisfiability becomes undecidable.
+                \end{itemize}
+            \item[Real arithmetic]
+                Theory $\mathcal{T}_\mathbb{R}$ that interprets $\Sigma$-symbols over reals.
+                \begin{itemize}
+                    \item Ground $\mathcal{T}_\mathbb{R}$-satisfiability is in \textbf{P}.
+                    \item Extended with multiplication, $\mathcal{T}_\mathbb{R}$-satisfiability becomes doubly-exponential.
+                \end{itemize}
+        \end{description}
+        
+        \begin{remark}
+            In floating points, commutativity still holds, but associativity and distributivity are not guaranteed.
+        \end{remark}
+
+
+    \item[Array theory] \marginnote{Array theory}
+        Let $\Sigma_\mathcal{A}$ be the signature containing two functions:
+        \begin{descriptionlist}
+            \item[$\texttt{read}(a, i)$] Reads the value of $a$ at index $i$.
+            \item[$\texttt{write}(a, i, v)$] Returns an array $a'$ where the value $v$ is at the index $i$ of $a$.
+        \end{descriptionlist}
+        
+        The theory $\mathcal{T}_\mathcal{A}$ is the set of all models respecting the following axioms:
+        \begin{itemize}
+            \item $\forall a\, \forall i\, \forall v: \texttt{read}(\texttt{write}(a, i, v), i) = v$.
+            \item $\forall a\, \forall i\, \forall j\, \forall v: (i \neq j) \Rightarrow \Big( \texttt{read}\big( \texttt{write}(a,i,v), j \big) = \texttt{read}(a, j) \Big)$.
+            \item $\forall a\, \forall a': \big( \forall i: \texttt{read}(a, i) = \texttt{read}(a', i) \big) \Rightarrow (a = a')$.
+        \end{itemize}
+        
+        \begin{remark}
+            The full $\mathcal{T}_\mathcal{A}$ theory is undecidable but there are decidable fragments.
+        \end{remark}
+
+
+    \item[Bit-vectors theory] \marginnote{Bit-vectors theory}
+        Theory $\mathcal{T}_\mathcal{BV}$ with vectors of bits of fixed length as constants and
+        operations such as:
+        \begin{itemize}
+            \item String-like operations (e.g. slicing, concatenation, \dots).
+            \item Logical operations (e.g. bit-wise operators).
+            \item Arithmetic operations (e.g. $+$, $-$, \dots).
+        \end{itemize}
+
+
+    \item[String theory] \marginnote{String theory}
+        Theory to handle strings of unbounded length.
+
+        \begin{description}
+            \item[Theory of word equations]
+                Given an alphabet $\mathcal{S}$, a word equation has form $L = R$
+                where $L$ and $R$ are concatenations of string constants over $\mathcal{S}^*$.
+
+                \begin{remark}
+                    The general theory of word equations is undecidable.
+                \end{remark}
+        
+                \begin{remark}
+                    The quantifier-free theory of word equations is decidable.
+                \end{remark}
+        \end{description}
+\end{description}
+
+\begin{remark}
+    In practice, many theories are often combined.
+\end{remark}
+
+
+
+\section{Encoding to SAT}
+
+
+\subsection{Eager approaches}
+
+All the information on the formal theory is used from the beginning to encode an SMT formula $\varphi$ into an equisatisfiable SAT formula $\varphi'$
+(i.e. SMT is compiled into SAT).
+
+\begin{descriptionlist}
+    \item[Equisatisfiability] \marginnote{Equisatisfiability}
+        Given a $\Sigma$-theory $\mathcal{T}$, two formulas $\varphi$ and $\varphi'$ are equisatisfiable iff:
+        \[ \varphi \text{ is $\mathcal{T}$-satisfiable } \iff \varphi' \text{ is $\mathcal{T}$-satisfiable } \]
+\end{descriptionlist}
+
+Eager approaches have the following advantages:
+\begin{itemize}
+    \item Does not require an SMT solver.
+    \item Once encoded, whichever SAT solver can be used.
+\end{itemize}
+
+Eager approaches have the following disadvantages:
+\begin{itemize}
+    \item An ad-hoc encoding is needed for all the theories.
+    \item The resulting SAT formula might be huge.
+\end{itemize}
+
+
+\begin{description}
+    \item[Algorithm] 
+        Given an EUF formula $\varphi$, to determine if it is $\mathcal{T}_\text{EUF}$-satisfiable,
+        the following steps are taken:
+        \begin{enumerate}
+            \item Replace functions and predicates with constant equalities.
+                Given the terms $f(t_1), \dots, f(t_k)$, possible approaches are:
+                \begin{descriptionlist}
+                    \item[Ackermann approach] \marginnote{Ackermann approach}
+                        \begin{itemize}
+                            \item Each $f(t_i)$ is encoded into a new constant $A_i$.
+                            \item Add the constraints $(t_i = t_j) \Rightarrow (A_i = A_j)$ for each $i < j$.
+                        \end{itemize}
+                
+                    \item[Bryant approach] \marginnote{Bryant approach}
+                        \begin{itemize}
+                            \item $f(t_1)$ is encoded as $A_1$.
+                            \item $f(t_2)$ is encoded as $\texttt{ite}(t_2 = t_1, A_1, A_2)$.
+                            \item $f(t_3)$ is encoded as $\texttt{ite}\big( t_3 = t_1, A_1, \texttt{ite}(t_3 = t_2, A_2, A_3) \big)$.
+                            \item $f(t_i)$ is encoded as:
+                            \[ \texttt{ite}\Big( t_i = t_1, A_1, \texttt{ite}\Big( t_i = t_2, A_2, \texttt{ite}\big( \dots, \texttt{ite}(t_i = t_{i-1}, A_{i-1}, A_i) \big) \Big) \Big) \]
+                        \end{itemize}
+                \end{descriptionlist}
+
+            \item Remove equalities to reduce $\varphi$ into propositional logic.
+                Possible encodings are:
+                \begin{descriptionlist}
+                    \item[Small-domain encoding] 
+                        If $\varphi$ has $n$ distinct variables $\{ c_1, \dots, c_n \}$, 
+                        a possible model $\mathcal{M} = \langle M, (\cdot)^\mathcal{M} \rangle$ that satisfies it must have $\vert M \vert \leq n$.
+                        
+                        Therefore, each $c_i^\mathcal{M}$ can be associated to a value in $\{ 1, \dots, n \}$.
+                        In SAT, this mapping from $c_i^\mathcal{M}$ to $\{ 1, \dots, n \}$ can be encoded using $O(\log n)$ bits.
+                        Finally, an equality $c_i = c_j$ (or $c_i \neq c_j$) can be encoded by adding bitwise constraints.
+
+                    \item[Direct encoding] 
+                        Encode each equality $a = b$ with a propositional symbol $P_{a,b}$
+                        and add transitivity constraints of form $(P_{a,b} \land P_{b,c}) \Rightarrow P_{a,c}$.
+                \end{descriptionlist}
+        \end{enumerate}
+\end{description}
+
+
+\subsection{Lazy approaches}
+
+Integrate SAT solvers with theory-specific decision procedures.
+
+These approaches are more flexible and modular and avoid an explosion of SAT clauses.
+On the other hand, the search becomes SAT-driven and not theory-driven.
+
+\begin{remark}
+    Most SMT solvers follow a lazy approach.
+\end{remark}
+
+\begin{description}
+    \item[Algorithm] \phantom{}
+        Let $\mathcal{T}$ be a theory.
+        Given a conjunction of $\mathcal{T}$-literals $\varphi = \varphi_1 \land \dots \land \varphi_n$, 
+        to determine its $\mathcal{T}$-satisfiability, the following steps are taken:
+        \begin{enumerate}
+            \item Each SMT literal $\varphi_i$ is encoded into a SAT literal $l_i$ to form the abstraction $\Phi = \{ l_1, \dots, l_n \} $ of $\varphi$.
+            \item The $\mathcal{T}$-solver sends $\Phi$ to the SAT-solver.
+                \begin{itemize}
+                    \item If the SAT-solver determines that $\Phi$ is unsatisfiable, then $\varphi$ is $\mathcal{T}$-unsatisfiable.
+                    \item Otherwise, the SAT-solver returns a model (an assignment of the literals, possible partial) $\mathcal{M} = \{ a_1, \dots, a_n \}$.
+                \end{itemize}
+            \item The $\mathcal{T}$-solver determines if $\mathcal{M}$ is $\mathcal{T}$-consistent.
+                \begin{itemize}
+                    \item If it is, then $\varphi$ is $\mathcal{T}$-satisfiable.
+                    \item Otherwise, update $\Phi = \Phi \cup \lnot \mathcal{M}$ and go to Point 2.
+                \end{itemize}
+        \end{enumerate}
+
+        \begin{example}
+            Consider the EUF formula $\varphi$:
+            \[ \big( g(a) = c \big) \land \big( (f(g(a)) \neq f(c)) \vee (g(a) = d) \big) \land \big( c \neq d \big) \]
+            
+            \begin{itemize}
+                \item $\varphi$ abstracted into SAT is:
+                    \begin{gather*}
+                        \underbrace{ \big( g(a) = c \big) }_{l_1} \land 
+                        \big(
+                            \lnot\underbrace{ (f(g(a)) = f(c)) }_{l_2} \vee 
+                            \underbrace{ (g(a) = d) }_{l_3}
+                        \big) \land 
+                        \lnot\underbrace{ \big( c = d \big) }_{l_4} \\
+                        l_1 \land (\lnot l_2 \vee l_3) \land \lnot l_4
+                    \end{gather*}
+                    Therefore, $\Phi = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4 \}$
+
+                \item The $\mathcal{T}$-solver sends $\Phi$ to the SAT-solver.
+                    Let's say that it return $\mathcal{M} = \{ l_1, \lnot l_2, \lnot l_4 \}$.
+
+                \item The $\mathcal{T}$-solver checks if $\mathcal{M}$ is consistent. Let's say it is not.
+                    Let $\Phi' = \Phi \cup \lnot \mathcal{M} = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4, (\lnot l_1 \vee l_2 \vee l_4) \}$.
+                
+                \item The $\mathcal{T}$-solver sends $\Phi'$ to the SAT-solver.
+                    Let's say that it return $\mathcal{M}' = \{ l_1, l_2, l_3, \lnot l_4 \}$.
+
+                \item The $\mathcal{T}$-solver checks if $\mathcal{M}'$ is consistent. Let's say it is not.
+                    Let $\Phi'' = \Phi' \cup \lnot \mathcal{M}' = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4, (\lnot l_1 \vee l_2 \vee l_4), (\lnot l_1 \vee \lnot l_2 \vee \lnot l_3 \vee l_4) \}$.
+                
+                \item The $\mathcal{T}$-solver sends $\Phi''$ to the SAT-solver and it detects the unsatisfiability.
+                    Therefore, $\varphi$ is $\mathcal{T}$-unsatisfiable.
+            \end{itemize}
+        \end{example}
+
+    \item[Optimizations] \phantom{}
+        \begin{itemize}
+            \item Check $\mathcal{T}$-consistency on partial assignments.
+            \item Given a $\mathcal{T}$-inconsistent assignment $\mu$, 
+                find a smaller $\mathcal{T}$-inconsistent assignment $\eta \subseteq \mu$ and add $\lnot \eta$ to $\Phi$ instead of $\lnot \mu$.
+            \item When reaching $\mathcal{T}$-inconsistency, backjump to a $\mathcal{T}$-consistent point in the computation.
+        \end{itemize}
+
+    \item[CDCL($\mathcal{T}$)] \marginnote{CDCL($\mathcal{T}$)}
+        CDCL for SAT extended with a $\mathcal{T}$-solver.
+        The $\mathcal{T}$-solver does the following:
+        \begin{itemize}
+            \item Checks the $\mathcal{T}$-consistency of a conjunction of literals.
+            \item Possibly performs deduction of unassigned literals.
+            \item Explains $\mathcal{T}$-inconsistent assigments.
+            \item Allows to backtrack.
+        \end{itemize}
+\end{description}
