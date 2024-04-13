@@ -501,8 +501,8 @@ Causal relationship between the \acl{cs} and the \acl{us}.
     \caption{Learning outcome due to surprise}
 \end{figure}
 
-\begin{example}
-    \phantom{}\\
+\begin{example}[Blocking effect]
+    \phantom{} \label{ex:blocking} \\
     \begin{minipage}{0.65\linewidth}
         \begin{enumerate}
             \item A rat is taught that a hissing sound (\ac{cs}) is paired with a sexually receptive mate (\ac{us}).
@@ -512,10 +512,437 @@ Causal relationship between the \acl{cs} and the \acl{us}.
 
         The light is not learned as a \ac{cs} as it does not provide any new information on the \ac{us}.
     \end{minipage}
-    \begin{minipage}{0.3\linewidth}
+    \begin{minipage}{0.35\linewidth}
         \begin{figure}[H]
             \centering
             \includegraphics[width=\linewidth]{./img/surprise_rats.png}
         \end{figure}
     \end{minipage}
 \end{example}
+
+
+
+\section{Computational model}
+
+
+\subsection{Rescorla-Wagner model}
+\marginnote{Rescorla-Wagner model}
+
+Error-driven learning model where the change expectancy is proportional to the difference between predicted and actual outcome:
+\[ \delta_{tr} = R_{tr} - V_{tr} \]
+where:
+\begin{itemize}
+    \item $\delta_{tr}$ is the prediction error.
+    \item $R_{tr} = \begin{cases}
+            1 & \text{if the \ac{us} is delivered at trial $tr$} \\
+            0 & \text{if the \ac{us} is omitted at trial $tr$}
+        \end{cases}$.
+    \item $V_{tr}$ is the association strength (i.e. expectancy of the \ac{us} or the expected value resulting from a given \ac{cs}) at trial $tr$.
+\end{itemize}
+
+Then, the expected value $V_{tr+1}$ is obtained as:
+\[ V_{tr+1} = V_{tr} + \alpha \delta_{tr} \]
+where $\alpha \in [0, 1]$ is the learning rate.
+
+\begin{remark}
+    A lower $\alpha$ is more suited for volatile environments.
+\end{remark}
+
+\begin{remark}
+    The prediction error $\delta$ is:
+    \begin{itemize}
+        \item Positive during acquisition.
+        \item Negative during extinction.
+    \end{itemize}
+    Moreover, the error is larger at the start of acquisition/extinction.
+\end{remark}
+
+\begin{remark}
+    The Rescorla-Wagner model is able to capture the blocking effect (see \hyperref[ex:blocking]{Blocking example}) as
+    the animal computes a single prediction error obtained as the combination of multiple stimuli.
+\end{remark}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{./img/rescorla_wagner_curve.png}
+    \caption{Acquisition and extinction in Pavlovian learning according to the Rescorla-Wagner model}
+\end{figure}
+
+\begin{remark}
+    The Rescorla-Wagner model is a trial-level model that only considers the change from trial to trial
+    without considering what happens within and between trials.
+\end{remark}
+
+
+\subsection{Temporal difference model}
+\marginnote{Temporal difference model}
+
+Real-time model based on time steps within a trial instead of monolithic trials.
+At each time $t$ of a trial during which a \ac{cs} is presented,
+the model computes a prediction of the total future reward that will be gained from time $t$ to the end of the trial.
+
+The prediction error is computed as follows\footnote{\url{https://pubmed.ncbi.nlm.nih.gov/9054347/}}:
+\begin{gather*}
+    \delta_t = R_t + V_{t+1} - V_t \\
+    V_{t+1} = V_t + \alpha \delta_t
+\end{gather*}
+
+\begin{itemize}
+    \item At the beginning of learning, the \ac{cs} is presented at time $t_\text{\ac{cs}}$
+        and $V_t = 0$ until the \ac{us} is delivered at time $t_\text{\ac{us}} > t_\text{\ac{cs}}$.
+    \item On the next trial, $V_{t_\text{\ac{us}}} - V_{t_\text{\ac{us}} - 1}$ now generates a positive prediction error that updates $V_{t_\text{\ac{us}} - 1}$.
+    \item On subsequent trials, $V_t$ is updated for each $t$ in between $t_\text{\ac{us}}$ back to $t_\text{\ac{cs}}$.
+\end{itemize}
+
+In other words, the value signal produced by the reward (\ac{us}) is transferred back to an event (\ac{cs}) that predicts the reward.
+
+\begin{example}[Second-order conditioning]
+    Pairing a new \ac{cs} to an existing \ac{cs}.
+
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{./img/second_order_conditioning.png}
+    \end{center}
+
+    \begin{remark}
+        The Rescorla-Wagner model is not capable of modeling second-order conditioning while 
+        the temporal difference model is.
+    \end{remark}
+\end{example}
+
+
+
+\section{Dopamine}
+
+\begin{description}
+    \item[Synaptic plasticity]
+        Change the synaptic efficacy by changing the amount of:
+        \begin{descriptionlist}
+            \item[Neurotransmitters] Directly provoke excitatory or inhibitory effects at postsynaptic neurons.
+            \item[Neuromodulators] Neurotransmitters with additional effects.
+        \end{descriptionlist}
+\end{description}
+
+
+\begin{description}
+    \item[Dopamine] \marginnote{Dopamine}
+        Neuromodulator responsible for processes such as motivation, learning, decision-making, addiction, Parkinson's disease, Huntington's disease, \dots.
+
+    \item[Dopaminergic pathways] \marginnote{Dopaminergic pathways}
+        \begin{description}
+            \item[Nigrostriatal pathway] 
+                Originates in the substantia nigra pars compacta (SNc)
+                and primarily projects to the caudate-putemen.
+                
+                \begin{minipage}{0.6\linewidth}
+                    \begin{description}
+                        \item[Basal ganglia motor loop]
+                            Collection of subcortical nuclei responsible for motor control and reinforcement learning.
+                            
+                            The direct pathway initiates movement while the indirect pathway inhibits it.
+
+                            The SNc projects into the striatum and is responsible for releasing dopamine that activates the direct pathway.
+                            The striatum can be seen as the component that uses the reward to influence an action.
+                    \end{description}
+                \end{minipage}
+                \begin{minipage}{0.35\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/basal_ganglia_motor.png}
+                \end{minipage}
+
+            \item[Meso-limbic pathway] 
+                Originates in the VTA and projects to the nucleus accumbens, septum, amygdala and hippocampus.
+
+            \item[Meso-cortical pathway] 
+                Originates in the VTA and projects to the medial prefrontal, cingulate, orbitofrontal and perirhinal cortex.
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.3\linewidth]{./img/dopaminergic_pathways.png}
+            \caption{Dopaminergic pathways}
+        \end{figure}
+\end{description}
+
+
+\subsection{Reward prediction error hypothesis of dopamine}
+
+There is strong evidence that the dopaminergic system is the major neural mechanism of reward and reinforcement.
+
+\begin{description}
+    \item[Response to unexpected rewards] \marginnote{Dopamine response to unexpected rewards}
+        Dopaminergic neurons exhibit a strong phasic response in the presence of an unexpected reward.
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey that touches food]
+                Some food is put in a box with a hole to reach its content.
+                In the absence of any other stimuli predicting the reward, 
+                a monkey presents a high dopaminergic response when it touches the food.
+                \begin{center}
+                    \includegraphics[width=0.55\linewidth]{./img/dopamine_monkey1.png}    
+                \end{center}
+            \end{example}
+        \end{@empty}
+
+    \item[Reward discrimination] \marginnote{Dopamine reward discrimination}
+        Dopamine neurons respond differently depending on the actual presence of a reward.
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey that touches food]
+                The dopaminergic response of a monkey that touches an apple attached to a wire in a box is different 
+                from the response of only touching the wire.
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{./img/dopamine_monkey2.png}    
+                \end{center}
+            \end{example}
+        \end{@empty}
+
+    \item[Magnitude discrimination] \marginnote{Dopamine magnitude discrimination}
+        Dopamine neurons respond differently depending on the amount of reward received.
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey that drinks]
+                By giving a monkey different amounts of fruit juice in a pseudorandom order,
+                its dopaminergic response is stronger for the highest volume and weaker for the lowest volume.
+                \begin{center}
+                    \includegraphics[width=0.7\linewidth]{./img/dopamine_monkey3.png}    
+                \end{center}
+            \end{example}
+        \end{@empty}
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey with juice and images]
+                Using different \acp{cs}, it can be seen that the dopaminergic response differs based on the amount of reward.
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{./img/dopamine_expected.png}
+                \end{center}
+            \end{example}
+        \end{@empty}
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey with juice and images]
+                After learning the association between a \ac{cs} and \ac{us} (middle graph), a change in the amount of the reward changes the dopaminergic response.
+                \begin{center}
+                    \includegraphics[width=0.6\linewidth]{./img/dopamine_expected2.png}
+                \end{center}
+
+                This behavior also involves the context (i.e. the \ac{cs} image that is shown).
+                \begin{center}
+                    \includegraphics[width=0.6\linewidth]{./img/dopamine_expected3.png}
+                \end{center}
+            \end{example}
+        \end{@empty}
+\end{description}
+
+\begin{remark}
+    With the previous observations, it can be concluded that:
+    \begin{itemize}
+        \item Dopamine neurons increase their firing rate when the reward is unexpectedly delivered or better than expected.
+        \item Dopamine neurons decrease their firing rate when the reward is unexpectedly omitted or worse than expected.
+    \end{itemize}
+\end{remark}
+
+\begin{description}
+    \item[Transfer to \ac{cs}] \marginnote{Dopamine transfer to \ac{cs}}
+        \phantom{} \\
+        \begin{minipage}{0.65\linewidth}
+            \begin{itemize}[leftmargin=*]
+                \item Before training, an unexpected reward (\ac{us}) causes the dopamine neurons to increase firing (positive prediction error).
+                \item After training, dopamine neurons firing is increased after the \ac{cs} but not following the reward (no prediction error).
+                \item After training, dopamine neurons firing is increased after the \ac{cs} but is decreased if the reward is omitted (negative prediction error).
+            \end{itemize}
+        \end{minipage}
+        \begin{minipage}{0.35\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{./img/dopamine_transfer_cs.png}
+        \end{minipage}
+
+    \item[Response to blocking] \marginnote{Dopamine response to blocking}
+        Dopaminergic response is in line with the blocking effect.
+
+        \begin{@empty}
+            \small
+            \begin{example}[Monkey with food and images]
+                \phantom{}\\
+                \begin{minipage}{0.7\linewidth}
+                    A monkey is taught to associate images with food.
+                    A new \ac{cs} alongside an existing \ac{cs} will not be learned.
+                \end{minipage}
+                \begin{minipage}{0.28\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/dopamine_blocking.png}
+                \end{minipage}
+            \end{example}
+        \end{@empty}
+
+    \item[Probability encoding] \marginnote{Dopamine probability encoding}
+        \phantom{} \\
+        \begin{minipage}{0.45\linewidth}
+            The phasic activation of dopamine neurons varies monotonically with the reward probability
+        \end{minipage}
+        \begin{minipage}{0.5\linewidth}
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/dopamine_probability.png}
+        \end{minipage}
+
+    \item[Timing encoding] \marginnote{Dopamine timing encoding}
+        Dopamine response to unexpectedness also involves timing.
+        A dopaminergic response occurs when a reward is given earlier or later than expected.
+
+        \begin{@empty}
+            \small
+            \begin{example}
+                After learning that a reward occurs 1 second after the end of the \ac{cs}, 
+                dopamine neurons fire if the timing changes.
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{./img/dopamine_timing.png}
+                \end{center}
+            \end{example}
+        \end{@empty}
+\end{description}
+
+\begin{remark}
+    Dopamine is therefore a signal for the predicted error and not strictly for the reward.
+\end{remark}
+
+
+\subsection{Dopamine in instrumental learning}
+
+There is evidence that dopamine is involved in learning action-outcome associations (instrumental learning).
+
+\begin{description}
+    \item[Striatal activity on unexpected events] \marginnote{Striatal activity on unexpected events}
+        When an unexpected event happens, there is a change in the activity of the striatum.
+        There is an increase in response when the feedback is positive and a decrease when negative.
+
+        \begin{@empty}
+            \small
+            \begin{example}[Microelectrodes in substantia nigra]
+                The activity of the substantia nigra of patients with Parkinson's disease is measured during a probabilistic instrumental learning task.
+                The task consists of repeatedly drawing a card from two decks, followed by positive or negative feedback depending on the deck.
+
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.25\linewidth}
+                        \centering
+                        \includegraphics[width=\linewidth]{./img/instrumental_dopamine_sn1.png}
+                    \end{subfigure}
+                    \begin{subfigure}{0.55\linewidth}
+                        \centering
+                        \includegraphics[width=\linewidth]{./img/instrumental_dopamine_sn2.png}
+                    \end{subfigure}
+                \end{figure}
+
+                The increase and decrease in striatal activity can be clearly seen when the feedback is unexpected.
+            \end{example}
+        \end{@empty}
+
+    \item[Dopamine effect on behavior] \marginnote{Dopamine effect on behavior}
+        The amount of dopamine changes the learning behavior:
+        \begin{itemize}
+            \item Low levels of dopamine cause an impairment in learning from positive feedback.
+                This happens because positive prediction errors cannot occur.
+            
+            \item High levels of dopamine cause an impairment in learning from negative feedback.
+                This happens because negative prediction errors cannot occur.
+        \end{itemize}
+
+        \begin{@empty}
+            \small
+            \begin{example}[Probabilistic selection task]
+                This instrumental learning task has two phases:
+                \begin{descriptionlist}
+                    \item[Learning]
+                        There are three pairs of stimuli (symbols) and, at each trial, a pair is presented to the participant who selects one.
+                        For each pair, a symbol has a higher probability of providing positive feedback while the other is more likely to be negative.
+                        Moreover, the probabilities are different among the three pairs.
+
+                        \begin{center}
+                            \includegraphics[width=0.55\linewidth]{./img/instrumental_dopamine_selection1.png}
+                        \end{center}
+
+                        Participants are required to learn by trial and error the stimulus in each pair that leads to a positive reward.
+                        Note that learning could be accomplished by:
+                        \begin{itemize}
+                            \item Recognizing the more rewarding stimulus.
+                            \item Recognizing the less rewarding stimulus.
+                            \item Both.
+                        \end{itemize}
+
+                    \item[Testing]
+                        Aims to assess if participants learned to select positive feedback or avoid negative feedback.
+
+                        The same task as above is repeated but all combinations of the stimuli among the three pairs are possible.
+                \end{descriptionlist}
+
+                Three groups of participants are considered for this experiment:
+                \begin{enumerate}
+                    \item Those who took the cabergoline drug (dopamine antagonist).
+                    \item Those who took the haloperidol drug (dopamine agonist).
+                    \item Those who took a drug without effects (placebo).
+                \end{enumerate}
+
+                \begin{center}
+                    \includegraphics[width=0.55\linewidth]{./img/instrumental_dopamine_selection2.png}
+                \end{center}
+
+                Results show that:
+                \begin{enumerate}
+                    \item Cabergoline inhibited positive feedback learning.
+                    \item Haloperidol enhanced positive feedback learning.
+                    \item Placebo learned positive and negative feedback equally.
+                \end{enumerate}
+            \end{example}
+        \end{@empty}
+        
+        \begin{@empty}
+            \small
+            \begin{example}
+                It has been observed that:
+                \begin{itemize}
+                    \item Reward prediction errors are correlated with activity in the left posterior putamen and left ventral striatum.
+                    \item Punishment prediction errors are correlated with activity in the right anterior insula.
+                \end{itemize}
+
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{./img/pe_location.png}
+                \end{center}
+            \end{example}
+        \end{@empty}
+
+    \item[Actor-critic model] \marginnote{Actor-critic model}
+        Model to correlate Pavlovian and instrumental learning. 
+        It is composed by:
+        \begin{itemize}
+            \item The cortex is responsible for representing the current state.
+            \item The basal ganglia implement two computational models:
+                \begin{descriptionlist}
+                    \item[Critic] \marginnote{Critic}
+                        Learns stimulus-outcome associations and is active in both Pavlovian and instrumental learning.
+                        It might be implemented in the ventral striatum, the amygdala and the orbitofrontal cortex.
+                
+                    \item[Actor] \marginnote{Actor}
+                        Learns stimulus-action associations and is only active during instrumental learning.
+                        It might be implemented in the dorsal striatum.
+                \end{descriptionlist}
+        \end{itemize}
+\end{description}
+
+\begin{@empty}
+    \small
+    \begin{example}[Food and cocaine]
+        \phantom{}
+        \begin{itemize}
+            \item Food-induced dopamine response is modulated by the reward expectations that promote learning until the prediction matches the actual outcome.
+            \item Cocaine-induced dopamine response causes a continuous increase in the predicted reward that
+                will eventually surpass all other cues and bias decision-making towards cocaine.
+        \end{itemize}
+        \begin{center}
+            \includegraphics[width=0.7\linewidth]{./img/dopamine_food_cocaine.png}
+        \end{center}
+    \end{example}
+\end{@empty}
