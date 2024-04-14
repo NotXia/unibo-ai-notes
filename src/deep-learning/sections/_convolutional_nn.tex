@@ -236,7 +236,7 @@ where:
 
 
 
-\section{Other convolution types}
+\section{Other types of convolution}
 
 \begin{description}
     \item[Transposed convolution / Deconvolution] \marginnote{Transposed convolution / Deconvolution}
@@ -267,7 +267,6 @@ where:
 
 
 
-
 \section{Normalization layer}
 
 A normalization layer has the empirical effects of:
@@ -295,5 +294,277 @@ A normalization layer has the empirical effects of:
                         Usually, it is obtained as the moving average of the values computed from the batches during training.
                 \end{descriptionlist}
         \end{itemize}
-
 \end{description}
+
+
+
+\section{Gradient ascent}
+
+
+\subsection{Hidden layer visualization}
+\marginnote{Hidden layer visualization}
+
+Visualize what type of input features activate a neuron.
+
+\begin{description}
+    \item[Image ascent approach] 
+        During training, the loss function of a neural network $\mathcal{L}(\vec{x}; \vec{\theta})$ is 
+        parametrized on the weights $\vec{\theta}$ while the input $\vec{x}$ is fixed.
+        
+        To visualize the patterns that activate a (convolutional) neuron, it is possible to invert the optimization process
+        by fixing the parameters $\vec{\theta}$ and optimizing an image $\vec{x}$ so that the loss function becomes $\mathcal{L}(\vec{\theta}; \vec{x})$.
+        The process works as follows:
+        \begin{enumerate}
+            \item Start with a random image $\vec{x}$.
+            \item Do a forward pass with $\vec{x}$ as input and keep track of the activation function $a_i(\vec{x})$ of the neuron(s) of interest.
+            \item Do a backward pass to compute the gradient $\frac{\partial a_i(\vec{x})}{\partial \vec{x}_{i,j}}$ (i.e. chain rule) for each pixel $(i, j)$ of the image.
+            \item Update the image as $\vec{x} = \vec{x} + \eta \frac{\partial a_i(\vec{x})}{\partial \vec{x}}$.
+            \item Repeat until the activation function $a_i(\vec{x})$ is high enough.
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/cnn_visualization_ascent.png}
+            \caption{Example of generative image ascent visualization approach}
+        \end{figure}
+
+    \item[Generative approach]
+        Starting from an image $\hat{\vec{x}}$ that makes a specific layer $l$ output $\Theta_l(\hat{\vec{x}})$, 
+        generate another image $\vec{x}$ that makes the same layer $l$ output a similar value $\Theta_l(\vec{x}) \approx \Theta_l(\hat{\vec{x}})$
+        (i.e. it cannot distinguish between $\vec{x}$ and $\hat{\vec{x}}$).
+
+        Fixed $\hat{\vec{x}}$, the problem can be solved as an optimization problem:
+        \[ \arg\min_{\vec{x}} \Big\{ l\big( \Theta_l(\vec{x}), \Theta_l(\hat{\vec{x}}) \big) + \lambda \mathcal{R}(\vec{x}) \Big\} \]
+        where $l$ is a loss function to measure the distance between the two representations and 
+        $\mathcal{R}$ is a regularizer.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/cnn_visualization_generative.png}
+            \caption{Example of generative visualization approach}
+        \end{figure}
+\end{description}
+
+
+\subsection{Inceptionism}
+\marginnote{Inceptionism}
+
+Employ the same techniques for hidden layer visualization to create psychedelic and abstract images.
+
+\begin{description}
+    \item[Deep dream] \marginnote{Deep dream}
+        Iteratively apply gradient ascent on an image:
+        \begin{enumerate}
+            \item Train a neural network for image classification.
+            \item Repeatedly modify an input image using gradient ascent to improve the activation of a specific neuron.
+        \end{enumerate}
+
+        After enough iterations, the features that the target neuron learned to recognize during training are injected into the input image,
+        even if that image does not have that specific feature.
+
+        \begin{remark}
+            Strong regularizers are used to prioritize features that statistically resemble real images.
+        \end{remark}
+
+    \item[Content enhancing] \marginnote{Content enhancing}
+        Same as above, but instead of selecting a neuron, an entire layer is fixed and the input image is injected with whatever that layer detects.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{./img/inceptionism.png}
+        \caption{Example of deep dream images}
+    \end{figure}
+\end{description}
+
+
+\subsection{Style transfer}
+\marginnote{Style transfer}
+
+Mimic the style of an image and transfer it to the content of another one.
+
+\begin{description}
+    \item[Internal representation approach] 
+        Given a convolutional neural network pretrained for classification, the method can be divided into two parts:
+        \begin{descriptionlist}
+            \item[Content reconstruction] 
+                Given an image $\hat{\vec{x}}$, consider the output of the $l$-th layer of the network.
+                Its internal representation of the image has $C^l$ distinct channels (depending on the number of kernels)
+                each with $M^l = W^l \cdot H^l$ elements (when flattened).
+        
+                The representation (feature map) of the $l$-th layer can therefore be denoted as $F^l \in \mathbb{R}^{C^l \times M^l}$
+                and $F^l_{c, k}$ is used to denote the activation of the $c$-th filter applied at position $k$ of the $l$-th layer.
+        
+                As higher layers of a CNN capture high-level features, one of the high layers is selected and its feature map is used as the content representation.
+        
+                Given a content representation $\mathcal{C} = \hat{F}^l$ of $\hat{\vec{x}}$, chosen as the feature map at the $l$-th layer, 
+                it is possible to reconstruct the original image $\hat{\vec{x}}$ starting from a random one $\vec{x}$ by minimizing the loss:
+                \[ \mathcal{L}_\text{content}(\hat{\vec{x}}, \vec{x}, l) = \sum_{c, i} (F^l_{c, i} - \mathcal{C}_{c, i})^2 \]
+                where $F^l$ is the feature representation of the random image $\vec{x}$.
+        
+            \item[Style reconstruction] 
+                Given an image $\hat{\vec{y}}$ and its feature maps $F^l$ for $l \in \{1, \dots L\}$,
+                at each layer $l$, the Gram matrix $G^l \in \mathbb{R}^{C^l \times C^l}$ obtained as the dot product between pairs of channels 
+                (i.e. correlation between features extracted by different kernels):
+                \[ G^l_{c_1, c_2} = F^l_{c_1} \odot F^l_{c_2} = \sum_{k} (F^l_{c_1, k} \cdot F^l_{c_2, k}) \]
+                allows to capture the concept of style.
+        
+                The Gram matrices at each layer are considered as the style representation.
+        
+                Given the style representation $\mathcal{S}^1, \dots, \mathcal{S}^L$ of $\hat{\vec{y}}$,
+                it is possible to reconstruct the same style of the original image $\hat{\vec{y}}$ starting from a random image $\vec{y}$ by minimizing the loss:
+                \[ \mathcal{L}_\text{style}(\hat{\vec{y}}, \vec{y}) = \sum_{l=1}^{L} \gamma_l \left(\sum_{i,j} (G^l_{i, j} - \mathcal{S}^l_{i,j})^2 \right) \]
+                where $\gamma_l$ is a weight assigned to each layer and $G^l$ is the $l$-th Gram matrix of the random image $\vec{y}$.
+        \end{descriptionlist}
+        
+        Put together, given:
+        \begin{itemize}
+            \item An image $\hat{\vec{x}}$ from which the content has to be copied.
+            \item An image $\hat{\vec{y}}$ from which the style has to be copied.
+            \item The content representation $\mathcal{C}$ of $\hat{\vec{x}}$.
+            \item The style representation $\mathcal{S}^1, \dots, \mathcal{S}^L$ of $\hat{\vec{y}}$.
+        \end{itemize}
+        A new random image $\vec{o}$ is fitted by minimizing the loss:
+        \[ \mathcal{L}_\text{total} = \alpha \mathcal{L}_\text{content}(\hat{\vec{x}}, \vec{o}, l) + \beta \mathcal{L}_\text{style}(\hat{\vec{y}}, \vec{o}) \]
+        where $\alpha$ and $\beta$ are hyperparameters.
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/style_transfer.png}
+            \caption{Internal representation style transfer workflow}
+        \end{figure}
+
+    \item[Perceptual loss approach]
+        A CNN pretrained for classification is used as a loss network to compute perceptual loss functions
+        to measure the difference in style and content between images.
+        The representation for style and content is extracted in a similar way as above.
+
+        The loss network is then kept fixed and an image transformation network is trained to transform its input $\vec{x}$ 
+        into an image $\vec{y}$ compliant (i.e. minimizes the perceptual losses) with a given style image $\vec{y}_s$ and a content image $\vec{y}_c$ 
+        (if the goal is to keep the content of the input, then $\vec{y}_c = \vec{x}$).
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\linewidth]{./img/style_transfer_perceptual_loss.png}
+            \caption{Perceptual loss style transfer workflow}
+        \end{figure}
+\end{description}
+
+
+
+\section{Data manifold}
+
+
+\subsection{Adversarial attacks}
+\marginnote{Adversarial attacks}
+
+Hijack a neural network classifier to forcefully predict a given class.
+
+\begin{description}
+    \item[Gradient ascent approach]
+        White-box technique that uses gradient ascent to compute an image that the network classifies with the wanted class.
+
+        Let:
+        \begin{itemize}
+            \item $\vec{x}$ be the input image.
+            \item $f(\vec{x})$ the probability distribution that the network outputs.
+            \item $c$ the wanted class.
+            \item $p$ the wanted probability distribution (i.e. $p_c = 1$ and $p_i = 0$ elsewhere).
+            \item $\mathcal{L}$ the loss function.
+        \end{itemize}
+
+        By iteratively updating the input image with the gradient of the loss function $\frac{\partial\mathcal{L}(f(\vec{x}), p)}{\partial\vec{x}}$ 
+        computed wrt to $\vec{x}$,
+        after enough iterations, the classifier will classify the updated $\vec{x}$ as $c$.
+
+        \begin{remark}
+            The updates computed from the gradient of the loss function are usually imperceptible.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.25\linewidth]{./img/fooling_nn.png}
+            \caption{Examples of hijacked classifications}
+        \end{figure}
+
+    \item[Evolutionary approach]
+        Black-box technique based on an evolutionary approach.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/fooling_evolutionary.png}
+            \caption{Workflow for evolutionary-based attacks}
+        \end{figure}
+\end{description}
+
+
+\subsection{Manifold}
+
+\begin{description}
+    \item[Manifold] \marginnote{Manifold}
+        Area of the feature space that represents "natural" images (i.e. images with a meaning an without artificial noise).
+
+        This area is usually organized along a smooth surface which is a minimal portion of the entire space of all the possible images.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/manifold.png}
+            \caption{Example of manifold in two dimensions}
+        \end{figure}
+\end{description}
+
+\begin{remark}
+    As one cannot know where the classifier draws the boundaries,
+    a tiny change in the data might cause a misclassification.
+
+    Adversarial attacks also exploit this to cause misclassifications.
+\end{remark}
+
+\begin{remark}
+    Inceptionism aims to modify the data while remaining in the manifold.
+\end{remark}
+
+
+\subsection{Autoencoders}
+\marginnote{Autoencoder}
+
+Network composed of two components:
+\begin{descriptionlist}
+    \item[Encoder]
+        Projects the input into an internal representation of lower dimensionality.
+
+    \item[Decoder]
+        Reconstructs the input from its internal representation.
+\end{descriptionlist}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{./img/autoencoder.png}
+    \caption{Autoencoder structure}
+\end{figure}
+
+An autoencoder has the following properties:
+\begin{descriptionlist}
+    \item[Data-specific] It only works on data with a strong correlation (i.e. with regularities in the feature space).
+    \item[Lossy] By passing through the internal representation, the reconstruction of the input is nearly always degraded.
+    \item[Self-supervised] Training happens directly on unlabelled data.
+\end{descriptionlist}
+
+Applications of autoencoders are:
+\begin{descriptionlist}
+    \item[Denoising] 
+        Train the autoencoder to reconstruct noiseless data.
+        Given an image, the input is a noisy version of it, while the output is expected to be similar to the original image.
+
+    \item[Anomaly detection]
+        As autoencoders are data-specific, they will perform poorly on data different from those used for training.
+
+        This allows to detect anomalies by comparing the quality of the reconstruction.
+        If the input is substantially different from the training data (or has been attacked with an artificial manipulation),
+        the reconstructed output is expected to have poor quality.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/autoencoder_anomaly.png}
+            \caption{Example of anomaly detection}
+        \end{figure}
+\end{descriptionlist}
