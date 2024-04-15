@@ -79,81 +79,88 @@
         \end{description}
 \end{description}
 
-\begin{example}[Axes-aligned rectangles in $\mathbb{R}^2_{[0, 1]}$]
-    Consider the instance space $X = \mathbb{R}^2_{[0, 1]}$
-    and the concept class $\mathcal{C}$ of concepts represented by all the points contained within a rectangle parallel to the axes of arbitrary size.
 
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.2\linewidth]{./img/_learning_rectangle.pdf}
-        \caption{Example of problem instance. The gray rectangle is the target concept, red dots are positive data points and blue dots are negative data points.}
-    \end{figure}
 
-    An algorithm has to guess a classifier (i.e. a rectangle) without knowing the target concept and the distribution of its training data.
-    Let an algorithm $\mathcal{A}_\text{BFP}$ be defined as follows:
+\section{Axes-aligned rectangles over $\mathbb{R}^2_{[0, 1]}$}
+
+Consider the instance space $X = \mathbb{R}^2_{[0, 1]}$
+and the concept class $\mathcal{C}$ of concepts represented by all the points contained within a rectangle parallel to the axes of arbitrary size.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\linewidth]{./img/_learning_rectangle.pdf}
+    \caption{Example of problem instance. The gray rectangle is the target concept, red dots are positive data points and blue dots are negative data points.}
+\end{figure}
+
+An algorithm has to guess a classifier (i.e. a rectangle) without knowing the target concept and the distribution of its training data.
+Let an algorithm $\mathcal{A}_\text{BFP}$ be defined as follows:
+\begin{itemize}
+    \item Take as input some data $\{ ((x_1, y_1), p_1), \dots, ((x_n, y_n), p_n) \}$ where 
+        $(x_i, y_i)$ are the coordinates of the point and $p_i$ indicates if the point is within the target rectangle.
+    \item Return the smallest rectangle that includes all the positive instances.
+\end{itemize}
+
+Given the rectangle $R$ predicted by $\mathcal{A}_\text{BFP}$ and the target rectangle $T$,
+the probability of error in using $R$ in place of $T$ is:
+\[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (R \smallsetminus T) \cup (T \smallsetminus R) ] \]
+In other words, a point is misclassified if it is in $R$ but not in $T$ or vice versa.
+\begin{remark}
+    By definition of $\mathcal{A}_\text{BFP}$, it always holds that $R \subseteq T$. 
+    Therefore, $(R \smallsetminus T) = \varnothing$ and the error can be rewritten as:
+    \[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (T \smallsetminus R) ] \]
+\end{remark}
+
+
+\begin{theorem}[Axes-aligned rectangles over $\mathbb{R}^2_{[0, 1]}$ PAC learnability]
+    It holds that:
     \begin{itemize}
-        \item Take as input some data $\{ ((x_1, y_1), p_1), \dots, ((x_n, y_n), p_n) \}$ where 
-            $(x_i, y_i)$ are the coordinates of the point and $p_i$ indicates if the point is within the target rectangle.
-        \item Return the smallest rectangle that includes all the positive instances.
-    \end{itemize}
+        \item For every distribution $\mathcal{D}$,
+        \item For every error $0 < \varepsilon < \frac{1}{2}$, 
+        \item For every confidence $0 < \delta < \frac{1}{2}$,
+    \end{itemize} 
+    if $m \geq \frac{4}{\varepsilon}\ln\left( \frac{4}{\delta} \right)$, then:
+    \[ 
+        \mathcal{P}_{D \sim \mathcal{D}^m}
+            \left[ \text{error}_{\mathcal{D}, T}\Big( \mathcal{A}_\text{BFP}\big(T(D)\big) \Big) < \varepsilon \right]  > 1 - \delta
+    \]
+    where $D \sim \mathcal{D}^m$ is a sample of $m$ data points (i.e. training data)
+    and $T(\cdot)$ labels the input data wrt to the target rectangle $T$.
 
-    Given the rectangle $R$ predicted by $\mathcal{A}_\text{BFP}$ and the target rectangle $T$,
-    the probability of error in using $R$ in place of $T$ is:
-    \[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (R \smallsetminus T) \cup (T \smallsetminus R) ] \]
-    In other words, a point is misclassified if it is in $R$ but not in $T$ or vice versa.
-    \begin{remark}
-        By definition of $\mathcal{A}_\text{BFP}$, it always holds that $R \subseteq T$. 
-        Therefore, $(R \smallsetminus T) = \varnothing$ and the error can be rewritten as:
+    \begin{proof}
+        By definition, the error of $\mathcal{A}_\text{BFP}$ is defined as:
         \[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (T \smallsetminus R) ] \]
-    \end{remark}
 
+        Consider the space defined by $(T \smallsetminus R)$ divided in four sections $E_1 \cup \dots \cup E_4 = (T \smallsetminus R)$:
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/_rectangle_space.pdf}
+        \end{figure}
 
-    \begin{theorem}[Axes-aligned rectangles in $\mathbb{R}^2_{[0, 1]}$ PAC learnability]
-        It holds that:
-        \begin{itemize}
-            \item For every distribution $\mathcal{D}$,
-            \item For every error $0 < \varepsilon < \frac{1}{2}$, 
-            \item For every confidence $0 < \delta < \frac{1}{2}$,
-        \end{itemize} 
-        if $m \geq \frac{4}{\varepsilon}\ln\left( \frac{4}{\delta} \right)$, then:
+        Consider the probabilistic event "$x \in E_i$".
+        For the training data $x \sim \mathcal{D}$ this holds iff none of those points
+        end up in $E_i$ as, if a training point is in $E_i$, $R$ would be bigger to include it and $E_i$ would be smaller.
+
+        Now consider four other regions $F_1, \dots, F_4$ of the plane related to $E_i$ but defined differently
+        in such a way that $\mathcal{P}_{x \sim D}[x \in F_i] = \frac{\varepsilon}{4}$.
+        This can be achieved by expanding the $E_i$ regions to take some area of the rectangle $R$.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/_rectangle_space2.pdf}
+        \end{figure}
+
+        Then, as $E_i$ are smaller than $F_i$, it holds that:
         \[ 
-            \mathcal{P}_{D \sim \mathcal{D}^m}
-                \left[ \text{error}_{\mathcal{D}, T}\Big( \mathcal{A}_\text{BFP}\big(T(D)\big) \Big) < \varepsilon \right]  > 1 - \delta
+            \begin{split}
+                \mathcal{P}_{x \sim D}[x \in E_i] < \frac{\varepsilon}{4} &\Rightarrow \mathcal{P}_{x \sim D}[x \in (T \smallsetminus R)] < \varepsilon \\
+                & \Rightarrow \text{error}_{\mathcal{D}, T}(R) < \varepsilon
+            \end{split}
         \]
-        where $D \sim \mathcal{D}^m$ is a sample of $m$ data points (i.e. training data)
-        and $T(\cdot)$ labels the input data wrt to the target rectangle $T$.
+        
+        \textit{To be continued\dots}
+    \end{proof}
+\end{theorem}
 
-        \begin{proof}
-            By definition, the error of $\mathcal{A}_\text{BFP}$ is defined as:
-            \[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (T \smallsetminus R) ] \]
 
-            Consider the space defined by $(T \smallsetminus R)$ divided in four sections $E_1 \cup \dots \cup E_4 = (T \smallsetminus R)$:
-            \begin{figure}[H]
-                \centering
-                \includegraphics[width=0.4\linewidth]{./img/_rectangle_space.pdf}
-            \end{figure}
-
-            Consider the probabilistic event "$x \in E_i$".
-            For the training data $x \sim \mathcal{D}$ this holds iff none of those points
-            end up in $E_i$ as, if a training point is in $E_i$, $R$ would be bigger to include it and $E_i$ would be smaller.
-
-            Now consider four other regions $F_1, \dots, F_4$ of the plane related to $E_i$ but defined differently
-            in such a way that $\mathcal{P}_{x \sim D}[x \in F_i] = \frac{\varepsilon}{4}$.
-            This can be achieved by expanding the $E_i$ regions to take some area of the rectangle $R$.
-            \begin{figure}[H]
-                \centering
-                \includegraphics[width=0.4\linewidth]{./img/_rectangle_space2.pdf}
-            \end{figure}
-
-            Then, as $E_i$ are smaller than $F_i$, it holds that:
-            \[ 
-                \begin{split}
-                    \mathcal{P}_{x \sim D}[x \in E_i] < \frac{\varepsilon}{4} &\Rightarrow \mathcal{P}_{x \sim D}[x \in (T \smallsetminus R)] < \varepsilon \\
-                    & \Rightarrow \text{error}_{\mathcal{D}, T}(R) < \varepsilon
-                \end{split}
-            \]
-            
-            \textit{To be continued\dots}
-        \end{proof}
-    \end{theorem}
-\end{example}
+\begin{corollary}
+    The concept class of axis-aligned rectangles over $\mathbb{R}^2_{[0, 1]}$ is efficiently PAC learnable.
+\end{corollary}
