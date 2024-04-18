@@ -104,33 +104,33 @@
         A model $\mathcal{M}$ satisfies a formula $\varphi \in \mathbb{F}^\Sigma$ if $\varphi^\mathcal{M} = \texttt{true}$.
 
     \item[$\mathbf{\Sigma}$-theory] \marginnote{$\Sigma$-theory}
-        Possibly infinite set $\mathcal{T}$ of $\Sigma$-models.
+        Possibly infinite set $\calT$ of $\Sigma$-models.
 
-    \item[$\mathbf{\mathcal{T}}$-satisfiability] \marginnote{$\mathcal{T}$-satisfiability}
-        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\mathcal{T}$-satisfiable if there exists a model $\mathcal{M} \in \mathcal{T}$ that satisfies it.
+    \item[$\mathbf{\calT}$-satisfiability] \marginnote{$\calT$-satisfiability}
+        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\calT$-satisfiable if there exists a model $\mathcal{M} \in \calT$ that satisfies it.
 
-    \item[$\mathbf{\mathcal{T}}$-consistency] \marginnote{$\mathcal{T}$-consistency}
-        A set of formulas $\{ \varphi_1, \dots, \varphi_k \} \subseteq \mathbb{F}^\Sigma$ is $\mathcal{T}$-consistent iff 
-        $\varphi_1 \land \dots \land \varphi_k$ is $\mathcal{T}$-satisfiable.
+    \item[$\mathbf{\calT}$-consistency] \marginnote{$\calT$-consistency}
+        A set of formulas $\{ \varphi_1, \dots, \varphi_k \} \subseteq \mathbb{F}^\Sigma$ is $\calT$-consistent iff 
+        $\varphi_1 \land \dots \land \varphi_k$ is $\calT$-satisfiable.
 
-    \item[$\mathbf{\mathcal{T}}$-entailment] \marginnote{$\mathcal{T}$-entailment}
-        A set of formulas $\Gamma \subseteq \mathbb{F}^\Sigma$ $\mathcal{T}$-entails a formula $\varphi \in \mathbb{F}^\Sigma$ ($\Gamma \models_\mathcal{T} \varphi$) iff
-        in every model $\mathcal{M} \in \mathcal{T}$ that satisfies $\Gamma$, $\varphi$ is also satisfied.
+    \item[$\mathbf{\calT}$-entailment] \marginnote{$\calT$-entailment}
+        A set of formulas $\Gamma \subseteq \mathbb{F}^\Sigma$ $\calT$-entails a formula $\varphi \in \mathbb{F}^\Sigma$ ($\Gamma \models_\calT \varphi$) iff
+        in every model $\mathcal{M} \in \calT$ that satisfies $\Gamma$, $\varphi$ is also satisfied.
 
         \begin{remark}
-            $\Gamma$ is $\mathcal{T}$-consistent iff $\Gamma \cancel{\models_\mathcal{T}} \bot$.
+            $\Gamma$ is $\calT$-consistent iff $\Gamma \cancel{\models_\calT} \bot$.
         \end{remark}
 
-    \item[$\mathbf{\mathcal{T}}$-validity] \marginnote{$\mathcal{T}$-validity}
-        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\mathcal{T}$-valid iff $\varnothing \models_\mathcal{T} \varphi$.
+    \item[$\mathbf{\calT}$-validity] \marginnote{$\calT$-validity}
+        A formula $\varphi \in \mathbb{F}^\Sigma$ is $\calT$-valid iff $\varnothing \models_\calT \varphi$.
 
         \begin{remark}
-            $\varphi$ is $\mathcal{T}$-consistent iff $\lnot\varphi$ is not $\mathcal{T}$-valid.
+            $\varphi$ is $\calT$-consistent iff $\lnot\varphi$ is not $\calT$-valid.
         \end{remark}
 
         \begin{description}
             \item[Theory lemma] \marginnote{Theory lemma}
-                $\mathcal{T}$-valid clause $c = l_1 \vee \dots \vee l_k$.
+                $\calT$-valid clause $c = l_1 \vee \dots \vee l_k$.
         \end{description}
 
     \item[$\Sigma$-expansion] \marginnote{$\Sigma$-expansion}
@@ -142,12 +142,12 @@
         \end{itemize}
 
         \begin{remark}
-            Given a $\Sigma$-theory $\mathcal{T}$, we implicitly consider it to be the theory $\mathcal{T}'$ defined as:
-            \[ \mathcal{T}' = \{ \mathcal{M}' \mid \mathcal{M}' \text{ is an expansion of a $\Sigma$-model } \mathcal{M} \text{ in } \mathcal{T}\} \]
+            Given a $\Sigma$-theory $\calT$, we implicitly consider it to be the theory $\calT'$ defined as:
+            \[ \calT' = \{ \mathcal{M}' \mid \mathcal{M}' \text{ is an expansion of a $\Sigma$-model } \mathcal{M} \text{ in } \calT\} \]
         \end{remark}
 
-    \item[Ground $\mathbf{\mathcal{T}}$-satisfiability] \marginnote{Ground $\mathcal{T}$-satisfiability}
-        Given a $\Sigma$-theory $\mathcal{T}$, determine if a ground formula is $\mathcal{T}$-satisfiable over a $\Sigma$-expansion $\mathcal{T}'$.
+    \item[Ground $\mathbf{\calT}$-satisfiability] \marginnote{Ground $\calT$-satisfiability}
+        Given a $\Sigma$-theory $\calT$, determine if a ground formula is $\calT$-satisfiable over a $\Sigma$-expansion $\calT'$.
 
     \item[Axiomatically defined theory] \marginnote{Axiomatically defined theory}
         Given a minimal set of formulas (axioms) $\Lambda \subseteq \mathbb{F}^\Sigma$,
@@ -172,7 +172,7 @@
 
 \begin{description}
     \item[Equality with Uninterpreted Functions theory (EUF)] \marginnote{Equality with Uninterpreted Functions theory (EUF)}
-        Theory $\mathcal{T}_\text{EUF}$ containing all the possible $\Sigma$-models.
+        Theory $\calT_\text{EUF}$ containing all the possible $\Sigma$-models.
         
         \begin{remark}
             Also called empty theory as its axiom set is $\varnothing$ (i.e. allows any model).
@@ -196,16 +196,16 @@
 
         \begin{description}
             \item[Presburger arithmetic]
-                Theory $\mathcal{T}_\mathbb{Z}$ that interprets $\Sigma$-symbols over integers.
+                Theory $\calT_\mathbb{Z}$ that interprets $\Sigma$-symbols over integers.
                 \begin{itemize}
-                    \item Ground $\mathcal{T}_\mathbb{Z}$-satisfiability is \textbf{NP}-complete.
-                    \item Extended with multiplication, $\mathcal{T}_\mathbb{Z}$-satisfiability becomes undecidable.
+                    \item Ground $\calT_\mathbb{Z}$-satisfiability is \textbf{NP}-complete.
+                    \item Extended with multiplication, $\calT_\mathbb{Z}$-satisfiability becomes undecidable.
                 \end{itemize}
             \item[Real arithmetic]
-                Theory $\mathcal{T}_\mathbb{R}$ that interprets $\Sigma$-symbols over reals.
+                Theory $\calT_\mathbb{R}$ that interprets $\Sigma$-symbols over reals.
                 \begin{itemize}
-                    \item Ground $\mathcal{T}_\mathbb{R}$-satisfiability is in \textbf{P}.
-                    \item Extended with multiplication, $\mathcal{T}_\mathbb{R}$-satisfiability becomes doubly-exponential.
+                    \item Ground $\calT_\mathbb{R}$-satisfiability is in \textbf{P}.
+                    \item Extended with multiplication, $\calT_\mathbb{R}$-satisfiability becomes doubly-exponential.
                 \end{itemize}
         \end{description}
         
@@ -221,7 +221,7 @@
             \item[$\texttt{write}(a, i, v)$] Returns an array $a'$ where the value $v$ is at the index $i$ of $a$.
         \end{descriptionlist}
         
-        The theory $\mathcal{T}_\mathcal{A}$ is the set of all models respecting the following axioms:
+        The theory $\calT_\mathcal{A}$ is the set of all models respecting the following axioms:
         \begin{itemize}
             \item $\forall a\, \forall i\, \forall v: \texttt{read}(\texttt{write}(a, i, v), i) = v$.
             \item $\forall a\, \forall i\, \forall j\, \forall v: (i \neq j) \Rightarrow \Big( \texttt{read}\big( \texttt{write}(a,i,v), j \big) = \texttt{read}(a, j) \Big)$.
@@ -229,12 +229,12 @@
         \end{itemize}
         
         \begin{remark}
-            The full $\mathcal{T}_\mathcal{A}$ theory is undecidable but there are decidable fragments.
+            The full $\calT_\mathcal{A}$ theory is undecidable but there are decidable fragments.
         \end{remark}
 
 
     \item[Bit-vectors theory] \marginnote{Bit-vectors theory}
-        Theory $\mathcal{T}_\mathcal{BV}$ with vectors of bits of fixed length as constants and
+        Theory $\calT_\mathcal{BV}$ with vectors of bits of fixed length as constants and
         operations such as:
         \begin{itemize}
             \item String-like operations (e.g. slicing, concatenation, \dots).
@@ -277,8 +277,8 @@ All the information on the formal theory is used from the beginning to encode an
 
 \begin{descriptionlist}
     \item[Equisatisfiability] \marginnote{Equisatisfiability}
-        Given a $\Sigma$-theory $\mathcal{T}$, two formulas $\varphi$ and $\varphi'$ are equisatisfiable iff:
-        \[ \varphi \text{ is $\mathcal{T}$-satisfiable } \iff \varphi' \text{ is $\mathcal{T}$-satisfiable } \]
+        Given a $\Sigma$-theory $\calT$, two formulas $\varphi$ and $\varphi'$ are equisatisfiable iff:
+        \[ \varphi \text{ is $\calT$-satisfiable } \iff \varphi' \text{ is $\calT$-satisfiable } \]
 \end{descriptionlist}
 
 Eager approaches have the following advantages:
@@ -296,7 +296,7 @@ Eager approaches have the following disadvantages:
 
 \begin{description}
     \item[Algorithm] 
-        Given an EUF formula $\varphi$, to determine if it is $\mathcal{T}_\text{EUF}$-satisfiable,
+        Given an EUF formula $\varphi$, to determine if it is $\calT_\text{EUF}$-satisfiable,
         the following steps are taken:
         \begin{enumerate}
             \item Replace functions and predicates with constant equalities.
@@ -350,19 +350,19 @@ On the other hand, the search becomes SAT-driven and not theory-driven.
 
 \begin{description}
     \item[Algorithm] \phantom{}
-        Let $\mathcal{T}$ be a theory.
-        Given a conjunction of $\mathcal{T}$-literals $\varphi = \varphi_1 \land \dots \land \varphi_n$, 
-        to determine its $\mathcal{T}$-satisfiability, the following steps are taken:
+        Let $\calT$ be a theory.
+        Given a conjunction of $\calT$-literals $\varphi = \varphi_1 \land \dots \land \varphi_n$, 
+        to determine its $\calT$-satisfiability, a generic lazy solver does the following:
         \begin{enumerate}
-            \item Each SMT literal $\varphi_i$ is encoded into a SAT literal $l_i$ to form the abstraction $\Phi = \{ l_1, \dots, l_n \} $ of $\varphi$.
-            \item The $\mathcal{T}$-solver sends $\Phi$ to the SAT-solver.
+            \item Each SMT literal $\varphi_i$ is encoded (abstracted) into a SAT literal $l_i$ to form the abstraction $\Phi = \{ l_1, \dots, l_n \} $ of $\varphi$.
+            \item The $\calT$-solver sends $\Phi$ to the SAT-solver.
                 \begin{itemize}
-                    \item If the SAT-solver determines that $\Phi$ is unsatisfiable, then $\varphi$ is $\mathcal{T}$-unsatisfiable.
-                    \item Otherwise, the SAT-solver returns a model (an assignment of the literals, possible partial) $\mathcal{M} = \{ a_1, \dots, a_n \}$.
+                    \item If the SAT-solver determines that $\Phi$ is unsatisfiable, then $\varphi$ is $\calT$-unsatisfiable.
+                    \item Otherwise, the SAT-solver returns a model $\mathcal{M} = \{ a_1, \dots, a_n \}$ (an assignment of the literals, possibly partial).
                 \end{itemize}
-            \item The $\mathcal{T}$-solver determines if $\mathcal{M}$ is $\mathcal{T}$-consistent.
+            \item The $\calT$-solver determines if $\mathcal{M}$ is $\calT$-consistent.
                 \begin{itemize}
-                    \item If it is, then $\varphi$ is $\mathcal{T}$-satisfiable.
+                    \item If it is, then $\varphi$ is $\calT$-satisfiable.
                     \item Otherwise, update $\Phi = \Phi \cup \lnot \mathcal{M}$ and go to Point 2.
                 \end{itemize}
         \end{enumerate}
@@ -384,38 +384,194 @@ On the other hand, the search becomes SAT-driven and not theory-driven.
                     \end{gather*}
                     Therefore, $\Phi = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4 \}$
 
-                \item The $\mathcal{T}$-solver sends $\Phi$ to the SAT-solver.
+                \item The $\calT$-solver sends $\Phi$ to the SAT-solver.
                     Let's say that it return $\mathcal{M} = \{ l_1, \lnot l_2, \lnot l_4 \}$.
 
-                \item The $\mathcal{T}$-solver checks if $\mathcal{M}$ is consistent. Let's say it is not.
+                \item The $\calT$-solver checks if $\mathcal{M}$ is consistent. Let's say it is not.
                     Let $\Phi' = \Phi \cup \lnot \mathcal{M} = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4, (\lnot l_1 \vee l_2 \vee l_4) \}$.
                 
-                \item The $\mathcal{T}$-solver sends $\Phi'$ to the SAT-solver.
+                \item The $\calT$-solver sends $\Phi'$ to the SAT-solver.
                     Let's say that it return $\mathcal{M}' = \{ l_1, l_2, l_3, \lnot l_4 \}$.
 
-                \item The $\mathcal{T}$-solver checks if $\mathcal{M}'$ is consistent. Let's say it is not.
+                \item The $\calT$-solver checks if $\mathcal{M}'$ is consistent. Let's say it is not.
                     Let $\Phi'' = \Phi' \cup \lnot \mathcal{M}' = \{ l_1, (\lnot l_2 \vee l_3), \lnot l_4, (\lnot l_1 \vee l_2 \vee l_4), (\lnot l_1 \vee \lnot l_2 \vee \lnot l_3 \vee l_4) \}$.
                 
-                \item The $\mathcal{T}$-solver sends $\Phi''$ to the SAT-solver and it detects the unsatisfiability.
-                    Therefore, $\varphi$ is $\mathcal{T}$-unsatisfiable.
+                \item The $\calT$-solver sends $\Phi''$ to the SAT-solver and it detects the unsatisfiability.
+                    Therefore, $\varphi$ is $\calT$-unsatisfiable.
             \end{itemize}
         \end{example}
 
     \item[Optimizations] \phantom{}
         \begin{itemize}
-            \item Check $\mathcal{T}$-consistency on partial assignments.
-            \item Given a $\mathcal{T}$-inconsistent assignment $\mu$, 
-                find a smaller $\mathcal{T}$-inconsistent assignment $\eta \subseteq \mu$ and add $\lnot \eta$ to $\Phi$ instead of $\lnot \mu$.
-            \item When reaching $\mathcal{T}$-inconsistency, backjump to a $\mathcal{T}$-consistent point in the computation.
-        \end{itemize}
-
-    \item[CDCL($\mathcal{T}$)] \marginnote{CDCL($\mathcal{T}$)}
-        CDCL for SAT extended with a $\mathcal{T}$-solver.
-        The $\mathcal{T}$-solver does the following:
-        \begin{itemize}
-            \item Checks the $\mathcal{T}$-consistency of a conjunction of literals.
-            \item Possibly performs deduction of unassigned literals.
-            \item Explains $\mathcal{T}$-inconsistent assigments.
-            \item Allows to backtrack.
+            \item Check $\calT$-consistency on partial assignments.
+            \item Given a $\calT$-inconsistent assignment $\mu$, 
+                find a smaller $\calT$-inconsistent assignment $\eta \subseteq \mu$ and add $\lnot \eta$ to $\Phi$ instead of $\lnot \mu$.
+            \item When reaching $\calT$-inconsistency, backjump to a $\calT$-consistent point in the computation.
         \end{itemize}
 \end{description}
+
+
+
+\section{CDCL($\calT$)}
+\marginnote{CDCL($\calT$)}
+
+Lazy solver based on CDCL for SAT extended with a $\calT$-solver.
+The $\calT$-solver does the following:
+\begin{itemize}
+    \item Checks the $\calT$-consistency of a conjunction of literals.
+    \item Performs deduction of unassigned literals.
+    \item Explains $\calT$-inconsistent assigments.
+    \item Allows to backtrack.
+\end{itemize}
+
+\begin{description}
+    \item[State transition] \marginnote{State transition}
+        Transition system to describe the reasoning of SAT or SMT solvers.
+        A transition has form:
+        \[ (\mu \Vert \varphi) \rightarrow (\mu' \Vert \varphi') \]
+        where:
+        \begin{itemize}
+            \item $\varphi$ and $\varphi'$ are $\calT$-formulas.
+            \item $\mu$ and $\mu'$ are (partial) boolean assignments to atoms of $\varphi$ and $\varphi'$, respectively.
+            \item $(\mu \Vert \varphi)$ and $(\mu' \Vert \varphi')$ are states.
+        \end{itemize}
+
+        \begin{description}
+            \item[Transition rule] Determine the possible transitions.
+            
+            \item[Derivation] Sequence of transitions.
+            
+            \item[Initial state] $(\varnothing \Vert \varphi)$.
+            
+            \item[$\calT$-consistency]
+                Given a $\calT$-formula $\varphi$ and a full assignment $\mu$ of $\varphi$,
+                $\varphi$ is $\calT$-consistent ($\mu \models_{\calT} \varphi$)
+                if there is a derivation from $(\varnothing \Vert \varphi)$ to $(\mu \Vert \varphi)$.
+        \end{description}
+
+    \item[$\calT$-propagation] \marginnote{$\calT$-propagation}
+        Deduce the assignment of an unassigned literal $l$ using some knowledge of the theory.
+
+        \begin{description}
+            \item[$\calT$-consequence] \marginnote{$\calT$-consequence}
+                If:
+                \begin{itemize}
+                    \item $\mu \models_\calT l$,
+                    \item $l$ or $\lnot l$ occur in $\varphi$,
+                    \item $l$ and $\lnot l$ do not occur in $\mu$, 
+                \end{itemize}
+                then:
+                \[ (\mu \Vert \varphi) \rightarrow (\mu \cup \{ l \} \Vert \varphi) \]
+        \end{description}
+
+    \begin{example}
+        Given the formula $\varphi$:
+        \[ \big( g(a) = c \big) \land \Big( \big( f(g(a)) \neq f(c) \big) \vee \big( g(a) = d \big) \Big) \land \big( c \neq d \big) \]
+        A possible derivation for some theory $\calT$ (i.e. $\calT$-propagation are decided arbitrarily) is:
+        \begin{enumerate}
+            \item $\varnothing \Vert \varphi$ (initial state).
+            \item $\varnothing \Vert \varphi \rightarrow \{ l_1 \} \Vert \varphi$ (Unit propagation).
+            \item $\{ l_1 \} \Vert \varphi \rightarrow \{ l_1, l_2 \} \Vert \varphi$ ($\calT$-propagation).
+            \item $\{ l_1, l_2 \} \Vert \varphi \rightarrow \{ l_1, l_2, l_3 \} \Vert \varphi$ (Unit propagation).
+            \item $\{ l_1, l_2, l_3 \} \Vert \varphi \rightarrow \{ l_1, l_2, l_3, l_4 \} \Vert \varphi$ ($\calT$-propagation).
+            \item $\{ l_1, l_2, l_3, l_4 \} \Vert \varphi \rightarrow \texttt{fail}$ (Failure).
+        \end{enumerate}
+        As we are at decision level 0 (as no decision literal has been fixed), we can conclude that $\varphi$ is unsatisfiable.
+
+        \begin{remark}
+            Unit and theory propagation are alternated (see algorithm description).
+        \end{remark}
+    \end{example}
+
+    \item[Algorithm]
+        Given a $\calT$-formula $\varphi$ and a (partial) $\calT$-assignment $\mu$ (i.e. initial decisions),
+        CDCL($\calT$) does the following:
+        \begin{algorithm}
+            \caption{CDCL($\calT$)}
+            \begin{lstlisting}[mathescape=true]
+def cdclT($\varphi$, $\mu$):
+    if preprocess($\varphi$, $\mu$) == CONFLICT: return UNSAT
+    $\varphi^p$, $\mu^p$ = SMT_to_SAT($\varphi$), SMT_to_SAT($\mu$)
+    level = 0
+    $l$ = None
+
+    while True:
+        status = propagate($\varphi^p$, $\mu^p$, $l$)
+        if status == SAT: 
+            return SAT_to_SMT($\mu^p$)
+        elif status == UNSAT:
+            $\eta^p$, jump_level = analyzeConflict($\varphi^p$, $\mu^p$)
+            if jump_level < 0: return UNSAT
+            backjump(jump_level, $\varphi^p \land \lnot\eta^p$, $\mu^p$)
+        elif status == UNKNOWN:
+            $l$ = decideNextLiteral($\varphi^p$, $\mu^p$)
+            level += 1
+            \end{lstlisting}
+        \end{algorithm}
+
+        Where:
+        \begin{descriptionlist}
+            \item[\texttt{preprocess}] 
+                Preprocesses $\varphi$ with $\mu$ through operations such as simplifications, $\calT$-specific rewritings, \dots
+            
+            \item[\texttt{SMT\_TO\_SAT}] 
+                Provides the boolean abstraction of an SMT formula.
+            \item[\texttt{SAT\_TO\_SMT}] 
+                Reverses the boolean abstraction of an SMT formula.
+            
+            \item[\texttt{propagate}]
+                Iteratively apply:
+                \begin{itemize}
+                    \item Unit propagation,
+                    \item $\calT$-consistency check,
+                    \item $\calT$-propagation.
+                \end{itemize}
+                Returns \texttt{SAT}, \texttt{UNSAT} or \texttt{UNKNOWN} (when no deductions are possible and there are still free variables).
+
+            \item[\texttt{analyzeConflict}]
+                Performs conflict analysis:
+                \begin{itemize}
+                    \item If the conflict is detected by SAT boolean propagation ($\mu^p \land \varphi^p \models_p \bot$),
+                        a boolean conflict set $\eta^p$ is outputted (as in standard CDCL).
+                    \item If the conflict is detected by $\calT$-propatation ($\mu \land \phi \models_\calT \bot$),
+                        a theory conflict $\eta$ is produced and its boolean abstraction $\eta^p$ is outputted.
+                \end{itemize}
+                Moreover, the earliest decision level at which a variable of $\eta^p$ is unassigned is returned.
+
+                As in standard CDCL, $\lnot \eta^p$ is added to $\varphi^p$ and the algorithm backjumps to a previous decision level (if possible).
+
+            \item[\texttt{decideNextLiteral}]
+                Decides the assignment of an unassigned variable (as in standard CDCL).
+                Theory information might be exploited.
+        \end{descriptionlist}
+
+    \item[Implication graph] \marginnote{Implication graph}
+        As in the standard CDCL algorithm, an implication graph is used to explain conflicts.
+        \begin{descriptionlist}
+            \item[Nodes] Decisions, derived literals or conflicts.
+            \item[Edges] If $v$ allows to unit/theory propagate $w$, then there is an edge $v \rightarrow w$.
+        \end{descriptionlist}
+\end{description} 
+
+\begin{example}
+    Given the $\calT$-formula $\varphi$:
+    \[ \big( h(a) = h(c) \vee p \big) \land \big( a = b \vee \lnot p \vee a = d \big) \land \big( a \neq d \vee a = b \big) \]
+    and an initial decision $(c = b) \in \mu$,
+    CDCL($\calT$) does the following:
+    \begin{enumerate}
+        \item As no propagation is possible, the decision $h(a) \neq h(c)$ is added to $\mu$.
+        \item Unit propagate $p$ due to the clause $\big( h(a) = h(c) \vee p \big)$ and the decision at the previous step.
+        \item $\calT$-propagate $(a \neq b)$ due to the current assigments: $\{ c = b, h(a) \neq h(c) \} \models_\calT a \neq b$.
+        \item Unit propagate $(a = d)$ due to the clause $\big( a = b \vee \lnot p \vee a = d \big)$ and the current knowledge base ($p$ and $a \neq b$).
+        \item There is a conflict between $(a \neq d)$ and $(a = d)$.
+    \end{enumerate}
+
+    By building the conflict graph, one can identify the 1UIP as the decision $h(a) \neq h(c)$.
+    \begin{center}
+        \includegraphics[width=0.35\linewidth]{./img/_conflict_graph_example.pdf}
+    \end{center}
+    A cut in front of the 1UIP that separates decision nodes and the conflict node (as in standard CDCL) is made
+    to obtain the conflict set $\eta = \{ h(a) \neq h(c), c = b \}$.
+    $\big( (h(a) = h(c)) \vee (c \neq b) \big)$ is added as a clause and the algorithm backjumps at the decision level 0.
+\end{example}
+
