@@ -575,3 +575,345 @@ def cdclT($\varphi$, $\mu$):
     $\big( (h(a) = h(c)) \vee (c \neq b) \big)$ is added as a clause and the algorithm backjumps at the decision level 0.
 \end{example}
 
+
+
+\section{Theory solvers}
+
+Decide satisfiability of theory-specific formulas.
+
+\subsection{EUF theory}
+
+\begin{description}
+    \item[Congruence closure] \marginnote{Congruence closure}
+        Given a conjunction of EUF literals $\Phi$,
+        its satisfiability can be decided in polynomial time as follows:
+        \begin{enumerate}
+            \item Add a new variable $c$ and replace each $p(t_1, \dots, t_k)$
+                with $f_p(t_1, \dots, t_k) = c$.
+            \item Partition input literals into the sets of equalities $E$ and disequalities $D$.
+            \item Define $E^*$ as the congruence closure of $E$. 
+                It is the smallest equivalence relation $\equiv_E$ over terms such that:
+                \begin{itemize}
+                    \item $(t_1 = t_2) \in E \Rightarrow (t_1 \equiv_E t_2)$.
+                    \item For each $f(s_1, \dots, s_k)$ and $f(t_1, \dots, t_k)$ occurring in $E$,
+                        if $s_i \equiv_E t_i$ for each $i \in \{ 1, \dots, k \}$, then $f(s_1, \dots, s_k) \equiv_E f(t_1, \dots, t_k)$.
+                \end{itemize}
+            \item $\Phi$ is satisfiable iff $\forall (t_1 \neq t_2) \in D \Rightarrow (t_1 \,\cancel{\equiv}_E\, t_2)$.
+        \end{enumerate}
+
+        \begin{remark}
+            In practice, congruence closure is usually implemented using a DAG to represent terms and union-find for the $E^*$ class.
+        \end{remark}
+\end{description}
+
+
+\subsection{Arithmetic theories}
+
+\begin{description}
+    \item[Linear real arithmetic] 
+        LRA theory has signature $\Sigma_\text{LRA} = (\mathbb{Q}, +, -, *, \leq)$
+        where the multiplication $*$ is only linear.
+        
+        \begin{description}
+            \item[Fourier-Motzkin elimination] \marginnote{Fourier-Motzkin elimination}
+                Given an LRA formula, its satisfiability can be decided as follows:
+                \begin{enumerate}
+                    \item Replace:
+                    \begin{itemize}
+                        \item $(t_1 \neq t_2)$ with $(t_1 < t_2) \vee (t_2 < t_1)$.
+                        \item $(t_1 \leq t_2)$ with $(t_1 < t_2) \vee (t_1 = t_2)$.
+                    \end{itemize}
+                    \item Eliminate equalities and apply the Fourier-Motzkin elimination\footnote{\url{https://en.wikipedia.org/wiki/Fourier\%E2\%80\%93Motzkin_elimination}} 
+                    method on all variables to determine satisfiability.
+                \end{enumerate}
+        
+                \begin{remark}
+                    Not practical on a large number of constraints.
+                    The simplex algorithm is more suited.
+                \end{remark}
+        \end{description}
+
+    \item[Linear integer arithmetic]
+        LIA theory has signature $\Sigma_\text{LRA} = (\mathbb{Z}, +, -, *, \leq)$
+        where the multiplication $*$ is only linear.
+
+        Fourier-Motzkin can be applied to check satisfiability.
+        Simplex and branch \& bound is usually better.
+\end{description}
+
+
+\subsection{Difference logic theory}
+
+Difference logic (DL) atomic formulas have form $(x - y \leq k)$
+where $x$, $y$ are variables and $k$ is a constant.
+
+\begin{remark}
+    Constraints with form $(x - y \bowtie k)$
+    where $\bowtie \,\in \{ =, \neq, <, \geq, > \}$ can be rewritten using $\leq$.
+\end{remark}
+
+\begin{remark}
+    Unary constraints $x \leq k$ can be rewritten as $x - z_0 \leq k$
+    with the assignment $z_0 = 0$.
+\end{remark}
+
+\begin{theorem}
+    By allowing $\neq$ and with domain in $\mathbb{Z}$,
+    deciding satisfiability becomes NP-hard.
+
+    \begin{proof}
+        Any graph $k$-coloring instance can be poly-reduced to a difference logic formula.
+    \end{proof}
+\end{theorem}
+
+\begin{description}
+    \item[Graph consistency] \marginnote{Graph consistency}
+        Given DL literals $\Phi$, it is possible to build a weighted graph $\mathcal{G}_\Phi$ where:
+        \begin{descriptionlist}
+            \item[Nodes] Variables occurring in $\Phi$. 
+            \item[Edges] $x \xrightarrow{k} y$ for each $(x - y \leq k) \in \Phi$.
+        \end{descriptionlist}
+
+        \begin{theorem}
+            $\Phi$ is inconsistent $\iff$ $\mathcal{G}_\Phi$ has a negative cycle 
+            (i.e. cycle whose cost is negative).
+        \end{theorem}
+
+        \begin{remark}
+            A negative cycle acts as an inconsistency explanation (not necessarily minimal).
+        \end{remark}
+
+        \begin{remark}
+            From the consistency graph, if there is a path from $x$ to $y$ with cost $k$,
+            then $(x - y \leq k)$ can be deduced.
+        \end{remark}
+\end{description}
+
+
+
+\section{Combining theories}
+
+Given $\calT_i$-solvers for theories $\calT_1, \dots, \calT_n$,
+a general approach to combine them into a $\bigcup_i^n \calT_i$-solver is the following:
+\begin{enumerate}
+    \item Purify the formula so that each literal belongs to a single theory. New constants can be introduced.
+
+        \begin{description}
+            \item[Interface equalities] Equalities involving shared constants across solvers should be the same for all solvers.
+        \end{description}
+    \item Iteratively run the following:
+    \begin{enumerate}
+        \item Each $\calT_i$-solver checks the satisfiability of $\calT_i$-formulas. If one detects unsatisfiability, the whole formula is unsatisfiable.
+        \item When a $\calT_i$-solver deduces a new literal, it sends it to the other solvers.
+    \end{enumerate}
+\end{enumerate}
+
+\begin{example}
+    Consider the formula:
+    \[ \Big( f\big( f(x) - f(y) \big) = a \Big) \land \Big( f(a) = a+2 \Big) \land \Big( x = y \Big) \]
+    where the theories of EUF and linear arithmetic (LA) are involved.
+
+    To determine satisfiability, the following steps are taken:
+    \begin{enumerate}
+        \item The formula is purified to obtain the literals:
+            \begin{center}
+                \small
+                \begin{tabular}{c|c}
+                    \toprule
+                    \textbf{LA} & \textbf{EUF} \\
+                    \midrule
+                    \makecell{
+                        $e_1 = e_2 - e_3$ \\
+                        $e_4 = 0$ \\
+                        $e_5 = a+2$
+                    } &
+                    \makecell{
+                        $f(e_1) = a$ \\
+                        $e_2 = f(x)$ \\
+                        $e_3 = f(y)$ \\
+                        $f(e_4) = e_5$ \\
+                        $x = y$
+                    } \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+            where $e_1, \dots, e_5$ are new constants.
+
+        \item Both EUF-solver and LA-solver determine \texttt{SAT}.
+            Moreover, the EUF-solver deduces that $\{ x=y, f(x)=e_2, f(y)=e_3 \} \models_{EUF} (e_2 = e_3)$ and sends it to the LA-solver.
+            \begin{center}
+                \small
+                \begin{tabular}{c|c}
+                    \toprule
+                    \textbf{LA} & \textbf{EUF} \\
+                    \midrule
+                    \makecell{
+                        $e_1 = e_2 - e_3$ \\
+                        $e_4 = 0$ \\
+                        $e_5 = a+2$ \\
+                        $\underline{e_2 = e_3}$
+                    } &
+                    \makecell{
+                        $f(e_1) = a$ \\
+                        $e_2 = f(x)$ \\
+                        $e_3 = f(y)$ \\
+                        $f(e_4) = e_5$ \\
+                        $x = y$
+                    } \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+        
+        \item Both EUF-solver and LA-solver determine \texttt{SAT}.
+            Moreover, the LA-solver deduces that $\{ e_2-e_3=e_1, e_4=0, e_2=e_3 \} \models_{LA} (e_1 = e_4)$ and sends it to the EUF-solver.
+            \begin{center}
+                \small
+                \begin{tabular}{c|c}
+                    \toprule
+                    \textbf{LA} & \textbf{EUF} \\
+                    \midrule
+                    \makecell{
+                        $e_1 = e_2 - e_3$ \\
+                        $e_4 = 0$ \\
+                        $e_5 = a+2$ \\
+                        $e_2 = e_3$
+                    } &
+                    \makecell{
+                        $f(e_1) = a$ \\
+                        $e_2 = f(x)$ \\
+                        $e_3 = f(y)$ \\
+                        $f(e_4) = e_5$ \\
+                        $x = y$ \\
+                        $\underline{e_1 = e_4}$
+                    } \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+        
+        \begin{center}
+            $\vdots$
+        \end{center}
+
+        \item The EUF-solver determines \texttt{SAT} but the LA-solver determines \texttt{UNSAT}.
+            Therefore, the formula is unsatisfiable.
+    \end{enumerate}
+\end{example}
+
+
+\subsection{Deterministic Nelson-Oppen}
+\marginnote{Deterministic Nelson-Oppen}
+
+Let $\calT_1$ be a $\Sigma_1$-theory and $\calT_2$ be a $\Sigma_2$-theory. 
+$(\calT_1 \cup \calT_2)$-satisfiability can be checked with the deterministic Nelson-Oppen if $\calT_1$ and $\calT_2$ are:
+\begin{descriptionlist}
+    \item[Signature-disjoint] $\Sigma_1 \cap \Sigma_2 = \varnothing$.
+    \item[Stably-infinite] $\calT_i$ is stably-infinite iff every $\calT_i$-satisfiable formula $\varphi$ has a corresponding 
+        $\calT_i$-model with a universe of infinite cardinality that satisfies it.
+    \item[Convex] For each set of $\calT_i$-literals $S$, it holds that:
+        \[ \big( S \models_{\calT_i} (a_1 = b_1) \vee \dots \vee (a_n = b_n) \big) \Rightarrow \big( S \models_{\calT_i} (a_k = b_k) \big) \text{ for some $k \in \{ 1, \dots, n \}$ } \]
+        \begin{example}
+            $\calT_\mathbb{Z}$ is not convex. Consider the following formula $\varphi$:
+            \[ (1 \leq z) \land (z \leq 2) \land (u = 1) \land (v = 2) \]
+            We have that:
+            \[ \varphi \models_{\calT_\mathbb{Z}} (z = u) \vee (z = v) \]
+            But it is not true that:
+            \[ \varphi \cancel{\models}_{\calT_\mathbb{Z}} z = u \hspace{3em} \varphi \cancel{\models}_{\calT_\mathbb{Z}} z = v \]
+        \end{example}
+\end{descriptionlist}
+
+\begin{description}
+    \item[Algorithm] 
+    Given a $(\calT_1 \cup \calT_2)$-formula $S$,
+    the deterministic Nelson-Oppen algorithm works as follows:
+    \begin{enumerate}
+        \item Purify $S$ into $S_1$ and $S_2$. 
+            Let $E$ be the set of interface equalities between $S_1$ and $S_2$ (i.e. it contains all the equalities that involve shared constants).
+        \item If $S_1 \models_{\calT_1} \bot$ or $S_2 \models_{\calT_2} \bot$, then $S$ is unsatisfiable.
+        \item If $S_1 \models_{\calT_1} (x = y)$ with $(x = y) \in (E \smallsetminus S_2)$, then $S_2 \leftarrow S_2 \cup \{ x = y \}$. Go to Point 2.
+        \item If $S_2 \models_{\calT_2} (x = y)$ with $(x = y) \in (E \smallsetminus S_1)$, then $S_1 \leftarrow S_1 \cup \{ x = y \}$. Go to Point 2.
+        \item $S$ is satisfiable.
+    \end{enumerate}
+\end{description}
+
+
+\subsection{Non-deterministic Nelson-Oppen}
+\marginnote{Non-deterministic Nelson-Oppen}
+
+Extension of the deterministic Nelson-Oppen algorithm to non-convex theories.
+
+Works by doing case splitting on pairs of shared variables and has exponential time complexity.
+
+
+
+\section{SMT extensions}
+
+
+\subsection{Layered solvers}
+\marginnote{Layered solvers}
+
+Stratify the problem into layers of increasing complexity.
+The satisfiability of each layer is determined by a different solver of increasing expressivity and complexity.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{./img/_layered_solvers.pdf}
+    \caption{Example of layered solvers}
+\end{figure}
+
+
+\subsection{Case splitting}
+\marginnote{Case splitting}
+
+Case reasoning on free variables.
+\begin{example}
+    Given the formula:
+    \[ y = \texttt{read}\big( \texttt{write}(A, i, x), j \big) \]
+    A solver can explore the case when $i = j$ and $i \neq j$.
+\end{example}
+
+\begin{description}
+    \item[$\calT$-solver case reasoning] 
+        The $\calT$solver internally detects inconsistencies through case reasoning.
+
+    \item[SAT solver case reasoning] 
+        The $\calT$-solver encodes the case reasoning and sends it to the SAT solver.
+        \begin{example}
+            Given the formula:
+            \[ y = \texttt{read}\big( \texttt{write}(A, i, x), j \big) \]
+            The $\calT$-solver sends to the SAT solver the following:
+            \[
+                \begin{split}
+                    y = \texttt{read}\big( \texttt{write}(A, i, x), j \big) \land (i = j) &\Rightarrow y = x \\
+                    y = \texttt{read}\big( \texttt{write}(A, i, x), j \big) \land (i \neq j) &\Rightarrow y = \texttt{read}(A, j)
+                \end{split}    
+            \]
+        \end{example}
+\end{description}
+
+
+
+\subsection{Optimization modulo theory}
+\marginnote{Optimization modulo theory}
+
+Extension of SMT so that it finds a model that simultaneously satisfies the input formula $\varphi$ and optimizes an objective function $f_\text{obj}$.
+
+$\varphi$ belongs to a theory $\calT = \calT_{\preceq} \cup \calT_1 \cup \dots \cup \calT_n$
+where $\calT_{\preceq}$ contains a predicate $\preceq$ (e.g. $\leq$) representing a total order.
+
+\begin{description}
+    \item[Offline OTM($\mathcal{LRA}$)]
+        Approach that does not require to modify the SMT solver.
+
+        \begin{description}
+            \item[Linear search]
+                Repeatedly solve the problem and, at each iteration, add the constraint $\texttt{cost} < c_i$ where $c_i$ is the cost found at the $i$-th iteration.
+
+            \item[Binary search] 
+                Given the cost domain $[l_i, u_i]$,
+                repeatedly pick a pivot $p_i \in [l_i, u_i]$ and add the constraint $\texttt{cost} < p_i$.
+                If a model is found, recurse in the domain $[l_i, p_i]$, otherwise recurse in $[p_i, u_i]$.
+        \end{description}
+
+    \item[Inline OTM($\mathcal{LRA}$)]
+        SMT solver that integrates an optimization procedure.
+\end{description}
