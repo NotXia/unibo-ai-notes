@@ -49,8 +49,8 @@ if __name__ == "__main__":
                     course_content = notes_metadata[year][semester][course]["content"]
 
                     if (len(course_content) == 1) and (course_content[0]["name"] is None):
-                        readme_f.write(f"- [{course_name}]({course_content[0]['url']})\n")
+                        readme_f.write(f"- [**{course_name}**]({course_content[0]['url']})\n")
                     else:
-                        readme_f.write(f"- {course_name}\n")
+                        readme_f.write(f"- **{course_name}**\n")
                         for content in course_content:
                             readme_f.write(f"   - [{content['name']}]({content['url']})\n")

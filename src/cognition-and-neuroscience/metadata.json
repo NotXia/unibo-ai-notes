@@ -4,8 +4,8 @@
     "semester": 2,
     "pdfs": [
         {
-            "name": "Module 1",
-            "path": "cn.pdf"
+            "name": "CN module 1",
+            "path": "module1/cn1.pdf"
         }
     ]
 }
