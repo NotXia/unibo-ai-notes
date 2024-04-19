@@ -39,8 +39,9 @@ if __name__ == "__main__":
 
     # Appends links to README
     with open(args.readme_path, "a") as readme_f:
+        readme_f.write(f"\n\n## Table of contents\n")
         for year in sorted(notes_metadata.keys()):
-            readme_f.write(f"\n\nYear {year}\n---\n")
+            readme_f.write(f"\n### Year {year}\n")
 
             for semester in sorted(notes_metadata[year].keys()):
                 for course in sorted(notes_metadata[year][semester]):

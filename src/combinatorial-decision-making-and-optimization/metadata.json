@@ -4,11 +4,11 @@
     "semester": 2,
     "pdfs": [
         {
-            "name": "Module 1",
+            "name": "CDMO module 1",
             "path": "module1/cdmo1.pdf"
         },
         {
-            "name": "Module 2",
+            "name": "CDMO module 2",
             "path": "module2/cdmo2.pdf"
         }
     ]

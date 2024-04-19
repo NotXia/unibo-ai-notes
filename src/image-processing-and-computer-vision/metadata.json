@@ -4,11 +4,11 @@
     "semester": 2,
     "pdfs": [
         {
-            "name": "Module 1",
+            "name": "IPCV module 1",
             "path": "module1/ipcv1.pdf"
         },
         {
-            "name": "Module 2",
+            "name": "IPCV module 2",
             "path": "module2/ipcv2.pdf"
         }
     ]
