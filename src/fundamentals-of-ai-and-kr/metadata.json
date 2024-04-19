@@ -1,0 +1,19 @@
+{
+    "name": "Fundamentals of Artificial Intelligence and Knowledge Representation",
+    "year": 1,
+    "semester": 1,
+    "pdfs": [
+        {
+            "name": "Module 1",
+            "path": "module1/faikr1.pdf"
+        },
+        {
+            "name": "Module 2",
+            "path": "module2/faikr2.pdf"
+        },
+        {
+            "name": "Module 3",
+            "path": "module3/faikr3.pdf"
+        }
+    ]
+}

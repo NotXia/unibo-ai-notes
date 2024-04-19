@@ -1,0 +1,15 @@
+{
+    "name": "Combinatorial Decision Making and Optimization",
+    "year": 1,
+    "semester": 2,
+    "pdfs": [
+        {
+            "name": "Module 1",
+            "path": "module1/cdmo1.pdf"
+        },
+        {
+            "name": "Module 2",
+            "path": "module2/cdmo2.pdf"
+        }
+    ]
+}

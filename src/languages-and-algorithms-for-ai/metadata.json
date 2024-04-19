@@ -1,0 +1,15 @@
+{
+    "name": "Languages and Algorithms for Artificial Intelligence",
+    "year": 1,
+    "semester": 3,
+    "pdfs": [
+        {
+            "name": "Module 2",
+            "path": "module2/laai2.pdf"
+        },
+        {
+            "name": "Module 3",
+            "path": "module3/laai3.pdf"
+        }
+    ]
+}

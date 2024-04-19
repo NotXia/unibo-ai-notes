@@ -1,0 +1,15 @@
+{
+    "name": "Image Processing and Computer Vision",
+    "year": 1,
+    "semester": 2,
+    "pdfs": [
+        {
+            "name": "Module 1",
+            "path": "module1/ipcv1.pdf"
+        },
+        {
+            "name": "Module 2",
+            "path": "module2/ipcv2.pdf"
+        }
+    ]
+}

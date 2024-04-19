@@ -1,0 +1,11 @@
+{
+    "name": "Cognition and Neuroscience",
+    "year": 1,
+    "semester": 2,
+    "pdfs": [
+        {
+            "name": "Module 1",
+            "path": "cn.pdf"
+        }
+    ]
+}

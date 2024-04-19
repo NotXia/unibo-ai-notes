@@ -33,12 +33,16 @@ jobs:
       - name: Prepare output directory
         run: |
           mkdir .compiled
-          cp README.md .compiled
           cp LICENSE .compiled
 
       - name: Compile
         run: |
           bash ./compile.sh .compiled .currpdfs
+
+      - name: Generate README
+        run: |
+          cp README.md .compiled/README.md
+          python3 ./utils/update_readme.py --src-path ./src --readme-path .compiled/README.md --gh-link https://github.com/NotXia/unibo-ai-notes/blob/pdfs
 
 
       - name: Move to pdfs branch
