@@ -20,7 +20,7 @@ if __name__ == "__main__":
         if METADATA_FILENAME in files:
             with open(os.path.join(root, METADATA_FILENAME)) as f:
                 metadata = json.load(f)
-                dir_name = pathlib.PurePath(root).name
+                dir_name = os.path.relpath(root, args.src_path)
                 gh_path = os.path.join(args.gh_link, dir_name)
                 
                 if metadata["year"] not in notes_metadata: notes_metadata[metadata["year"]] = {}

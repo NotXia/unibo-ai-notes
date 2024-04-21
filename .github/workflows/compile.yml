@@ -37,7 +37,7 @@ jobs:
 
       - name: Compile
         run: |
-          bash ./compile.sh .compiled .currpdfs
+          bash ./utils/compile.sh src .compiled .currpdfs
 
       - name: Generate README
         run: |

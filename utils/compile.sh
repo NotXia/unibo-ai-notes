@@ -2,8 +2,9 @@
 
 # 
 # Commit based .tex compiling
-# $1 is the output directory.
-# $2 is the directory of the current state of the files.
+# $1 is the source directory.
+# $2 is the output directory.
+# $3 is the directory of the current state of the files.
 # 
 
 if [ $# -eq 0 ]; then
@@ -13,11 +14,11 @@ fi
 
 shopt -s globstar extglob
 
-out_dir=`realpath $1`
-old_out_dir=`realpath $2`
+out_dir=`realpath $2`
+old_out_dir=`realpath $3`
 hash_file="$old_out_dir/.hash"
 new_hash_file="$out_dir/.hash"
-work_dir=`realpath src`
+work_dir=`realpath $1`
 
 mkdir -p $out_dir
 touch $hash_file
