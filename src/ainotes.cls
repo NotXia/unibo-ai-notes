@@ -104,11 +104,11 @@
 }
 
 
-\newcommand{\gitFAIKROne}[0]{   https://github.com/NotXia/unibo-ai-notes/tree/pdfs/fundamentals-of-ai-and-kr/module1            }
-\newcommand{\gitFAIKRTwo}[0]{   https://github.com/NotXia/unibo-ai-notes/tree/pdfs/fundamentals-of-ai-and-kr/module2            }
-\newcommand{\gitFAIKRThree}[0]{ https://github.com/NotXia/unibo-ai-notes/tree/pdfs/fundamentals-of-ai-and-kr/module3            }
-\newcommand{\gitLAAITwo}[0]{    https://github.com/NotXia/unibo-ai-notes/tree/pdfs/languages-and-algorithms-for-ai/module2      }
-\newcommand{\gitMLDM}[0]{       https://github.com/NotXia/unibo-ai-notes/tree/pdfs/machine-learning-and-data-mining             }
-\newcommand{\gitSMM}[0]{        https://github.com/NotXia/unibo-ai-notes/tree/pdfs/statistical-and-mathematical-methods-for-ai  }
+\newcommand{\gitFAIKROne}[0]{   https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/fundamentals-of-ai-and-kr/module1            }
+\newcommand{\gitFAIKRTwo}[0]{   https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/fundamentals-of-ai-and-kr/module2            }
+\newcommand{\gitFAIKRThree}[0]{ https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/fundamentals-of-ai-and-kr/module3            }
+\newcommand{\gitLAAITwo}[0]{    https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/languages-and-algorithms-for-ai/module2      }
+\newcommand{\gitMLDM}[0]{       https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/machine-learning-and-data-mining             }
+\newcommand{\gitSMM}[0]{        https://github.com/NotXia/unibo-ai-notes/tree/pdfs/year1/statistical-and-mathematical-methods-for-ai  }
 
 \newcommand{\eoc}[0]{\begin{flushright}\texttt{\raggedleft\small <end of course>}\end{flushright}}
