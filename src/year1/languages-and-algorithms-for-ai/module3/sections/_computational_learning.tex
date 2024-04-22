@@ -77,7 +77,75 @@
                     The complexity of $\mathcal{A}$ is measured taking into account the number of calls to $EX(c, \mathcal{D})$.
                 \end{remark}
         \end{description}
+
+    \item[Representation class] \marginnote{Representation class}
+        A concept class $\mathcal{C}$ is a representation class if
+        each concept $c \in \mathcal{C}$ can be represented as a binary string of $\texttt{size}(c)$ bits.
+
+        \begin{remark}
+            Let $X^n$ be an instance space (e.g. $\{ 0, 1 \}^n$) and $\mathcal{C}$ be a representation class.
+            If a single learning algorithm $\mathcal{A}$ is designed to work for every $n$ of $X^n$,
+            then its efficient PAC learnability definition is extended to allow 
+            a polynomial in $n$, $\texttt{size}(c)$, $\frac{1}{\varepsilon}$ and $\frac{1}{\delta}$.
+        \end{remark}
 \end{description}
+
+
+
+\section{Boolean functions as representation class}
+
+\subsection{Conjunctions of literals}
+
+Consider the instance space $X^n = \{ 0, 1 \}^n$ where 
+the target concept $c$ is a conjunction of literals on $n$ variables $x_1, \dots, x_n$.
+The training data is in the form $(s, b)$ where $s \in \{ 0, 1 \}^n$ and $b \in \{ 0, 1 \}$ such that
+$(b = 1) \Rightarrow (s \in c)$ and $(b = 0) \Rightarrow (s \notin c$).
+
+A learning algorithm that wants to learn $c$ can proceed as follows:
+\begin{enumerate}
+    \item Start with an initial literal $h$ defined as:
+        \[ (x_1 \land \lnot x_1) \land \dots \land (x_n \land \lnot x_n) \]
+    \item For each training entry $(s, 0)$, ignore it.
+    \item For each training entry $(s, 1)$, update $h$ by removing literals that contradicts $s$.
+        \begin{example}
+            For $n = 3$, assume that the current state $h$ is $x_1 \land x_2 \land \lnot x_2 \land \lnot x_3$.
+            If the algorithm receives $(101, 1)$, it updates $h$ as $x_1 \land \lnot x_2$.
+        \end{example}
+\end{enumerate}
+
+\begin{theorem}
+    The representation class of boolean conjunctions of literals is efficiently PAC learnable.
+\end{theorem}
+
+\begin{remark}
+    Conjunctions of literals are highly incomplete.
+\end{remark}
+
+
+\subsection{3DNF}
+Consider the instance space $X^n = \{ 0, 1 \}^n$ where
+the target concept $c$ is a 3-term disjunctive normal form formula over $n$ variables $x_1, \dots, x_n$.
+
+\begin{remark}
+    3DNF is more expressive than conjunctions of literals but is still not universal.
+\end{remark}
+
+\begin{remark}
+    3DNF is the dual of 3CNF.
+\end{remark}
+
+\begin{theorem}
+    If $\NP \neq \text{\textbf{Randomized}-\P}$, then the representation class of 3DNF is not efficiently PAC learnable.
+
+    \begin{proof}
+        We have to show that there exists a polytime reduction such that:
+        \[ 
+            \underset{\parbox{4.5cm}{\footnotesize Instance of an \NP-complete problem (e.g. graph 3-coloring)}}{\alpha \in \{ 0, 1 \}^*} 
+            \stackrel{f}{\mapsto} 
+            \underset{\text{\footnotesize Training set for 3DNF}}{\mathcal{S}_\alpha } 
+        \]
+    \end{proof}
+\end{theorem}
 
 
 
@@ -121,7 +189,7 @@ In other words, a point is misclassified if it is in $R$ but not in $T$ or vice 
     if $m \geq \frac{4}{\varepsilon}\ln\left( \frac{4}{\delta} \right)$, then:
     \[ 
         \mathcal{P}_{D \sim \mathcal{D}^m}
-            \left[ \text{error}_{\mathcal{D}, T}\Big( \mathcal{A}_\text{BFP}\big(T(D)\big) \Big) < \varepsilon \right]  > 1 - \delta
+            \left[ \text{error}_{\mathcal{D}, T}\Big( \mathcal{A}_\text{BFP}\big(T(D)\big) \Big) \leq \varepsilon \right]  > 1 - \delta
     \]
     where $D \sim \mathcal{D}^m$ is a sample of $m$ data points (i.e. training data)
     and $T(\cdot)$ labels the input data wrt to the target rectangle $T$.
@@ -129,34 +197,70 @@ In other words, a point is misclassified if it is in $R$ but not in $T$ or vice 
     \begin{proof}
         By definition, the error of $\mathcal{A}_\text{BFP}$ is defined as:
         \[ \text{error}_{\mathcal{D}, T}(R) = \mathcal{P}_{x \sim \mathcal{D}} [ x \in (T \smallsetminus R) ] \]
+        where $R$ is the predicted rectangle and $T$ is the target rectangle.
 
-        Consider the space defined by $(T \smallsetminus R)$ divided in four sections $E_1 \cup \dots \cup E_4 = (T \smallsetminus R)$:
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.4\linewidth]{./img/_rectangle_space.pdf}
-        \end{figure}
+        First, we need to prove some auxiliary lemmas:
+        \begin{enumerate}
+            \item 
+                Consider the space defined by $(T \smallsetminus R)$ divided in four sections $E_1 \cup \dots \cup E_4 = (T \smallsetminus R)$:
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.35\linewidth]{./img/_rectangle_space.pdf}
+                \end{figure}
 
-        Consider the probabilistic event "$x \in E_i$".
-        For the training data $x \sim \mathcal{D}$ this holds iff none of those points
-        end up in $E_i$ as, if a training point is in $E_i$, $R$ would be bigger to include it and $E_i$ would be smaller.
+                Consider the probabilistic event "$x \in E_i$".
+                For the training data $x \sim \mathcal{D}$ this holds iff none of those points
+                end up in $E_i$ as, if a training point is in $E_i$, $R$ would be bigger to include it and $E_i$ would be smaller.
 
-        Now consider four other regions $F_1, \dots, F_4$ of the plane related to $E_i$ but defined differently
-        in such a way that $\mathcal{P}_{x \sim D}[x \in F_i] = \frac{\varepsilon}{4}$.
-        This can be achieved by expanding the $E_i$ regions to take some area of the rectangle $R$.
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.4\linewidth]{./img/_rectangle_space2.pdf}
-        \end{figure}
+                Now consider four other regions $F_1, \dots, F_4$ of the plane related to $E_i$ but defined differently
+                in such a way that $\mathcal{P}_{x \sim \mathcal{D}}[x \in F_i] = \frac{\varepsilon}{4}$.
+                This can be achieved by expanding the $E_i$ regions to take some area of the rectangle $R$.
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.35\linewidth]{./img/_rectangle_space2.pdf}
+                \end{figure}
 
-        Then, as $E_i$ are smaller than $F_i$, it holds that:
-        \[ 
-            \begin{split}
-                \mathcal{P}_{x \sim D}[x \in E_i] < \frac{\varepsilon}{4} &\Rightarrow \mathcal{P}_{x \sim D}[x \in (T \smallsetminus R)] < \varepsilon \\
-                & \Rightarrow \text{error}_{\mathcal{D}, T}(R) < \varepsilon
-            \end{split}
-        \]
+                Then, as $E_i$ are smaller than $F_i$, it holds that:
+                \begin{equation} \label{eq:rect_prob_to_error}
+                    \begin{split}
+                        \mathcal{P}_{x \sim \mathcal{D}}[x \in E_i] \leq \frac{\varepsilon}{4} &\Rightarrow 
+                            \mathcal{P}_{x \sim \mathcal{D}}[x \in (T \smallsetminus R)] \leq \varepsilon \\
+                            & \Rightarrow \text{error}_{\mathcal{D}, T}(R) \leq \varepsilon
+                    \end{split}
+                \end{equation}
+
+            \item
+                We want to prove that:
+                \begin{equation} \label{eq:rect_points_to_error}
+                    \begin{aligned}
+                        \forall i: \left( \parbox{2.7cm}{Some red points in the training data is in $F_i$} \right) &\Rightarrow
+                            E_i \subseteq F_i \\
+                            & \Rightarrow \mathcal{P}_{x \sim \mathcal{D}}[x \in E_i] \leq \mathcal{P}_{x \sim \mathcal{D}}[x \in F_i] \\
+                            & \Rightarrow \mathcal{P}_{x \sim \mathcal{D}}[x \in E_i] \leq \frac{\varepsilon}{4}
+                                & \text{\footnotesize Def. of $\mathcal{P}_{x \sim \mathcal{D}}[x \in F_i]$} \\
+                            & \Rightarrow \text{error}_{\mathcal{D}, T}(R) \leq \varepsilon 
+                                & \text{\footnotesize By \Cref{eq:rect_prob_to_error}}
+                    \end{aligned}    
+                \end{equation}
+        \end{enumerate}
         
-        \textit{To be continued\dots}
+        Now, we can prove the theorem:
+        \[
+            \begin{aligned}
+                m \geq \frac{4}{\varepsilon} \ln \left( \frac{4}{\delta} \right) &\Rightarrow
+                    \frac{\varepsilon \cdot m}{4} \geq \ln \left( \frac{4}{\delta} \right) \\
+                    & \Rightarrow \ln(4) + \ln(e^{-\varepsilon / 4})^m \leq \ln(\delta) \\
+                    & \Rightarrow 4 \cdot (e^{-\varepsilon / 4})^m \leq \delta \\
+                    & \Rightarrow 4 \cdot \left( 1 -\frac{\varepsilon}{4} \right)^m \leq \delta 
+                        & \text{\footnotesize $e^x$ Taylor series} \\
+                    & \Rightarrow \mathcal{P} \left[\exists i: \left( \parbox{4.2cm}{None of the points in the training data occur in $F_i$} \right)\right] \leq \delta 
+                        & \parbox{4.1cm}{\raggedleft\footnotesize Since $\mathcal{P}_{x \sim \mathcal{D}}[x \in F_i] = \frac{\varepsilon}{4}$, then $\mathcal{P}_{x \sim \mathcal{D}}[x \notin F_i] = 1-\frac{\varepsilon}{4}$} \\
+                    & \Rightarrow \mathcal{P} \left[\forall i: \left( \parbox{4.2cm}{Some points in the training data occur in $F_i$} \right)\right] > 1 - \delta 
+                        & \text{\footnotesize Invert event} \\
+                    & \Rightarrow \mathcal{P} \left[ \text{error}_{\mathcal{D}, T}(R) \leq \varepsilon \right] > 1 - \delta 
+                        & \text{\footnotesize By \Cref{eq:rect_points_to_error}} 
+            \end{aligned}  
+        \]
     \end{proof}
 \end{theorem}
 
