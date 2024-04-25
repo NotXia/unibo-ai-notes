@@ -1,4 +1,4 @@
-\chapter{Convolutional neural networks}
+\chapter{Computer vision}
 
 
 \section{Convolutions}
@@ -568,3 +568,92 @@ Applications of autoencoders are:
             \caption{Example of anomaly detection}
         \end{figure}
 \end{descriptionlist}
+
+
+
+\section{Segmentation}
+
+\begin{description}
+    \item[Semantic segmentation] \marginnote{Semantic segmentation}
+        Classify the pixels of an image depending on the category it belongs to.
+
+        \begin{remark}
+            Creating a dataset for segmentation is expensive.
+        \end{remark}
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{./img/semantic_segmentation.png}
+    \caption{Example of semantic segmentation}
+\end{figure}
+
+
+\subsection{Convolutionalization}
+\marginnote{Convolutionalization}
+
+Given a pre-trained image classification network,
+it can be adapted into a segmentation network by converting its final dense layers into convolutions
+with kernel size $1 \times 1$ and depth equal to the number of neurons in that layer.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{./img/_convolutionalization.pdf}
+    \caption{Example of convolutionalization}
+\end{figure}
+
+The resulting model has the following behavior:
+\begin{itemize}
+    \item It takes as input an image of arbitrary shape. This is possible as the network is composed of only convolutions (i.e. it can be seen as a single big convolution).
+    \item It outputs a heatmap of activations of the different object classes (i.e. the categories of the pre-trained classification network).
+\end{itemize}
+
+As the output is obtained through a series of convolutions, its shape does not match the input image.
+Therefore, the initial output heatmap needs to be upsampled by using transposed convolutions.
+
+To avoid losing information from previous layers, the original work proposes to use skip connections before upsampling.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{./img/_convolutionalization_skip.pdf}
+    \caption{
+        Examples of upsampling.
+        The first row shows the upsampling process of the output (\texttt{conv7}) without skip connections.
+        The second row shows the upsampling process with a skip connection from the second last pooling layer (\texttt{pool4}):
+        the output (\texttt{conv7}) is partially upsampled to match the shape of the skip connectionm, then upsampling is done on their concatenation.
+        The third row shows the upsampling process with skip connections up to the third last pooling layer (\texttt{pool3}).
+    }
+\end{figure}
+
+
+\subsection{U-net}
+\marginnote{U-net}
+
+Segmentation architecture that does not rely on a pre-trained classification network.
+
+The architecture is composed of two steps:
+\begin{descriptionlist}
+    \item[Downsampling] Using convolutions and max-pooling.
+    \item[Upsampling] Using transposed convolutions and skip connections.
+\end{descriptionlist}
+
+\begin{remark}
+    An interpretation of the two operations is the following:
+    \begin{descriptionlist}
+        \item[Downsampling] Aims to find what the image contains.
+        \item[Upsampling] Aims to find where the found objects are.
+    \end{descriptionlist}
+\end{remark}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{./img/_unet.pdf}
+    \caption{Example of U-net architecture without padding}
+\end{figure}
+
+\begin{remark}
+    In the original work, the architecture is defined using cropping and without padding, making the output shape smaller than the input.
+    Segmentation was therefore done on a cropped portion of the input image.
+
+    Another approach is to use padding to maintain the same shape of the input in the output.
+\end{remark}
