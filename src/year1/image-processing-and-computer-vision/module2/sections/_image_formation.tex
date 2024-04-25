@@ -34,7 +34,7 @@
 The conversion from the camera reference frame to the image reference frame
 is done in two steps:
 \begin{descriptionlist}
-    \item[Discetization] \marginnote{Discetization}
+    \item[Discretization] \marginnote{Discretization}
         Given the sizes (in mm) $\Delta u$ and $\Delta v$ of the pixels,
         it is sufficient to modify the perspective projection to map CRF coordinates into a discrete grid:
         \[ 
@@ -346,7 +346,7 @@ The PPM is based on the pinhole model and is unable to capture distortions that 
             \caption{Example of distortions w.r.t. a perfect rectangle}
         \end{figure}
 
-    \item[Tangental distortion]
+    \item[Tangential distortion]
         Second-order effects caused by misalignment or defects of the lens (i.e. capture distortions that are not considered in radial distortion).
 \end{description}
 
@@ -430,9 +430,14 @@ Therefore, the complete workflow for image formation becomes the following:
         \begin{remark}
             In practice, it is easier to get multiple images of the same pattern.
         \end{remark}
-\end{description}
 
-\begin{description}
+    \item[Algebraic error] \marginnote{Algebraic error}
+        Error minimized to estimate an initial guess for a subsequent refinement step.
+        It should be cheap to compute.
+    
+    \item[Geometric error] \marginnote{Geometric error}
+        Error minimized to match the actual geometrical location of a problem.
+
     \item[Zhang's method] \marginnote{Zhang's method}
         Algorithm to determine the intrinsic and extrinsic parameters of a camera setup given multiple images of a pattern.
 
@@ -477,21 +482,21 @@ Therefore, the complete workflow for image formation becomes the following:
         Due to the choice of the $z$-axis position, the perspective projection matrix and the WRF points can be simplified:
         \[ 
             \begin{split}
-                k \tilde{\vec{m}} &\equiv 
-                k \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} \equiv
-                \matr{P} \tilde{\vec{M}}_W \equiv
+                k \tilde{\vec{m}} &= 
+                k \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} =
+                \matr{P} \tilde{\vec{M}}_W =
                 \begin{bmatrix}
                     p_{1,1} & p_{1,2} & \cancel{p_{1,3}} & p_{1,4} \\
                     p_{2,1} & p_{2,2} & \cancel{p_{2,3}} & p_{2,4} \\
                     p_{3,1} & p_{3,2} & \cancel{p_{3,3}} & p_{3,4}
                 \end{bmatrix}
                 \begin{bmatrix} x \\ y \\ \cancel{0} \\ 1 \end{bmatrix} \\
-                &\equiv \begin{bmatrix}
+                &= \begin{bmatrix}
                     p_{1,1} & p_{1,2} & p_{1,4} \\
                     p_{2,1} & p_{2,2} & p_{2,4} \\
                     p_{3,1} & p_{3,2} & p_{3,4}
                 \end{bmatrix}
-                \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} \equiv
+                \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} =
                 \matr{H}\tilde{\vec{w}}
             \end{split}
         \]
@@ -533,7 +538,7 @@ Therefore, the complete workflow for image formation becomes the following:
                     \includegraphics[width=0.7\linewidth]{./img/_zhang_corner_homography.pdf}
                 \end{center}
 
-                It can be shown that two points lay on the same line if their cross product is $\nullvec$:
+                It can be shown that two vectors have the same direction if their cross product is $\nullvec$:
                 \begin{align*}
                     \tilde{\vec{m}}_{i,j} \equiv \matr{H}_i \tilde{\vec{w}}_j 
                     &\iff
@@ -556,9 +561,9 @@ Therefore, the complete workflow for image formation becomes the following:
                     \\
                     &\iff
                         \underset{\mathbb{R}^{3 \times 9}}{\begin{bmatrix}
-                            \nullvec_{1\times 3} & -\vec{w}_j^T & v_{i,j}\vec{w}_j^T \\
-                            \vec{w}_j^T & \nullvec_{1\times 3} & -u_{i,j} \vec{w}_j^T \\
-                            -v_{i,j} \vec{w}_j^T & u_{i,j} \vec{w}_j^T & \nullvec_{1\times 3}
+                            \nullvec_{1 \times 3} & -\tilde{\vec{w}}_j^T & v_{i,j} \tilde{\vec{w}}_j^T \\
+                            \tilde{\vec{w}}_j^T & \nullvec_{1\times 3} & -u_{i,j} \tilde{\vec{w}}_j^T \\
+                            -v_{i,j} \tilde{\vec{w}}_j^T & u_{i,j} \tilde{\vec{w}}_j^T & \nullvec_{1\times 3}
                         \end{bmatrix}}
                         \underset{\mathbb{R}^{9 \times 1}}{\begin{bmatrix}
                             \vec{h}_{i,1} \\ \vec{h}_{i,2} \\ \vec{h}_{i,3}
@@ -568,8 +573,8 @@ Therefore, the complete workflow for image formation becomes the following:
                     & \text{\parbox[t]{5cm}{$\vec{h}_{*}^T \tilde{\vec{w}}_j = \tilde{\vec{w}}_j^T \vec{h}_{*}$\\and factorization}} \\
                     &\iff
                         \underset{\mathbb{R}^{2 \times 9}}{\begin{bmatrix}
-                            \nullvec_{1\times 3} & -\vec{w}_j^T & v_{i,j}\vec{w}_j^T \\
-                            \vec{w}_j^T & \nullvec_{1\times 3} & -u_{i,j} \vec{w}_j^T \\
+                            \nullvec_{1 \times 3} & -\tilde{\vec{w}}_j^T & v_{i,j} \tilde{\vec{w}}_j^T \\
+                            \tilde{\vec{w}}_j^T & \nullvec_{1\times 3} & -u_{i,j} \tilde{\vec{w}}_j^T \\
                         \end{bmatrix}}
                         \underset{\mathbb{R}^{9 \times 1}}{\begin{bmatrix}
                             \vec{h}_{i,1} \\ \vec{h}_{i,2} \\ \vec{h}_{i,3}
@@ -580,9 +585,263 @@ Therefore, the complete workflow for image formation becomes the following:
                 \end{align*}
         \end{description}
 
-    \item[Homographies refinement]
+        Given $c$ corners, a homogeneous overdetermined linear system of $2c$ equations to estimate the (vectorized) homography $\vec{h}_i$ is defined as follows:
+        \[
+            \underset{\mathbb{R}^{2c \times 9}}{
+                \begin{bmatrix}
+                    \nullvec_{1 \times 3} & -\tilde{\vec{w}}_1^T & v_{i,1} \tilde{\vec{w}}_1^T \\
+                    \tilde{\vec{w}}_1^T & \nullvec_{1 \times 3} & -u_{i,1} \tilde{\vec{w}}_1^T \\
+                    \vdots & \vdots & \vdots \\
+                    \nullvec_{1 \times 3} & -\tilde{\vec{w}}_c^T & v_{i,c} \tilde{\vec{w}}_c^T \\
+                    \tilde{\vec{w}}_c^T & \nullvec_{1 \times 3} & -u_{i,c} \tilde{\vec{w}}_c^T \\
+                \end{bmatrix}
+            }
+            \underset{\mathbb{R}^{9 \times 1}}{
+                \begin{bmatrix}
+                    \vec{h}_{i, 1} \\ \vec{h}_{i, 2} \\ \vec{h}_{i, 3}
+                \end{bmatrix}
+            }
+            =
+            \nullvec_{2c \times 1}
+            \Rightarrow
+            \matr{L}_i \vec{h}_i = \nullvec
+        \]
+        With the constraint $\Vert \vec{h}_i \Vert = 1$ to avoid the trivial solution $\vec{h}_i = \nullvec$.
+
+        The solution $\vec{h}_i^*$ is found by minimizing the norm of $\matr{L}_i \vec{h}_i$:
+        \[
+            \vec{h}_i^* = \arg\min_{\vec{h_i} \in \mathbb{R}^{9}} \Vert \matr{L}_i \vec{h}_i \Vert \text{ subject to } \Vert \vec{h}_i \Vert = 1
+        \]
+        $\vec{h}_i^*$ can be found using the singular value decomposition of $\matr{L}_i = \matr{U}_i \matr{D}_i \matr{V}_i^T$.
+        It can be shown that $\vec{h}_i^* = \vec{v}_9$ where $\vec{v}_9$ is the last column of $\matr{V}_i$, associated with the smallest singular value.
+
+        \begin{remark}
+            This step minimizes an algebraic error.
+        \end{remark}
+
+    \item[Homographies non-linear refinement]
+        The homographies $\matr{H}_i$ estimated at the previous step are obtained using a linear method and need to be refined as, for each image $i$, 
+        the IRF coordinates $\matr{H}_i\vec{w}_j = (\frac{h_{i, 1}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j}, \frac{h_{i, 2}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j})$
+        of the world point $\vec{w}_j$ are still not matching the known IRF coordinates $\vec{m}_{i,j}$ of the $j$-corner in the $i$-image.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/_homography_refinement.pdf}
+        \end{figure}
+
+        Given an initial guess for the homography $\matr{H}_i$, we can refine it through a non-linear minimization problem:
+        \[ \matr{H}_i^* = \arg\min_{\matr{H}_i} \sum_{j=1}^{c} \Vert \vec{m}_{i,j} - \matr{H}_i \vec{w}_j \Vert^2 \]
+
+        This can be solved using an iterative algorithm (e.g. Levenberg-Marquardt algorithm).
+
+        \begin{remark}
+            This step minimizes a geometric error.
+        \end{remark}
+
     \item[Initial intrinsic parameters guess]
+        From the PPM, the following relationship between intrinsic and extrinsic parameters can be established:
+        \[
+            \begin{aligned}
+                \matr{P}_i &\equiv \matr{A}[\matr{R}_i | \vec{t}_i] = \matr{A} \begin{bmatrix} \vec{r}_{i,1} & \vec{r}_{i,2} & \vec{r}_{i,3} & \vec{t}_{i} \end{bmatrix} \\
+                    &\Rightarrow \matr{H}_i = \begin{bmatrix} \vec{h}_{i,1} & \vec{h}_{i,2} & \vec{h}_{i,3} \end{bmatrix} = 
+                        \begin{bmatrix} k\matr{A}\vec{r}_{i,1} & k\matr{A}\vec{r}_{i,2} & k\matr{A}\vec{t}_{i} \end{bmatrix}
+                        & \text{By definition of $\matr{H}_i$} \\
+                    &\Rightarrow (k\vec{r}_{i,1} = \matr{A}^{-1} \vec{h}_{i,1}) \land (k\vec{r}_{i,2} = \matr{A}^{-1}\vec{h}_{i,2})
+            \end{aligned}
+        \]
+        Moreover, as $\matr{R}_i$ is an orthogonal matrix, the following two constraints must hold:
+        \[
+            \begin{split}
+                \langle \vec{r}_{i,1}, \vec{r}_{i,2} \rangle = \nullvec &\Rightarrow 
+                    \langle \matr{A}^{-1} \vec{h}_{i,1}, \matr{A}^{-1} \vec{h}_{i,2} \rangle = \nullvec \\
+                    &\Rightarrow \vec{h}_{i,1}^T (\matr{A}^{-1})^T \matr{A}^{-1} \vec{h}_{i,2} = \nullvec
+            \end{split}
+        \]
+        \[
+            \begin{split}
+                \langle \vec{r}_{i,1}, \vec{r}_{i,1} \rangle = \langle \vec{r}_{i,2}, \vec{r}_{i,2} \rangle &\Rightarrow
+                    \langle \matr{A}^{-1} \vec{h}_{i,1}, \matr{A}^{-1} \vec{h}_{i,1} \rangle = \langle \matr{A}^{-1} \vec{h}_{i,2}, \matr{A}^{-1} \vec{h}_{i,2} \rangle \\
+                    &\Rightarrow \vec{h}_{i,1}^T (\matr{A}^{-1})^T \matr{A}^{-1} \vec{h}_{i,1} = \vec{h}_{i,2}^T (\matr{A}^{-1})^T \matr{A}^{-1} \vec{h}_{i,2}
+            \end{split}
+        \]
+        where $\langle \cdot, \cdot \rangle$ is the dot product.
+        
+        If at least 3 images have been collected, by stacking the two constraints for each image,
+        we obtain a homogeneous system of equations that can be solved with SVD over the unknown $(\matr{A}^{-1})^T \matr{A}^{-1}$.
+
+        Note that $(\matr{A}^{-1})^T \matr{A}^{-1}$ is symmetric, therefore reducing the number of independent parameters to 5 (6 with skew).
+
+        Once $(\matr{A}^{-1})^T \matr{A}^{-1}$ has been estimated, the actual values of $\matr{A}$ can be found by solving a 
+        traditional system of equations using the structure and results in $(\matr{A}^{-1})^T \matr{A}^{-1}$.
+
+        \begin{remark}
+            This step minimizes an algebraic error.
+        \end{remark}
+
     \item[Initial extrinsic parameters guess]
+        For each image, given the estimated intrinsic matrix $\matr{A}$ and the homography $\matr{H}_i$,
+        it holds that:
+        \[
+            \begin{split}
+                \matr{H}_i &= \begin{bmatrix} \vec{h}_{i,1} & \vec{h}_{i,2} & \vec{h}_{i,3} \end{bmatrix} =
+                    \begin{bmatrix} k\matr{A}\vec{r}_{i,1} & k\matr{A}\vec{r}_{i,2} & k\matr{A}\vec{t}_{i} \end{bmatrix} \\
+                    &\Rightarrow \vec{r}_{i,1} = \frac{\matr{A}^{-1} \vec{h}_{i,1}}{k} 
+            \end{split}  
+        \]
+        Then, as $\vec{r}_{i,1}$ is a unit vector, it must be that $k = \Vert \matr{A}^{-1} \vec{h}_{i,1} \Vert$.
+
+        Now, with $k$ estimated, $\vec{r}_{i,2}$ and $\vec{t}_{i}$ can be computed:
+        \[ \vec{r}_{i,2} = \frac{\matr{A}^{-1}\vec{h}_{i,2}}{k} \hspace{3em} \vec{t}_{i} = \frac{\matr{A}^{-1}\vec{h}_{i,3}}{k} \]
+
+        Finally, $\vec{r}_{i,3}$ can be computed as:
+        \[ \vec{r}_{i,3} = \vec{r}_{i,1} \times \vec{r}_{i,2} \]
+        where $\times$ is the cross-product. It holds that:
+        \begin{itemize}
+            \item $\vec{r}_{i,3}$ is orthogonal to $\vec{r}_{i,1}$ and $\vec{r}_{i,2}$.
+            \item $\Vert \vec{r}_{i,3} \Vert = 1$ as the cross-product computes the area of the square defined by $\vec{r}_{i,1}$ and $\vec{r}_{i,2}$ (both unit vectors).
+        \end{itemize}
+
+        Note that the resulting rotation matrix $\matr{R}_i$ is not exactly orthogonal as:
+        \begin{itemize}
+            \item $\vec{r}_{i,1}$ and $\vec{r}_{i,2}$ are not necessarily orthogonal.
+            \item $\vec{r}_{i,2}$ does not necessarily have unit length as $k$ was computed considering $\vec{r}_{i,1}$.
+        \end{itemize}
+        SVD for $\matr{R}_i$ can be used to find the closest orthogonal matrix by substituting the singular value matrix $\matr{D}$ with the identity $\matr{I}$.
+
+        \begin{remark}
+            This step minimizes an algebraic error.
+        \end{remark}
+
     \item[Initial distortion parameters guess]
-    \item[Parameters refinement]
+        The current estimate of the homographies $\matr{H}_i$ project WRF points into ideal (undistorted) IRF coordinates $\vec{m}_\text{undist}$.
+        On the other hand, the coordinates $\vec{m}$ of the corners in the actual image are distorted.
+
+        The original algorithm estimates the parameters of the radial distortion function defined as:
+        \[
+            \begin{bmatrix} x \\ y \end{bmatrix} = L(r) \begin{bmatrix} x_\text{undist} \\ y_\text{undist} \end{bmatrix} =
+                (1 + k_1r^2 + k_2r^4) \begin{bmatrix} x_\text{undist} \\ y_\text{undist} \end{bmatrix}
+        \]
+        where $k_1$ and $k_2$ are parameters.
+
+        \begin{remark}
+            OpenCV uses a different method to estimate:
+            \begin{itemize}
+                \item 3 parameters $k_1$, $k_2$, $k_3$ for radial distortion.
+                \item 2 parameters $p_1$, $p_2$ for tangential distortion.
+            \end{itemize}
+        \end{remark}
+
+        Using the estimated intrinsic matrix $\matr{A}$, it is possible to obtain the CRF coordinates $(x, y)$ from the IRF coordinates $(u, v)$ 
+        of $\vec{m}$ or $\vec{m}_\text{undist}$:
+        \[
+            \begin{bmatrix} ku \\ kv \\ k \end{bmatrix} \equiv \matr{A} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} \,\,\Rightarrow\,\,
+            \begin{bmatrix} ku \\ kv \\ k \end{bmatrix} \equiv \begin{bmatrix} f_u x + u_0 \\ f_v y + v_0 \\ 1 \end{bmatrix} \,\,\Rightarrow\,\,
+            \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} \frac{u-u_0}{f_u} \\ \frac{v-v_0}{f_v} \end{bmatrix}
+        \]
+        Then, the distortion equation can be rewritten in IRF coordinates as:
+        \[
+            \begin{split}
+                \begin{bmatrix} \frac{u-u_0}{f_u} \\ \frac{v-v_0}{f_v} \end{bmatrix} &=
+                    (1 + k_1r^2 + k_2r^4) \begin{bmatrix} \frac{u_\text{undist}-u_0}{f_u} \\ \frac{v_\text{undist}-v_0}{f_v} \end{bmatrix} \\
+                &\Rightarrow \begin{bmatrix} u-u_0 \\ v-v_0 \end{bmatrix} = (1 + k_1r^2 + k_2r^4) \begin{bmatrix} u_\text{undist}-u_0 \\ v_\text{undist}-v_0 \end{bmatrix} \\
+                &\Rightarrow \begin{bmatrix} u-u_0 \\ v-v_0 \end{bmatrix} - \begin{bmatrix} u_\text{undist}-u_0 \\ v_\text{undist}-v_0 \end{bmatrix} = 
+                    (k_1r^2 + k_2r^4) \begin{bmatrix} u_\text{undist}-u_0 \\ v_\text{undist}-v_0 \end{bmatrix} \\
+                &\Rightarrow \begin{bmatrix} u-u_\text{undist} \\ v-v_\text{undist} \end{bmatrix} = 
+                    \begin{bmatrix}
+                        (u_\text{undist} - u_0)r^2 & (u_\text{undist} - u_0)r^4 \\
+                        (v_\text{undist} - v_0)r^2 & (v_\text{undist} - v_0)r^4
+                    \end{bmatrix}
+                    \begin{bmatrix} k_1 \\ k_2 \end{bmatrix}
+            \end{split}
+        \]
+        With $n$ images with $c$ corners each, we obtain $2nc$ equations 
+        to form a system $\vec{d} = \matr{D} \vec{k}$ in 2 unknowns $\vec{k} = \begin{bmatrix} k_1 & k_2\end{bmatrix}^T$.
+        This can be solved in a least squares approach as:
+        \[ \vec{k}^*  = \min_k \Vert \matr{D}\vec{k} - \vec{d} \Vert_2 = \matr{D}^\dagger \vec{d} = (\matr{D}^T\matr{D})^{-1} \matr{D}^T \vec{d} \]
+        where $\matr{D}^\dagger$ is the pseudo-inverse of $\matr{D}$.
+
+        \begin{remark}
+            This step minimizes an algebraic error.
+        \end{remark}
+
+    \item[Parameters non-linear refinement]
+        A final non-linear refinement of all the estimated parameters is done to obtain a solution closer to their physical meaning.
+
+        Assuming i.i.d. noise, this is done through the maximum likelihood estimate (MLE) using the estimated parameters as starting point:
+        \[ 
+            \matr{A}^*, \vec{k}^*, \matr{R}_i^*, \vec{t}_i^* = 
+                \arg\min_{\matr{A}, \vec{k}, \matr{R}_i, \vec{t}_i} \sum_{i=1}^n \sum_{j=1}^c 
+                    \Vert \tilde{\vec{m}}_{i,j} - \hat{\vec{m}}(\matr{A}, \vec{k}, \matr{R}_i, \vec{t}_i, \tilde{\vec{w}}_j) \Vert^2
+        \]
+        where $\tilde{\vec{m}}_{i,j}$ are the known IRF coordinates in projective space of the $j$-th corner in the $i$-th image and
+        $\hat{\vec{m}}(\cdot)$ is the projection from WRF to IRF coordinates using the estimated parameters.
+
+        This can be solved using iterative algorithms.
+
+        \begin{remark}
+            This step minimizes a geometric error.
+        \end{remark}
 \end{description}
+
+
+
+\section{Warping}
+
+\begin{description}
+    \item[Warp] \marginnote{Warp}
+        Transformation of an image on the spatial domain.
+
+        Given an image $I$, warping can be seen as a function $w$ that computes the new coordinates of each pixel:
+        \[ u' = w_u(u, v) \hspace{2em} v' = w_v(u, v) \]
+
+        The transformation can be:
+        \begin{descriptionlist}
+            \item[Rotation] 
+                $\begin{bmatrix} u' \\ v' \end{bmatrix} = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}\begin{bmatrix} u \\ v \end{bmatrix}$
+            \item[Full homography]
+                $k\begin{bmatrix} u' \\ v' \\ 1 \end{bmatrix} = 
+                    \begin{bmatrix} h_{1,1} & h_{1,2} & h_{1,3} \\ h_{2,1} & h_{2,2} & h_{2,3} \\ h_{3,1} & h_{3,2} & h_{3,3} \end{bmatrix}\begin{bmatrix} u \\ v \\ 1 \end{bmatrix}$
+
+        \end{descriptionlist}
+
+        \begin{remark}
+            Differently from warping, filtering transforms the pixel intensities of an image.
+        \end{remark}
+\end{description}
+
+
+\subsection{Forward mapping}
+\marginnote{Forward mapping}
+
+Starting from the input image coordinates, apply the warping function to obtain the output image.
+
+Output coordinates might be continuous and need to be discretized (e.g. truncated or rounded).
+This might give rise to two problems:
+\begin{descriptionlist}
+    \item[Fold] More than one input pixel ends up in the same output pixel.
+    \item[Hole] An output pixel does not have a corresponding input pixel.
+\end{descriptionlist}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{./img/_forward_warping.pdf}
+    \caption{Example of fold and hole}
+\end{figure}
+
+
+\subsection{Backward mapping}
+\marginnote{Backward mapping}
+
+Starting from the output image coordinates, use the inverse of the warping function $w^{-1}$ to find its corresponding input coordinates.
+\[ u = w_u^{-1}(u', v') \hspace{2em} v = w_v^{-1}(u', v') \]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{./img/_backward_warping.pdf}
+\end{figure}
+
+The computed input coordinates might be continuous. Possible discretization strategies are:
+\begin{itemize}
+    \item Truncation.
+    \item Nearest neighbor (i.e. rounding).
+    \item Interpolation between the 4 closest points (e.g. bilinear, bicubic, \dots).
+\end{itemize}
