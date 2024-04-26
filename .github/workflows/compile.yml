@@ -27,7 +27,7 @@ jobs:
       - name: Install LaTeX
         run: |
             sudo apt update
-            sudo apt install -y latexmk texlive texlive-science texlive-latex-extra texlive-bibtex-extra biber
+            sudo apt install -y latexmk texlive texlive-science texlive-latex-extra texlive-fonts-extra texlive-bibtex-extra biber
         
 
       - name: Prepare output directory
