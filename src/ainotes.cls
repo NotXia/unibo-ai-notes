@@ -6,7 +6,7 @@
 
 \usepackage{geometry}
 \usepackage{graphicx, xcolor}
-\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm, upgreek, cancel}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools, bm, upgreek, cancel, bbm}
 \usepackage[bottom]{footmisc}
 \usepackage[pdfusetitle]{hyperref}
 \usepackage[nameinlink]{cleveref}

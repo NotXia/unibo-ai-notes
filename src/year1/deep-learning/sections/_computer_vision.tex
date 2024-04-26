@@ -657,3 +657,210 @@ The architecture is composed of two steps:
 
     Another approach is to use padding to maintain the same shape of the input in the output.
 \end{remark}
+
+
+
+\section{Object detection}
+
+\begin{description}
+    \item[Intersection over union] \marginnote{Intersection over union}
+        Metric used to determine the quality of a bounding box w.r.t. a ground truth:
+        \[ \texttt{IoU}(A, B) = \frac{\vert A \cap B \vert}{\vert A \cup B \vert} \]
+
+    \item[Object detection] \marginnote{Object detection}
+        Find bounding boxes containing a specific object or category.
+
+        There are two main strategies:
+        \begin{description}
+            \item[Region proposal] \marginnote{Region proposal}
+                Object-independent method that uses selective search algorithms to exploit the texture and the structure of the image to find locations of interest.
+
+            \item[Single-shot] \marginnote{Single shot}
+                Fast method oriented towards real-time applications.
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/object_detection.png}
+            \caption{Example of bounding boxes}
+        \end{figure}
+\end{description}
+
+
+\subsection{YOLOv3}
+
+YOLO is a fully convolutional neural network belonging to the family of single-shot methods.
+% Given an image, YOLO downsamples it to obtain a feature map .
+% Each cell of the feature map makes bounding box predictions.
+
+\begin{description}
+    \item[Anchor box] \marginnote{Anchor box}
+        It has been shown that directly predicting the width and height of the bounding boxes leads to unstable gradients during training.
+        A common solution to this problem is to use pre-defined bounding boxes (anchors).
+
+        Anchors are selected using k-means clustering on the bounding boxes of the training set using \texttt{IoU} as metric (i.e. the most common shapes are identified).
+        Then, the network learns to draw bounding boxes by placing and scaling the anchors.
+
+
+    \item[Architecture] \marginnote{YOLO architecture}
+        An input image is progressively downsampled through convolutions by a factor of $2^5$ to obtain a feature map of $S \times S$ cells
+        (e.g. a $416 \times 416$ image is downsampled into a $13 \times 13$ grid).
+
+        Each entry of the feature map has a depth of $(B \times (5+C))$ where:
+        \begin{itemize}
+            \item $B$ is the number of bounding boxes (one per anchor) the cell proposes.
+            \item $C$ is the number of object classes.
+        \end{itemize}
+
+        Therefore, each bounding box prediction has associated $5+C$ attributes:
+        \begin{itemize}
+            \item $t_x$ and $t_y$ describe the center coordinates of the box (relative to the predicting cell).
+            \item $t_w$ and $t_h$ describe the width and height of the box (relative to the anchor).
+            \item $p_o$ is an objectness score that indicates the probability that an object is contained in the predicted bounding box (useful for thresholding).
+            \item $p_1, \dots, p_C$ are the probabilities associated to each class. 
+                Since YOLOv3, the probability of each class is given by a sigmoid instead of passing everything through a softmax.
+                This allows to associate an object with multiple categories.
+        \end{itemize}
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/yolo_architecture.png}
+        \end{figure}
+
+
+    \item[Inference] \marginnote{YOLO inference}
+        \begin{remark}
+            Each cell of the feature map is identified by a set of coordinates relative to the feature map itself 
+            (e.g. the first cell is at coordinate $(0,0)$, the one to its right is at $(0, 1)$).    
+        \end{remark}
+
+        Given a cell of the feature map at coordinates $(c_x, c_y)$, consider its $i$-th bounding box prediction.
+        The bounding box is computed using the following parameters:
+        \begin{itemize}
+            \item The predicted relative position and dimension $\langle t_x, t_y, t_w, t_h \rangle$ of the box.
+            \item The width $p_w$ and height $p_h$ of the anchor associated with the $i$-th prediction of the cell.
+        \end{itemize}
+        Then, the bounding box position and dimension (relative to the feature map) are computed as follows:
+        \[
+            \begin{split}
+                b_x &= c_x + \sigma(t_x) \\
+                b_y &= c_y + \sigma(t_y) \\
+                b_w &= p_w \cdot e^{t_w} \\
+                b_h &= p_h \cdot e^{t_h} \\
+            \end{split}  
+        \]
+        where:
+        \begin{itemize}
+            \item $(b_x, b_y)$ are the coordinates of the center of the box.
+            \item $b_w$ and $b_h$ are the width and height of the box.
+            \item $\sigma$ is the sigmoid function.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/yolo_anchor.png}
+        \end{figure}
+
+
+    \item[Training] \marginnote{YOLO training}
+        During training, for each ground truth bounding box, 
+        only the cell at its center and the anchor with the highest \texttt{IoU} are considered for its prediction.
+        In other words, only that combination of cell and anchor influences the loss function.
+
+        Given a $S \times S$ feature map and $B$ anchors, for each prediction, YOLO uses two losses:
+        \begin{descriptionlist}
+            \item[Localization loss] 
+                Measures the positioning of the bounding boxes:
+                \[ 
+                    \mathcal{L}_\text{loc} = \lambda_\text{coord} \sum_{i=0}^{S \times S} \sum_{j=0}^{B} \mathbbm{1}_{ij}^\text{obj} \Big( 
+                        (x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2 +
+                        (\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2
+                    \Big) 
+                \]
+                where:
+                \begin{itemize}
+                    \item $\mathbbm{1}_{ij}^\text{obj}$ is a delta function that is 1 if the $j$-th anchor of the $i$-th cell is responsible for detecting the object.
+                    \item $(x_i, y_i)$ are the predicted coordinates of the box. $(\hat{x}_i, \hat{y}_i)$ are the ground truth coordinates.
+                    \item $w_i$ and $h_i$ are the predicted width and height of the box. $\hat{w}_i$ and $\hat{h}_i$ are the ground truth dimensions.
+                    \item $\lambda_\text{coord}$ is a hyperparameter (the default is 5).
+                \end{itemize}
+
+            \item[Classification loss] 
+                Considers the objectness score and the predicted classes:
+                \[
+                    \begin{split}
+                        \mathcal{L}_\text{cls} = &\sum_{i=0}^{S \times S} \sum_{j=0}^{B} (\mathbbm{1}_{ij}^\text{obj} + \lambda_\text{no-obj}(1-\mathbbm{1}_{ij}^\text{obj}))(C_{ij} - \hat{C}_{ij})^2 \\
+                            &+ \sum_{i=0}^{S \times S} \sum_{c \in \mathcal{C}} \mathbbm{1}_{i}^\text{obj} (p_i(c) - \hat{p}_i(c))^2
+                    \end{split}
+                \]
+                where:
+                \begin{itemize}
+                    \item $\mathbbm{1}_{ij}^\text{obj}$ is defined as above.
+                    \item $\mathbbm{1}_{i}^\text{obj}$ is 1 if the $i$-th cell is responsible for classifying the object.
+                    \item $C_{ij}$ is the predicted objectness score. $\hat{C}_{ij}$ is the ground truth.
+                    \item $p_i(c)$ is the predicted probability of belonging to class $c$. $\hat{p}_i(c)$ is the ground truth.
+                    \item $\lambda_\text{no-obj}$ is a hyperparameter (the default is 0.5). 
+                        It is useful to down-weight cells that are not responsible for detecting this specific instance.
+                \end{itemize}
+        \end{descriptionlist}
+
+        The final loss is the sum of the two losses:
+        \[\mathcal{L} = \mathcal{L}_\text{loc} + \mathcal{L}_\text{cls} \]
+\end{description}
+
+
+\subsection{Multi-scale processing}
+
+\begin{description}
+    \item[Feature pyramid] \marginnote{Feature pyramid}
+        Techniques to manipulate the input image to detect objects at different scales.
+
+        Possible approaches are:
+        \begin{descriptionlist}
+            \item[Featurized image pyramid] 
+                A pyramid of images at different scales is built. The features at each scale are computed independently (which makes this approach slow).
+
+            \item[Single feature map] 
+                Progressively extract features from a single image and only use features at the highest level.
+
+            \item[Pyramidal feature hierarchy] 
+                Reuse the hierarchical features extracted by a convolutional network and use them as in the featurized image pyramid approach.
+
+            \item[Feature Pyramid Network]
+                Progressively extract higher-level features in a forward pass and then inject them back into the previous pyramid layers.
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.4\linewidth]{./img/pyramid_network.png}
+                    % \caption{Feature pyramid network workflow}
+                \end{figure}
+            \end{descriptionlist}
+
+        \begin{remark}
+            YOLOv3 predicts feature maps at scales 13, 26 and 52 using a feature pyramid network.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/feature_pyramid.png}
+            \caption{Feature pyramid recap}
+        \end{figure}
+\end{description}
+
+
+\subsection{Non-maximum suppression}
+
+\begin{description}
+    \item[Non-maximum suppression] \marginnote{Non-maximum suppression}
+        Method to remove multiple detections of the same object.
+
+        Given the bounding boxes $BB_c$ of a class $c$ and a threshold $t$, NMS does the following:
+        \begin{enumerate}
+            \item Sort $BB_c$ according to the objectness score.
+            \item While $BB_c$ is not empty:
+            \begin{enumerate}
+                \item Pop the first box $p$ from $BB_c$.
+                \item $p$ is considered as a true prediction.
+                \item Remove from $BB_c$ all the boxes $s$ with $\texttt{IoU}(p, s) > t$.
+            \end{enumerate}
+        \end{enumerate}
+\end{description}
