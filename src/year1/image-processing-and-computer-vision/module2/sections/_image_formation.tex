@@ -477,7 +477,7 @@ Therefore, the complete workflow for image formation becomes the following:
         \end{description}
 
     \item[Initial homographies guess]
-        For each image $i$, compute an initial guess of its homography $H_i$.
+        For each image $i$, compute an initial guess of its homography $\matr{H}_i$.
 
         Due to the choice of the $z$-axis position, the perspective projection matrix and the WRF points can be simplified:
         \[ 
@@ -842,6 +842,185 @@ Starting from the output image coordinates, use the inverse of the warping funct
 The computed input coordinates might be continuous. Possible discretization strategies are:
 \begin{itemize}
     \item Truncation.
-    \item Nearest neighbor (i.e. rounding).
-    \item Interpolation between the 4 closest points (e.g. bilinear, bicubic, \dots).
+    \item Nearest neighbor.
+    \item Interpolation between the 4 closest pixels of the continuous point (e.g. bilinear, bicubic, \dots).
 \end{itemize}
+
+
+\begin{description}
+    \item[Bilinear interpolation] \marginnote{Bilinear interpolation}
+        Given a continuous coordinate $(u, v)$ and 
+        its closest four pixels $(u_1, v_1), \dots, (u_4, v_4)$ with intensities denoted for simplicity as $I_i = I(u_i, v_i)$,
+        bilinear interpolation works as follows:
+        \begin{enumerate}
+            \item Compute the offset of $(u,v)$ w.r.t. the top-left pixel:
+                \[ \Delta u = u - u_1 \hspace{2em} \Delta v = v - v_1 \]
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.25\linewidth]{./img/_warping_bilinear1.pdf}
+                \end{figure}
+
+            \item Interpolate a point $(u_a, v_a)$ between $(u_1, v_1)$ and $(u_2, v_2)$ in such a way that it is perpendicular to $(u,v)$.
+                Do the same for a point $(u_b, v_b)$ between $(u_3, v_3)$ and $(u_4, v_4)$.
+                The intensities of the new points are computed by interpolating the intensities of their extrema:
+                \[ I_a = I_1 + (I_2 - I_1) \Delta u \hspace{2em} I_b = I_3 + (I_4 - I_3) \Delta u \]
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.7\linewidth]{./img/_warping_bilinear2.pdf}
+                    \caption{In the figure, it is assumed that $I_1 < I_2$ and $I_3 > I_4$}
+                \end{figure}
+            
+            \item The intensity $I(\Delta u, \Delta v) = I'(u', v')$ in the warped image is obtained by interpolating the intensities of $I_a$ and $I_b$:
+                \[ 
+                    \begin{split}
+                        I'(u', v') &= I_a + (I_b - I_a) \Delta v \\
+                        &= \Big( I_1 + (I_2 - I_1) \Delta u \Big) + \Big( \big( I_3 + (I_4 - I_3) \Delta u \big) - \big( I_1 + (I_2 - I_1) \Delta u \big) \Big) \Delta v \\
+                        &= (1-\Delta u)(1 - \Delta v) I_1 + \Delta u (1-\Delta v) I_2 + (1-\Delta u) \Delta v I_3 + \Delta u \Delta v I_4
+                    \end{split}
+                \]
+        \end{enumerate}
+
+        \begin{remark}[Zoom]
+            Zooming using nearest-neighbor produces sharper edges while bilinear interpolation results in smoother images.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{./img/warp_zoom.png}
+            \end{figure}
+        \end{remark}
+
+        \begin{remark}
+            Nearest-neighbor is suited to preserve transition (e.g. zoom a binary mask while maintaining the 0s and 1s).
+        \end{remark}
+\end{description}
+
+
+\subsection{Undistort warping}
+
+Once a camera has been calibrated, the lens distortion parameters can be used to obtain the undistorted image through backward warping.
+\[
+    \begin{split}
+        w_u &= u_\text{undist} + (k_1 r^2 + k_2 r^4)(u_\text{undist} - u_0) \\
+        w_v &= v_\text{undist} + (k_1 r^2 + k_2 r^4)(v_\text{undist} - v_0) \\
+    \end{split}
+\]
+\[
+    I'(u_\text{undist}, v_\text{undist}) = I\big( w^{-1}_u(u_\text{undist}, v_\text{undist}), w^{-1}_v(u_\text{undist}, v_\text{undist}) \big)
+\]
+
+Undistorted images enjoy some properties:
+\begin{descriptionlist}
+    \item[Planar warping] \marginnote{Planar warping}
+        Any two images without lens distortion of a planar world scene ($z_W=0$) are related by a homography.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/_warp_application1.pdf}
+        \end{figure}
+        Given two images containing the same world point, their image points (in projective space) are respectively given by a homography $\matr{H}_1$ and $\matr{H}_2$ 
+        (note that with $z_w=0$, the PPM is a $3 \times 3$ matrix and therefore a homography):\\[-0.5em]
+        \begin{minipage}{0.5\linewidth}            
+            \[
+                \begin{split}
+                    \tilde{\vec{m}}_1 &= \matr{H}_1 \tilde{\vec{M}}_W \\
+                    \tilde{\vec{m}}_1 &= \matr{H}_1 \matr{H}_2^{-1} \tilde{\vec{m}}_2 \\
+                \end{split}
+            \]
+        \end{minipage}
+        \begin{minipage}{0.5\linewidth}            
+            \[
+                \begin{split}
+                    \tilde{\vec{m}}_2 &= \matr{H}_2 \tilde{\vec{M}}_W \\
+                    \tilde{\vec{m}}_2 &= \matr{H}_2 \matr{H}_1^{-1} \tilde{\vec{m}}_1 \\
+                \end{split}
+            \]
+        \end{minipage}\\[0.5em]
+        Then, $\matr{H}_1 \matr{H}_2^{-1} = \matr{H}_{21} = \matr{H}_{12}^{-1}$ is the homography that relates $\tilde{\vec{m}}_2$ to $\tilde{\vec{m}}_1$
+        and $\matr{H}_2 \matr{H}_1^{-1} = \matr{H}_{12} = \matr{H}_{21}^{-1}$ relates $\tilde{\vec{m}}_1$ to $\tilde{\vec{m}}_2$.
+
+        \begin{remark}
+            Only ground points on the planar section of the image can be correctly warped.
+        \end{remark}
+
+        \begin{example}[Inverse Perspective Mapping]
+            In autonomous driving, it is usually useful to have a bird-eye view of the road.
+
+            In a controlled environment, a calibrated camera can be mounted on a car to take a picture of the road in front of it.
+            Then, a (virtual) image of the road viewed from above is generated.
+            By finding the homography that relates the two images, it is possible to produce a bird-eye view of the road from the camera mounted on the vehicle.
+
+            Note that the homography needs to be computed only once.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/inverse_perspective_mapping.png}
+            \end{figure}
+        \end{example}
+
+    \item[Rotation warping] \marginnote{Rotation warping}
+        Any two images without lens distortion taken by rotating the camera about its optical center are related by a homography.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/_warp_application2.pdf}
+        \end{figure}
+        It is assumed that the first image is taken in such a way that the WRF and CRF are the same (i.e. no extrinsic parameters).
+        Then, a second image is taken by rotating the camera about its optical center.
+        It holds that:\\[-0.5em]
+        \begin{minipage}{0.5\linewidth}            
+            \[
+                \begin{split}
+                    \tilde{\vec{m}}_1 &= \matr{A} [\matr{I} | \nullvec] \tilde{\vec{M}}_W = \matr{A}\tilde{\vec{M}}_W \\
+                    \tilde{\vec{m}}_1 &= \matr{A}\matr{R}^{-1}\matr{A}^{-1} \tilde{\vec{m}}_2 \\
+                \end{split}
+            \]
+        \end{minipage}
+        \begin{minipage}{0.5\linewidth}            
+            \[
+                \begin{split}
+                    \tilde{\vec{m}}_2 &= \matr{A} [\matr{R} | \nullvec] \tilde{\vec{M}}_W = \matr{A}\matr{R}\tilde{\vec{M}}_W \\
+                    \tilde{\vec{m}}_2 &= \matr{A}\matr{R}\matr{A}^{-1} \tilde{\vec{m}}_1 \\
+                \end{split}
+            \]
+        \end{minipage}\\[0.5em]
+        Then, $\matr{A}\matr{R}^{-1}\matr{A}^{-1} = \matr{H}_{21} = \matr{H}_{12}^{-1}$ is the homography that relates $\tilde{\vec{m}}_2$ to $\tilde{\vec{m}}_1$
+        and $\matr{A}\matr{R}\matr{A}^{-1} = \matr{H}_{12} = \matr{H}_{21}^{-1}$ relates $\tilde{\vec{m}}_1$ to $\tilde{\vec{m}}_2$.
+
+        \begin{remark}
+            Any point of the image can be correctly warped.
+        \end{remark}
+
+        \begin{example}[Compensate pitch or yaw]
+            In autonomous driving, cameras should be ideally mounted with the optical axis parallel to the road plane and aligned with the direction of motion.
+            It is usually very difficult to obtain perfect alignment physically 
+            but a calibrated camera can help to compensate pitch (i.e. rotation around the $x$-axis)
+            and yaw (i.e. rotation around the $y$-axis) by estimating the vanishing point of the lane lines.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.85\linewidth]{./img/pitch_yaw_compensation.png}
+            \end{figure}
+
+            It is assumed that the vehicle is driving straight w.r.t. the lines and 
+            that the WRF is attached to the vehicle in such a way that the $z$-axis is pointing in front of the vehicle.
+            It holds that any line parallel to the $z$-axis has direction $\begin{bmatrix} 0 & 0 & 1 \end{bmatrix}^T$
+            and their point at infinity in perspective space is at $\begin{bmatrix} 0 & 0 & 1 & 0 \end{bmatrix}^T$.
+
+            The coordinates of the vanishing point are then obtained as:
+            \[ 
+                \vec{m}_\infty \equiv \matr{A}[\matr{R} | 0] \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix} 
+                    \equiv \matr{A}\vec{r}_3 
+                    \equiv \matr{A} \begin{bmatrix} 0 \\ \sin\beta \\ \cos\beta \end{bmatrix}
+            \]
+            where $\vec{r}_3$ is the third column of the rotation matrix $\matr{R}_\text{pitch} = \begin{bmatrix}
+                1 & 0 & 0 \\ 0 & \cos\beta & \sin\beta \\ 0 & -\sin\beta & \cos\beta
+            \end{bmatrix}$ that applies a rotation of $\beta$ degree around the $x$-axis.
+
+            By computing the point at infinity, it is possible to estimate $\vec{r}_3 = \frac{\matr{A}^{-1} \vec{m}_\infty}{\Vert \matr{A}^{-1} \vec{m}_\infty \Vert_2}$
+            (as $\vec{r}_3$ is a unit vector) and from it we can find the entire rotation matrix $\matr{R}_\text{pitch}$.
+
+            Finally, the homography $\matr{A}\matr{R}_\text{pitch}\matr{A}^{-1}$ relates the pitched image to the ideal image.
+
+            \begin{remark}
+                The same procedure can be done for the yaw.
+            \end{remark}
+        \end{example}
+\end{descriptionlist}
