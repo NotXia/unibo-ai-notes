@@ -6,6 +6,10 @@
         {
             "name": "CN module 1",
             "path": "module1/cn1.pdf"
+        },
+        {
+            "name": "CN module 2",
+            "path": "module2/cn2.pdf"
         }
     ]
 }
