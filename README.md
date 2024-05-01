@@ -18,6 +18,7 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 - [**Statistical and Mathematical Methods for Artificial Intelligence**](https://github.com/NotXia/unibo-ai-notes/blob/pdfs/year1/statistical-and-mathematical-methods-for-ai/smm.pdf)
 - **Cognition and Neuroscience**
    - [CN module 1](https://github.com/NotXia/unibo-ai-notes/blob/pdfs/year1/cognition-and-neuroscience/module1/cn1.pdf)
+   - [CN module 2](https://github.com/NotXia/unibo-ai-notes/blob/pdfs/year1/cognition-and-neuroscience/module2/cn2.pdf)
 - **Combinatorial Decision Making and Optimization**
    - [CDMO module 1](https://github.com/NotXia/unibo-ai-notes/blob/pdfs/year1/combinatorial-decision-making-and-optimization/module1/cdmo1.pdf)
    - [CDMO module 2](https://github.com/NotXia/unibo-ai-notes/blob/pdfs/year1/combinatorial-decision-making-and-optimization/module2/cdmo2.pdf)
