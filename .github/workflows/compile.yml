@@ -54,4 +54,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_NAME: "github-actions[bot]"
           COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
-          MESSAGE: "🤖 Hello human, doing my things ({sha})"
+          MESSAGE: "🤖 Hello human, trying to not break anything ({sha})"
