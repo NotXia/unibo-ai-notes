@@ -247,6 +247,14 @@
             \item Larger batches provide a smoother estimation of the gradient and allow to better exploit parallel hardware (below a certain limit, there is no gain in time).
             \item Smaller batches require more iterations to train but might have a regularization effect for better generalization.
         \end{itemize}
+
+    \item[Gradient computation] \marginnote{Gradient computation}
+        Gradients can be computed:
+        \begin{descriptionlist}
+            \item[Numerically] Slow and approximate but easy to implement.
+            \item[Analytically] Using the chain rule.
+            \item[Automatically] Using automatic differentiation (e.g. backpropagation).
+        \end{descriptionlist}
 \end{description}
 
 
@@ -272,6 +280,185 @@ The prediction is obtained as the index of the maximum score.
     Each row of $\matr{W} \in \mathbb{R}^{c \times i}$ is a class template that is cross-correlated with the image to obtain a score.
 \end{remark}
 
-\marginnote{Affine classifier}
-In practice, a linear classifier is actually an affine classifier parametrized on $\theta = (\matr{W} \in \mathbb{R}^{c \times i}, \vec{b} \in \mathbb{R}^{c})$:
-\[ f(\vec{x}; \theta) = \matr{W}\vec{x} + \vec{b} = \texttt{logits} \]
+\begin{remark}
+    \marginnote{Affine classifier}
+    In practice, a linear classifier is actually an affine classifier parametrized on $\theta = (\matr{W} \in \mathbb{R}^{c \times i}, \vec{b} \in \mathbb{R}^{c})$:
+    \[ f(\vec{x}; \theta) = \matr{W}\vec{x} + \vec{b} = \texttt{logits} \]
+\end{remark}
+
+\begin{remark}
+    Linear classifiers are limited by the expressiveness of the input data as pixels alone do not contain relevant features.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.45\linewidth]{./img/data_representation_linear.png}
+        \caption{
+            \parbox[t]{0.6\linewidth}{
+                Example of non-linearly separable data points that become linearly separable in polar coordinates
+            }
+        }
+    \end{figure}
+\end{remark}
+
+
+
+\section{Bag of visual words}
+
+\begin{description}
+    \item[Codeword] \marginnote{Codeword}
+        Visual feature (e.g. an edge with a particular direction) that appears in an image.
+
+    \item[Bag of visual words (BOVW)] \marginnote{Bag of visual words (BOVW)}
+        Encoding of an image into a histogram of codeword frequencies.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{./img/bovw.png}
+\end{figure}
+
+
+
+\section{Neural networks}
+
+\begin{description}    
+    \item[Shallow neural network] \marginnote{Shallow neural network}
+        Linear transformations with an activation function:
+        \[ 
+            \begin{split}
+                f(\vec{x}, \matr{\theta}) &= \matr{W}_2 \vec{h} + \vec{b}_2  \\
+                &= \matr{W}_2 \phi(\matr{W}_1 \vec{x} + \vec{b}_1) + \vec{b}_2 = \vec{s}
+            \end{split}
+        \]
+        where:
+            \begin{itemize}
+                \item $\matr{\theta} = (W_1 \in \mathbb{R}^{h \times i}, b_1 \in \mathbb{R}^{h}, W_2 \in \mathbb{R}^{c \times h}, b_2 \in \mathbb{R}^{c})$
+                    are the parameters of the linear transformations with an inner representation of size $h$.
+                \item $\phi$ is an activation function.
+                \item $\vec{h}$ and $\vec{s}$ are activations.
+            \end{itemize}
+
+    \item[Activation function] \marginnote{Activation function}
+        Function to introduce non-linearity.
+
+        \begin{remark}
+            Without an activation function, a neural network is equivalent to a plain linear transformation.
+        \end{remark}
+
+        Examples of activation functions are:
+        \begin{descriptionlist}
+            \item[Sigmoid] 
+                Defined as:
+                \[ 
+                    \sigma(a) = \frac{1}{1+\exp(-a)} \hspace{2em}
+                    \frac{\partial \sigma(a)}{\partial a} = \sigma(a) \big( 1-\sigma(a) \big)
+                \]
+                It is subject to the vanishing gradient problem.
+
+            \item[Rectified linear unit (ReLU)] 
+                Defined as:
+                \[ 
+                    \texttt{ReLU}(a) = \max\{ 0, a \} \hspace{2em}
+                    \frac{\partial \texttt{ReLU}(a)}{\partial a} = \begin{cases}
+                        1 & \text{if } a \geq 0\\
+                        0 & \text{otherwise}
+                    \end{cases}
+                \]
+                It is subject to the dead neuron problem for negative inputs.
+
+            \item[Leaky ReLU] 
+                Defined as:
+                \[ 
+                    \texttt{leaky\_ReLU}(a) = \begin{cases}
+                        a & \text{if $a \geq 0$} \\
+                        0.01 & \text{otherwise}
+                    \end{cases} \hspace{2em}
+                    \frac{\partial \texttt{leaky\_ReLU}(a)}{\partial a} = \begin{cases}
+                        1 & \text{if } a \geq 0 \\
+                        0.01 & \text{otherwise}
+                    \end{cases}
+                \]
+        \end{descriptionlist}
+
+        \begin{example}[Linear separability]
+            Linear transformations do not change the linear separability of the data points.
+            A non-linear function can make linear separation possible.
+
+            \begin{figure}[H]
+                \centering
+                \begin{subfigure}{0.55\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/relu_separability_1.png}
+                \end{subfigure}
+
+                \begin{subfigure}{0.55\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/relu_separability_2.png}
+                \end{subfigure}
+            \end{figure}
+        \end{example}
+    
+    \item[Deep neural network] \marginnote{Deep neural network}
+        Multiple layers of linear transformations and activation functions:
+        \[
+            \begin{split}
+                f(\vec{x}, \matr{\theta}) &= \matr{W}_L \vec{h}_{L-1} + \vec{b}_L \\
+                    &= \matr{W}_L \phi_L(\matr{W}_{L-1} \vec{h}_{L-2} + \vec{b}_{L-1}) + \vec{b}_L \\
+                    &= \matr{W}_L \phi_{L}(\matr{W}_{L-1} \phi_{L-1}(\cdots \phi_{1}(\matr{W}_{1} \vec{x} + \vec{b}_{1}) \cdots) + \vec{b}_{L-1}) + \vec{b}_L = \vec{s} \\
+            \end{split}  
+        \]
+
+        \begin{description}
+            \item[Depth] Number of layers.
+            \item[Width] Number of activations at each layer.  
+        \end{description}
+\end{description}
+
+
+
+\section{Convolutional neural networks}
+
+
+\subsection{Image filtering}
+
+Consider the case of vertical edge detection.
+Image filtering can be implemented through:
+\begin{descriptionlist}
+    \item[Fully-connected layer] \marginnote{Image filtering with fully-connected layers}
+        Use an FC layer to transform the image.
+
+        Given an image of size $H \times W$, the layer requires:
+        \begin{itemize}
+            \item $(H \cdot W) \cdot (H \cdot (W-1)) \approx H^2W^2$ parameters.
+            \item $2 (H \cdot W) \cdot (H \cdot (W-1)) \approx 2H^2W^2$ FLOPS (multiplications and additions).
+        \end{itemize}
+
+    \item[Convolution/Correlation] \marginnote{Image filtering with convolutions}
+        Use a convolution (more precisely, a cross-correlation) to transform the image.
+
+        \begin{remark}
+            Convolutions preserve the spatial structure of the image, have shared parameters and extract local features.
+        \end{remark}
+
+        Given an image of size $H \times W$, a convolution requires:
+        \begin{itemize}
+            \item $2$ parameters.
+            \item $3 (H \cdot (W-1)) \approx 3HW$ FLOPS.
+        \end{itemize}
+
+        \begin{description}
+            \item[Convolution matrix] 
+                A convolution can be expressed as a multiplication matrix such that:
+                \begin{itemize}
+                    \item The parameters are shared across rows.
+                    \item The resulting matrix is sparse.
+                    \item It adapts to varying input sizes.
+                    \item It is equivariant to translation (but not w.r.t. rotation and scale).
+                \end{itemize}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.5\linewidth]{./img/convolution_matrix.png}
+                \end{figure}
+        \end{description}
+\end{descriptionlist}
