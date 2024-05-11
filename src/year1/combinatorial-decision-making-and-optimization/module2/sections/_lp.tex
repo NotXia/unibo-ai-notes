@@ -478,3 +478,197 @@ the two-phase method works as follows:
     \item[Phase 2] 
         Solve $\mathcal{P}$ through the simplex algorithm using as initial basis $\calB_{\mathcal{P}'}$.
 \end{descriptionlist}
+
+
+\subsection{Duality}
+
+\begin{description}
+    \item[Dual problem]
+        Given the primal problem $P$ defined as: 
+        \[ P: \max \{\vec{cx}\} \text{ subject to } \matr{A}\vec{x} = \vec{b} \land \vec{x} \geq \nullvec \]
+        with $\vec{b} \in \mathbb{R}^m$, $\vec{x} \in \mathbb{R}^n$, $\matr{A} \in \mathbb{R}^{m \times n}$,
+        its dual problem $\mathcal{D}(P)$ is defined as:
+        \[ \mathcal{D}(P): \min\{\vec{by}\} \text{ subject to } \matr{A}^T\vec{y} \geq \vec{c} \land \vec{y} \geq \nullvec \]
+        where:
+        \begin{itemize}
+            \item $\vec{y} \in \mathbb{R}^m$ has a variable $\vec{y}_i$ for each constraint $\sum_{j=1}^{n} \matr{A}_{i,j} \vec{x}_j = \vec{b}_i$ of $P$,
+            \item $\sum_{i=1}^{m} \matr{A}_{j, i} \vec{y}_i \geq \vec{c}_j$ is a new constraint defined for each variable $\vec{x}_j$ of $P$.
+        \end{itemize} 
+
+        \begin{remark}
+            The constraint $\vec{y} \geq \nullvec$ comes out naturally from the conversion from primal to dual.
+            Therefore, it is not strictly necessary to explicitly put it.
+        \end{remark}
+
+        \begin{example}
+            Given the primal problem:
+            \begin{center}
+                \begin{tabular}{lccccccccccc}
+                    \toprule
+                    $\max$ & $1x_1$ & $+$ & $1x_2$ & $+$ & \color{lightgray}$0x_3$ & $+$ & \color{lightgray}$0x_4$ & $+$ & \color{lightgray}$0x_5$ \\
+                    \midrule
+                    subj. to & $3x_1$ & $+$ & $2x_2$ & $+$ & $1x_3$ & $+$ & \color{lightgray}$0x_4$ & $+$ & \color{lightgray}$0x_5$ & $=$ & 5 \\
+                             & $4x_1$ & $+$ & $5x_2$ & $+$ & \color{lightgray}$0x_3$ & $+$ & $1x_4$ & $+$ & \color{lightgray}$0x_5$ & $=$ & 4 \\
+                             & \color{lightgray}$0x_1$ & $+$ & $1x_2$ & $+$ & \color{lightgray}$0x_3$ & $+$ & \color{lightgray}$0x_4$ & $+$ & $1x_5$ & $=$ & 2 \\
+                    \midrule
+                            & $x_1$ & , & $x_2$ & , & $x_3$ & , & $x_4$ & , & $x_5$ & $\geq$ & 0 \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+
+            Its dual is:
+            \begin{center}
+                \begin{tabular}{lccccccc}
+                    \toprule
+                    $\min$ & $5y_1$ & $+$ & $4y_2$ & $+$ & $2y_3$ \\
+                    \midrule
+                    subj. to & $3y_1$ & $+$ & $4y_2$ & $+$ & \color{lightgray}$0y_3$ & $\geq$ & 1 \\
+                             & $2y_1$ & $+$ & $5y_2$ & $+$ & $1y_3$ & $\geq$ & 1 \\
+                             & $1y_1$ & $+$ & \color{lightgray}$0y_2$ & $+$ & \color{lightgray}$0y_3$ & $\geq$ & 0 \\
+                             & \color{lightgray}$0y_1$ & $+$ & $1y_2$ & $+$ & \color{lightgray}$0y_3$ & $\geq$ & 0 \\
+                             & \color{lightgray}$0y_1$ & $+$ & \color{lightgray}$0y_2$ & $+$ & $1y_3$ & $\geq$ & 0 \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+        \end{example}
+\end{description}
+
+\begin{theorem}
+    For any primal problem $P$, it holds that $\mathcal{D}(\mathcal{D}(P)) = P$.
+\end{theorem}
+
+\begin{theorem}[Weak duality] \marginnote{Weak duality}
+    The cost of any feasible solution of the primal $P$ is less or equal than the cost of any solution of the dual $\mathcal{D}(P)$:
+    \[ \forall \vec{x} \in \mathcal{F}_{P}, \forall \vec{y} \in \mathcal{F}_{\mathcal{D}(P)}: \vec{cx} \leq \vec{by} \]
+
+    In other words, $\vec{by}$ is an upper bound for $P$ and $\vec{cx}$ is a lower bound for $\mathcal{D}(P)$.
+
+    \begin{corollary}
+        If $P$ is unbounded, then $\mathcal{D}(P)$ is unfeasible:
+        \[ \mathcal{F}_{P} \neq \varnothing \land \mathcal{O}_{P} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{\mathcal{D}(P)} = \varnothing \]
+    \end{corollary}
+
+    \begin{corollary}
+        If $\mathcal{D}(P)$ is unbounded, then $P$ is unfeasible:
+        \[ \mathcal{F}_{\mathcal{D}(P)} \neq \varnothing \land \mathcal{O}_{\mathcal{D}(P)} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{P} = \varnothing \]
+    \end{corollary}
+\end{theorem}
+
+\begin{theorem}[Strong duality] \marginnote{Strong duality}
+    If the primal and the dual are feasible, then they have the same optimal values:
+    \[ 
+        \Big( \mathcal{F}_{P} \neq \varnothing \land \mathcal{F}_{\mathcal{D}(P)} \neq \varnothing \Big) \Rightarrow 
+        \Big( \forall \vec{x}^* \in \mathcal{O}_P, \forall \vec{y}^* \in \mathcal{O}_{\mathcal{D}(P)}: \vec{cx}^* = \vec{by}^* \Big)
+    \]
+\end{theorem}
+
+\begin{description}
+    \item[Dual simplex] \marginnote{Dual simplex}
+        Move from optimal basis (which can be unfeasible) to feasible basis, while preserving optimality.
+
+        \begin{remark}
+            The traditional primal simplex moves from feasible to optimal basis, while preserving feasibility.
+        \end{remark}
+
+    \item[Properties]
+        \phantom{}
+        \begin{itemize}
+            \item Duality makes the time complexity of finding a feasible or optimal solution the same.
+            \item The dual allows to prove the unfeasibility of the primal.
+            \item Primal and dual provide a bounding of the objective function.
+        \end{itemize}
+\end{description}
+
+
+\subsection{Sensitive analysis}
+\marginnote{Sensitive analysis}
+
+Study how the optimal solution of a problem $P$ is affected if $P$ is perturbed.
+
+Given a problem $P$ with optimal solution $\vec{x}^*$, a perturbed problem $\bar{P}$ can be obtained by altering:
+\begin{descriptionlist}
+    \item[Known terms] 
+        Change of form: 
+        \[ \vec{b} \leadsto \bar{\vec{b}} = \vec{b} + \Delta \vec{b} \]
+        This can affect the feasibility and optimality of $\vec{x}^*$.
+
+        \begin{remark}
+            Changing the known terms of $P$ changes the objective function of $\mathcal{D}(P)$.
+        \end{remark}
+
+    \item[Objective function coefficients] 
+        Change of form: 
+        \[ \vec{c} \leadsto \bar{\vec{c}} = \vec{c} + \Delta \vec{c} \]
+        This can affect the optimality of $\vec{x}^*$.
+    
+    \item[Constraint coefficients] 
+        Change of form: 
+        \[ \matr{A} \leadsto \bar{\matr{A}} = \matr{A} + \Delta \matr{A} \]
+        \begin{itemize}
+            \item If the change involves a variable $\vec{x}^*_j = 0$, then feasibility is not changed but optimality can be affected.
+            \item If the change involves a variable $\vec{x}^*_j \neq 0$, the problem needs to be re-solved.
+        \end{itemize}
+\end{descriptionlist}
+
+
+
+\section{(Mixed) integer linear programming}
+
+\begin{description}
+    \item[Integer linear programming (ILP)] \marginnote{Integer linear programming (ILP)}
+        Linear programming problem where variables are all integers:
+        \[ 
+            \begin{split}
+                \max \sum_{j=1}^{n} c_j x_j \text{ subject to } &\sum_{j=1}^{n} a_{i,j} x_j = b_i \,\,\text{ for } 1 \leq i \leq m \,\,\land \\
+                    & x_j \geq 0 \land x_j \in \mathbb{Z} \,\,\text{ for } 1 \leq j \leq n
+            \end{split}
+        \]
+
+    \item[Mixed-integer linear programming (MILP)] \marginnote{Mixed-integer programming (MILP)}
+        Linear programming problem with $n$ variables where $k < n$ variables are integers.
+\end{description}
+
+\begin{theorem}
+    Finding a feasible solution of a mixed-integer linear programming problem is NP-complete.
+
+    \begin{proof}
+        \phantom{}
+        \begin{descriptionlist}
+            \item[MILP in NP)] 
+                A certificate contains an assignment of the variables. It is sufficient to check if all constraints are satisfied.
+                Both steps are polynomial.
+            \item[MILP is NP-hard)] 
+                Any SAT problem can be poly-reduced to MILP.
+        \end{descriptionlist}
+    \end{proof}
+\end{theorem}
+
+\begin{remark}
+    Due to its NP-completeness, MILP problems can be solved by:
+    \begin{descriptionlist}
+        \item[Exact algorithms] Guarantee optimal solution with exponential time complexity.
+        \item[Approximate algorithms] Guarantee polynomial time complexity but might provide sub-optimal solutions with an approximation factor $\rho$.
+        \item[Heuristic algorithms] Empirically find a good solution in a reasonable time (no theoretical guarantees).
+    \end{descriptionlist}
+\end{remark}
+
+
+\subsection{Linear relaxation}
+\marginnote{Linear relaxation}
+
+Given a MILP problem $P$, its linear relaxation $\mathcal{L}(P)$ removes the constraints $x_j \in \mathbb{Z}$.
+However, solving $\mathcal{L}(P)$ as an LP problem and rounding the solution does not guarantee feasibility or optimality.
+
+\begin{theorem}
+    It holds that $\mathcal{F}_{\mathcal{L}(P)} = \varnothing \Rightarrow \mathcal{F}_P = \varnothing$.
+
+    Therefore, the linear relaxation of a MILP problem can be used to verify unsatisfiability.
+\end{theorem}
+
+\begin{remark}
+    If $\mathcal{F}_{\mathcal{L}(P)}$ is unbounded, then $P$ can either be bounded, unbounded or unsatisfiable.
+\end{remark}
+
+
+
+\subsection{Branch and bound}
