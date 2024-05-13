@@ -430,7 +430,7 @@ Image filtering can be implemented through:
         Given an image of size $H \times W$, the layer requires:
         \begin{itemize}
             \item $(H \cdot W) \cdot (H \cdot (W-1)) \approx H^2W^2$ parameters.
-            \item $2 (H \cdot W) \cdot (H \cdot (W-1)) \approx 2H^2W^2$ FLOPS (multiplications and additions).
+            \item $2 (H \cdot W) \cdot (H \cdot (W-1)) \approx 2H^2W^2$ FLOPs (multiplications and additions).
         \end{itemize}
 
     \item[Convolution/Correlation] \marginnote{Image filtering with convolutions}
@@ -443,7 +443,7 @@ Image filtering can be implemented through:
         Given an image of size $H \times W$, a convolution requires:
         \begin{itemize}
             \item $2$ parameters.
-            \item $3 (H \cdot (W-1)) \approx 3HW$ FLOPS.
+            \item $3 (H \cdot (W-1)) \approx 3HW$ FLOPs.
         \end{itemize}
 
         \begin{description}
@@ -458,7 +458,249 @@ Image filtering can be implemented through:
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\linewidth]{./img/convolution_matrix.png}
+                    \includegraphics[width=0.45\linewidth]{./img/convolution_matrix.png}
+                    \caption{Multiplication matrix of a $1 \times 2$ convolution}
                 \end{figure}
         \end{description}
 \end{descriptionlist}
+
+
+\subsection{Convolutional layer}
+
+\begin{description}
+    \item[Multi-channel convolution] \marginnote{Multi-channel convolution}
+        On inputs with multiple channels (i.e. 3D inputs), different 2D convolutions are applied across the different channels.
+
+        Given a $C_\text{in} \times H_\text{in} \times W_\text{in}$ image $I$, a convolution kernel $K$ will have shape $C_\text{in} \times H_K \times W_K$
+        and the output activation at each pixel is computed as:
+        \[ 
+            [K * I](j, i) = 
+                \sum_{n=1}^{C_\text{in}} 
+                \sum_{m = -\lfloor \frac{H_K}{2} \rfloor}^{\lfloor \frac{H_K}{2} \rfloor} 
+                \sum_{l = -\lfloor \frac{W_K}{2} \rfloor}^{\lfloor \frac{W_K}{2} \rfloor} 
+                    K_n(m, l) I_n(j-m, i-l) + b
+        \]
+        where $b$ is a bias term associated with the filter.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.2\linewidth]{./img/2d_convolution.png}
+        \end{figure}
+
+    \item[2D convolutional layer] \marginnote{2D convolutional layer}
+        Given a $C_\text{in} \times H_\text{in} \times W_\text{in}$ image $I$ and a desired number of channels $C_\text{out}$ in the output activation,
+        multiple different convolution kernels $K^{(i)}$ are applied and their results are stacked:
+        \[
+            [K * I]_k(j, i) = \sum_{n=1}^{C_\text{in}} \sum_{m} \sum_{l} K_n^{(k)}(m, l) I_n(j-m, i-l) + b^{(k)} \,\,\text{ for $k=1, \dots, C_\text{out}$} 
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{./img/2d_convolution_multi_out.png}
+        \end{figure}
+
+        \begin{remark}
+            Only applying convolutions results in a linear transformation of the input. Therefore, an activation function is applied after convolving.
+        \end{remark}
+
+    \item[Padding] 
+        \phantom{}
+        \begin{description}
+            \item[No padding] \marginnote{No padding}
+                Convolutions are only applied at pixels on which they do not overflow.
+
+                Given a $H_\text{in} \times W_\text{in}$ image and a $H_K \times W_K$ kernel,
+                the output shape is:
+                \[ H_\text{out} = H_\text{in} - H_K + 1 \hspace{2em} W_\text{out} = W_\text{in} - W_K + 1 \]
+
+                \begin{remark}
+                    This type of padding is referred to as \texttt{valid}.
+                \end{remark}
+
+            \item[Zero padding] \marginnote{Zero padding}
+                Zeros are added around the image.
+
+                Given a $H_\text{in} \times W_\text{in}$ image and a $H_K \times W_K$ kernel,
+                the padding is usually $P=\frac{H_K-1}{2}$ (for odd square kernels) and the output shape is:
+                \[ H_\text{out} = H_\text{in} - H_K + 1 + 2P \hspace{2em} W_\text{out} = W_\text{in} - W_K + 1 + 2P \]
+
+                \begin{remark}
+                    This type of padding is referred to as \texttt{same}.
+                \end{remark}
+        \end{description}
+
+        
+    \item[Stride] \marginnote{Stride}
+        Amount of pixels the convolution kernel is slid after each application. This is useful for downsampling the image.
+
+        Given a $H_\text{in} \times W_\text{in}$ image and a $H_K \times W_K$ kernel,
+        the output with stride $S$ and padding $P$ has shape:
+        \[ 
+            H_\text{out} = \left\lfloor \frac{H_\text{in} - H_K + 2P}{2} \right\rfloor + 1
+            \hspace{2em} 
+            W_\text{out} = \left\lfloor \frac{W_\text{in} - W_K + 2P}{2} \right\rfloor + 1
+        \]
+        
+    
+    \item[Receptive field] \marginnote{Receptive field}
+        Number of pixels in the input image that affects a hidden unit.
+
+        Given a $H_K \times W_K$ kernel, without stride, the receptive field of a neuron at the $L$-th layer is:
+        \[ r_L = \big( 1 + L \cdot (H_K - 1) \big) \cdot \big( 1 + L \cdot (W_K - 1) \big) \]
+
+        If each layer has a stride $S_l$, then the receptive field of the $L$-th activation is:
+        \[ 
+            r_L = \left( 1 + \sum_{l=1}^{L} \left( (H_K - 1) \prod_{i=1}^{l-1}S_i \right) \right) \cdot 
+                \left( 1 + \sum_{l=1}^{L} \left( (W_K - 1) \prod_{i=1}^{l-1}S_i \right) \right)
+        \]
+
+        \begin{remark}
+            Without stride, the receptive field grows linearly with the number of layers.
+            With the same stride ($> 1$) across all the layers, the growth becomes exponential as $\prod_{i=1}^{l-1}S_i = S^{l-1}$.
+        \end{remark}
+
+    \item[Computational cost] \marginnote{Computational cost}
+        \phantom{}
+        \begin{description}
+            \item[Parameters] 
+                Given a $C_\text{in} \times H_\text{in} \times W_\text{in}$ image, a kernel $H_K \times W_K$ and a desired number of output channels $C_\text{out}$,
+                the corresponding convolutional layer has the following number of parameters:
+                \[ C_\text{out} ( C_\text{in} H_K W_K + 1 ) \]
+
+            \item[Floating-point operations] 
+                Given a $C_\text{in} \times H_\text{in} \times W_\text{in}$ input image, a kernel $H_K \times W_K$ and 
+                the corresponding output image of size $C_\text{out} \times H_\text{out} \times W_\text{out}$,
+                the number of FLOPs (multiplications and additions) is:
+                \[ 2 (C_\text{out} H_\text{out} W_\text{out}) (C_\text{in} H_K W_K) \]
+
+            \item[Multiply-accumulate operations] 
+                A MAC operation implemented in hardware allows to perform a multiplication and an addition in a single clock cycle.
+                Therefore, the number of MACs is:
+                \[ \cancel{2} (C_\text{out} H_\text{out} W_\text{out}) (C_\text{in} H_K W_K) \]
+        \end{description}
+    
+    \item[Other convolutional layers]
+        \phantom{}
+        \begin{description}
+            \item[1D convolutional layer] \marginnote{1D convolutional layer}
+                Suitable for time series.
+                \[
+                    [K * S]_k(i) = \sum_{n=1}^{C_\text{in}} \sum_{l} K_n^{(k)}(l) S_n(i-l) + b^{(k)}
+                \]
+
+            \item[3D convolutional layer] \marginnote{3D convolutional layer}
+                Suitable for videos.
+                \[
+                    [K * V]_k(h, j, i) = \sum_{n=1}^{C_\text{in}} \sum_{p} \sum_{m} \sum_{l} K_n^{(k)}(p, m, l) V_n(h-p, j-m, i-l) + b^{(k)}
+                \]
+        \end{description}
+\end{description}
+
+
+\subsection{Pooling layer}
+\marginnote{Pooling layer}
+
+Kernel that aggregates several values through a fixed function into one output.
+Each input channel is processed independently (i.e. $C_\text{in} = C_\text{out}$).
+
+\begin{remark}
+    Traditionally, pooling layers were used for downsampling. Therefore, the stride is usually $> 1$.
+\end{remark}
+
+\begin{description}
+    \item[Max pooling] \marginnote{Max pooling}
+        Select the maximum within the kernel.
+
+        \begin{remark}
+            Max pooling is invariant to small (depending on the receptive field, it can also be big w.r.t the input image) spatial translations.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    Mean pooling can be represented through normal convolutions.
+\end{remark}
+
+
+\subsection{Batch normalization layer}
+\marginnote{Batch normalization layer}
+
+Normalize the output of a layer during training in such a way that it has zero mean and unit variance.
+
+\begin{description}
+    \item[Training]
+        During training, normalization is done on the current batch.
+        Given the $B$ activations of a batch $\{ \vec{a}^{(i)} \in \mathbb{R}^{D} \mid i = 1, \dots, B \}$, 
+        mean and variance are computed as:
+        \[ 
+            \vec{\mu}_j = \frac{1}{B} \sum_{i=1}^{B} \vec{a}_j^{(i)} 
+            \hspace{1.5em} 
+            \vec{v}_j = \frac{1}{B} \sum_{i=1}^{B} \left( \vec{a}_j^{(i)} - \vec{\mu}_j \right)^2 
+            \hspace{2em}
+            \text{ for $j = 1, \dots, D$} 
+        \]
+
+        Then, the normalized activation is computed as:
+        \[ \hat{\vec{a}}_j^{(i)} = \frac{\vec{a}_j^{(i)} - \vec{\mu}_j}{\sqrt{\vec{v}_j + \varepsilon}} \hspace{2em} \text{ for $j = 1, \dots, D$} \]
+        where $\varepsilon$ is a small constant.
+
+        To introduce some flexibility, the final activation $\vec{s}^{(i)}$ is learned as:
+        \[ \vec{s}_j^{(i)} = \vec{\gamma}_j \hat{\vec{a}}_j^{(i)} + \vec{\beta}_j \hspace{2em} \text{ for $j = 1, \dots, D$} \]
+        where $\vec{\gamma}_j$ and $\vec{\beta}_j$ are parameters.
+
+        To estimate the mean and variance of the entire dataset to use during inference, their running averages are also computed.
+        At the $t$-th step, the running averages of mean and variance are computed as:
+        \[ 
+            \vec{\mu}_j^{(t)} = (1-\beta) \vec{\mu}_j^{(t-1)} + \beta \vec{\mu}_j 
+            \hspace{1.5em} 
+            \vec{v}_j^{(t)} = (1-\beta) \vec{v}_j^{(t-1)} + \beta \vec{v}_j 
+            \hspace{2em} \text{ for $j = 1, \dots, D$} 
+        \]
+        where $\beta$ is the momentum (usually $\beta = 0.1$).
+
+        \begin{remark}
+            All training steps of batch normalization are differentiable and can be integrated into gradient descent.
+            If normalization is done outside gradient descent, the optimization process might undo it.
+        \end{remark}
+
+        \begin{remark}
+            For convolutional layers, mean and variance are computed along the spatial dimension (i.e. pixels in the same output channel are normalized in the same way).
+        \end{remark}
+
+
+    \item[Inference] 
+        During inference, the final running averages of mean $\vec{\mu}$ and variance $\vec{v}$ are used to normalize the activations (i.e. they are considered constants).
+        Given the learned parameters $\vec{\gamma}$ and $\vec{\beta}$, an activation is normalized as follows:
+        \[  
+            \begin{split}
+                \vec{s}_j^{(i)} &= \vec{\gamma}_j \frac{\vec{a}_j^{(i)} - \vec{\mu}_j}{\sqrt{\vec{v}_j + \varepsilon}} + \vec{\beta}_j \\
+                &= \left( \frac{\vec{\gamma}_j}{\sqrt{\vec{v}_j + \varepsilon}} \right) \vec{a}_j^{(i)} + 
+                    \left( \vec{\beta}_j - \frac{\vec{\gamma}_j \vec{\mu}_j}{\sqrt{\vec{v}_j + \varepsilon}} \right)
+            \end{split}
+            \hspace{2em} \text{ for $j = 1, \dots, D$} 
+        \]
+        
+        \begin{remark}
+            Normalization during inference can be seen as a linear transformation. Therefore, it can be merged with the previous layer.
+        \end{remark}
+
+
+    \item[Properties]
+        The advantages of batch normalization are:
+        \begin{itemize}
+            \item It allows to use a higher learning rate and makes initialization less important.
+            \item Training becomes non-deterministic, introducing some regularization.
+            \item During inference, there is no overhead as it can be merged with the previous layer.
+        \end{itemize}
+        The disadvantages are:
+        \begin{itemize}
+            \item It is not clear why it works.
+            \item Training and inference work differently.
+            \item It does not scale with batches that are too small.
+        \end{itemize}
+
+        \begin{remark}[Internal covariate shift]
+            A possible motivation for batch normalization is that each layer of a neural network expects an input distribution that changes at each training iteration.
+            On the other hand, the distribution of the input itself depends on the previous layer and it also changes at each iteration.
+            Therefore, each layer is disrupted by the update of the previous one. Batch normalization aims to minimize this by maintaining a fixed distribution.
+        \end{remark}
+\end{description}
