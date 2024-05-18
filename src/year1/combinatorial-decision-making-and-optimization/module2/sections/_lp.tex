@@ -484,7 +484,7 @@ the two-phase method works as follows:
 
 \begin{description}
     \item[Dual problem]
-        Given the primal problem $P$ defined as: 
+        Given the primal problem $\mathcal{P}$ defined as: 
         \[ P: \max \{\vec{cx}\} \text{ subject to } \matr{A}\vec{x} = \vec{b} \land \vec{x} \geq \nullvec \]
         with $\vec{b} \in \mathbb{R}^m$, $\vec{x} \in \mathbb{R}^n$, $\matr{A} \in \mathbb{R}^{m \times n}$,
         its dual problem $\mathcal{D}(P)$ is defined as:
@@ -534,31 +534,31 @@ the two-phase method works as follows:
 \end{description}
 
 \begin{theorem}
-    For any primal problem $P$, it holds that $\mathcal{D}(\mathcal{D}(P)) = P$.
+    For any primal problem $\mathcal{P}$, it holds that $\mathcal{D}(\mathcal{D}(\mathcal{P})) = \mathcal{P}$.
 \end{theorem}
 
 \begin{theorem}[Weak duality] \marginnote{Weak duality}
-    The cost of any feasible solution of the primal $P$ is less or equal than the cost of any solution of the dual $\mathcal{D}(P)$:
-    \[ \forall \vec{x} \in \mathcal{F}_{P}, \forall \vec{y} \in \mathcal{F}_{\mathcal{D}(P)}: \vec{cx} \leq \vec{by} \]
+    The cost of any feasible solution of the primal $\mathcal{P}$ is less or equal than the cost of any solution of the dual $\mathcal{D}(\mathcal{P})$:
+    \[ \forall \vec{x} \in \mathcal{F}_{\mathcal{P}}, \forall \vec{y} \in \mathcal{F}_{\mathcal{D}(\mathcal{P})}: \vec{cx} \leq \vec{by} \]
 
-    In other words, $\vec{by}$ is an upper bound for $P$ and $\vec{cx}$ is a lower bound for $\mathcal{D}(P)$.
+    In other words, $\vec{by}$ is an upper bound for $\mathcal{P}$ and $\vec{cx}$ is a lower bound for $\mathcal{D}(P)$.
 
     \begin{corollary}
-        If $P$ is unbounded, then $\mathcal{D}(P)$ is unfeasible:
-        \[ \mathcal{F}_{P} \neq \varnothing \land \mathcal{O}_{P} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{\mathcal{D}(P)} = \varnothing \]
+        If $\mathcal{\mathcal{P}}$ is unbounded, then $\mathcal{D}(\mathcal{P})$ is unfeasible:
+        \[ \mathcal{F}_{\mathcal{P}} \neq \varnothing \land \mathcal{O}_{\mathcal{P}} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{\mathcal{D}(\mathcal{P})} = \varnothing \]
     \end{corollary}
 
     \begin{corollary}
-        If $\mathcal{D}(P)$ is unbounded, then $P$ is unfeasible:
-        \[ \mathcal{F}_{\mathcal{D}(P)} \neq \varnothing \land \mathcal{O}_{\mathcal{D}(P)} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{P} = \varnothing \]
+        If $\mathcal{D}(\mathcal{P})$ is unbounded, then $\mathcal{P}$ is unfeasible:
+        \[ \mathcal{F}_{\mathcal{D}(\mathcal{P})} \neq \varnothing \land \mathcal{O}_{\mathcal{D}(\mathcal{P})} = \varnothing \,\,\Rightarrow\,\, \mathcal{F}_{\mathcal{P}} = \varnothing \]
     \end{corollary}
 \end{theorem}
 
 \begin{theorem}[Strong duality] \marginnote{Strong duality}
     If the primal and the dual are feasible, then they have the same optimal values:
     \[ 
-        \Big( \mathcal{F}_{P} \neq \varnothing \land \mathcal{F}_{\mathcal{D}(P)} \neq \varnothing \Big) \Rightarrow 
-        \Big( \forall \vec{x}^* \in \mathcal{O}_P, \forall \vec{y}^* \in \mathcal{O}_{\mathcal{D}(P)}: \vec{cx}^* = \vec{by}^* \Big)
+        \Big( \mathcal{F}_{\mathcal{P}} \neq \varnothing \land \mathcal{F}_{\mathcal{D}(\mathcal{P})} \neq \varnothing \Big) \Rightarrow 
+        \Big( \forall \vec{x}^* \in \mathcal{O}_\mathcal{P}, \forall \vec{y}^* \in \mathcal{O}_{\mathcal{D}(\mathcal{P})}: \vec{cx}^* = \vec{by}^* \Big)
     \]
 \end{theorem}
 
@@ -583,9 +583,9 @@ the two-phase method works as follows:
 \subsection{Sensitive analysis}
 \marginnote{Sensitive analysis}
 
-Study how the optimal solution of a problem $P$ is affected if $P$ is perturbed.
+Study how the optimal solution of a problem $\mathcal{P}$ is affected if $\mathcal{P}$ is perturbed.
 
-Given a problem $P$ with optimal solution $\vec{x}^*$, a perturbed problem $\bar{P}$ can be obtained by altering:
+Given a problem $\mathcal{P}$ with optimal solution $\vec{x}^*$, a perturbed problem $\bar{\mathcal{P}}$ can be obtained by altering:
 \begin{descriptionlist}
     \item[Known terms] 
         Change of form: 
@@ -593,7 +593,7 @@ Given a problem $P$ with optimal solution $\vec{x}^*$, a perturbed problem $\bar
         This can affect the feasibility and optimality of $\vec{x}^*$.
 
         \begin{remark}
-            Changing the known terms of $P$ changes the objective function of $\mathcal{D}(P)$.
+            Changing the known terms of $\mathcal{P}$ changes the objective function of $\mathcal{D}(\mathcal{P})$.
         \end{remark}
 
     \item[Objective function coefficients] 
@@ -656,19 +656,428 @@ Given a problem $P$ with optimal solution $\vec{x}^*$, a perturbed problem $\bar
 \subsection{Linear relaxation}
 \marginnote{Linear relaxation}
 
-Given a MILP problem $P$, its linear relaxation $\mathcal{L}(P)$ removes the constraints $x_j \in \mathbb{Z}$.
-However, solving $\mathcal{L}(P)$ as an LP problem and rounding the solution does not guarantee feasibility or optimality.
+Given a MILP problem $\mathcal{P}$, its linear relaxation $\mathcal{L}(\mathcal{P})$ removes the constraints $x_j \in \mathbb{Z}$.
+However, solving $\mathcal{L}(\mathcal{P})$ as an LP problem and rounding the solution does not guarantee feasibility or optimality.
 
 \begin{theorem}
-    It holds that $\mathcal{F}_{\mathcal{L}(P)} = \varnothing \Rightarrow \mathcal{F}_P = \varnothing$.
+    It holds that $\mathcal{F}_{\mathcal{L}(\mathcal{P})} = \varnothing \Rightarrow \mathcal{F}_\mathcal{P} = \varnothing$.
 
     Therefore, the linear relaxation of a MILP problem can be used to verify unsatisfiability.
 \end{theorem}
 
 \begin{remark}
-    If $\mathcal{F}_{\mathcal{L}(P)}$ is unbounded, then $P$ can either be bounded, unbounded or unsatisfiable.
+    If $\mathcal{F}_{\mathcal{L}(\mathcal{P})}$ is unbounded, then $\mathcal{P}$ can either be bounded, unbounded or unsatisfiable.
 \end{remark}
 
 
 
-\subsection{Branch and bound}
+\subsection{Branch-and-bound}
+\marginnote{Branch-and-bound}
+
+Given an ILP problem $\mathcal{P}$, the branch-and-bound algorithm solves it with a divide et impera approach.
+
+The algorithm does the following:
+\begin{enumerate}
+    \item Set the current best optimal value $z^* = -\infty$ and put $\mathcal{P}$ as the root of a search tree.
+    \item Solve $\mathcal{P}_0 = \mathcal{L}(\mathcal{P})$ to obtain a solution $\{ x_1 = \beta_1, \dots, x_n = \beta_n \}$.
+    \item If each $\beta_i$ is an integer, the solution is optimal and terminate.
+    \item Pick a variable $x_k$ such that its assignment $\beta_k \notin \mathbb{Z}$ and branch the problem:
+        \[
+            \begin{cases}
+                \mathcal{P}_1 = \mathcal{P}_0 \cup \{ x_k \leq \lfloor \beta_k \rfloor \} \\
+                \mathcal{P}_2 = \mathcal{P}_0 \cup \{ x_k \geq \lceil \beta_k \rceil \}
+            \end{cases}
+        \]
+    \item Add $\mathcal{P}_1$ and $\mathcal{P}_2$ as children of $\mathcal{P}$ in the search tree.
+        Solve the linear relaxations $\mathcal{L}(\mathcal{P}_1)$ and $ \mathcal{L}(\mathcal{P}_2)$:
+        \begin{itemize}
+            \item If $\mathcal{L}(\mathcal{P}_k)$ has an integral solution, it is optimal for the subproblem.
+                The best optimal value $z^*$ is updated if the current objective value $z_k$ is higher.
+
+                In the search tree, $\mathcal{P}_k$ becomes a leaf.
+            
+            \item If $\mathcal{L}(\mathcal{P}_k)$ does not have an integral solution, continue branching as in Point 4.
+                If this is not possible, $\mathcal{P}_k$ becomes a leaf in the search tree.
+        \end{itemize}
+\end{enumerate}
+
+\begin{description}
+    \item[Fathomed node] Leaf of the search tree.
+    \item[Incumbent solution] Leaf whose solution is optimal.  
+\end{description}
+
+\begin{example}[Bakery problem]
+    Consider the problem $\mathcal{P}$:
+    \begin{center}
+        \begin{tabular}{lccccc}
+            $\max$ & $400B$ & $+$ & $450C$ \\
+            subj. to & $250B$ & $+$ & $200C$ & $\leq$ & $4000$ \\
+                     & $2B$ & & & $\leq$ & 6 \\
+                     & $75B$ & $+$ & $150C$ & $\leq$ & $2000$ \\
+                     & $100B$ & $+$ & $150C$ & $\leq$ & $500$ \\
+                     & & & $75C$ & $\leq$ & $500$ \\
+                     & $B$ & , & $C$ & $\in$ & $\{ 1, 2, \dots, 100\}$ \\
+        \end{tabular}
+    \end{center}
+
+    \begin{enumerate}
+        \item The solution of $\mathcal{P}_0 = \mathcal{L}(\mathcal{P})$ is $\{ B = 3, C = \frac{4}{3} \}$.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.55\linewidth]{./img/bakery_1.png}
+            \end{figure}
+
+        \item We have to branch on the variable $C$:
+            \[  
+                \begin{cases}
+                    \mathcal{P}_1 = \mathcal{P}_0 \cup \{ C \leq \lfloor \frac{4}{3} \rfloor \} = \mathcal{P}_0 \cup \{ C \leq 1 \} \\
+                    \mathcal{P}_2 = \mathcal{P}_0 \cup \{ C \geq \lceil \frac{4}{3} \rceil \} = \mathcal{P}_0 \cup \{ C \geq 2 \}
+                \end{cases}    
+            \]
+            \begin{figure}[H]
+                \centering
+                \begin{subfigure}{0.2\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/bakery_tree2.png}
+                \end{subfigure}
+                \begin{subfigure}{0.55\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/bakery_2.png}
+                \end{subfigure}
+            \end{figure}
+        
+        \item The solution of $\mathcal{L}(\mathcal{P}_1)$ is $\{ B=3, C=1 \}$ and has objective value $z_1 = 1650$. 
+            As it is integral, the current best solution is updated to $z^* = 1650$ and no further branching is needed.
+
+        \item The solution of $\mathcal{L}(\mathcal{P}_2)$ is $\{ B=2, C=2 \}$ and has objective value $z_2 = 1700$. 
+            As it is integral, the current best solution is updated to $z^* = 1700$ and no further branching is needed.
+            \begin{figure}[H]
+                \centering
+                \begin{subfigure}{0.35\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/bakery_tree3.png}
+                \end{subfigure}
+                \begin{subfigure}{0.55\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/bakery_3.png}
+                \end{subfigure}
+            \end{figure}
+
+        \item The leaf containing $\mathcal{P}_2$ is optimal.
+    \end{enumerate}
+\end{example}
+
+
+Possible techniques to improve branch-and-bound are:
+\begin{descriptionlist}
+    \item[Presolve] \marginnote{Presolve}
+        Reformulate the problem $\mathcal{P}$ before solving it to reduce 
+        the size of $\mathcal{F}_{\mathcal{L}(\mathcal{P})}$ (without altering $\mathcal{F}_{\mathcal{P}}$).
+        \begin{descriptionlist}
+            \item[Bounds tightening] \marginnote{Bounds tightening}
+                Infer stronger constraints.
+                \begin{example}
+                    $\{ x_1 + x_2 \geq 20, x_1 \leq 10 \} \,\,\models\,\, x_2 \geq 10$.
+                \end{example}
+
+            \item[Problem reduction] \marginnote{Problem reduction}
+                Infer the assignment to variables.
+                \begin{example}
+                    $\{ x_1 + x_2 \geq 0.8 \} \,\,\models\,\, x_1 = x_2 = 0$.
+                \end{example}
+        \end{descriptionlist}
+
+    \item[Cutting planes] \marginnote{Cutting planes}
+        Add constraints to reduce the space of non-integral solutions ($\mathcal{F}_{\mathcal{L}(\mathcal{P})} \smallsetminus \mathcal{F}_{\mathcal{P}}$).
+
+        Given a MILP problem $\mathcal{P}$, a cut is an inequality:
+        \[ 
+            \begin{aligned}
+                \vec{px} \leq \vec{q} \text{ such that }
+                    &\forall \vec{y} \in \mathcal{F}_\mathcal{P}: \vec{py} \leq \vec{p} \,\,\land\,\, &\text{\small(feasible solutions inside the cut)}\\
+                    &\forall \vec{z} \in \mathcal{O}_{\mathcal{L}(\mathcal{P})}: \vec{pz} > \vec{q} &\text{\small(non-integral solutions outside the cut)}
+            \end{aligned}
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.39\linewidth]{./img/cutting_planes.png}
+        \end{figure}
+
+        \begin{theorem}
+            There always exists a (possibly non-unique) cut separating the optimal solution in 
+            $\mathcal{F}_{\mathcal{L}(\mathcal{P})} \smallsetminus \mathcal{F}_{\mathcal{P}}$ from 
+            $\mathcal{F}_{\mathcal{P}}$.
+        \end{theorem}
+
+        \begin{remark}
+            The cut can be done when branching or as a standalone operation (branch-and-cut).
+        \end{remark}
+
+        \begin{description}
+            \item[Gomory's cut] \marginnote{Gomory's cut}
+                Consider the optimal solution of $\mathcal{L}(\mathcal{P})$ 
+                with basis $\calB^* = \{ x_{i_1}, \dots, x_{i_m} \}$ and non-basic variables $\calN^* = \{ x_{i_{m+1}}, \dots, x_{i_n} \}$.
+                The cut aims to separate a non-integral vertex of the polytope and all the other feasible integer points.
+
+                % \begin{remark}
+                %     As $x_{i_{m+1}}^* = 0, \dots, x_{i_n}^* = 0$, basic variables can be rewritten as:
+                %     \[ \forall k \in \{ 1, \dots, m \}: x_{i_k} = \beta_k + \sum_{j=1}^{n-m} \alpha_{k,j} x_{i_{m+j}} \]
+                % \end{remark}
+                
+                If there is a $k$ such that $x_{i_k} = \beta_k \notin \mathbb{Z}$, 
+                then $\vec{x}^* \in \mathcal{F}_{\mathcal{L}(\mathcal{P})} \smallsetminus \mathcal{F}_{\mathcal{P}}$
+                and it can separated from the optimal solution in $\mathcal{F}_{\mathcal{P}}$.
+                $x_{i_k}$ can be written in basic form as:
+                \[ 
+                    \begin{split}
+                        x_{i_k} &= \beta_k + \sum_{j=1}^{n-m} \alpha_{k,j} x_{i_{m+j}} \\
+                        % \iff 
+                        % \underbrace{ \beta_k + \sum_{j=1}^{n-m} \lfloor \alpha_{k,j} \rfloor x_{i_{m+j}} - \lfloor \beta_k \rfloor }_{\mathclap{\text{Integer part}}} &= 
+                        % \underbrace{ \beta_k - \lfloor \beta_k \rfloor - \sum_{j=1}^{n-m} (\alpha_{k,j} - \lfloor \alpha_{k,j} \rfloor) x_{i_{m+j}} }_{\mathclap{\text{Fractional part}}}
+                        % = (\beta_k - \lfloor \beta_k \rfloor) + \sum_{j=1}^{n-m} \lfloor -\alpha_{k,j} \rfloor x_{i_{m+j}} \\
+                    \end{split}
+                \]
+
+                The cut has form:
+                \[ 
+                    \begin{gathered}
+                        \sum_{j=1}^{n-m} (-\alpha_{k,j} - \lfloor -\alpha_{k,j} \rfloor) x_{i_{m+j}} \geq (\beta_k - \lfloor \beta_k \rfloor) \\
+                        \iff -(\beta_k - \lfloor \beta_k \rfloor) + \sum_{j=1}^{n-m} (-\alpha_{k,j} - \lfloor -\alpha_{k,j} \rfloor) x_{i_{m+j}} \geq 0 \\
+                    \end{gathered}
+                \]
+                % where:
+                % \begin{itemize}
+                %     \item $f_k = \beta_k - \lfloor \beta_k \rfloor$ is the mantissa of $\beta_k$.
+                %     \item $f_{k,j} = -\alpha_{k,j} - \lfloor -\alpha_{k,j} \rfloor$ is the mantissa of $-\alpha_{k,j}$.
+                % \end{itemize}
+
+                The problem is then extended with the cut as:
+                \[ 
+                    \mathcal{L}(\mathcal{P}) \cup \left\{ y_k = -(\beta_k - \lfloor \beta_k \rfloor) + \sum_{j=1}^{n-m} (-\alpha_{k,j} - \lfloor -\alpha_{k,j} \rfloor) x_{i_{m+j}} 
+                    \land y_k \geq 0 \right\} 
+                \]
+                where $y_k$ is a new slack variable.
+                The old optimal solution for the updated problem is unfeasible but the dual is feasible.
+
+            \item[Bender's decomposition] \marginnote{Bender's decomposition}
+                Consider a problem with $m$ inequalities and $n$ variables.
+                Variables can be partitioned into $\vec{x} \in \mathbb{R}^n$ and $\vec{y} \in \mathbb{R}^{n-p}$ for $p = 1, \dots, n$.
+                The problem can be rewritten as:
+                \begin{center}
+                    \begin{tabular}{lccccc}
+                        $\min_{\vec{x}, \vec{y}}$ & $\vec{c}^T\vec{x}$ & $+$ & $\vec{d}^T\vec{y}$ \\
+                        subj. to & $\matr{A}\vec{x}$ & $+$ & $\matr{B}\vec{y}$ & $\geq$ & $\vec{b}$ \\
+                                 & $\vec{x} \geq \nullvec$ & $,$ & $\vec{y} \in \mathcal{Y}$
+                    \end{tabular}
+                \end{center}
+                where $\mathcal{Y} \subseteq \mathbb{R}^{n-p}$ is the feasible set of $\vec{y}$.
+                
+                For any $\bar{\vec{y}} \in \mathcal{Y}$, the residual problem is defined as:
+                \begin{center}
+                    \begin{tabular}{lccccc}
+                        $\min_{\vec{x}}$ & $\vec{c}^T\vec{x}$ & $+$ & $\vec{d}^T\bar{\vec{y}}$ \\
+                        subj. to & $\matr{A}\vec{x}$ & $\geq$ & $\vec{b} - \matr{B}\bar{\vec{y}}$ & $,$ & $\vec{x} \geq \nullvec$ \\
+                    \end{tabular}
+                \end{center}
+                
+                The dual of the residual problem is:
+                \begin{center}
+                    \begin{tabular}{lccccc}
+                        $\max_{\vec{u}}$ & $(\vec{b} - \matr{B}\bar{\vec{y}})^T \vec{u}$ & $+$ & $\overbrace{\vec{d}^T\bar{\vec{y}}}^{\mathclap{\text{Constant}}}$ \\
+                        subj. to & $\matr{A}^T\vec{u} \leq \vec{c}$ & $,$ & $\vec{u} \geq \nullvec$ \\
+                    \end{tabular}
+                \end{center}
+
+                Therefore, the original problem (master problem) becomes a min-max problem:
+                \[ 
+                    \min_{\vec{y} \in \mathcal{Y}} \left[ 
+                        \vec{d}^T\vec{y} + \max_{\vec{u} \geq \nullvec} \left\{ (\vec{b} - \matr{B}\bar{\vec{y}})^T \vec{u} \mid \matr{A}^T\vec{u} \leq \vec{c} \right\}
+                    \right] 
+                \]
+
+                Fixed an initial $\vec{y}$, the method does the following:
+                \begin{enumerate}
+                    \item Initialize an empty set of cuts $\mathcal{C}$.
+                    \item Solve the linear relaxation of the $\max$ sub-problem (dual of residual):
+                        \begin{itemize}
+                            \item If it is unbounded, the residual problem is unfeasible. Add a cut in $\mathcal{C}$ to exclude $\vec{y}$.
+                            \item If it is unfeasible, the residual problem is unbounded or unfeasible. Terminate.
+                            \item If $\bar{\vec{u}}$ is optimal, it is optimal for the residual problem too.
+                                Add the cut $\vec{c}^T\vec{x} + \cancel{\vec{d}^T\vec{y}} \geq (\vec{b} - \matr{B}\vec{y})^T \bar{\vec{u}} + \cancel{\vec{d}^T\vec{y}}$ 
+                                (by weak duality) to $\mathcal{C}$.
+                        \end{itemize}
+                    \item Solve the updated master problem to get a new solution $\bar{\vec{y}}$.
+                    \item If the new bounds gap is lower than a threshold, stop and solve the residual problem for $\bar{\vec{x}}$.
+                        Otherwise, go to Point 2 with the new $\bar{\vec{y}}$.
+                \end{enumerate}
+        \end{description}
+
+    \item[Heuristics] \marginnote{Heuristics}
+        Empirical methods to guide the search.
+        \begin{itemize}
+            \item Local search
+            \item Meta-heuristics
+            \item MILP heuristics:
+            \begin{itemize}
+                \item Rounding.
+                \item Diving: rounding and re-solving by fixing some variables.
+                \item Sub-MIPing: solving by fixing some variables.
+            \end{itemize}
+        \end{itemize}
+
+    \item[Warm start] \marginnote{Warm start}
+        Search from a given initial total or partial assignment of the variables.
+\end{descriptionlist}
+
+
+
+\section{Non-linear programming}
+\marginnote{Non-linear programming}
+
+Problem of form:
+\[
+    \begin{split}
+        \min f(\vec{x}) \,\,\text{ subj. to }\,\,& g_i(\vec{x}) \leq \nullvec \hspace{1em}\text{ for $j=1, \dots, m$} \\
+                                    & h_j(\vec{x}) = \nullvec \hspace{1em}\text{ for $j=1, \dots, p$}
+    \end{split}
+\]
+where $\vec{x} \in \mathbb{R}^n$ and $f$, $g_i$, $h_j$ are non-linear functions.
+
+\begin{remark}
+    Non-linear problems are solved using optimization methods (e.g. gradient descent, Newton's method, \dots).
+\end{remark}
+
+
+
+\section{Linearization}
+
+Methods to linearize constraints.
+They usually work if the domains of the variables are bounded.
+
+\begin{description}
+    \item[Reification] \marginnote{Integer reification}
+        Linearize logical combinations of linear constraints.
+
+        Given a constraint $C(x_1, \dots, x_k)$, a new boolean variable $b \in \{0, 1\}$ is introduced to reify it.
+        Depending on the type of reification, $b$ behaves as follows:
+        \begin{descriptionlist}
+            \item[Integer full-reification] \marginnote{Full-reification}
+                $(b = 1) \iff C(x_1, \dots, x_k)$
+            \item[Integer half-reification] \marginnote{Half-reification}
+                $(b = 1) \Rightarrow C(x_1, \dots, x_k) \land (b = 0) \Rightarrow \lnot C(x_1, \dots, x_k)$
+        \end{descriptionlist}
+
+        Given the reifications $b_i$ of some constraints $C_i$, the logical combination is modeled by adding new constraints on $b_i$.
+        \begin{example}
+            $\bigvee_i C_i$ is modeled by imposing $\sum_{i} b_i \geq 1$.
+        \end{example}
+
+        \begin{description}
+            \item[Big-M trick] \marginnote{Big-M trick}
+                Half-reification of bounded linear inequalities.
+
+                Given a conjunction of constraints $C_1 \vee \dots \vee C_m$, it is modeled as follows:
+                \begin{enumerate}
+                    \item Introduce $m$ new boolean variables $b_1, \dots, b_m$ and impose $\sum_{i=1}^{m} b_i \geq 1$.
+                    \item For each $C_i \equiv \sum_{j} \alpha_{i,j} x_j \leq \beta_i$, add a new constraint:
+                        \[ \sum_{j} \alpha_{i,j} x_j - \beta_i \leq M_i \cdot (1-b_i) \]
+                        where $M_i$ is a "big enough" constant.
+                        In this way:
+                        \begin{itemize}
+                            \item $(b_i=0) \Rightarrow \sum_{j} \alpha_{i,j} x_j - \beta_i \leq M_i$ is always satisfied (as $M_i$ is big enough for any assignment of $x_j$).
+                            \item $(b_i=1) \Rightarrow \sum_{j} \alpha_{i,j} x_j - \beta_i \leq 0$ is the original constraint.
+                        \end{itemize}
+                \end{enumerate}
+
+                \begin{description}
+                    \item[Big-M number]
+                        Constant $M$ for the constraints.
+                        Assuming that each variable is bounded ($x_j \in \{l_j, \dots, u_j\}$),
+                        the constant big-M for the constraint $C_i$ can be defined as:
+                        \[ M_i = -\beta_i + \sum_{j} \max \{ (\alpha_{i,j} l_j), (\alpha_{i,j} u_j) \} \]
+                \end{description}
+
+                \begin{example}
+                    Given the variables $x \in \{0, \dots, 30\}$, $y \in \{ -5, \dots, -2 \}$, $z \in \{ -6, \dots, 7 \}$ and the constraint:
+                    \[ (5x \leq 18) \vee (-y +2z \leq 3) \]
+                    Its linearization is done by adding two boolean variables $b_1$, $b_2$ and the constraints:
+                    \begin{itemize}
+                        \item $b_1 + b_2 \geq 1$
+                        \item $5x - 18 \leq (\max\{ 5 \cdot 0, 5 \cdot 30 \} - 18)(1 - b_1)$
+                        \item $-y + 2z - 3 \leq (\max\{ -1 \cdot -5, -1 \cdot -2 \} + \max\{ 2 \cdot -6, 2 \cdot 7 \} - 3)(1 - b_2)$
+                    \end{itemize}
+                \end{example}
+        \end{description}
+
+    \item[Min/max constraints] \marginnote{Min/max constraints}
+        Given the variables $x_1, \dots, x_k$ such that $x_i \in \{ l_i, \dots, u_i \}$,
+        $\min$/$\max$ constraints of form:
+        \[ y = [\cdot] \{ x_1, \dots, x_k \} \] 
+        are modeled as follows:
+        \begin{descriptionlist}
+            \item[min] 
+                Let $l_{\min} = \min\{ l_1, \dots, l_k \}$.
+                Add $k$ new boolean variables $b_1, \dots, b_k$ and impose:
+                \[ \sum_{i=1}^{k} \big( b_i = 1 \big) \land \big( y \leq x_i \big) \land \big( y \geq x_i - (u_i - l_{\min})(1 - b_i) \big) \]
+                In this way, $(b_i = 1) \Rightarrow (x_i = \min\{ x_1, \dots, x_k \})$.
+
+            \item[max] 
+                Let $u_{\max} = \max\{ u_1, \dots, u_k \}$.
+                Add $k$ new boolean variables $b_1, \dots, b_k$ and impose:
+                \[ \sum_{i=1}^{k} \big( b_i = 1 \big) \land \big( y \geq x_i \big) \land \big( y \leq x_i + (u_{\max}-l_i)(1 - b_i) \big) \]
+                In this way, $(b_i = 1) \Rightarrow (x_i = \max\{ x_1, \dots, x_k \})$.
+        \end{descriptionlist}
+
+        \begin{remark}
+            This approach can also be applied to $y = \vert x \vert$, $y \neq x$, $y = kx$.
+        \end{remark}
+
+
+    \item[Unary encoding] \marginnote{Unary encoding}
+        Encoding of the domain of a variable.
+
+        Given a variable $x$ with domain $\mathcal{D}(x)$,
+        its unary encoding introduces $\vert \mathcal{D}(x) \vert$ new binary variables $b_k^x$ and imposes:
+        \[ \sum_{k \in \mathcal{D}(x)} b_k^x = 1 \land \sum_{k \in \mathcal{D}(x)} k \cdot b_k^x = x \]
+        In this way: $b_k^x = 1 \iff x = k$.
+    
+        \begin{remark}
+            This encoding provides a tighter search space of the linear relaxation of the problem and better encodes global constraints.
+            On the other hand, it might introduce lots of new binary variables.
+        \end{remark}
+
+        \begin{example}[\texttt{all\_different}]
+            The encoding of $\texttt{all\_different}(x_1, \dots, x_n)$ is done as follows:
+            \begin{itemize}
+                \item Encode each variable through unary encoding.
+                \item For $j \in \bigcup_{1 \leq h < k \leq n} (\mathcal{D}(x_h) \cap \mathcal{D}(x_k))$ add the constraint:
+                    \[ \sum_{i=1}^{n} \alpha_{i,j} b_j^{x_i} \leq 1 \]
+                    where $\alpha_{i,j} = \begin{cases}
+                        1 & \text{if $j \in \mathcal{D}(x_i)$} \\
+                        0 & \text{otherwise}
+                    \end{cases}$
+            \end{itemize}
+
+            For instance, consider the variables $x \in \{ 2, \dots, 11 \}$, $y \in \{ -5, \dots, 4 \}$, $z \in \{ 3, \dots, 5 \}$
+            constrained with $\texttt{all\_different}(x, y, z)$.
+            We encode them using unary encoding and constrain $b_j$ for 
+            $j \in (\{ 2, \dots, 11 \} \cap \{ -5, \dots, 4 \}) \cup (\{ 2, \dots, 11 \} \cap \{ 3, \dots, 5 \}) \cup (\{ -5, \dots, 4 \} \cap \{ 3, \dots, 5 \}) = \{ 2, \dots, 5 \}$:
+            \begin{center}
+                \begin{tabular}{ccccccc}
+                    $1 \cdot b_2^x$ & $+$ & $1 \cdot b_2^y$ & $+$ & \color{lightgray}$0 \cdot b_2^z$ & $\leq$ & $1$ \\
+                    $1 \cdot b_3^x$ & $+$ & $1 \cdot b_3^y$ & $+$ & $1 \cdot b_3^z$ & $\leq$ & $1$ \\
+                    $1 \cdot b_4^x$ & $+$ & $1 \cdot b_4^y$ & $+$ & $1 \cdot b_4^z$ & $\leq$ & $1$ \\
+                    $1 \cdot b_5^x$ & $+$ & \color{lightgray}$0 \cdot b_5^y$ & $+$ & $1 \cdot b_5^z$ & $\leq$ & $1$ \\
+                \end{tabular}
+            \end{center}
+        \end{example}
+
+        \begin{example}[Array]
+            $z = [x_1, \dots, x_n][y]$ can be encoded as $z = \sum_{i=1}^{n} b_i^y x_i$.
+        \end{example}
+
+        \begin{example}[Bounded non-linearity]
+            $z = xy$ with $y \in \{ l_y, \dots, u_y \}$ can be encoded as $z = [xl_y, \dots, xu_y][y-l_y+1]$
+        \end{example}
+\end{description}
