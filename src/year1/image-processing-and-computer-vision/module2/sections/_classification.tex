@@ -465,7 +465,7 @@ Image filtering can be implemented through:
 \end{descriptionlist}
 
 
-\subsection{Convolutional layer}
+\subsection{Convolutional layer} \label{sec:conv_layer}
 
 \begin{description}
     \item[Multi-channel convolution] \marginnote{Multi-channel convolution}
@@ -688,7 +688,7 @@ Normalize the output of a layer during training in such a way that it has zero m
         The advantages of batch normalization are:
         \begin{itemize}
             \item It allows to use a higher learning rate and makes initialization less important.
-            \item Training becomes non-deterministic, introducing some regularization.
+            \item Training becomes non-deterministic (i.e. adds noise) acting as some form of regularization.
             \item During inference, there is no overhead as it can be merged with the previous layer.
         \end{itemize}
         The disadvantages are:
