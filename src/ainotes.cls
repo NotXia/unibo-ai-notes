@@ -79,7 +79,7 @@
         \centering
         \vspace*{\fill}
         \huge
-        \textbf{\@title}\\
+        \href{\giturl}{\textbf{\@title}}\\
         {\Large Last update: \lastupdate}
         \vspace*{\fill}
 

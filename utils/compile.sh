@@ -19,6 +19,7 @@ old_out_dir=`realpath $3`
 hash_file="$old_out_dir/.hash"
 new_hash_file="$out_dir/.hash"
 work_dir=`realpath $1`
+git_base_url="https://github.com/NotXia/unibo-ai-notes/blob/pdfs"
 
 mkdir -p $out_dir
 touch $hash_file
@@ -93,6 +94,10 @@ for f in **/[!_]*.tex; do
     # Insert last update date
     last_update=`getLastUpdateDate`
     sed -i "s/PLACEHOLDER-LAST-UPDATE/${last_update}/" $f_base
+
+    # Insert Github link
+    git_url="${git_base_url}/${f_dir}/${f_nameonly}.pdf"
+    sed -i "s@PLACEHOLDER-GIT-URL@${git_url}@" $f_base
 
     # Compile
     latexmk -pdf -jobname=${f_nameonly} ${f_base}
