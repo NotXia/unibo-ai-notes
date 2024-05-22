@@ -1,0 +1,188 @@
+\chapter{Reinforcement learning}
+
+
+\begin{description}
+    \item[Reinforcement learning (RL)] \marginnote{Reinforcement learning (RL)}
+        Learning a behavior (policy) by taking actions in a mutable environment that responds with rewards.
+
+    \item[Policy] \marginnote{Policy}
+        Probability distribution $\pi(a_t | s_t)$ that given the current state $s_t$ indicates 
+        the likelihood of an action $a_t$.
+
+    \item[Future cumulative reward] \marginnote{Future cumulative reward}
+        Starting from a time step $t$, the future cumulative reward $R$ is the sum of all the local rewards $r_t$:
+        \[ R = \sum_{i \geq 1} r_i \]
+
+        \begin{description}
+            \item[Future discounted cumulative reward] \marginnote{Future discounted cumulative reward} 
+                Take into account the fact that future rewards are less certain than closer ones.
+                \[ R = \sum_{i \geq 1} \gamma^{(i)} r_i \]
+                where $0 <\gamma^{(i)} \leq 1$ is a discount factor that decreases exponentially over time.
+        \end{description}
+
+    \item[Markov decision process] \marginnote{Markov decision process}
+        The environment can be modeled as a Markov decision process where future actions only depend on the current state.
+        This is defined by the tuple $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$
+        where:
+        \begin{itemize}
+            \item $\mathcal{S}$ is the set of possible states.
+            \item $\mathcal{A}$ is the set of possible actions.
+            \item $\mathcal{R}$ is the set of rewards given state and action.
+            \item $\mathcal{P}$ is the transition probability given state and action.
+            \item $\gamma$ is the discount factor.
+        \end{itemize}
+
+    \item[RL problem] \marginnote{RL problem}
+        Problem involving an agent that interacts with an environment.
+        At each time step $t$, the following happens:
+        \begin{enumerate}
+            \item From the current state $s_t$, the agent selects an action $a_t$ according to a policy $\pi(a_t | s_t)$.
+            \item The environment answers with a local reward $r_t \sim \mathcal{R}(r_t | s_t, a_t)$.
+            \item The environment samples the next state $s_{t+1} \sim \mathcal{P}(s_{t+1} | s_t, a_t)$.
+            \item The agent updates its policy accordingly.
+        \end{enumerate}
+
+        \begin{remark}
+            A policy defines a trajectory:
+            \[ (s_0, a_0) \mapsto (r_1, s_1, a_1) \mapsto \dots \]
+        \end{remark}
+
+    \item[Episode] \marginnote{Episode}
+        Sequence of interactions between agent and environment from an initial state to a final state.
+
+        \begin{remark}
+            It is roughly the equivalent of an epoch.
+        \end{remark}
+
+    \item[Optimal policy] \marginnote{Optimal policy}
+        Policy $\pi^*$ that maximizes the average future reward over all possible trajectories:
+        \[ \pi^* = \arg\max_\pi \mathbb{E}\left[ \sum_{t \geq 0} \gamma^{(t)} r_t \right] \]
+
+    \item[Model-based approach] \marginnote{Model-based}
+        Method that needs to learn the transition probability $\mathcal{P}(s_{t+1} | s_t, a_t)$.
+
+    \item[Model-free approach] \marginnote{Model-free}
+        Method that only learns to make actions based on past experience.
+
+        There are mainly two techniques:
+        \begin{descriptionlist}
+            \item[Value-based] \marginnote{Value-based}
+                Learn a value function $V(s)$ that evaluates each state $s$.
+                The policy is implicit, the best action is the one that brings to the state with the best evaluation.
+            
+            \item[Policy-based] \marginnote{Policy-based}
+                Directly improve the probability distribution defined by the policy.
+        \end{descriptionlist}
+\end{description}
+
+
+
+\section{$Q$-learning}
+
+$Q$-learning is a value-based approach that learns a function $Q$ that acts as a proxy for the value function $V$.
+
+\begin{description}
+    \item[$Q$-value] \marginnote{$Q$-value}
+        Measures the goodness of an action $a$ in the state $s$ by considering its future reward:
+        \[ Q(s, a) = \mathbb{E}_{\substack{s_0 = s\\a_0 = a}} \left[ \sum_{t \geq 0} \gamma^{(t)} r_t \right] \]
+
+    \item[Value function] \marginnote{Value function}
+        Measures the goodness of a state $s$ by considering its future reward:
+        \[ V(s) = \mathbb{E}_{s_0 = s} \left[ \sum_{t \geq 0} \gamma^{(t)} r_t \right] \]
+
+        Given $Q$, $V$ can be computed as:
+        \[ V(s) = \sum_{a} \pi(a | s) Q (s, a) \]
+
+        \begin{remark}
+            Given $V$, $Q$ can be computed as:
+            \[ Q(s_t, a_t) = \sum_{s_{t+1}} \mathcal{P}(s_{t+1} | s_t, a_t) V(s_{t+1}) \]
+            but this requires a model-based approach as $\mathcal{P}$ is needed.
+        \end{remark}
+
+    \item[Optimal $Q$-value] \marginnote{Optimal $Q$-value}
+        The optimal $Q$-value $Q^*$ is the one that maximizes the expected cumulative reward 
+        achievable starting from state $s$ with action $a$:
+        \[ Q^*(s, a) = \max_\pi \mathbb{E}_{\substack{s_0 = s\\a_0 = a}} \left[ \sum_{t \geq 0} \gamma^{(t)} r_t \right] \]
+
+    \item[Optimal policy] \marginnote{Optimal policy}
+        The optimal policy $\pi^*$ is the one that makes the best action according to the optimal $Q$-value $Q^*$.
+\end{description}
+
+
+\subsection{Training}
+\begin{description}
+    \item[Bellman equation] \marginnote{Bellman equation}
+        Expresses the optimal $Q$-value in terms of subproblems:
+        \[ Q^*(s_t, a_t) = \mathbb{E}_{s_{t+1}} \left[ r_t + \gamma \max_{a_{t+1}} Q^*(s_{t+1}, a_{t+1}) \right] \]
+        where $\max_{a_{t+1}} Q^*(s_{t+1}, a_{t+1}) = R_{s_{t+1}} = V^*(s_{t+1})$ is the optimal future cumulative reward from $s_{t+1}$ with action $a_{t+1}$.
+
+        $Q^*$ can then be iteratively computed as follows:
+        \[ Q^{(i+1)}(s_t, a_t) = Q^{(i)}(s_t, a_t) + \alpha\left( r_t + \gamma \max_{a_{t+1}} Q^{(i)}(s_{t+1}, a_{t+1}) - Q^{(i)}(s_t, a_t) \right) \]
+        where:
+        \begin{itemize}
+            \item $\alpha$ is the learning rate.
+            \item The update step aims to impose $Q^{(i)}(s_t, a_t) = r_t + \gamma \max_{a_{t+1}} Q^*(s_{t+1}, a_{t+1})$
+                (i.e. respect the Bellman equation).
+        \end{itemize}
+
+    \item[$Q$-learning transition] \marginnote{$Q$-learning transition}
+        Tuple of form:
+        \[ (s_t, a_t, r_t, T, s_{t+1}) \]
+        where:
+        \begin{itemize}
+            \item $s_t$ is the current state.
+            \item $a_t$ is the action performed at the current step.
+            \item $r_t$ is the reward at the current step.
+            \item $T$ is a boolean indicating if the episode has ended.
+            \item $s_{t+1}$ is the next state after doing the action.
+        \end{itemize}
+
+        For training, transitions are collected in a buffer by exploring the environment.
+        Collected transitions can be replayed in any order, this has the advantage of:
+        \begin{itemize}
+            \item Avoid using correlated consecutive samples.
+            \item Avoid biases caused by the exploitation of unbalanced transitions.
+        \end{itemize}
+
+        \begin{remark}
+            $Q$-learning is an off-policy method. Training does not rely on a policy and only needs local transitions.
+        \end{remark}
+
+    \item[Epsilon greedy strategy] \marginnote{Epsilon greedy strategy}
+        Introduce an exploration rate $\varepsilon$, initially set to 1 and progressively reduced during training.
+        $\varepsilon$ is the probability of choosing a random action (exploration) instead of choosing the best-known action (exploitation).
+
+    \item[Algorithm] \marginnote{$Q$-learning training}
+        Given:
+        \begin{itemize}
+            \item A $Q$-table (to store the $Q$-values $Q(s, a)$), 
+            \item A replay buffer $D$,
+            \item The initial state $s_0$,
+            \item The learning rate $\alpha$ and the discount factor $\gamma$,
+            \item The exploration rate $\varepsilon$, 
+        \end{itemize}
+        an episode of $Q$-learning training does the following:
+        \begin{itemize}
+            \item Until the episode is not terminated:
+            \begin{enumerate}
+                \item Choose the next action as:
+                    \[ a_t = \begin{cases}
+                        \texttt{random}(\mathcal{A}) & \text{with probability $\varepsilon$} \\
+                        \max_a Q(s_t, a) & \text{with probability $\varepsilon$} \\
+                    \end{cases} \]
+                \item Perform $a_t$ and observe the reward $r_t$ and the next state $s_{t+1}$.
+                \item Store $(s_t, a_t, r_t, T, s_{t+1})$ in $D$.
+                \item Sample a random mini-batch $B$ from $D$. For each transition in $B$:
+                \begin{enumerate}
+                    \item Estimate the cumulative future reward:
+                        \[ R = \begin{cases}
+                            r_t & \text{if the episode is terminated} \\
+                            r_t + \gamma \max_{a_{t+1}} Q(s_{t+1}, a_{t+1}) & \text{otherwise} \\
+                        \end{cases} \]
+                    \item Update the $Q$-table as:
+                        \[ Q(s_t, a_t) = Q(s_t, a_t) + \alpha(R - Q(s_t, a_t)) \]
+                \end{enumerate}
+                \item Decrement $\varepsilon$.
+            \end{enumerate}
+        \end{itemize} 
+\end{description}
