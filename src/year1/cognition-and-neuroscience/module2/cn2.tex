@@ -7,7 +7,14 @@
 \def\lastupdate{{PLACEHOLDER-LAST-UPDATE}}
 \def\giturl{{PLACEHOLDER-GIT-URL}}
 
-\newtheorem*{casestudy}{Case study}
+\newtheorem*{privatecasestudy}{Case study}
+\newenvironment{casestudy}{%
+    \begin{marginbar}{olive}{0}{thick}
+    \begin{privatecasestudy}
+}{%
+    \end{privatecasestudy}
+    \end{marginbar}
+}
 
 \begin{document}
     

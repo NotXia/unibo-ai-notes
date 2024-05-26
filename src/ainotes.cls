@@ -21,6 +21,10 @@
 \usepackage{eurosym}
 \usepackage{bussproofs} % Deductive tree
 \usepackage{varwidth} 
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\tcbuselibrary{breakable}
+\usetikzlibrary{decorations.pathmorphing,calc}
 
 \geometry{ margin=3cm, lmargin=1.5cm, rmargin=4.5cm, marginparwidth=3cm }
 \hypersetup{ colorlinks, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black, linktoc=all }
@@ -48,6 +52,7 @@
 \lstset{style=mystyle}
 \lstset{language=Python}
 
+
 \NewDocumentEnvironment{descriptionlist}{}{%
     \begin{description}[labelindent=1em]
 }{
@@ -57,14 +62,37 @@
 \renewcommand*{\marginfont}{\color{gray}\footnotesize}
 \renewcommand*\chapterpagestyle{scrheadings} % Header in chapter pages
 
+
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
-\newtheorem*{example}{Example}
+\newtheorem*{privateexample}{Example}
 \theoremstyle{definition}
 \newtheorem*{definition}{Def}
 \newtheorem*{remark}{Remark}
+
+\newtcolorbox{marginbar}[3]{ % #1: color | #2: (number of lines - 1) | #3: line thickness
+    enhanced, blank, breakable,
+    overlay = {
+        \foreach \t in {0,...,#2}{
+            \draw[decorate, #3, #1]
+                ([xshift=-3-\t mm]frame.north west)
+                --
+                ([xshift=-3-\t mm]frame.south west);
+        },
+    }
+}
+
+\newenvironment{example}{%
+    \begin{marginbar}{lightgray}{0}{thick}
+    \begin{privateexample}
+}{%
+    \end{privateexample}
+    \end{marginbar}
+}
+
+
 
 \newcommand{\ubar}[1]{\text{\b{$#1$}}}
 \renewcommand{\vec}[1]{{\bm{\mathbf{#1}}}}

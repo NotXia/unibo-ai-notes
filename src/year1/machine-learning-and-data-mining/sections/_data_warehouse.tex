@@ -34,7 +34,7 @@
         Navigation path created by the operations that a user applied.
 \end{description}
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.35\textwidth]{img/_olap_cube.pdf}
     \caption{\ac{olap} data cube}
@@ -280,13 +280,13 @@ The architecture of a data warehouse should meet the following requirements:
         \end{descriptionlist}
 \end{description}
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/dfm.png}
     \caption{Example of \ac{dfm}}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{img/dfm_events.png}
     \caption{Example of primary and secondary events}
@@ -318,7 +318,7 @@ Aggregation operators can be classified as:
 \begin{description}
     \item[Additivity] \marginnote{Additive measure}
     A measure is additive along a dimension if an aggregation operator can be applied. 
-    \begin{table}[ht]
+    \begin{table}[H]
         \centering
         \begin{tabular}{l | c | c}
                                         & \textbf{Temporal hierarchies}                             & \textbf{Non-temporal hierarchies} \\
@@ -340,7 +340,7 @@ There are two main strategies:
 \begin{descriptionlist}
     \item[Star schema] \marginnote{Star schema}
         A fact table that contains all the measures is linked to dimensional tables.
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=\textwidth]{img/logical_star_schema.png}
             \caption{Example of star schema}

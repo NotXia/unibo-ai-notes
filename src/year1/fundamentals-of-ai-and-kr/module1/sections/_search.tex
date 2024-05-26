@@ -30,7 +30,7 @@
         A leaf can be a state to expand, a solution or a dead-end.
         \Cref{alg:search_tree_search} describes a generic tree search algorithm.
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.25\textwidth]{img/_search_tree.pdf}
             \caption{Search tree}
@@ -122,7 +122,7 @@ Always expands the least deep node. The fringe is implemented as a queue (FIFO).
 
 The exponential space complexity makes BFS impractical for large problems.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.30\textwidth]{img/_bfs.pdf}
     \caption{BFS visit order}
@@ -147,7 +147,7 @@ Same as BFS, but always expands the node with the lowest cumulative cost.
     \end{tabular}
 \end{center}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.50\textwidth]{img/_ucs.pdf}
     \caption{Uniform-cost search visit order. $(n)$ is the cumulative cost}
@@ -175,7 +175,7 @@ Always expands the deepest node. The fringe is implemented as a stack (LIFO).
     \end{tabular}
 \end{center}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.30\textwidth]{img/_dfs.pdf}
     \caption{DFS visit order}
@@ -261,7 +261,7 @@ The fringe is ordered according to the estimated scores.
         \end{center}
         % The complexity can be reduced depending on the heuristic.
 
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.65\textwidth]{img/_greedy_best_first_example.pdf}
             \caption{Hill climbing visit order}
@@ -337,7 +337,7 @@ The fringe is ordered according to the estimated scores.
 
         In general, it is better to use heuristics with large values (i.e. heuristics that don't underestimate too much).
 
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.65\textwidth]{img/_a_start_example.pdf}
             \caption{A$^*$ visit order}

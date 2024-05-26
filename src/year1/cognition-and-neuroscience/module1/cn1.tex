@@ -18,7 +18,14 @@
 \DeclareAcronym{cs}{short=CS, long=conditioned stimulus}
 \DeclareAcronym{cr}{short=CR, long=conditioned response}
 
-\newtheorem*{casestudy}{Case study}
+\newtheorem*{privatecasestudy}{Case study}
+\newenvironment{casestudy}{%
+    \begin{marginbar}{olive}{0}{thick}
+    \begin{privatecasestudy}
+}{%
+    \end{privatecasestudy}
+    \end{marginbar}
+}
 
 \begin{document}
     

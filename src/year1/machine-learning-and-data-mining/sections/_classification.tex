@@ -30,7 +30,7 @@
         \end{example}
 
     \item[Data exploration] \marginnote{Data exploration}
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \begin{subfigure}{.5\textwidth}
                 \centering
                 \includegraphics[width=\linewidth]{img/_iris_boxplot_general.pdf}
@@ -137,7 +137,7 @@ As $N$ is at the denominator, this means that for large values of $N$, the uncer
         Note that cross-validation is done on the training set, so a final test set can still be used to
         evaluate the resulting model.
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.6\textwidth]{img/cross_validation.png}
             \caption{Cross-validation example}
@@ -287,7 +287,7 @@ a macro (unweighted) average or a class-weighted average.
         When the area between the two curves is large and the curve is above the random classifier, 
         the model can be considered a good classifier.
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.5\textwidth]{img/lift_chart.png}
             \caption{Example of lift chart}
@@ -301,7 +301,7 @@ a macro (unweighted) average or a class-weighted average.
         A straight line is used to represent a random classifier.
         A threshold can be considered good if it is high on the y-axis and low on the x-axis.
         
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.35\textwidth]{img/roc_curve.png}
             \caption{Example of ROC curves}
@@ -408,7 +408,7 @@ Possible solutions are:
             \item Classes distribution.
         \end{itemize}
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.5\textwidth]{img/_iris_decision_tree_example.pdf}
             \caption{Example of decision tree}
@@ -458,7 +458,7 @@ Possible solutions are:
                 Skipped.
         \end{descriptionlist}
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.35\textwidth]{img/impurity_comparison.png}
             \caption{Comparison of impurity measures}
@@ -633,7 +633,7 @@ This has complexity $O(h)$, with $h$ the height of the tree.
     \item[Perceptron] \marginnote{Perceptron}
         A single artificial neuron that takes $n$ inputs $x_1, \dots, x_n$ and a bias $b$,
         and computes a linear combination of them with weights $w_1, \dots, w_n, w_b$.
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.25\textwidth]{img/_perceptron.pdf}
             \caption{Example of perceptron}
@@ -686,7 +686,7 @@ In practice, a maximum number of iterations is set.
         In general, a subset of points (support vectors) \marginnote{Support vectors} 
         in the training set is sufficient to define the hulls.
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.4\textwidth]{img/svm.png}
             \caption{Maximum margin hyperplane of linearly separable data}
@@ -724,7 +724,7 @@ For non-linearly separable data, the boundary can be found using a non-linear ma
 to map the data into a new space (feature space) where a linear separation is possible.
 Then, the data and the boundary is mapped back into the original space.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=\linewidth]{img/svm_kernel_example1.png}
@@ -840,7 +840,7 @@ Train a set of base classifiers and make predictions by majority vote.
 If all the classifiers have the same but independent error rate, 
 the overall error of the ensemble model is lower (derived from a binomial distribution).
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{img/ensemble_error.png}
     \caption{Relationship between the error of base classifiers and ensemble models}

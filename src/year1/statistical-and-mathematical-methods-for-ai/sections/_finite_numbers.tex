@@ -16,7 +16,7 @@
 
     \item[Inherent error] \marginnote{Inherent error}
         Caused by the finite representation of the data (floating-point).
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.6\textwidth]{img/_inherent_error.pdf}
             \caption{Inherent error visualization}
@@ -97,7 +97,7 @@ Given a floating-point system $\mathcal{F}(\beta, t, L, U)$, the total amount of
 %
 Representable numbers are more sparse towards the exponent upper bound and more dense towards the lower bound.
 It must be noted that there is an underflow area around 0.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/floatingpoint_range.png}
     \caption{Floating-point numbers in $\mathcal{F}(2, 3, -1, 2)$}
@@ -132,13 +132,13 @@ Depending on the approximation approach, machine precision can be computed as:
 Therefore, rounding results in more accurate representations.
 
 $\varepsilon_{\text{mach}}$ is the smallest distance among the representable numbers (\Cref{fig:finnum_eps}).
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth]{img/machine_eps.png}
     \caption{Visualization of $\varepsilon_{\text{mach}}$ in $\mathcal{F}(2, 3, -1, 2)$}
     \label{fig:finnum_eps}
-\end{figure}\\
-%
+\end{figure}
+
 In alternative, $\varepsilon_{\text{mach}}$ can be defined as the smallest representable number such that:
 \begin{equation*}
     \texttt{fl}(1 + \varepsilon_{\text{mach}}) > 1.

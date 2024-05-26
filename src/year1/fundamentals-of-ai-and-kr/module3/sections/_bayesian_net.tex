@@ -142,7 +142,7 @@
         \end{itemize}
         In other words, influence can flow from $X$ to $Y$ passing by $Z$.
 
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.65\textwidth]{img/_active_trail.pdf}
             \caption{Example of active and non-active two-edge trails}
@@ -214,7 +214,7 @@
 
     \item[Local semantics]
         Each node is conditionally independent of its non-descendants given its parents.
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.35\textwidth]{img/_local_independence.pdf}
             \caption{Local independence}
@@ -228,7 +228,7 @@
     \item[Markov blanket]
         Each node is conditionally independent of all the other nodes 
         if its Markov blanket (parents, children, children's parents) is in the evidence.
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.35\textwidth]{img/_markov_blanket.pdf}
             \caption{Markov blanket}
@@ -263,7 +263,7 @@ By construction, this algorithm guarantees the global semantics.
     Note that $P \perp G$.
     Let the order be fixed as follows: $P$, $G$, $H$.
 
-    \begin{figure}[h]
+    \begin{figure}[H]
         \begin{subfigure}{.3\textwidth}
             \centering
             \includegraphics[width=0.15\linewidth]{img/_monty_hall1.pdf}
@@ -423,7 +423,7 @@ the number of variables in a conditional probability table.
 Noisy-OR distributions model a network of non-interacting causes with a common effect.
 A node $X$ has $k$ parents $U_1, \dots, U_k$ and possibly a leak node $U_L$ to capture unmodeled concepts. 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{img/_noisy_or_example.pdf}
     \caption{Example of noisy-OR network}
@@ -536,7 +536,7 @@ Possible approaches are:
     \item[Dynamic Bayesian network] \marginnote{Dynamic Bayesian network}
         Useful to model the evolution through time.
         A template variable $X_i$ is instantiated as $X_i^{(t)}$ at each time step.
-        \begin{figure}[h]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.3\textwidth]{img/_dynamic_bn_example.pdf}
             \caption{Example of dynamic Bayesian network}
