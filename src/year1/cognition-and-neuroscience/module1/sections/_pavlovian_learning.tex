@@ -231,7 +231,7 @@ Causal relationship between the \acl{cs} and the \acl{us}.
     Two groups of rats are exposed to a shock paired with a bell ring.
     Contiguity is the same but contingency differs.
 
-    Only the group where the shock is more likely with the bell learns the association.
+    Only the group where the shock with the bell is more likely learned the association.
 
     \begin{figure}[H]
         \centering
@@ -338,9 +338,9 @@ Real-time model based on time steps within a trial instead of monolithic trials.
 At each time $t$ of a trial during which a \ac{cs} is presented,
 the model computes a prediction of the total future reward that will be gained from time $t$ to the end of the trial.
 
-The prediction error is computed as follows\footnote{\url{https://pubmed.ncbi.nlm.nih.gov/9054347/}}:
+The prediction error is computed as follows:
 \begin{gather*}
-    \delta_t = R_t + V_{t+1} - V_t \\
+    \delta_t = R_t + V_t - V_{t-1} \\
     V_{t+1} = V_t + \alpha \delta_t
 \end{gather*}
 
@@ -390,7 +390,7 @@ There is strong evidence that the dopaminergic system is the major neural mechan
 
         \begin{casestudy}[Monkey that touches food]
             The dopaminergic response of a monkey that touches an apple attached to a wire in a box is different 
-            from the response of only touching the wire.
+            from the response of touching the wire only.
             \begin{center}
                 \includegraphics[width=0.5\linewidth]{./img/dopamine_monkey2.png}    
             \end{center}
@@ -442,9 +442,12 @@ There is strong evidence that the dopaminergic system is the major neural mechan
             \item After training, dopamine neurons firing is increased after the \ac{cs} but not following the reward (no prediction error).
             \item After training, dopamine neurons firing is increased after the \ac{cs} but is decreased if the reward is omitted (negative prediction error).
         \end{itemize}
-        \begin{center}
-            \includegraphics[width=0.4\linewidth]{./img/dopamine_transfer_cs.png}
-        \end{center}
+        \begin{casestudy}
+            \phantom{}
+            \begin{center}
+                \includegraphics[width=0.4\linewidth]{./img/dopamine_transfer_cs.png}
+            \end{center}
+        \end{casestudy}
 
     \item[Response to blocking] \marginnote{Dopamine response to blocking}
         Dopaminergic response is in line with the blocking effect.
@@ -457,15 +460,18 @@ There is strong evidence that the dopaminergic system is the major neural mechan
             \end{minipage}
             \begin{minipage}{0.28\linewidth}
                 \centering
-                \includegraphics[width=\linewidth]{./img/dopamine_blocking.png}
+                \includegraphics[width=0.9\linewidth]{./img/dopamine_blocking.png}
             \end{minipage}
         \end{casestudy}
 
     \item[Probability encoding] \marginnote{Dopamine probability encoding}
         The phasic activation of dopamine neurons varies monotonically with the reward probability
-        \begin{center}
-            \includegraphics[width=0.65\linewidth]{./img/dopamine_probability.png}
-        \end{center}
+        \begin{casestudy}
+            \phantom{}
+            \begin{center}
+                \includegraphics[width=0.65\linewidth]{./img/dopamine_probability.png}
+            \end{center}
+        \end{casestudy}
 
     \item[Timing encoding] \marginnote{Dopamine timing encoding}
         Dopamine response to unexpectedness also involves timing.
