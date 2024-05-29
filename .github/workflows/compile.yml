@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    paths: ["src/**", .github/workflows/**, compile.sh]
+    paths: ["src/**", .github/**, compile.sh]
 
 jobs:
   compile:
@@ -32,17 +32,20 @@ jobs:
 
       - name: Prepare output directory
         run: |
-          mkdir .compiled
-          cp LICENSE .compiled
+          mkdir ${GITHUB_WORKSPACE}/.compiled
+          cp ${GITHUB_WORKSPACE}/LICENSE ${GITHUB_WORKSPACE}/.compiled
 
       - name: Compile
         run: |
-          bash ./utils/compile.sh src .compiled .currpdfs
+          bash ${GITHUB_WORKSPACE}/utils/compile.sh src ${GITHUB_WORKSPACE}/.compiled ${GITHUB_WORKSPACE}/.currpdfs
 
       - name: Generate README
         run: |
           cp README.md .compiled/README.md
-          python3 ./utils/update_readme.py --src-path ./src --readme-path .compiled/README.md --gh-link https://github.com/NotXia/unibo-ai-notes/blob/pdfs
+          python3 ${GITHUB_WORKSPACE}/.github/update_readme.py \
+            --src-path ${GITHUB_WORKSPACE}/src \
+            --readme-path ${GITHUB_WORKSPACE}/.compiled/README.md \
+            --gh-link https://github.com/NotXia/unibo-ai-notes/blob/pdfs
 
 
       - name: Move to pdfs branch

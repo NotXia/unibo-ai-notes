@@ -1,9 +1,5 @@
 import argparse
-import os
-import pathlib
-import json
-
-METADATA_FILENAME = "metadata.json"
+from read_metadata import readMetadata
 
 
 if __name__ == "__main__":
@@ -13,29 +9,7 @@ if __name__ == "__main__":
     parser.add_argument("--gh-link", type=str, required=True, help="Link to the GitHub repo")
     args = parser.parse_args()
 
-    notes_metadata = {}
-
-    # Reads courses metadata
-    for root, dirs, files in os.walk(args.src_path):
-        if METADATA_FILENAME in files:
-            with open(os.path.join(root, METADATA_FILENAME)) as f:
-                metadata = json.load(f)
-                dir_name = os.path.relpath(root, args.src_path)
-                gh_path = os.path.join(args.gh_link, dir_name)
-                
-                if metadata["year"] not in notes_metadata: notes_metadata[metadata["year"]] = {}
-                if metadata["semester"] not in notes_metadata[metadata["year"]]: notes_metadata[metadata["year"]][metadata["semester"]] = {}
-
-                notes_metadata[metadata["year"]][metadata["semester"]][metadata["name"]] = {
-                    "name": metadata["name"],
-                    "content": [
-                        {
-                            "name": pdf["name"],
-                            "url": os.path.join(gh_path, pdf["path"])
-                        }
-                        for pdf in metadata["pdfs"]
-                    ]
-                }
+    notes_metadata = readMetadata(args.src_path, args.gh_link)
 
     # Appends links to README
     with open(args.readme_path, "a") as readme_f:
