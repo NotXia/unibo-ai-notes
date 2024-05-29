@@ -536,9 +536,9 @@ Image filtering can be implemented through:
         Given a $H_\text{in} \times W_\text{in}$ image and a $H_K \times W_K$ kernel,
         the output with stride $S$ and padding $P$ has shape:
         \[ 
-            H_\text{out} = \left\lfloor \frac{H_\text{in} - H_K + 2P}{2} \right\rfloor + 1
+            H_\text{out} = \left\lfloor \frac{H_\text{in} - H_K + 2P}{S} \right\rfloor + 1
             \hspace{2em} 
-            W_\text{out} = \left\lfloor \frac{W_\text{in} - W_K + 2P}{2} \right\rfloor + 1
+            W_\text{out} = \left\lfloor \frac{W_\text{in} - W_K + 2P}{S} \right\rfloor + 1
         \]
         
     
