@@ -55,7 +55,7 @@ jobs:
         env:
           REPO: self
           BRANCH: pdfs
-          FOLDER: ${GITHUB_WORKSPACE}/.compiled
+          FOLDER: .compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_NAME: "github-actions[bot]"
           COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
