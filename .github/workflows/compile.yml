@@ -37,7 +37,10 @@ jobs:
 
       - name: Compile
         run: |
-          bash ${GITHUB_WORKSPACE}/utils/compile.sh src ${GITHUB_WORKSPACE}/.compiled ${GITHUB_WORKSPACE}/.currpdfs
+          bash ${GITHUB_WORKSPACE}/utils/compile.sh \
+            ${GITHUB_WORKSPACE}/src \
+            ${GITHUB_WORKSPACE}/.compiled \
+            ${GITHUB_WORKSPACE}/.currpdfs
 
       - name: Generate README
         run: |
@@ -47,14 +50,33 @@ jobs:
             --readme-path ${GITHUB_WORKSPACE}/.compiled/README.md \
             --gh-link https://github.com/NotXia/unibo-ai-notes/blob/pdfs
 
-
       - name: Move to pdfs branch
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
           BRANCH: pdfs
-          FOLDER: .compiled
+          FOLDER: ${GITHUB_WORKSPACE}/.compiled
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_NAME: "github-actions[bot]"
           COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
           MESSAGE: "🤖 Hello human, trying to not break anything ({sha})"
+
+
+      - name: Generate web viewer content
+        run: |
+          python3 ${GITHUB_WORKSPACE}/.github/prepare_web_viewer.py \
+            --src-path=${GITHUB_WORKSPACE}/src \
+            --out-path=/tmp/webviewer \
+            --pdfs-path=${GITHUB_WORKSPACE}/.compiled \
+            --template-path=${GITHUB_WORKSPACE}/.github/web-viewer \
+
+      - name: Move to pages branch
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: pages
+          FOLDER: /tmp/webviewer
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_NAME: "github-actions[bot]"
+          COMMIT_EMAIL: "github-actions[bot]@users.noreply.github.com"
+          MESSAGE: "🤖 Web developer stuff"
