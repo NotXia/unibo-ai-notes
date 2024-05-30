@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main
-    paths: ["src/**", .github/**, compile.sh]
+    paths: [
+      "src/**", 
+      .github/update_readme.py, 
+      .github/read_metadata.py, 
+      .github/workflows/compile.yml, 
+      compile.sh
+    ]
 
 jobs:
   compile:
