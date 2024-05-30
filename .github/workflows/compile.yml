@@ -67,8 +67,8 @@ jobs:
           python3 ${GITHUB_WORKSPACE}/.github/prepare_web_viewer.py \
             --src-path=${GITHUB_WORKSPACE}/src \
             --out-path=/tmp/webviewer \
-            --pdfs-path=${GITHUB_WORKSPACE}/.compiled \
             --template-path=${GITHUB_WORKSPACE}/.github/web-viewer \
+            --gh-raw-pdf-url="https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs"
 
       - name: Move to pages branch
         uses: s0/git-publish-subdir-action@develop

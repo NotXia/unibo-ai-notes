@@ -12,3 +12,5 @@
 [!_]*.pdf
 
 .compiled
+
+__pycache__

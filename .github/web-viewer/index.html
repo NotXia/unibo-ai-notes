@@ -8,8 +8,20 @@
     <style>
         * {
             font-family: monospace, monospace;
-            color: white;
-            background-color: #292929;
+        }
+
+        @media (prefers-color-scheme: light) {
+            * {
+                color: black;
+                background-color: white;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            * {
+                color: white;
+                background-color: #292929;
+            }
         }
     </style>
 </head>
