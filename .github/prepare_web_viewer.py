@@ -34,12 +34,12 @@ if __name__ == "__main__":
                 course_content = notes_metadata[year][semester][course]["content"]
 
                 if (len(course_content) == 1) and (course_content[0]["name"] is None):
-                    table_of_content += f"<h2><a href='{os.path.join(args.gh_raw_pdf_url, course_content[0]['url'])}'>{course_name}</a></h2>\n"
+                    table_of_content += f"<h3><a href='{os.path.join(args.gh_raw_pdf_url, course_content[0]['url'])}'>{course_name}</a></h3>\n"
                 else:
-                    table_of_content += f"<h2>{course_name}</h2>\n"
+                    table_of_content += f"<h3>{course_name}</h3>\n"
                     table_of_content += "<ul>\n"
                     for content in course_content:
-                        table_of_content += f"<li><h3><a href='{os.path.join(args.gh_raw_pdf_url, content['url'])}'>{content['name']}</a></h3></li>\n"
+                        table_of_content += f"<li><h4><a href='{os.path.join(args.gh_raw_pdf_url, content['url'])}'>{content['name']}</a></h4></li>\n"
                     table_of_content += "</ul>\n"
 
     with open(os.path.join(args.out_path, "index.html"), "w") as f:
