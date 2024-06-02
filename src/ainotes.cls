@@ -100,6 +100,7 @@
     \end{marginbar}
 }
 
+\def\indenttbox{\hangindent0.5em\hangafter=0}
 
 \newcommand{\ubar}[1]{\text{\b{$#1$}}}
 \renewcommand{\vec}[1]{{\bm{\mathbf{#1}}}}
