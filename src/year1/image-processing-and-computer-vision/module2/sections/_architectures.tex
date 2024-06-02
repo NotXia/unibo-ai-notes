@@ -440,8 +440,8 @@ VGG-16 has the following trends:
 
 
 
-\section{Inception v1 (GoogLeNet)}
-\marginnote{Inception v1 (GoogLeNet)}
+\section{Inception-v1 (GoogLeNet)}
+\marginnote{Inception-v1 (GoogLeNet)}
 
 Network that aims to optimize computing resources.
 
@@ -454,7 +454,7 @@ Network that aims to optimize computing resources.
         As in ZFNet, multiple layers are used (5) and the largest convolution is of shape $7 \times 7$ and stride $2$.
 
     \item[Inception module] \marginnote{Inception module}
-        Main component of Inception v1 that computes multiple convolutions on the input.
+        Main component of Inception-v1 that computes multiple convolutions on the input.
 
         \begin{description}
             \item[Naive approach] 
@@ -517,7 +517,7 @@ Network that aims to optimize computing resources.
 \begin{figure}[H]
     \centering
     \includegraphics[angle=-90, width=0.85\linewidth]{./img/_inception_v1.pdf}
-    \caption{Architecture of Inception v1}
+    \caption{Architecture of Inception-v1}
 \end{figure}
 
 
@@ -532,7 +532,7 @@ Network that aims to optimize computing resources.
 
 \begin{table}[H]
     \centering
-    \caption{Parameters of Inception v1 (batch size of 128)}
+    \caption{Parameters of Inception-v1 (batch size of 128)}
     \scriptsize
     \setlength{\tabcolsep}{2pt}
     \begin{tabular}{cccccccccccccccccccc}
@@ -580,3 +580,280 @@ Network that aims to optimize computing resources.
         \bottomrule
     \end{tabular}
 \end{table}
+
+
+\subsection{Inception-v3}
+\marginnote{Inception-v3}
+
+Uses convolution factorization to improve computational efficiency, reduce the number of parameters and make training more disentangled and easier.
+Different modules are used depending on the activation shape.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{./img/inception_v3.png}
+    \caption{Inception-v3 modules}
+\end{figure}
+
+
+\subsection{Inception-v4}
+\marginnote{Inception-v4}
+
+A larger version of Inception v3 with more complicated stem layers.
+
+
+
+\section{Residual networks}
+
+\begin{remark}
+    Training a very deep network from scratch might result in a solution that performs worse than a shallower layer.
+    One could expect that the network simply overfits, but in reality, it underfits as gradient descent is not able to find a solution.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{./img/deep_network_error.png}
+    \end{figure}
+\end{remark}
+
+\begin{remark}
+    Technically, a deep neural network that has similar performance to a small network $\mathcal{N}$ can always be constructed.
+    It is sufficient to take $\mathcal{N}$ as the starting network and add an arbitrary amount of identity layers.
+\end{remark}
+
+\begin{description}
+    \item[Standard residual block] \marginnote{Standard residual block}
+        Block that allows to easily learn the identity function through skip connections.
+        The output of a residual block with input $x$ and a series of convolutional layers $F$ is:
+        \[ F(x; \matr{\theta}) + x \]
+
+        \begin{minipage}{0.75\linewidth}
+            \begin{description}
+                \item[Skip connection] \marginnote{Skip connection}
+                    Connection that skips a certain number of layers (e.g. 2 convolutional blocks).
+            \end{description}
+    
+            \begin{remark}
+                Training starts with small weights so that the network starts as the identity function. Updates can be seen as perturbations of the identity function.
+            \end{remark}
+    
+            \begin{remark}
+                Batch normalization is heavily used.
+            \end{remark}
+        \end{minipage}
+        \begin{minipage}{0.2\linewidth}
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/skip_conn.png}
+        \end{minipage}
+        
+        \begin{remark}
+            Skip connections are applied before the activation function (ReLU) as otherwise it would be summed to all positive values making the perturbation of the identity function less effective.
+        \end{remark}
+\end{description}
+
+
+\subsection{ResNet}
+\marginnote{ResNet-18}
+
+VGG-inspired network with residual blocks.
+It has the following properties:
+\begin{itemize}
+    \item A stage is composed of residual blocks.
+    \item A residual block is composed of two $3 \times 3$ convolutions followed by batch normalization.
+    \item The first residual block of each stage halves the spatial dimension and doubles the number of channels (there is no pooling).
+    \item Stem layers are less aggressive than GoogLeNet (\texttt{conv + pool}. Input reduced to $56 \times 56$).
+    \item Global average pooling is used instead of flattening.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.15\linewidth]{./img/resnet_18.png}
+    \caption{Architecture of ResNet-18}
+\end{figure}
+
+\begin{description}
+    \item[Skip connection reshape]
+        Due to the shape mismatch, the output of a stage cannot be directly used as the skip connection of the next stage.
+        Possible solutions are:
+        \begin{itemize}
+            \item Apply stride $2$ and zero-padding in the first layer of the next stage (this does not add new parameters).
+            \item The output of the previous stage is passed through a $1 \times 1$ convolution with stride $2$ and $2C$ output channels (shown to work slightly better).
+        \end{itemize}
+
+    \item[Bottleneck residual network] \marginnote{Bottleneck residual network}
+        Variant of residual blocks that uses more layers with approximately the same number of parameters and FLOPs of the standard residual block.
+        Instead of using two $3 \times 3$ convolutions, bottleneck residual network has the following structure:
+        \begin{itemize}
+            \item $1 \times 1$ convolution to compress the channels of the input by an order of $4$ (and the spatial dimension by $2$ if it is the first block of a stage, as in the normal ResNet).
+            \item $3 \times 3$ convolution.
+            \item $1 \times 1$ convolution to match the shape of the skip connection.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/bottleneck_block.png}
+            \caption{Standard residual block (left) and bottleneck block (right)}
+        \end{figure}
+\end{description}
+
+\begin{remark}
+    ResNet improves the results of a deeper layer but beyond a certain depth, the gain is negligible.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.65\linewidth]{./img/resnet_results.png}
+    \end{figure}
+\end{remark}
+
+\begin{table}[H]
+    \centering
+    \caption{Variants of ResNet}
+    \scriptsize
+    \begin{tabular}{c|c|c|c|c}
+        \toprule
+        \textbf{ResNet-18} & \textbf{ResNet-34} & \textbf{ResNet-50} & \textbf{ResNet-101} & \textbf{ResNet-152} \\
+        \bottomrule
+        \toprule
+        \multicolumn{5}{c}{Stem layers} \\
+        \midrule
+            \makecell{2 residual blocks\\($C=64$)} & 
+            \makecell{3 residual blocks\\($C=64$)} & 
+            \makecell{3 bottleneck blocks\\($C=256$)} & 
+            \makecell{3 bottleneck blocks\\($C=256$)} & 
+            \makecell{3 bottleneck blocks\\($C=256$)} \\
+        \midrule
+            \makecell{2 residual blocks\\($C=128$)} & 
+            \makecell{4 residual blocks\\($C=128$)} & 
+            \makecell{4 bottleneck blocks\\($C=512$)} & 
+            \makecell{4 bottleneck blocks\\($C=512$)} & 
+            \makecell{8 bottleneck blocks\\($C=512$)} \\
+        \midrule
+            \makecell{2 residual blocks\\($C=256$)} & 
+            \makecell{6 residual blocks\\($C=256$)} & 
+            \makecell{6 bottleneck blocks\\($C=1024$)} & 
+            \makecell{23 bottleneck blocks\\($C=1024$)} & 
+            \makecell{36 bottleneck blocks\\($C=1024$)} \\
+        \midrule
+            \makecell{2 residual blocks\\($C=512$)} & 
+            \makecell{3 residual blocks\\($C=512$)} & 
+            \makecell{3 bottleneck blocks\\($C=2048$)} & 
+            \makecell{3 bottleneck blocks\\($C=2048$)} & 
+            \makecell{3 bottleneck blocks\\($C=2048$)} \\
+        \midrule
+        \multicolumn{5}{c}{Average pooling + Fully-connected} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{./img/resnet_variants.png}
+%     \caption{ResNet variants. ResNet-18 and ResNet-34 use standard residual blocks. ResNet-50, ResNet-101 and ResNet-152 use bottleneck blocks.}
+% \end{figure}
+
+\begin{remark}
+    Residual connection creates a smother loss surface.
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.3\linewidth}
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/resnet_loss1.png}        
+            \caption{Without skip connections}
+        \end{subfigure}
+        \begin{subfigure}{0.3\linewidth}
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/resnet_loss2.png}        
+            \caption{With skip connections}
+        \end{subfigure}
+        \caption{Loss surface visualized through dimensionality reduction}
+    \end{figure}
+\end{remark}
+
+\begin{remark}[ResNet as ensemble]
+    Skip connections can be seen as a way to create an ensemble-like network as it allows the network to ignore blocks by learning the identity function.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{./img/resnet_ensemble.png}
+        \caption{Possible paths of a residual network with three blocks}
+    \end{figure}
+
+    Studies show that, in ResNet-56, the gradient updates a subset of the blocks at the time. This is due to the fact that:
+    \begin{itemize}
+        \item The majority of the possible paths have a length of $\sim 30$.
+        \item The gradient magnitude is significant at the first layers (i.e. in shorter paths).
+    \end{itemize}
+    By multiplying values of two points above, results show that the total gradient magnitude is significant only up until paths of length $\sim 20$.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\linewidth]{./img/resnet_ensemble_magnitude.png}
+    \end{figure}
+
+    Further experiments show that by randomly deleting layers of the network, the drop in performance, as expected in ensemble models, becomes significant only after a certain number of layers.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\linewidth]{./img/resnet_ensemble_experiment.png}
+    \end{figure}
+
+    Therefore, skip connections do not directly solve the vanishing problem but go around it by creating an ensemble of smaller networks. 
+\end{remark}
+
+
+\subsection{ResNet-v2}
+
+Several improvements over the original ResNet have been made:
+\begin{descriptionlist}
+    \item[ResNet-B] \marginnote{ResNet-B}
+        As the first block of each stage is responsible for halving the spatial dimension, in a bottleneck block this is done by the first $1 \times 1$ convolution. This causes to lose $\frac{3}{4}$ of the input activations as a $1 \times 1$ convolution with stride $\geq 2$ does not have spatial extent. To solve this issue, the halving of the input image is done by the second $3 \times 3$ convolution.
+
+    \item[ResNet-C] \marginnote{ResNet-C}
+        The $7 \times 7$ convolution in stem layers is replaced by a sequence of three $3 \times 3$ convolutions, the first one with stride $2$.
+
+    \item[ResNet-D] \marginnote{ResNet-D}
+        Similarly to ResNet-B, the $1 \times 1$ convolution used to match the shape of the skip connection has a stride of $2$ and causes a loss of activations. Therefore, stride is dropped and a $2 \times 2$ average pooling with stride $2$ is added before the convolution. 
+\end{descriptionlist}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{./img/resnet_v2.png}
+\end{figure}
+
+
+\subsection{Inception-ResNet-v4}
+
+Network with bottleneck-block-inspired inception modules.
+
+\begin{descriptionlist}
+    \item[Inception-ResNet-A] \marginnote{Inception-ResNet-A}
+        Three $1 \times 1$ convolutions are used to compress the input channels. Each of them leads to a different path:
+        \begin{itemize}
+            \item Directly to the final concatenation.
+            \item To a $3 \times 3$ convolution.
+            \item To two $3 \times 3$ convolutions (i.e. a factorized $5 \times 5$ convolution). 
+        \end{itemize}
+        The final concatenation is passed through a $1 \times 1$ convolution to match the skip connection shape.
+
+    \item[Inception-ResNet-B] \marginnote{Inception-ResNet-B}
+        Three $1 \times 1$ convolutions are used to compress the input channels. Each of them leads to:
+        \begin{itemize}
+            \item Directly to the final concatenation.
+            \item A $1 \times 7$ and $7 \times 1$ convolutions (i.e. a factorized $7 \times 7$ convolution). 
+        \end{itemize}
+        The final concatenation is passed through a $1 \times 1$ convolution to match the skip connection shape.
+\end{descriptionlist}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{./img/inception_resnet.png}
+\end{figure}
+
+
+
+\section{Transfer learning}
+\marginnote{Transfer learning}
+
+Adapt a pre-trained network on a new dataset. There are mainly two approaches:
+\begin{description}
+    \item[Frozen CNN]
+        The weights of the pre-trained CNN are kept frozen and a new trainable classification head is added at the end of the model. In this case, the pre-trained model only acts as a feature extractor.
+
+    \item[Fine-tuning] 
+        After transferring using the frozen CNN approach, the pre-trained model can be unfrozen (entirely or only the higher layers) and further trained together with the new classification head, usually for a few steps.
+\end{description}

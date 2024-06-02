@@ -70,7 +70,7 @@
 \newtheorem*{privateexample}{Example}
 \theoremstyle{definition}
 \newtheorem*{definition}{Def}
-\newtheorem*{remark}{Remark}
+\newtheorem*{privateremark}{Remark}
 
 \newtcolorbox{marginbar}[3]{ % #1: color | #2: (number of lines - 1) | #3: line thickness
     enhanced, blank, breakable,
@@ -92,6 +92,13 @@
     \end{marginbar}
 }
 
+\newenvironment{remark}{%
+    \begin{marginbar}{darkgray}{0}{thick}
+    \begin{privateremark}
+}{%
+    \end{privateremark}
+    \end{marginbar}
+}
 
 
 \newcommand{\ubar}[1]{\text{\b{$#1$}}}
