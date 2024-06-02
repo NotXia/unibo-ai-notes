@@ -80,7 +80,7 @@
                 ([xshift=-3-\t mm]frame.north west)
                 --
                 ([xshift=-3-\t mm]frame.south west);
-        },
+        }
     }
 }
 
