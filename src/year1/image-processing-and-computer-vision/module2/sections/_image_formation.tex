@@ -711,7 +711,7 @@ Therefore, the complete workflow for image formation becomes the following:
         \end{remark}
 
     \item[Initial distortion parameters guess]
-        The current estimate of the homographies $\matr{H}_i$ project WRF points into ideal (undistorted) IRF coordinates $\vec{m}_\text{undist}$.
+        The current estimate of the homographies $\matr{H}_i$ project WRF points into ideal (undistorted) IRF coordinates $\vec{m}_\text{undist}$ (this is an assumption).
         On the other hand, the coordinates $\vec{m}$ of the corners in the actual image are distorted.
 
         The original algorithm estimates the parameters of the radial distortion function defined as:

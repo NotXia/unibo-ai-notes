@@ -3,7 +3,7 @@
 
 Deep learning has a large impact on neuroscience. For instance:
 \begin{casestudy}[Neural network to represent parietal neurons \cite{parietal_network}]
-    A monkey is tasked to maintain fixation at a point with a stimulus visible within its receptive field. The fixation point and the stimulus are moved together so that, for the retina, the stimulus is at the same retinal coordinate.
+    A monkey is tasked to maintain fixation at a point with a stimulus visible within its receptive field. The fixation point and the stimulus are moved together so that, for the retina, the stimulus is at the same retinal coordinates.
 
     \begin{figure}[H]
         \centering
@@ -116,7 +116,7 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
         \end{remark}
 
     \item[Long-term memory] \marginnote{Long-term memory}
-        Inactive past memories that have to be reactivated to use them. In humans, it comes in different forms:
+        Inactive past memories that have to be reactivated in order to use them. In humans, it comes in different forms:
         \begin{descriptionlist}
             \item[Declarative/Explicit]
                 Memory that can be expressed in a propositional form (i.e. by words).
@@ -138,7 +138,7 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
         \end{figure}
 
         \begin{remark}
-            On the other spectrum, there are short-term and working memories.
+            On the other spectrum, there is short-term and working memory.
             The former, once formed, is sort of read-only (e.g. repeat a sequence of numbers). The latter allows the manipulation of its content (e.g. repeat a sequence of numbers in reverse order).
         \end{remark}
 
@@ -212,7 +212,7 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
 
         \begin{casestudy}[Replay in rats]
             The movements and the activity of a neuron (place cell) in the hippocampus of a rat are recorded.
-            It has been observed that the place cell fires only at a specific spatial area (and it changes if the rat is moved to another environment).
+            It has been observed that the place cell fires only at a specific spatial area (which changes if the rat is moved to another environment).
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=0.55\linewidth]{./img/hippocampus_replay1.png}
@@ -220,14 +220,21 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
 
             \indenttbox
             \begin{remark}
-                Grid cells are another type of cells in the medial entorhinal cortex that fire based on spatial features.
-                Differently from place cells, this type of cell is active in multiple zones arranged in a regular manner (i.e. triangular or hexagonal units).
+                \phantom{}\\[0.5em]
+                \begin{minipage}{0.6\linewidth}
+                    Grid cells are another type of cells in the medial entorhinal cortex that fire based on spatial features.
+                    Differently from place cells, this type of cell is active in multiple zones arranged in a regular manner (i.e. triangular or hexagonal units).
+    
+                    In other words, place cells are based on landmarks and grid cells are based on self-motion.
+                    
+                \end{minipage}
+                \begin{minipage}{0.3\linewidth}
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.9\linewidth]{./img/grid_place_cell.png}
+                    \end{figure}
+                \end{minipage}
 
-                In other words, place cells are based on landmarks and grid cells are based on self-motion.
-                \begin{figure}[H]
-                    \centering
-                    \includegraphics[width=0.25\linewidth]{./img/grid_place_cell.png}
-                \end{figure}
             \end{remark}
 
             By placing the rat on a triangular track where some reward is available, a correlation between two place cells have been recorded.
@@ -247,7 +254,7 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
             \phantom{}
             \begin{description}
                 \item[Experiment 1] 
-                    In each trial, candidates are asked to choose a slot machine to spin (bandit problem). Each slot has a different point reward that changes at each trial.
+                    In each trial, candidates are asked to choose a slot machine to spin (bandit problem). Each slot has a different reward in points that changes at each trial.
                     \begin{figure}[H]
                         \centering
                         \includegraphics[width=0.55\linewidth]{./img/memory_decision1.png}
@@ -294,7 +301,7 @@ There are at least two factors that cause the sample inefficiency of deep reinfo
     Monkeys are presented with two unfamiliar objects and are asked to grab one of them.
     Under an object lays either food or nothing.
     The same procedure is repeated for six trials and the position of the two objects can be swapped.
-    After the round of trials, new rounds are repeated with new objects.
+    After the first round of trials, new rounds are repeated with new objects.
 
     It has been observed that after some rounds, monkeys are able to learn the task in one shot.
 
