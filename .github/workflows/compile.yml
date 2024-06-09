@@ -54,7 +54,7 @@ jobs:
           python3 ${GITHUB_WORKSPACE}/.github/update_readme.py \
             --src-path ${GITHUB_WORKSPACE}/src \
             --readme-path ${GITHUB_WORKSPACE}/.compiled/README.md \
-            --gh-link https://github.com/NotXia/unibo-ai-notes/blob/pdfs
+            --gh-link https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs
 
       - name: Move to pdfs branch
         uses: s0/git-publish-subdir-action@develop
