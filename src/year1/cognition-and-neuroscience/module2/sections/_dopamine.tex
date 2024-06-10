@@ -111,7 +111,7 @@
     \item[Bellman equation] \marginnote{Bellman equation}
         Given an action $a_t$ performed in the state $s_t$ following a policy $\pi$,
         the expected future reward is given by the following equation:
-        \[ Q_\pi(s_t, a_t) = r_t + \gamma \sum_{s_{t+1}} \prob{s_{t+1 | s_t, a_t}} Q_\pi(s_{t+1}, \pi(s_{t+1})) \]
+        \[ Q_\pi(s_t, a_t) = r_t + \gamma \sum_{s_{t+1}} \prob{s_{t+1} | s_t, a_t} Q_\pi(s_{t+1}, \pi(s_{t+1})) \]
         where $\gamma$ is a discount factor.
 \end{description}
 
