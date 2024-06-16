@@ -64,7 +64,7 @@ Possible similarity/dissimilarity functions are:
         before computing \texttt{NCC}:
         \[ \mu(\tilde{I}_{i,j}) = \frac{1}{MN} \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} I(i+m, j+n) \hspace{3em} \mu(T) = \frac{1}{MN} \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} T(m, n) \]
         \[ 
-            \texttt{NCC}(i, j) = 
+            \texttt{ZNCC}(i, j) = 
             \frac{ \sum\limits_{m=0}\limits^{M-1} \sum\limits_{n=0}\limits^{N-1} \Big( \big(I(i+m, j+n) - \mu(\tilde{I}_{i,j})\big) \cdot \big(T(m, n) - \mu(T)\big) \Big) }
                 { \sqrt{\sum\limits_{m=0}\limits^{M-1} \sum\limits_{n=0}\limits^{N-1} \big(I(i+m, j+n) - \mu(\tilde{I}_{i,j})\big)^2} \cdot \sqrt{\sum\limits_{m=0}\limits^{M-1} \sum\limits_{n=0}\limits^{N-1} \big(T(m, n) - \mu(T)\big)^2} } 
         \]
@@ -97,7 +97,7 @@ Edge-based template matching that works as follows:
             \nabla \tilde{I}_{i,j}(\tilde{P}_k) = \begin{pmatrix} \partial_x \tilde{I}_{i,j}(\tilde{P}_k) \\ \partial_y \tilde{I}_{i,j}(\tilde{P}_k) \end{pmatrix} \hspace{2em} 
             \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{\nabla \tilde{I}_{i,j}(\tilde{P}_k)}{\Vert \nabla \tilde{I}_{i,j}(\tilde{P}_k) \Vert} 
         \]
-    \item Compute the similarity as the sum of the cosine similarities of each pair of gradients:
+    \item Compute the similarity as the mean of the cosine similarities of each pair of gradients:
         \[ S(i, j) = \frac{1}{n} \sum_{k=1}^{n} \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{1}{n} \sum_{k=1}^{n} \cos \theta_k \in [-1, 1] \]
         $S(i, j) = 1$ when the gradients perfectly match. A minimum threshold $S_\text{min}$ is used to determine if there is a match.
 \end{enumerate}
@@ -156,13 +156,14 @@ by means of a projection from the image space to a parameter space.
             For instance, consider two points $p_1$, $p_2$ in the image space and
             their projection in the parameter space.
             If the two lines intersect at the point $(\tilde{m}, \tilde{c})$,
-            then the line parametrized on $\tilde{m}$ and $\tilde{c}$ passes through $p_1$ and $p_2$ in the image space.
+            then the line parametrized on $\tilde{m}$ and $\tilde{c}$ passes through both $p_1$ and $p_2$ in the image space.
             
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=0.4\linewidth]{./img/hough_line_parameter_space.png}
             \end{figure}
 
+            \indenttbox
             \begin{remark}
                 By projecting $n$ points of the image space, there are at most $\frac{n(n-1)}{2}$ intersections in the parameter space.
             \end{remark}
@@ -267,7 +268,7 @@ Hough transform extended to detect an arbitrary shape.
                     \item Compute its gradient direction $\varphi(\vec{x})$ discretized to match the step $\Delta \varphi$ of the R-table.
                     \item For each $\vec{r}_i$ in the corresponding row of the R-table:
                     \begin{enumerate}
-                        \item Compute an estimate of the barycenter as $\vec{y} = \vec{x} - \vec{r}_i$.
+                        \item Compute an estimate of the barycenter as $\vec{y} = \vec{x} + \vec{r}_i$.
                         \item Cast a vote in the accumulator array $A[\vec{y}] \texttt{+=} 1$
                     \end{enumerate}
                 \end{enumerate}

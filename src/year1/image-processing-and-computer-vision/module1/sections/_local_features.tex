@@ -6,7 +6,7 @@
 
         \begin{example}[Homography]
             Align two images of the same scene to create a larger image.
-            Homography requires at least 4 correspondences. 
+            An homography requires at least 4 correspondences. 
             To find them, it does the following:
             \begin{itemize}
                 \item Independently find salient points in the two images.
@@ -264,8 +264,8 @@ but this is not always able to capture the same features due to the details diff
         \begin{enumerate}
             \item Create a Gaussian scale-space by applying the scale-normalized Laplacian of Gaussian with different values of $\sigma$.
             \item For each pixel, find the characteristic scale and its corresponding Laplacian response across the scale-space (automatic scale selection).
-            \item Filter out the pixels whose response is lower than a threshold and apply NMS.
-            \item The remaining pixels are the centers of the blobs. 
+            \item Filter out the pixels whose response is lower than a threshold and find the peaks.
+            \item The found pixels are the centers of the blobs. 
                 It can be shown that the radius is given by $r = \sigma\sqrt{2}$.
         \end{enumerate}
 \end{description}
@@ -332,7 +332,7 @@ When detecting a peak, there are two cases:
         \]
 
         \begin{theorem}
-            It can be proven that the DoG kernel is a scaled version of the LoG kernel:
+            It can be proved that the DoG kernel is a scaled version of the LoG kernel:
             \[ G(x, y, k\sigma) - G(x, y, \sigma) \approx (k-1)\sigma^2 \nabla^{(2)}G(x, y, \sigma) \]
 
             \begin{remark}
@@ -341,7 +341,7 @@ When detecting a peak, there are two cases:
         \end{theorem}
 
     \item[Extrema detection] \marginnote{DoG extrema}
-        Given three DoG images with scales $\sigma_i$, $\sigma_{i-1}$ and $\sigma_{i+1}$,
+        Given three DoG images with scales $\sigma_{i-1}$, $\sigma_i$ and $\sigma_{i+1}$,
         a pixel $(x, y, \sigma_i)$ is an extrema (i.e. keypoint) iff:
         \begin{itemize}
             \item It is an extrema in a $3 \times 3$ patch centered on it (8 pixels as $(x, y, \sigma_i)$ is excluded).
@@ -407,7 +407,7 @@ After finding the keypoints, a descriptor of a keypoint is computed from the pix
         \[ 
             \begin{split}
                 \vert \nabla L(x, y) \vert &= \sqrt{ \big( L(x+1, y) - L(x-1, y) \big)^2 + \big( L(x, y+1) - L(x, y-1) \big)^2 } \\
-                \theta_L(x, y) &= \tan^{-1}\left( \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)} \right)
+                \theta_L(x, y) &= \arctan\left( \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)} \right)
             \end{split}
         \] 
 

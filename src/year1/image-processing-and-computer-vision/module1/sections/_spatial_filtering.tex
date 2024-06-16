@@ -5,7 +5,7 @@
 
 The noise added to a pixel $p$ is defined by $n_k(p)$, 
 where $k$ indicates the time step (i.e. noise changes depending on the moment the image is taken).
-It is assumed that $n_k(p)$ is i.i.d and $n_k(p) \sim \mathcal{N}(0, \sigma)$.
+It is assumed that $n_k(p)$ is i.i.d. and $n_k(p) \sim \mathcal{N}(0, \sigma)$.
 
 The information of a pixel $p$ is therefore defined as:
 \[ I_k(p) = \tilde{I}(p) + n_k(p) \]
@@ -33,7 +33,7 @@ where $\tilde{I}(p)$ is the real information.
         Let $K_p$ be the pixels in a window around $p$ (included):
         \[ 
             \begin{split}
-                O(p) &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} I(p) \\
+                O(p) &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} I(q) \\
                     &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \Big( \tilde{I}(q) + n(q) \Big) \\
                     &= \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \tilde{I}(q) + \frac{1}{\vert K_p \vert} \sum_{q \in K_p} n(q) \\
                     &\approx \frac{1}{\vert K_p \vert} \sum_{q \in K_p} \tilde{I}(q)
@@ -80,7 +80,7 @@ where $\tilde{I}(p)$ is the real information.
         \end{descriptionlist}
 
     \item[Dirac delta] \marginnote{Dirac delta}
-        The Dirac delta "function" $\delta$ is defined as follows \cite{wiki:dirac,book:sonka}:
+        The Dirac delta ``function" $\delta$ is defined as follows \cite{wiki:dirac,book:sonka}:
         \[ \forall x \neq 0: \delta(x) = 0 \text{, constrained to } \int_{-\infty}^{+\infty} \delta(x) \,\text{d}x = 1 \]
 
         Extended to the 2-dimensional case, the definition is the following:
@@ -93,7 +93,7 @@ where $\tilde{I}(p)$ is the real information.
                 
                 \begin{remark}
                     Exploiting the sifting property, the signal of an image can be expressed through an integral of Dirac deltas 
-                    (i.e. a linear combination) \cite{slides:filters,book:sonka}:
+                    (i.e. a linear combination) \cite{slides:filters, book:sonka}:
                     \[ i(x, y) = \int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty} i(\alpha, \beta) \delta(x-\alpha, y-\beta) \,\text{d}\alpha\,\text{d}\beta \]
                 \end{remark}
         \end{description}
@@ -173,7 +173,8 @@ where $\tilde{I}(p)$ is the real information.
                 & \text{linearity of $T\{ \cdot \}$} \\
                 %
                 &= \int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty} i(\alpha, \beta) h(x-\alpha, y-\beta) \,\text{d}\alpha\,\text{d}\beta
-                & \text{\small translation-equivariance of $T\{ \cdot \}$} \\
+                & \text{impulse response} \\
+                % & \text{\small translation-equivariance of $T\{ \cdot \}$} \\
                 %
                 &= i(x, y) * h(x, y) 
                 & \text{definition of convolution} \\
@@ -214,7 +215,8 @@ where $\tilde{I}(p)$ is the real information.
             \begin{align*}
                 h(x, y) * i(x, y) &= \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} i(\alpha, \beta)h(x-\alpha, y-\beta) \,\text{d}\alpha\,\text{d}\beta \\
                     &= \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} i(\alpha, \beta)h(\alpha-x, \beta-y) \,\text{d}\alpha\,\text{d}\beta 
-                    & \parbox[b]{0.25\textwidth}{\raggedleft signs in $h$ swappable for Dirac delta} \\
+                    % & \parbox[b]{0.25\textwidth}{\raggedleft signs in $h$ swappable for Dirac delta} 
+                    \\
                     &= h(x, y) \circ i(x, y)
             \end{align*}
         \end{remark}
@@ -336,8 +338,8 @@ where $\tilde{I}(p)$ is the real information.
         \begin{description}
             \item[Sampling]
                 In practice, the kernel is created by sampling from the wanted Gaussian distribution.
-                One can notice that a higher $\sigma$ results in a more spread distribution and therefore a larger kernel is more suited,
-                on the other hand, a smaller $\sigma$ can be represented using a smaller kernel as it is more concentrated around the origin.
+                One can notice that a higher $\sigma$ results in a more spread distribution and therefore a larger kernel is more suited.
+                On the other hand, a smaller $\sigma$ can be represented using a smaller kernel as it is more concentrated around the origin.
 
                 As a rule-of-thumb, given $\sigma$, an ideal kernel is of size $(2\lceil 3\sigma \rceil + 1) \times (2\lceil 3\sigma \rceil + 1)$.
 
@@ -448,7 +450,7 @@ where $\tilde{I}(p)$ is the real information.
                 \begin{split}
                     O(p) &= \sum_{q \in S_p} w(p, q) \cdot \texttt{intensity}(q) \\
                     \text{where }& w(p, q) = \frac{1}{Z(p)} e^{-\frac{\Vert \mathcal{N}_p - \mathcal{N}_q \Vert_2^2}{h^2}} \\
-                                & Z(p) = \sum_{q \in I} e^{\frac{\Vert \mathcal{N}_p - \mathcal{N}_q \Vert_2^2}{h^2}}
+                                & Z(p) = \sum_{v \in I} e^{\frac{\Vert \mathcal{N}_p - \mathcal{N}_v \Vert_2^2}{h^2}}
                 \end{split}
             \]
         \end{minipage}

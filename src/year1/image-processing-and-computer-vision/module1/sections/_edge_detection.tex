@@ -72,8 +72,8 @@ In a 2D signal (e.g. an image), the gradient allows to determine the magnitude a
                 \end{remark}
         \end{description}
 
-    \item[Discete magnitude approximation] \marginnote{Discete magnitude approximation}
-        The gradient magnitude can be approximated using the approximated partial derivatives:
+    \item[Discrete magnitude approximation] \marginnote{Discrete magnitude approximation}
+        The gradient magnitude can be approximated in different ways by using the approximated partial derivatives:
         \[ 
             \Vert \nabla I \Vert = \sqrt{(\partial_x I)^2 + (\partial_y I)^2} \hspace{1.5em}
             \Vert \nabla I \Vert_+ = \vert \partial_x I \vert + \vert \partial_y I \vert \hspace{1.5em}
@@ -124,7 +124,7 @@ In a 2D signal (e.g. an image), the gradient allows to determine the magnitude a
     In practice, the signal of an image is not always smooth due to noise. 
     Derivatives amplify noise and are therefore unable to recognize edges.
 
-    Smoothing the signal before computing the derivative allows to reduce the noise but also blurs the edges making it more difficult to localize them.
+    Smoothing the signal before computing the derivative allows to reduce the noise but also blurs the edges, making it more difficult to localize them.
 
     A solution is to smooth and differentiate in a single operation by approximating the gradient as a difference of averages.
 \end{remark}
