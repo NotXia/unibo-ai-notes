@@ -371,7 +371,7 @@ The prediction is obtained as the index of the maximum score.
                 \[ 
                     \texttt{leaky\_ReLU}(a) = \begin{cases}
                         a & \text{if $a \geq 0$} \\
-                        0.01 & \text{otherwise}
+                        0.01 \cdot a & \text{otherwise}
                     \end{cases} \hspace{2em}
                     \frac{\partial \texttt{leaky\_ReLU}(a)}{\partial a} = \begin{cases}
                         1 & \text{if } a \geq 0 \\
