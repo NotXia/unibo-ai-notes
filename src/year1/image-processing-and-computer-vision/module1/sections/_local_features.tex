@@ -93,7 +93,7 @@ After computing the cornerness of each pixel, one can apply thresholding and the
 Harris' corner detector uses an error function formulated as the continuous version of Moravec's detector and 
 assumes an infinitesimal shift $(\Delta x, \Delta y)$ of the image:
 \[ E(\Delta x, \Delta y) = \sum_{x, y} w(x, y) \big( I(x+\Delta x, y+\Delta y) - I(x, y) \big)^2 \]
-where $w(x, y)$ in a window centered on $(x, y)$ and can be seen as a mask with $1$ when the pixel belongs to the window and $0$ otherwise.
+where $w(x, y)$ represents a window and can be seen as a mask with $1$ when the pixel belongs to the window and $0$ otherwise.
 
 By employing the Taylor's series $f(x + \Delta x) = f(x) + f'(x) \Delta x$,
 we can expand the intensity difference as:
