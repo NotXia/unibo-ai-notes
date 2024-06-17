@@ -98,8 +98,8 @@ Edge-based template matching that works as follows:
             \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{\nabla \tilde{I}_{i,j}(\tilde{P}_k)}{\Vert \nabla \tilde{I}_{i,j}(\tilde{P}_k) \Vert} 
         \]
     \item Compute the similarity as the mean of the cosine similarities of each pair of gradients:
-        \[ S(i, j) = \frac{1}{n} \sum_{k=1}^{n} \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{1}{n} \sum_{k=1}^{n} \cos \theta_k \in [-1, 1] \]
-        $S(i, j) = 1$ when the gradients perfectly match. A minimum threshold $S_\text{min}$ is used to determine if there is a match.
+        \[ S(T, \tilde{I}_{i,j}) = \frac{1}{n} \sum_{k=1}^{n} \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{1}{n} \sum_{k=1}^{n} \cos \theta_k \in [-1, 1] \]
+        $S(T, \tilde{I}_{i,j}) = 1$ when the gradients perfectly match. A minimum threshold $S_\text{min}$ is used to determine if there is a match.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -109,15 +109,15 @@ Edge-based template matching that works as follows:
 \end{figure}
 
 
-\subsection{Invariance to global inversion of contrast polarity}
+\subsection{Invariance to contrast polarity inversion}
 
 As an object might appear on a darker or brighter background, more robust similarity functions can be employed:
 \begin{description}
-    \item[Global polarity inversion contrast] 
+    \item[Global contrast polarity inversion] 
         \[ S(i, j) = \frac{1}{n} \left\vert \sum_{k=1}^{n} \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) \right\vert = 
             \frac{1}{n} \left\vert \sum_{k=1}^{n} \cos \theta_k \right\vert \]
 
-    \item[Local polarity inversion contrast] 
+    \item[Local contrast polarity inversion] 
         \[ S(i, j) = \frac{1}{n} \sum_{k=1}^{n} \left\vert  \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) \right\vert = 
         \frac{1}{n} \sum_{k=1}^{n} \left\vert \cos \theta_k \right\vert \]
 
@@ -269,11 +269,11 @@ Hough transform extended to detect an arbitrary shape.
                     \item For each $\vec{r}_i$ in the corresponding row of the R-table:
                     \begin{enumerate}
                         \item Compute an estimate of the barycenter as $\vec{y} = \vec{x} + \vec{r}_i$.
-                        \item Cast a vote in the accumulator array $A[\vec{y}] \texttt{+=} 1$
+                        \item Cast a vote in the accumulator array $A[\vec{y}] \texttt{+=} 1$.
                     \end{enumerate}
                 \end{enumerate}
-            \item Find the local maxima of the accumulator vector to estimate the barycenters.
-                The shape can then be visually found by overlaying the template barycenter to the found barycenters.
+            \item Find the local maxima of the accumulator vector to estimate the barycenter.
+                The shape can then be visually found by overlaying the template barycenter to the found barycenter.
         \end{enumerate}
 \end{description}
 

@@ -406,7 +406,7 @@ After finding the keypoints, a descriptor of a keypoint is computed from the pix
         Given a pixel $(x, y)$, its gradient magnitude and direction is computed from the Gaussian smoothed image $L$:
         \[ 
             \begin{split}
-                \vert \nabla L(x, y) \vert &= \sqrt{ \big( L(x+1, y) - L(x-1, y) \big)^2 + \big( L(x, y+1) - L(x, y-1) \big)^2 } \\
+                \Vert \nabla L(x, y) \Vert &= \sqrt{ \big( L(x+1, y) - L(x-1, y) \big)^2 + \big( L(x, y+1) - L(x, y-1) \big)^2 } \\
                 \theta_L(x, y) &= \arctan\left( \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)} \right)
             \end{split}
         \] 
@@ -416,7 +416,7 @@ After finding the keypoints, a descriptor of a keypoint is computed from the pix
                 By dividing the directions into bins (e.g. bins of size $10^\circ$),
                 it is possible to define for each keypoint a histogram by considering its neighboring pixels within a patch.
                 For each pixel $(x, y)$ neighboring a keypoint $(x_k, y_k)$, its contribution to the histogram along the direction $\theta_L(x, y)$ is given by:
-                \[ G_{(x_k, y_k)}(x, y, \frac{3}{2} \sigma_s(x_k, y_k)) \cdot \vert \nabla L(x, y) \vert \]
+                \[ G_{(x_k, y_k)}\left( x, y, \frac{3}{2} \sigma_s(x_k, y_k) \right) \cdot \Vert \nabla L(x, y) \Vert \]
                 where $G_{(x_k, y_k)}$ is a Gaussian centered on the keypoint and  $\sigma_s(x_k, y_k)$ is the scale of the keypoint.
 
                 The characteristic orientation of a keypoint is given by the highest peak of the orientation histogram.
