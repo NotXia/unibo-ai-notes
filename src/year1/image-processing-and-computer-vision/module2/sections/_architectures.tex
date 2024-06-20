@@ -164,7 +164,7 @@ AlexNet is composed of:
 
 \subsection{Training}
 
-The network is trained on ImageNet 1k (for the ILSVRC 2012) with a batch size of 128.
+The network was trained on ImageNet 1k (for the ILSVRC 2012) with a batch size of 128.
 Due to GPU memory limitations, training was split into two parallel lines on two GPUs (model parallelism).
 
 \begin{description}
@@ -675,7 +675,7 @@ It has the following properties:
         Due to the shape mismatch, the output of a stage cannot be directly used as the skip connection of the next stage.
         Possible solutions are:
         \begin{itemize}
-            \item Apply stride $2$ and zero-padding in the first layer of the next stage (this does not add new parameters).
+            \item Apply stride $2$ and zero-pad the missing channels of the skip connection (this does not add new parameters).
             \item The output of the previous stage is passed through a $1 \times 1$ convolution with stride $2$ and $2C$ output channels (shown to work slightly better).
         \end{itemize}
 
