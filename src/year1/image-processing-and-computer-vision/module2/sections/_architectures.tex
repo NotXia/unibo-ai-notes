@@ -5,7 +5,7 @@
 
 \begin{description}
     \item[Stem layer] \marginnote{Stem layer}
-        First convolutional layer of a CNN that aims to reduce the spatial size of the activations for memory and computational purposes
+        First convolutional layer(s) of a CNN that aims to reduce the spatial size of the activations for memory and computational purposes
         but also to rapidly increase the receptive field.
 
     \item[Model parallelism] \marginnote{Model parallelism}
@@ -299,6 +299,7 @@ The authors constrained the layers to:
 
             On the other hand, two activations are computed and both need to be stored for backpropagation.
 
+            \indenttbox
             \begin{example}
                 \phantom{}
                 \begin{center}
@@ -451,7 +452,7 @@ Network that aims to optimize computing resources.
 \begin{description}
     \item[Stem layers]
         Down-sample the image from a shape of 224 to 28.
-        As in ZFNet, multiple layers are used (5) and the largest convolution is of shape $7 \times 7$ and stride $2$.
+        As in ZFNet, multiple layers are used (5) and the largest convolution is of shape $7 \times 7$ with stride $2$.
 
     \item[Inception module] \marginnote{Inception module}
         Main component of Inception-v1 that computes multiple convolutions on the input.
@@ -621,7 +622,7 @@ A larger version of Inception v3 with more complicated stem layers.
 
 \begin{description}
     \item[Standard residual block] \marginnote{Standard residual block}
-        Block that allows to easily learn the identity function through skip connections.
+        Block that allows to easily learn the identity function through a skip connection.
         The output of a residual block with input $x$ and a series of convolutional layers $F$ is:
         \[ F(x; \matr{\theta}) + x \]
 
@@ -779,7 +780,7 @@ It has the following properties:
         \item The majority of the possible paths have a length of $\sim 30$.
         \item The gradient magnitude is significant at the first layers (i.e. in shorter paths).
     \end{itemize}
-    By multiplying values of two points above, results show that the total gradient magnitude is significant only up until paths of length $\sim 20$.
+    By multiplying the values of the two points above, results show that the total gradient magnitude is significant only up until paths of length $\sim 20$.
     
     \begin{figure}[H]
         \centering

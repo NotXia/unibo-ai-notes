@@ -291,7 +291,7 @@ The prediction is obtained as the index of the maximum score.
 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.45\linewidth]{./img/data_representation_linear.png}
+        \includegraphics[width=0.40\linewidth]{./img/data_representation_linear.png}
         \caption{
             \parbox[t]{0.6\linewidth}{
                 Example of non-linearly separable data points that become linearly separable in polar coordinates
@@ -386,12 +386,12 @@ The prediction is obtained as the index of the maximum score.
 
             \begin{figure}[H]
                 \centering
-                \begin{subfigure}{0.55\linewidth}
+                \begin{subfigure}{0.6\linewidth}
                     \centering
                     \includegraphics[width=\linewidth]{./img/relu_separability_1.png}
                 \end{subfigure}
 
-                \begin{subfigure}{0.55\linewidth}
+                \begin{subfigure}{0.6\linewidth}
                     \centering
                     \includegraphics[width=\linewidth]{./img/relu_separability_2.png}
                 \end{subfigure}
@@ -442,7 +442,7 @@ Image filtering can be implemented through:
 
         Given an image of size $H \times W$, a convolution requires:
         \begin{itemize}
-            \item $2$ parameters.
+            \item $2$ parameters (in the case of edge detection).
             \item $3 (H \cdot (W-1)) \approx 3HW$ FLOPs.
         \end{itemize}
 
@@ -469,7 +469,7 @@ Image filtering can be implemented through:
 
 \begin{description}
     \item[Multi-channel convolution] \marginnote{Multi-channel convolution}
-        On inputs with multiple channels (i.e. 3D inputs), different 2D convolutions are applied across the different channels.
+        On inputs with multiple channels (e.g. RGB images), different 2D convolutions are applied across the different channels.
 
         Given a $C_\text{in} \times H_\text{in} \times W_\text{in}$ image $I$, a convolution kernel $K$ will have shape $C_\text{in} \times H_K \times W_K$
         and the output activation at each pixel is computed as:

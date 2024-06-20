@@ -84,7 +84,7 @@ is done in two steps:
 \marginnote{Roto-translation}
 
 The conversion from the world reference system to the camera reference system
-is done through a roto-translation wrt the optical center.
+is done through a roto-translation w.r.t. the optical center.
 
 Given: 
 \begin{itemize}
@@ -111,7 +111,7 @@ the coordinates $\vec{M}_C$ in CRF corresponding to $\vec{M}_W$ are given by:
 \]
 
 \begin{remark}
-    The coordinates $\vec{C}_W$ of the optical center $\vec{C}$ are obtained as:
+    The coordinates $\vec{C}_W$ of the optical center $\vec{C} = \nullvec$ are obtained as:
     \[ 
         \nullvec = \matr{R}\vec{C}_W + \vec{t} 
             \iff (\nullvec - \vec{t}) = \matr{R}\vec{C}_W 
@@ -378,7 +378,7 @@ where:
         \]
         where $p_1$ and $p_2$ are additional intrinsic parameters.
         \begin{remark}
-            This approximation has empirically been shown to work.
+            This approximation has been empirically shown to work.
         \end{remark}
 \end{itemize}
 
@@ -620,7 +620,7 @@ Therefore, the complete workflow for image formation becomes the following:
 
     \item[Homographies non-linear refinement]
         The homographies $\matr{H}_i$ estimated at the previous step are obtained using a linear method and need to be refined as, for each image $i$, 
-        the IRF coordinates $\matr{H}_i\vec{w}_j = (\frac{h_{i, 1}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j}, \frac{h_{i, 2}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j})$
+        the IRF coordinates $\matr{H}_i\vec{w}_j = \left( \frac{h_{i, 1}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j}, \frac{h_{i, 2}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j} \right)$
         of the world point $\vec{w}_j$ are still not matching the known IRF coordinates $\vec{m}_{i,j}$ of the $j$-corner in the $i$-image.
         \begin{figure}[H]
             \centering
@@ -896,7 +896,7 @@ The computed input coordinates might be continuous. Possible discretization stra
 
 \subsection{Undistort warping}
 
-Once a camera has been calibrated, the lens distortion parameters can be used to obtain the undistorted image through backward warping.
+Once a camera has been calibrated using Zhang's method, the lens distortion parameters can be used to obtain the undistorted image through backward warping.
 \[
     \begin{split}
         w_u &= u_\text{undist} + (k_1 r^2 + k_2 r^4)(u_\text{undist} - u_0) \\
@@ -1018,6 +1018,7 @@ Undistorted images enjoy some properties:
 
             Finally, the homography $\matr{A}\matr{R}_\text{pitch}\matr{A}^{-1}$ relates the pitched image to the ideal image.
 
+            \indenttbox
             \begin{remark}
                 The same procedure can be done for the yaw.
             \end{remark}
