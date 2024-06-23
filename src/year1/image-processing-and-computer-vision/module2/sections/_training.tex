@@ -205,7 +205,7 @@ Add a regularization term to the loss:
         \end{remark}
 
         \begin{remark}
-            The \texttt{weight\_decay} of more advanced optimizers (e.g. Adam) is not always the L2 regularization.
+            The \texttt{weight\_decay} parameter of more advanced optimizers (e.g. Adam) is not always the L2 regularization.
             
             In PyTorch, \texttt{Adam} implements L2 regularization while \texttt{AdamW} uses another type of regularizer.
         \end{remark}
@@ -234,7 +234,7 @@ When using cross-entropy with softmax, the model has to push the correct logit t
 Given $C$ classes, labels can be smoothed by assuming a small uniform noise $\varepsilon$:
 \[
     \vec{y}^{(i)} = \begin{cases}
-        1 - \frac{\varepsilon(C-1)}{C} & \text{if $i$ is the correct label} \\
+        1 - \frac{\varepsilon}{C}(C-1) & \text{if $i$ is the correct label} \\
         \frac{\varepsilon}{C} & \text{otherwise} \\
     \end{cases}
 \]
@@ -273,7 +273,7 @@ Given $C$ classes, labels can be smoothed by assuming a small uniform noise $\va
                             &= \frac{1}{2}(w_1 x_1 + w_2 x_2) = p a^\text{(test)}
                     \end{split}
                 \]
-                There is, therefore, a $p$ factor of discrepancy between $a^\text{(train)}$ and $a^\text{(test)}$ that might disrupt the distribution of the activations. Two approaches can be taken:
+                Therefore, there is a $p$ factor of discrepancy between $a^\text{(train)}$ and $a^\text{(test)}$ that might disrupt the distribution of the activations. Two approaches can be taken:
                 \begin{itemize}
                     \item Rescale the value at test time:
                         \[ p a^\text{(test)} = \mathbb{E}_\matr{m} \left[ a^\text{(train)} \right] \]
