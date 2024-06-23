@@ -683,7 +683,7 @@ It has the following properties:
         Variant of residual blocks that uses more layers with approximately the same number of parameters and FLOPs of the standard residual block.
         Instead of using two $3 \times 3$ convolutions, bottleneck residual network has the following structure:
         \begin{itemize}
-            \item $1 \times 1$ convolution to compress the channels of the input by an order of $4$ (and the spatial dimension by $2$ if it is the first block of a stage, as in the normal ResNet).
+            \item $1 \times 1$ convolution to compress the channels of the input by an order of $4$ (and the spatial dimension by $2$ if it is the first block of a stage, as in normal ResNet).
             \item $3 \times 3$ convolution.
             \item $1 \times 1$ convolution to match the shape of the skip connection.
         \end{itemize}

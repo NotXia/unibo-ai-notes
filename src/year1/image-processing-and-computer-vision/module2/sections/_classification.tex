@@ -271,7 +271,7 @@ where the $\texttt{logits} \in \mathbb{R}^{c}$ vector contains a score for each 
 The prediction is obtained as the index of the maximum score.
 
 \begin{remark}
-    Predicting directly the integer encoded classes is not ideal as it would give a (probably) inexistent semantic ordering
+    Directly predicting the integer encoded classes is not ideal as it would give a (probably) inexistent semantic ordering
     (e.g. if $2$ encodes bird and $3$ encodes cat, $2.5$ should not mean half bird and half cat).
 \end{remark}
 
