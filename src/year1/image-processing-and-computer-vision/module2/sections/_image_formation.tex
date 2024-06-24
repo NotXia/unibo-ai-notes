@@ -621,7 +621,7 @@ Therefore, the complete workflow for image formation becomes the following:
     \item[Homographies non-linear refinement]
         The homographies $\matr{H}_i$ estimated at the previous step are obtained using a linear method and need to be refined as, for each image $i$, 
         the IRF coordinates $\matr{H}_i\vec{w}_j = \left( \frac{h_{i, 1}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j}, \frac{h_{i, 2}^T \tilde{\vec{w}}_j}{h_{i, 3}^T \tilde{\vec{w}}_j} \right)$
-        of the world point $\vec{w}_j$ are still not matching the known IRF coordinates $\vec{m}_{i,j}$ of the $j$-corner in the $i$-image.
+        of the world point $\vec{w}_j$ are still not matching the known IRF coordinates $\vec{m}_{i,j}$ of the $j$-th corner in the $i$-th image.
         \begin{figure}[H]
             \centering
             \includegraphics[width=0.7\linewidth]{./img/_homography_refinement.pdf}
@@ -989,7 +989,7 @@ Undistorted images enjoy some properties:
 
         \begin{example}[Compensate pitch or yaw]
             In autonomous driving, cameras should be ideally mounted with the optical axis parallel to the road plane and aligned with the direction of motion.
-            It is usually very difficult to obtain perfect alignment physically 
+            It is usually very difficult to physically obtain perfect alignment 
             but a calibrated camera can help to compensate pitch (i.e. rotation around the $x$-axis)
             and yaw (i.e. rotation around the $y$-axis) by estimating the vanishing point of the lane lines.
 

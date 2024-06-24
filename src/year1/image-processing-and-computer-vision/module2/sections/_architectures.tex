@@ -599,7 +599,7 @@ Different modules are used depending on the activation shape.
 \subsection{Inception-v4}
 \marginnote{Inception-v4}
 
-A larger version of Inception v3 with more complicated stem layers.
+A larger version of Inception-v3 with more complicated stem layers.
 
 
 
@@ -660,7 +660,7 @@ It has the following properties:
     \item A stage is composed of residual blocks.
     \item A residual block is composed of two $3 \times 3$ convolutions followed by batch normalization.
     \item The first residual block of each stage halves the spatial dimension and doubles the number of channels (there is no pooling).
-    \item Stem layers are less aggressive than GoogLeNet (\texttt{conv + pool}. Input reduced to $56 \times 56$).
+    \item Stem layers are less aggressive than GoogLeNet (\texttt{conv + pool}. Input reduced to a shape of $56 \times 56$).
     \item Global average pooling is used instead of flattening.
 \end{itemize}
 
@@ -696,7 +696,7 @@ It has the following properties:
 \end{description}
 
 \begin{remark}
-    ResNet improves the results of a deeper layer but beyond a certain depth, the gain is negligible.
+    ResNet improves the results of a deeper network but, beyond a certain depth, the gain is negligible.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.65\linewidth]{./img/resnet_results.png}
