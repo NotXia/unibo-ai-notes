@@ -143,7 +143,7 @@ By developing the error function into matrix form, we obtain the following:
         $\matr{R}^T$ is the rotation matrix that aligns the image to the eigenvectors of $\matr{M}_w$, 
         while the eigenvalues remain the same for any rotation of the same patch.
 
-        Therefore, the eigenvalues $\lambda_1^{(w)}, \lambda_2^{(w)}$ of $\matr{M}_w$ allow to detect intensity changes along the shift directions:
+        Therefore, the eigenvalues $\lambda_1^{(w)}, \lambda_2^{(w)}$ of $\matr{M}_w$ allow to detect intensity changes along the shift direction:
         \[
             \begin{split}
                 E(\Delta x, \Delta y) &= \begin{pmatrix} \Delta x & \Delta y \end{pmatrix} 
@@ -450,7 +450,7 @@ After finding the keypoints, a descriptor of a keypoint is computed from the pix
 Given a keypoint, SIFT detector works as follows:
 \begin{enumerate}
     \item Center on the keypoint a $16 \times 16$ grid divided into $4 \times 4$ regions.
-    \item Compute for each region its orientation histogram with eight bins (i.e. bins of size $45^\circ$).
+    \item Compute, for each region, its orientation histogram with eight bins (i.e. bins of size $45^\circ$).
         The Gaussian weighting function is centered on the keypoint and has $\sigma$ equal to half the grid size.
     \item The descriptor is obtained by concatenating the histograms of each region. 
         This results in a feature vector with $128$ elements ($(4 \cdot 4) \cdot 8$).

@@ -97,7 +97,7 @@ Edge-based template matching that works as follows:
             \nabla \tilde{I}_{i,j}(\tilde{P}_k) = \begin{pmatrix} \partial_x \tilde{I}_{i,j}(\tilde{P}_k) \\ \partial_y \tilde{I}_{i,j}(\tilde{P}_k) \end{pmatrix} \hspace{2em} 
             \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{\nabla \tilde{I}_{i,j}(\tilde{P}_k)}{\Vert \nabla \tilde{I}_{i,j}(\tilde{P}_k) \Vert} 
         \]
-    \item Compute the similarity as the mean of the cosine similarities of each pair of gradients:
+    \item Compute the similarity as the mean cosine similarity of each pair of gradients:
         \[ S(T, \tilde{I}_{i,j}) = \frac{1}{n} \sum_{k=1}^{n} \vec{u}_k(P_k) \cdot \tilde{\vec{u}}_k(\tilde{P}_k) = \frac{1}{n} \sum_{k=1}^{n} \cos \theta_k \in [-1, 1] \]
         $S(T, \tilde{I}_{i,j}) = 1$ when the gradients perfectly match. A minimum threshold $S_\text{min}$ is used to determine if there is a match.
 \end{enumerate}
