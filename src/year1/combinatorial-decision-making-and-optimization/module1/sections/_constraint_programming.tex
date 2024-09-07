@@ -124,7 +124,7 @@ Examine individual constraints and detect inconsistent partial assignments.
         \begin{example}[Generalized arc consistency]
             Given the variables $D(X_1) = \{ 1, 2, 3 \}$, $D(X_2) = \{ 1, 2 \}$, $D(X_3) = \{ 1, 2 \}$ and 
             the constraint $C: \texttt{alldifferent}([X_1, X_2, X_3])$,
-            $C$ is not GAC as $1 \in D(X_1)$ and $2 \in D(X_2)$ do not have a support.
+            $C$ is not GAC as $1 \in D(X_1)$ and $2 \in D(X_1)$ do not have a support.
             
             By applying a constraint propagation algorithm, we can reduce the domain to: 
             $D(X_1) = \{ \cancel{1}, \cancel{2}, 3 \}$ and $D(X_2) = D(X_3) = \{ 1, 2 \}$.
@@ -185,7 +185,7 @@ Examine individual constraints and detect inconsistent partial assignments.
 
 \begin{description}
     \item[Constraint propagation] \marginnote{Constraint propagation}
-        Algorithm that removes values from the domains of the variables to achieve a given level of consistency.
+        Algorithm that removes values from the domain of the variables to achieve a given level of consistency.
 
         Constraint propagation algorithms interact with each other and already propagated constraints might be woke up again by another constraint.
         Propagation will eventually reach a fixed point.
@@ -357,7 +357,7 @@ Define constraints in an extensive way.
 
 
 \begin{description}
-    \item[Backtraking tree search] \marginnote{Backtraking tree search}
+    \item[Backtracking tree search] \marginnote{Backtracking tree search}
         Tree where nodes are variables and branches are variable assignments.
 
     \item[Systematic search] \marginnote{Systematic search}

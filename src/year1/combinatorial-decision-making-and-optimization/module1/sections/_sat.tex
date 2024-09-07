@@ -153,7 +153,7 @@
         \item $p$ with $(\lnot p \vee \lnot r)$ derives $\lnot r$.
         \item $\lnot s$ with $(q \vee s)$ derives $q$.
         \item $\lnot r$ with $(r \vee t)$ derives $t$.
-        \item $q$ with $(\lnot q \vee \lnot t)$ derives $\not t$.
+        \item $q$ with $(\lnot q \vee \lnot t)$ derives $\lnot t$.
         \item $t$ and $\lnot t$ bring to $\bot$. This branch is UNSAT.
     \end{itemize}
 
@@ -221,7 +221,7 @@ DPLL with two improvements:
         When a contradiction is found, augment the original CNF with a conflict clause
         to prune the search space.
 
-        The conflict clause is obtained through resolution by combining two clauses that cause the contradiction.
+        The conflict clause is obtained through resolution by combining the two clauses that cause the contradiction.
 
     \item[\texttt{Backjumping}]
         Depending on the type of contradiction, skip decision literals that are not causing the conflict

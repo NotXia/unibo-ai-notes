@@ -180,6 +180,8 @@
         
         \begin{remark}
             Useful to deal with black-box functions (i.e. prove satisfiability without a specific theory).
+            
+            \indenttbox
             \begin{example}
                 The following formula can be proved to be unsatisfiable by only using syntactic manipulations of basic FOL concepts:
                 \begin{gather*}
@@ -478,6 +480,7 @@ The $\calT$-solver does the following:
         \end{enumerate}
         As we are at decision level 0 (as no decision literal has been fixed), we can conclude that $\varphi$ is unsatisfiable.
 
+        \indenttbox
         \begin{remark}
             Unit and theory propagation are alternated (see algorithm description).
         \end{remark}
