@@ -1,0 +1,36 @@
+\chapter{Introduction}
+
+\begin{description}
+    \item[Wall-clock time] \marginnote{Wall-clock time}
+        Time taken to run a program from start to finish.
+
+    \item[High performance computing (HPC)] \marginnote{High performance computing (HPC)}
+        Specialized hardware aiming to reduce wall-clock time (e.g., super-computer). A program is split into strongly coupled sub-problems.
+
+    \item[High throughput computing (HTC)] \marginnote{High throughput computing (HTC)} 
+        Commodity hardware that guarantees a high job throughput (e.g., cloud computing). A program is split into loosely coupled sub-problems that are not necessarily related to each other.
+\end{description}
+
+\begin{remark}
+    A system with two units of the same processor with the clock halved is usually more power efficient than a system with a single unit at full speed.
+\end{remark}
+
+\begin{description}
+    \item[Parallel programming steps] 
+        The typical steps to write a parallel program is the following:
+        \begin{enumerate}
+            \item Decompose the main problem into sub-problems.
+            \item Distribute the sub-problems to the execution units.
+            \item Solve each sub-problem.
+            \item Merge the sub-solutions.
+        \end{enumerate}
+
+        \begin{description}
+            \item[Embarrassingly parallel problem] \marginnote{Embarrassingly parallel problem}
+                Problem that can be split in completely independent sub-problems.
+
+            \begin{remark}
+                Typically, parallelizing a sequential algorithm is not straightforward.
+            \end{remark}
+        \end{description}
+\end{description}
