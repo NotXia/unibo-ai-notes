@@ -29,3 +29,7 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 - **Languages and Algorithms for Artificial Intelligence**
    - [LAAI module 2](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year1/languages-and-algorithms-for-ai/module2/laai2.pdf)
    - [LAAI module 3](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year1/languages-and-algorithms-for-ai/module3/laai3.pdf)
+
+### Year 2
+- **Architectures and Platforms for Artificial Intelligence**
+   - [APAI module 1](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/architectures-and-platforms-for-ai/module1/apai1.pdf)
