@@ -33,3 +33,4 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 ### Year 2
 - **Architectures and Platforms for Artificial Intelligence**
    - [APAI module 1](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/architectures-and-platforms-for-ai/module1/apai1.pdf)
+- [**Artificial Intelligence in Industry**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/artificial-intelligence-in-industry/a3i.pdf)
