@@ -31,6 +31,5 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
    - [LAAI module 3](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year1/languages-and-algorithms-for-ai/module3/laai3.pdf)
 
 ### Year 2
-- **Architectures and Platforms for Artificial Intelligence**
-   - [APAI module 1](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/architectures-and-platforms-for-ai/module1/apai1.pdf)
 - [**Artificial Intelligence in Industry**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/artificial-intelligence-in-industry/a3i.pdf)
+- [**Natural Language Processing**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/natural-language-processing/nlp.pdf)
