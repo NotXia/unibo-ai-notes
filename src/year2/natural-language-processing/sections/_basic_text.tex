@@ -1,0 +1,208 @@
+\chapter{Basic text processing}
+
+
+\begin{description}
+    \item[Text normalization]
+        Operations such as:
+        \begin{description}
+            \item[Tokenization] \marginnote{Tokenization}
+            Split a sentence in tokens.
+
+            \begin{remark}
+                Depending on the approach, a token is not always a word.
+            \end{remark}
+
+            \item[Lemmatization/stemming] \marginnote{Lemmatization/stemming}
+                Convert words to their canonical form.
+
+                \begin{example}
+                    $\{ \texttt{sang}, \texttt{sung}, \texttt{sings} \} \mapsto \texttt{sing}$
+                \end{example}
+
+            \item[Sentence segmentation] \marginnote{Sentence segmentation}
+                Split a text in sentences.
+
+                \begin{remark}
+                    A period does not always signal the end of a sentence.
+                \end{remark}
+        \end{description}
+\end{description}
+
+
+\section{Regular expressions}
+
+\begin{description}
+    \item[Regular expression (regex)] \marginnote{Regular expression (regex)}
+        Formal language to describe string patterns.
+\end{description}
+
+
+\subsection{Basic operators}
+
+\begin{description}
+    \item[Disjunction (brackets)]
+        Match a single character between square brackets \texttt{[]}.
+
+        \begin{example}
+            \texttt{/[wW]oodchuck/} matches \texttt{Woodchuck} and \texttt{woodchuck}.
+        \end{example}
+
+    \item[Range]
+        Match a single character from a range of characters or digits.
+
+        \begin{example} \phantom{}\\[-1.5em]
+            \begin{itemize}
+                \item \texttt{/[A-Z]/} matches a single upper case letter.
+                \item \texttt{/[a-z]/} matches a single lower case letter.
+                \item \texttt{/[0-9]/} matches a single digit.
+            \end{itemize}
+        \end{example}
+
+    \item[Negation]
+        Match the negation of a pattern.
+
+        \begin{example}
+            \texttt{/[\textasciicircum A-Z]/} matches a single character that is not an upper case letter.
+        \end{example}
+
+    \item[Disjunction (pipe)]
+        Disjunction of regular expressions separated by \texttt{|}.
+
+        \begin{example}
+            \texttt{/groundhog|woodchuck/} matches \texttt{groundhog} and \texttt{woodchuck}.
+        \end{example}
+
+
+    \item[Wildcards] \phantom{}
+        \begin{description}
+            \item[Optional]
+                A character followed by \texttt{?} can be matched optionally.
+
+                \begin{example}
+                    \texttt{/woodchucks?/} matches \texttt{woodchuck} and \texttt{woodchucks}.
+                \end{example}
+
+            \item[Any]
+                \texttt{.} matches any character.
+
+            \item[Kleene \texttt{*}]
+                A character followed by \texttt{*} can be matched zero or more times.
+
+            \item[Kleene \texttt{+}]
+                A character followed by \texttt{+} must be matched at least once.
+
+            \item[Counting]
+                A character followed by \texttt{\string{n,m\string}} must be matched from $n$ to $m$ times.
+
+                \begin{example} \phantom{}\\[-1.5em]
+                    \begin{itemize}
+                        \item \texttt{\string{n\string}} matches exactly $n$ instances of the previous character.
+
+                        \item \texttt{\string{n,m\string}} matches from $n$ to $m$ instances of the previous character.
+
+                        \item \texttt{\string{n,\string}} matches at least $n$ instances of the previous character.
+                        
+                        \item \texttt{\string{,m\string}} matches at most $m$ instances of the previous character.
+                    \end{itemize}
+                \end{example}
+        \end{description}
+
+    \item[Anchors] \phantom{}
+        \begin{description}
+            \item[Start of line]
+                \texttt{\textasciicircum} matches only at the start of line.
+
+                \begin{example}
+                    \texttt{/\textasciicircum a/} matches \texttt{\underline{a}} but not \texttt{ba}.
+                \end{example}
+
+            \item[End of line] 
+                \texttt{\$} matches only at the end of line.
+
+                \begin{example}
+                    \texttt{/a\$/} matches \texttt{\underline{a}} but not \texttt{ab}.
+                \end{example}
+
+            \item[Word boundary]
+                \texttt{\char`\\ b} matches a word boundary character.
+
+            \item[Word non-boundary] 
+                \texttt{\char`\\ B} matches a word non-boundary character.
+        \end{description}
+
+    \item[Aliases] \phantom{}
+        \begin{itemize}
+            \item \texttt{\char`\\ d} matches a single digit (same as \texttt{[0-9]}).
+            
+            \item \texttt{\char`\\ D} matches a single non-digit (same as \texttt{[\textasciicircum\char`\\ d]}).
+            
+            \item \texttt{\char`\\ w} matches a single alphanumeric or underscore character (same as \texttt{[a-zA-Z0-9\_]}).
+            
+            \item \texttt{\char`\\ w} matches a single non-alphanumeric and non-underscore character (same as \texttt{[\textasciicircum\char`\\ w]}).
+
+            \item \texttt{\char`\\ s} matches a single whitespace (space or tab).
+            
+            \item \texttt{\char`\\ S} matches a single non-whitespace.
+        \end{itemize}
+
+
+    \item[Capture group]
+        Operator to refer to previously matched substrings.
+
+        \begin{example}
+            In the regex \texttt{/the (.*)er they were, the \char`\\ 1er they will be/}, \texttt{\char`\\ 1} should match the same content matched by \texttt{(.*)}.
+        \end{example}
+\end{description}
+
+
+
+\section{Tokenization}
+
+\begin{description}
+    \item[Lemma] \marginnote{Lemma}
+        Words with the same stem and roughly the same semantic meaning.
+        \begin{example}
+            \texttt{cat} and \texttt{cats} are the same lemma.
+        \end{example}
+
+    \item[Wordform] \marginnote{Wordform}
+        Orthographic appearance of a word.
+        \begin{example}
+            \texttt{cat} and \texttt{cats} do not have the same wordform.
+        \end{example}
+    
+    \item[Vocabulary] \marginnote{Vocabulary}
+        Collection of text elements, each indexed by an integer.
+
+        \begin{remark}
+            To reduce the size of a vocabulary, words can be reduced to lemmas.
+        \end{remark}
+
+    \item[Type / Wordtype] \marginnote{Type / Wordtype}
+        Element of a vocabulary (i.e., wordforms in the vocabulary).
+    
+    \item[Token] \marginnote{Token}
+        Instance of a type in a text.
+
+    \item[Genre] \marginnote{Genre}
+        Topic of a text corpus (e.g., short social media comments, books, Wikipedia pages, \dots).
+\end{description}
+
+\begin{remark}[Herdan's law]
+    Given a corpus with $N$ tokens, a vocabulary $V$ over that corpus roughly have size:
+    \[ \left\vert V \right\vert = kN^\beta \]
+    where the typical values are $10 \leq k \leq 100$ and $0.4 \leq \beta \leq 0.6$.
+\end{remark}
+
+\begin{description}
+    \item[Stopwords] \marginnote{Stopwords}
+        Frequent words that can be dropped.
+
+        \begin{remark}
+            If semantics is important, stopwords should be kept. LLMs keep stopwords.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    For speed, simple tokenizers use regex.
+\end{remark}
