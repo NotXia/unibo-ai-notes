@@ -1,4 +1,4 @@
-\chapter{Anomaly detection: Taxi calls}
+\chapter{Low dimensional anomaly detection: Taxi calls} \label{ch:ad_low}
 
 \begin{description}
     \item[Anomaly] \marginnote{Anomaly}
@@ -73,7 +73,7 @@ Classify a data point as an anomaly if it is too unlikely.
 \end{description}
 
 
-\subsubsection{Univariate kernel density estimation}
+\subsubsection{Univariate kernel density estimation} \label{sec:ad_taxi_kde_uni}
 
 \begin{description}
     \item[Kernel density estimation (KDE)] \marginnote{Kernel density estimation (KDE)}
@@ -105,16 +105,6 @@ Classify a data point as an anomaly if it is too unlikely.
 
         Therefore, the train data themselves are used as the parameters of the model while the bandwidth $h$ has to be estimated. 
 
-        \begin{remark}
-            According to some statistical arguments, a rule-of-thumb to estimate $h$ in the univariate case is the following:
-            \[ h = 0.9 \cdot \min\left\{ \hat{\sigma}, \frac{\texttt{IQR}}{1.34} \right\} \cdot m^{-\frac{1}{5}} \]
-            where:
-            \begin{itemize}
-                \item $\texttt{IQR}$ is the inter-quartile range.
-                \item $\hat{\sigma}$ is the standard deviation computed over the whole dataset.
-            \end{itemize}
-        \end{remark}
-
     \item[Data split] 
         Time series are usually split chronologically:
         \begin{descriptionlist}
@@ -141,6 +131,15 @@ Classify a data point as an anomaly if it is too unlikely.
         \[ (c_\text{false} \cdot \texttt{FP}) + (c_\text{miss} \cdot \texttt{FN}) + (c_\text{late} \cdot \texttt{adv}_{\leq 0}) \]
         where $c_\text{false}$, $c_\text{miss}$, and $c_\text{late}$ are hyperparameters.
 
+    \item[Bandwidth estimation]
+        According to some statistical arguments, a rule-of-thumb to estimate $h$ in the univariate case is the following:
+        \[ h = 0.9 \cdot \min\left\{ \hat{\sigma}, \frac{\texttt{IQR}}{1.34} \right\} \cdot m^{-\frac{1}{5}} \]
+        where:
+        \begin{itemize}
+            \item $\texttt{IQR}$ is the inter-quartile range.
+            \item $\hat{\sigma}$ is the standard deviation computed over the whole dataset.
+        \end{itemize}
+
     \item[Threshold optimization]
         Using the train and validation set, it is possible to find the best threshold $\varepsilon$ that minimizes the cost model through linear search.
 
@@ -158,7 +157,7 @@ Classify a data point as an anomaly if it is too unlikely.
 \end{remark}
 
 
-\subsubsection{Multivariate kernel density estimation}
+\subsubsection{Multivariate kernel density estimation} \label{sec:ad_taxi_kde_multi}
 
 \begin{remark}
     In this dataset, nearby points tend to have similar values.
@@ -176,12 +175,12 @@ Classify a data point as an anomaly if it is too unlikely.
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.7\linewidth]{./img/_ad_taxi_autocorrelation.pdf}
+            \includegraphics[width=0.75\linewidth]{./img/_ad_taxi_autocorrelation.pdf}
             \caption{
                 \parbox[t]{0.6\linewidth}{
                     Autocorrelation plot of the subset of the dataset. There is strong correlation up to 4-5 lags.
                 }
-            }
+            } \label{fig:ad_taxi_autocorrelation}
         \end{figure}
 
 
@@ -199,4 +198,97 @@ Classify a data point as an anomaly if it is too unlikely.
 
     \item[Multivariate KDE]
         Extension of KDE to vector variables.
+
+    \item[Window size estimation]
+        By analyzing the autocorrelation plot, an ideal window size can be picked as the lag with a low correlation (e.g., $10$ according to \Cref{fig:ad_taxi_autocorrelation}).
+
+    \item[Bandwidth estimation]
+        Differently from the univariate case, the bandwidth has to be estimated by maximizing the log-likelihood on the validation set. Given:
+        \begin{itemize}
+            \item The validation set $\tilde{x}$,
+            \item The observations $x$,
+            \item The bandwidth $h$,
+            \item The density estimator $\hat{f}$
+        \end{itemize}
+        the likelihood is computed, by assuming independent observations, as:
+        \[ L(h, x, \tilde{x}) = \prod_{i=1}^{m} \hat{f}(x_i, \tilde{x}_i, h) \]
+        Maximum likelihood estimation is defined as:
+        \[ \arg\max \mathbb{E}_{x \sim f(x), \tilde{x} \sim f(x)}[ L(h, x, \tilde{x}) ] \]
+        where $f(x)$ is the true distribution.
+
+        In practice, the expected value is sampled from multiple validation and training sets through cross-validation and grid-search.
+
+        \begin{remark}
+            As different folds for cross-validation must be tried, grid-search is an expensive operation.
+        \end{remark}
+
+    \item[Threshold optimization]
+        The threshold can be determined as in \Cref{sec:ad_taxi_kde_uni}.
+\end{description}
+
+
+\subsubsection{Time-dependent estimator}
+
+The approach taken in \Cref{sec:ad_taxi_kde_uni,sec:ad_taxi_kde_multi} is based on the complete timestamp of the dataset. Therefore, the same times on different days are treated differently. However, it can be seen that this time series is approximately periodic, making the approach used so far more complicated than necessary.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./img/_ad_taxi_periodic.pdf}
+    \includegraphics[width=0.8\linewidth]{./img/_ad_taxi_periodic_autocorrelation.pdf}
+\end{figure}
+
+
+\begin{description}
+    \item[Time input]
+        It is possible to take time into consideration by adding it as a parameter of the density function:
+        \[ f(t, x) \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_ad_taxi_time_distribution.pdf}
+            \caption{
+                \parbox[t]{0.6\linewidth}{2D histogram of the distribution. Lighter colors indicate a higher frequency of occurrence.}
+            }
+        \end{figure}
+
+        However, $t$ is a controlled variable and is completely predictable (i.e., if times are samples with different frequencies, they should not affect the overall likelihood). Therefore, a conditional density should be used:
+        \[ f(x \mid t) = \frac{f(t, x)}{f(t)} \]
+        where $f(t)$ can be easily computed using KDE on the time data.
+
+        \begin{remark}
+            For this dataset, the time distribution is uniform. Therefore, $f(t)$ is a constant and it is correct to use $f(t, x)$ as the estimator.
+        \end{remark}
+
+    \item[Bandwidth estimation]
+        The bandwidth can be estimated as in \Cref{sec:ad_taxi_kde_multi}.
+
+        \begin{remark}
+            When using the \texttt{scikit-learn}, the dataset should be normalized as the implementation of KDE use the same bandwidth for all features.
+        \end{remark}
+
+    \item[Threshold optimization]
+        The threshold can be determined as in \Cref{sec:ad_taxi_kde_uni}.
+\end{description}
+
+
+\subsubsection{Time-indexed model}
+
+\begin{description}
+    \item[Ensemble model] \marginnote{Ensemble model}
+        Model defined as:
+        \[ f_{g(t)}(x) \]
+        where:
+        \begin{itemize}
+            \item $f_i$ are estimators, each working on subsets of the dataset and solving a smaller problem.
+            \item $g(t)$ determines which particular $f_i$ should solve the input.
+        \end{itemize}
+
+    \item[Time-indexed model]
+        Consider both time and sequence inputs by using an ensemble model. Each estimator is specialized on a single time value (i.e., an estimator for \texttt{00:00}, one for \texttt{00:30}, \dots ).
+
+    \item[Bandwidth estimation]
+        The bandwidth can be estimated as in \Cref{sec:ad_taxi_kde_multi}.
+
+    \item[Threshold optimization]
+        The threshold can be determined as in \Cref{sec:ad_taxi_kde_uni}.
 \end{description}
