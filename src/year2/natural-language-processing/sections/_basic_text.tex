@@ -203,6 +203,203 @@
         \end{remark}
 \end{description}
 
-\begin{remark}
-    For speed, simple tokenizers use regex.
-\end{remark}
+\begin{description}
+    \item[Rule-based tokenization] \marginnote{Rule-based tokenization} 
+        Hand-defined rules for tokenization.
+        \begin{remark}
+            For speed, simple tokenizers use regex.
+        \end{remark}
+
+    \item[Data-driven tokenization] \marginnote{Data-driven tokenization}
+        Determine frequent tokens from a large text corpus.
+\end{description}
+
+
+\subsection{Data-driven tokenization}
+
+Tokenization is done by two components:
+\begin{descriptionlist}
+    \item[Token learner] \marginnote{Token learner}
+        Learns a vocabulary from a given corpus (i.e., training).
+
+    \item[Token segmenter] \marginnote{Token segmenter}
+        Segments a given input into tokens based on a vocabulary (i.e., inference).
+\end{descriptionlist}
+
+
+\begin{description}
+    \item[Byte-pair encoding (BPE)] \marginnote{Byte-pair encoding (BPE)}
+        Based on the most frequent $n$-grams.
+
+        \begin{description}
+            \item[Token learner]
+                Given a training corpus $C$, BPE determines the vocabulary as follows:
+                \begin{enumerate}
+                    \item Start with a vocabulary $V$ containing all the $1$-grams of $C$ and an empty set of merge rules $M$.
+                    \item While the desired size of the vocabulary has not been reached:
+                    \begin{enumerate}
+                        \item Determine the pair of tokens $t_1 \in V$ and $t_2 \in V$ such that, among all the possible pairs, the $n$-gram $t_1 + t_2 = t_1t_2$ obtained by merging them is the most frequent in the corpus $C$.
+                        \item Add $t_1t_2$ to $V$ and the merge rule $t_1+t_2$ to $M$.
+                    \end{enumerate}
+                \end{enumerate}
+
+                \begin{example}
+                    Given the following corpus:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{cl}
+                            \toprule
+                            \textbf{Occurrences} & \textbf{Tokens} \\
+                            \midrule
+                            5 & \texttt{l o w \$} \\
+                            2 & \texttt{l o w e r \$} \\
+                            6 & \texttt{n e w e s t \$} \\
+                            6 & \texttt{w i d e s t \$} \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    The initial vocabulary is: $V = \{  \texttt{\$}, \texttt{l}, \texttt{o}, \texttt{w}, \texttt{e}, \texttt{r}, \texttt{n}, \texttt{w}, \texttt{s}, \texttt{t}, \texttt{i}, \texttt{d} \}$.
+
+                    At the first iteration, $\texttt{e} + \texttt{s} = \texttt{es}$ is the most frequent $n$-gram. Corpus and vocabulary are updated as:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{cl}
+                            \toprule
+                            \textbf{Occurrences} & \textbf{Tokens} \\
+                            \midrule
+                            5 & \texttt{l o w \$} \\
+                            2 & \texttt{l o w e r \$} \\
+                            6 & \texttt{n e w es t \$} \\
+                            6 & \texttt{w i d es t \$} \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    \vspace{-2em}
+                    \[ V = \{  \texttt{\$}, \texttt{l}, \texttt{o}, \texttt{w}, \texttt{e}, \texttt{r}, \texttt{n}, \texttt{w}, \texttt{s}, \texttt{t}, \texttt{i}, \texttt{d} \} \cup \{ \texttt{es} \} \]
+
+                    At the second iteration, $\texttt{es} + \texttt{t} = \texttt{est}$ is the most frequent $n$-gram:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{cl}
+                            \toprule
+                            \textbf{Occurrences} & \textbf{Tokens} \\
+                            \midrule
+                            5 & \texttt{l o w \$} \\
+                            2 & \texttt{l o w e r \$} \\
+                            6 & \texttt{n e w est \$} \\
+                            6 & \texttt{w i d est \$} \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    \vspace{-2em}
+                    \[ V = \{  \texttt{\$}, \texttt{l}, \texttt{o}, \texttt{w}, \texttt{e}, \texttt{r}, \texttt{n}, \texttt{w}, \texttt{s}, \texttt{t}, \texttt{i}, \texttt{d}, \texttt{es} \} \cup \{ \texttt{est} \} \]
+
+                    And so on\dots
+                \end{example}
+
+            \item[Token segmenter]
+                Given the vocabulary $V$ and the merge rules $M$, the BPE segmenter does the following:
+                \begin{enumerate}
+                    \item Split the input into $1$-grams.
+                    \item Iteratively scan the input and do the following:
+                    \begin{enumerate}
+                        \item Apply a merge rule if possible.
+                        \item If no merge rules can be applied, lookup the (sub)word in the vocabulary. Tokens out-of-vocabulary are marked with a special unknown token \texttt{[UNK]}.
+                    \end{enumerate}
+                \end{enumerate}
+        \end{description}
+
+    \item[WordPiece] \marginnote{WordPiece}
+        Similar to BPE with the addition of merge rules ranking and a special leading/tailing set of characters (usually \texttt{\#\#}) to identify subwords (e.g., \texttt{new\#\#}, \texttt{\#\#est} are possible tokens).
+
+    \item[Unigram] \marginnote{Unigram}
+        Starts with a big vocabulary and remove tokens following a loss function.
+\end{description}
+
+
+
+\section{Normalization}
+
+\begin{description}
+    \item[Normalization] \marginnote{Normalization}
+        Convert tokens into a standard form.
+
+        \begin{example}
+            \texttt{U.S.A.} and \texttt{USA} should be encoded using the same index.
+        \end{example}
+
+    \item[Case folding] \marginnote{Case folding}
+        Map every token to upper/lower case.
+
+        \begin{remark}
+            Depending on the task, casing might be important (e.g., \texttt{US} vs \texttt{us}).
+        \end{remark}
+
+    \item[Lemmatization] \marginnote{Lemmatization}
+        Reduce inflections and variant forms to their base form.
+
+        \begin{example}
+            $\{ \texttt{am}, \texttt{are}, \texttt{is} \} \mapsto \texttt{be}$
+        \end{example}
+
+        \begin{remark}
+            Accurate lemmatization requires complete morphological parsing.
+        \end{remark}
+
+    \item[Stemming] \marginnote{Stemming}
+        Reduce terms to their stem.
+
+        \begin{remark}
+            Stemming is a simpler approach to lemmatization.
+        \end{remark}
+
+        \begin{description}
+            \item[Porter stemmer]
+                Simple stemmer based on cascading rewrite rules.
+
+                \begin{example}
+                    $\texttt{ational} \mapsto \texttt{ate}$, 
+                    $\texttt{ing} \mapsto \varepsilon$,
+                    $\texttt{sses} \mapsto \texttt{ss}$.
+                \end{example}
+        \end{description}
+\end{description}
+
+
+
+\section{Edit distance}
+
+\begin{description}
+    \item[Minimum edit distance] \marginnote{Minimum edit distance}
+        Minimum number of edit operations (insertions, deletions, and substitutions) needed to transform a string into another one.
+
+        \begin{remark}
+            Dynamic programming can be used to efficiently determine the minimum edit distance.
+        \end{remark}
+
+    \item[Levenshtein distance] \marginnote{Levenshtein distance}
+        Edit distance where:
+        \begin{itemize}
+            \item Insertions cost $1$;
+            \item Deletions cost $1$;
+            \item Substitutions cost $2$.
+        \end{itemize}
+
+        \begin{example}
+            The Levenshtein distance between \texttt{intention} and \texttt{execution} is $8$.
+            \begin{table}[H]
+                \centering
+                \begin{tabular}{cccccccccc}
+                    \texttt{I} & \texttt{N} & \texttt{T} & \texttt{E} & \texttt{*} & \texttt{N} & \texttt{T} & \texttt{I} & \texttt{O} & \texttt{N} \\
+                    $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ & $\vert$ \\
+                    \texttt{*} & \texttt{E} & \texttt{X} & \texttt{E} & \texttt{C} & \texttt{U} & \texttt{T} & \texttt{I} & \texttt{O} & \texttt{N} \\
+                    $-$ & $\pm$ & $\pm$ &  & $+$ & $\pm$ \\
+                    1 & 2 & 2 &  & 1 & 2 \\
+                \end{tabular}
+            \end{table}
+        \end{example}
+\end{description}
+
