@@ -162,7 +162,7 @@ Methods that also consider the second-order derivatives when determining the ste
     \item[Adaptive learning rates] \marginnote{Adaptive learning rates}
         Methods to define per-parameter adaptive learning rates.
 
-        Ideally, assuming that the changes in the curvature of the loss are axis-aligned (e.g., in a canyon), it is reasonable to obtain a faster convergence by:
+        Ideally, assuming that the changes in the curvature of the loss are axis-aligned (i.e., the parameters are independent), it is reasonable to obtain a faster convergence by:
         \begin{itemize}
             \item Reducing the learning rate along the dimension where the gradient is large.
             \item Increasing the learning rate along the dimension where the gradient is small.
@@ -227,9 +227,96 @@ Methods that also consider the second-order derivatives when determining the ste
         \]
         where $\beta \in [0, 1]$ (typically $0.9$ or higher) makes $s^{(t)}$ an exponential moving average.
 
+        \begin{remark}
+            RMSProp is faster than SGD at the beginning and slows down reaching similar performances as SGD.
+        \end{remark}
+
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.4\linewidth]{./img/rmsprop.png}
+            \includegraphics[width=0.35\linewidth]{./img/rmsprop.png}
             \caption{SGD vs AdaGrad vs RMSProp}
         \end{figure}
+\end{description}
+
+
+\subsection{Adam}
+
+\begin{description}
+    \item[Adaptive moments (Adam)] \marginnote{Adaptive moments (Adam)}
+        Extends RMSProp by also considering a running average for the gradients:
+        \[
+            \begin{split}
+                \vec{g}^{(t+1)} &= \beta_1 \vec{g}^{(t)} + (1-\beta_1) \nabla\mathcal{L}(\vec{\theta}^{(t)}) \\
+                \vec{s}^{(t+1)} &= \beta_2 \vec{s}^{(t)} + (1-\beta_2) \nabla\mathcal{L}(\vec{\theta}^{(t)}) \odot \nabla\mathcal{L}(\vec{\theta}^{(t)}) \\
+            \end{split}
+        \]
+        where $\beta_1, \beta_2 \in [0, 1]$ (typically $\beta_1 = 0.9$ and $\beta_2 = 0.999$).
+
+        Moreover, as $\vec{g}^{(0)} = 0$, $\vec{s}^{(0)} = 0$, and $\beta_1$, $\beta_2$ are typically large (i.e., past history weighs more), Adam starts by taking small steps (e.g., $\vec{g}^{(1)} = (1-\beta_1) \nabla\mathcal{L}(\vec{\theta}^{(0)})$ is simply rescaling the gradient for no reason). To cope with this, a debiased formulation of $\vec{g}$ and $\vec{s}$ is used:
+        \[
+            \vec{g}^{(t)}_{\text{debiased}} = \frac{g^{(t+1)}}{1-\beta_1^{t+1}} 
+            \qquad
+            \vec{s}^{(t)}_{\text{debiased}} = \frac{s^{(t+1)}}{1-\beta_2^{t+1}} 
+        \]
+        where the denominator $(1-\beta_i^{t+1}) \rightarrow 1$ for increasing values of $t$.
+
+        Finally, the update is defined as:
+        \[
+            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{s^{(t)}_{\text{debiased}}} + \varepsilon} \odot g^{(t)}_{\text{debiased}}
+        \]
+
+        \begin{remark}
+            It can be shown that $\frac{g^{(t)}_{\text{debiased}}}{\sqrt{s^{(t)}_{\text{debiased}}}}$ has a bounded domain, making it more controlled than RMSProp.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.75\linewidth]{./img/adam.png}
+            \caption{SGD vs AdaGrad vs RMSProp vs Adam}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.75\linewidth]{./img/adam_noisy.png}
+            \caption{SGD vs AdaGrad vs RMSProp vs Adam with a smaller batch size}
+        \end{figure}
+
+        \begin{remark}
+            Adam is based on the assumption of unrelated parameters (i.e., axis-aligned). If this does not actually hold, it might be slower to converge.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\linewidth]{./img/optimizers_no_align.png}
+            \end{figure}
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    Empirically, in computer vision Nesterov momentum (properly tuned) works better than Adam.
+\end{remark}
+
+\begin{remark}
+    Momentum based approaches tend to prefer large basins. Intuitively, by accumulating momentum, it is possible to ``escape" small basins.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\linewidth]{./img/momentum_local_global.png}
+    \end{figure}
+\end{remark}
+
+
+\subsection{AdamW}
+
+\begin{description}
+    \item[Adam with weight decay (AdamW)] \marginnote{Adam with weight decay (AdamW)} 
+        Modification on the gradient update of Adam to include weight decay:
+        \[ 
+            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{s^{(t)}_{\text{debiased}}} + \varepsilon} \odot g^{(t)}_{\text{debiased}} - \lambda\vec{\theta}^{(t)}
+        \]
+
+        \begin{remark}
+            Differently from SGD, L2 regularization on Adam is not equivalent to applying weight decay. In fact, by definition, the regularization term is applied to the gradient and not on the update step:
+            \[ \nabla_{\text{actual}}\mathcal{L}(\vec{\theta}^{(t)}) = \nabla\mathcal{L}(\vec{\theta}^{(t)}) + \lambda\vec{\theta}^{(t)} \]
+            where $\nabla_{\text{actual}}\mathcal{L}(\vec{\theta}^{(t)})$ is the actual gradient used to compute the running averages $\vec{g}$ and $\vec{s}$.
+        \end{remark}
 \end{description}

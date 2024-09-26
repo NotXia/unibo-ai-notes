@@ -1,0 +1,282 @@
+\chapter{Architectures}
+
+
+
+\graphicspath{{../../year1/image-processing-and-computer-vision/module2/}}
+
+
+\section{Inception-v1 (GoogLeNet)\protect\footnote{Excerpt from \href{https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year1/image-processing-and-computer-vision/module2/ipcv2.pdf}{IPCV2}}}
+\marginnote{Inception-v1 (GoogLeNet)}
+
+Network that aims to optimize computing resources (i.e., small amount of parameters and FLOPs).
+
+\begin{description}
+    \item[Stem layers]
+        Down-sample the image from a shape of 224 to 28.
+        As in ZFNet, multiple layers are used (5) and the largest convolution is of shape $7 \times 7$ with stride $2$.
+
+    \item[Inception module] \marginnote{Inception module}
+        Main component of Inception-v1 that computes multiple convolutions on the input.
+
+        Given the input activation, the output is the concatenation of:
+        \begin{itemize}
+            \item A $1 \times 1$ (stride $1$) and a $5 \times 5$ (stride $1$, padding $2$) convolution.
+            \item A $1 \times 1$ (stride $1$) and a $3 \times 3$ (stride $1$ and padding $1$) convolution.
+            \item A $1 \times 1$ (stride $1$ and padding $0$) convolution.
+            \item A $1 \times 1$ (stride $1$) convolution and a $3 \times 3$ (stride $1$ and padding $1$) max-pooling.
+        \end{itemize} 
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_actual_inception.pdf}
+            \caption{Inception module on the output of the stem layers}
+        \end{figure}
+
+        \begin{remark}
+            The multiple convolutions of an inception module can be seen as decision components.
+        \end{remark}
+
+    \item[Auxiliary \texttt{softmax}]
+        Intermediate \texttt{softmax}s are used to ensure that hidden features are good enough.
+        They also act as regularizers. During inference, they are discarded.
+
+    \item[Global average pooling classifier] \marginnote{Global average pooling classifier}
+        Instead of flattening between the convolutional and fully connected layers, 
+        global average pooling is used to reduce the number of parameters.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[angle=-90, width=0.7\linewidth]{./img/_inception_v1.pdf}
+    \caption{Architecture of Inception-v1}
+\end{figure}
+
+
+
+\section{Residual networks\protect\footnote{Excerpt from \href{https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year1/image-processing-and-computer-vision/module2/ipcv2.pdf}{IPCV2}}}
+
+\begin{description}
+    \item[Standard residual block] \marginnote{Standard residual block}
+        Block that allows to easily learn the identity function through a skip connection.
+        The output of a residual block with input $x$ and a series of convolutional layers $F$ is:
+        \[ F(x; \matr{\theta}) + x \]
+
+        \begin{minipage}{0.75\linewidth}
+            \begin{description}
+                \item[Skip connection] \marginnote{Skip connection}
+                    Connection that skips a certain number of layers (e.g. 2 convolutional blocks).
+            \end{description}
+    
+            \begin{remark}
+                Training starts with small weights so that the network starts as the identity function. Updates can be seen as perturbations of the identity function.
+            \end{remark}
+    
+            \begin{remark}
+                Batch normalization is heavily used.
+            \end{remark}
+        \end{minipage}
+        \begin{minipage}{0.2\linewidth}
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/skip_conn.png}
+        \end{minipage}
+        
+        \begin{remark}
+            Skip connections are applied before the activation function (ReLU) as otherwise it would be summed to all positive values making the perturbation of the identity function less effective.
+        \end{remark}
+\end{description}
+
+
+\subsection{ResNet}
+\marginnote{ResNet-18}
+
+VGG-inspired network with residual blocks.
+It has the following properties:\\
+\begin{minipage}{0.48\linewidth}
+    \begin{itemize}
+        \item A stage is composed of residual blocks.
+        \item A residual block is composed of two $3 \times 3$ convolutions followed by batch normalization.
+        \item The first residual block of each stage halves the spatial dimension and doubles the number of channels (there is no pooling).
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\linewidth]{./img/resnet_18.png}
+        \caption{Architecture of ResNet-18}
+    \end{figure}
+\end{minipage}
+
+
+\begin{description}
+    \item[Bottleneck residual network] \marginnote{Bottleneck residual network}
+        Variant of residual blocks that uses more layers with approximately the same number of parameters and FLOPs of the standard residual block.
+        Instead of using two $3 \times 3$ convolutions, bottleneck residual network has the following structure:
+        \begin{itemize}
+            \item $1 \times 1$ convolution to compress the channels of the input by an order of $4$ (and the spatial dimension by $2$ if it is the first block of a stage, as in normal ResNet).
+            \item $3 \times 3$ convolution.
+            \item $1 \times 1$ convolution to match the shape of the skip connection.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/bottleneck_block.png}
+            \caption{Standard residual block (left) and bottleneck block (right)}
+        \end{figure}
+\end{description}
+
+
+\subsection{Inception-ResNet-v4}
+
+Network with bottleneck-block-inspired inception modules.
+
+\begin{descriptionlist}
+    \item[Inception-ResNet-A] \marginnote{Inception-ResNet-A}
+        Three $1 \times 1$ convolutions are used to compress the input channels. Each of them leads to a different path:
+        \begin{itemize}
+            \item Directly to the final concatenation.
+            \item To a $3 \times 3$ convolution.
+            \item To two $3 \times 3$ convolutions (i.e. a factorized $5 \times 5$ convolution). 
+        \end{itemize}
+        The final concatenation is passed through a $1 \times 1$ convolution to match the skip connection shape.
+
+    \item[Inception-ResNet-B] \marginnote{Inception-ResNet-B}
+        Three $1 \times 1$ convolutions are used to compress the input channels. Each of them leads to:
+        \begin{itemize}
+            \item Directly to the final concatenation.
+            \item A $1 \times 7$ and $7 \times 1$ convolutions (i.e. a factorized $7 \times 7$ convolution). 
+        \end{itemize}
+        The final concatenation is passed through a $1 \times 1$ convolution to match the skip connection shape.
+\end{descriptionlist}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{./img/inception_resnet.png}
+\end{figure}
+
+
+\graphicspath{}
+
+
+
+\section{ResNeXt}
+
+\begin{remark}
+    Inception and Inception-ResNet modules are multi-branch architectures and can be interpreted as a split-transform-merge paradigm. Moreover, their architectures have been specifically ``hand" designed.
+\end{remark}
+
+\begin{description}
+    \item[Grouped convolution] \marginnote{Grouped convolution}
+        Given:
+        \begin{itemize}
+            \item The input activation of shape $C_\text{in} \times W_\text{in} \times H_\text{in}$,\item The desired number of output channels $C_\text{out}$,
+            \item The number of groups $G$,
+        \end{itemize} 
+        a grouped convolution splits the input into $G$ chunks of $\frac{C_\text{in}}{G}$ channels and processes each with a dedicated set of kernels of shape $\frac{C_\text{out}}{G} \times \frac{C_\text{in}}{G} \times W_K \times H_K$. The output activation is obtained by stacking the outputs of each group.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/_grouped_conv.pdf}
+        \end{figure}
+
+        By processing the input in smaller chunks, there are the following gains:
+        \begin{itemize}
+            \item The number of parameters is $G$ times less.
+            \item The number of FLOPs is $G$ times less.
+        \end{itemize}
+
+        \begin{remark}
+            Grouped convolutions are trivially less expressive than convolving on the full input activation. However, as convolutions are expected to build a hierarchy of features, it is reasonable to process the input in chunks as, probably, not all of it is needed.
+        \end{remark}
+\end{description}
+
+\subsection{Architecture}
+
+\begin{description}
+    \item[ResNetXt block] \marginnote{ResNetXt block}
+        Given the number of branches $G$ and the number of intermediate channels $d$, a ResNeXt block decomposes a bottleneck residual block into $G$ parallel branches that are summed out at the end.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/_resnext_block.pdf}
+        \end{figure}
+
+        \begin{remark}
+            The branching in a ResNeXt block should not be confused with grouped convolutions.
+        \end{remark}
+
+        \begin{remark}
+            Parametrizing $G$ and $d$ allows obtaining configurations that are FLOP-wise comparable with the original ResNet by fixing $G$ and solving a second-order equation over $d$.
+        \end{remark}
+
+        \begin{description}
+            \item[Equivalent formulation]
+                Given an input activation $\vec{x}$ of shape $4C \times H \times W$, each layer of the ResNeXt block can be reformulated as follows:
+                \begin{descriptionlist}
+                    \item[Second $1 \times 1$ convolution] 
+                        Without loss of generality, consider a ResNeXt block with $G=2$ branches.
+
+                        The output $\vec{y}_k$ at each channel $k=1, \dots, 4C$ is obtained as:
+                        \[ \vec{y}_k = \vec{y}_k^{(1)} + \vec{y}_k^{(2)} + \vec{x}_k \]
+                        where the output $\vec{y}_k^{(b)}$ of a branch $b$ is computed as:
+                        \[
+                            \begin{split}
+                                \vec{y}_k^{(b)}(j, i) &= \left[ \vec{w}^{(b)} * \vec{a}^{(b)} \right]_k(j, i) \\
+                                &= \vec{w}^{(b)}_k \cdot \vec{a}^{(b)}(j, i) \\
+                                &= \vec{w}^{(b)}_k(1) \vec{a}^{(b)}(j, i, 1) + \dots + \vec{w}^{(b)}_k(d) \vec{a}^{(b)}(j, i, d)
+                            \end{split}
+                        \]
+                        where:
+                        \begin{itemize}
+                            \item $*$ represents a convolution,
+                            \item $\vec{a}^{(b)}$ is the input activation with $d$ channels from the previous layer.
+                            \item $\vec{w}^{(b)}$ is the convolutional kernel. $\vec{w}^{(b)}_k \in \mathbb{R}^{d}$ is the kernel used to obtain the $k$-th output channel.
+                        \end{itemize}
+
+                        By putting everything together:
+                        \[
+                            \begin{split}
+                                \vec{y}_k(j, i) &= \vec{w}^{(1)}_k \cdot \vec{a}^{(1)}(j, i) + \vec{w}^{(2)}_k \cdot \vec{a}^{(2)}(j, i) + \vec{x}_k \\
+                                &= 
+                                \underbrace{\left[ \vec{w}^{(1)}_k \vec{w}^{(2)}_k \right]}_{\hspace{1cm}\mathllap{\parbox{4cm}{\scriptsize by stacking, this is a $1\times1$ convolution with $2d$ channels}}}
+                                \cdot 
+                                \underbrace{\left[ \vec{a}^{(1)}(j, i) \vec{a}^{(2)}(j, i) \right] }_{\hspace{-1cm}\mathrlap{\parbox{4cm}{\scriptsize by stacking depth-wise, this is an activation with $2d$ channels}}}
+                                +\, \vec{x}_k
+                            \end{split}
+                        \]
+                        Therefore, the last ResNeXt layer with $G$ branches is equivalent to a single convolution with $Gd$ input channels that processes the concatenation of the activations of the previous layer.
+
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.8\linewidth]{./img/_resnext_to_resnet_l3.pdf}
+                        \end{figure}
+
+                    \item[First $1 \times 1$ convolution] 
+                        The $G$ $1 \times 1$ convolutions at the first layer of ResNeXt all process the same input $\vec{x}$. Trivially, this can also be represented using a single $1 \times 1$ convolution with $G$ times more output channels that can be split afterwards.
+
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.8\linewidth]{./img/_resnext_to_resnet_l1.pdf}
+                        \end{figure}
+
+                    \item[$3 \times 3$ convolution] 
+                        By putting together the previous two equivalences, the middle layer has the same definition of a grouped convolution with $G$ groups. Therefore, it can be seen as a single grouped convolution with $G$ groups and $Gd$ input and output channels.
+
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.6\linewidth]{./img/_resnext_to_resnet_l2.pdf}
+                        \end{figure}
+                \end{descriptionlist}
+
+            \begin{remark}
+                Therefore, a ResNeXt block is similar to a bottleneck block.
+            \end{remark}
+        \end{description}
+\end{description}
+
+
+\subsection{Properties}
+
+The following holds:
+\begin{itemize}
+    \item It has been empirically seen that, with the same FLOPs, it is better to have more groups (i.e., wider activations).
+\end{itemize}
