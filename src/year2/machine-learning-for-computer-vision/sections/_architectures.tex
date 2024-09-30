@@ -190,8 +190,6 @@ Network with bottleneck-block-inspired inception modules.
         \end{remark}
 \end{description}
 
-\subsection{Architecture}
-
 \begin{description}
     \item[ResNetXt block] \marginnote{ResNetXt block}
         Given the number of branches $G$ and the number of intermediate channels $d$, a ResNeXt block decomposes a bottleneck residual block into $G$ parallel branches that are summed out at the end.
@@ -273,10 +271,278 @@ Network with bottleneck-block-inspired inception modules.
         \end{description}
 \end{description}
 
+\begin{remark}
+    It has been empirically seen that, with the same FLOPs, it is better to have more groups (i.e., wider activations).
+\end{remark}
 
-\subsection{Properties}
 
-The following holds:
-\begin{itemize}
-    \item It has been empirically seen that, with the same FLOPs, it is better to have more groups (i.e., wider activations).
-\end{itemize}
+
+\section{Squeeze-and-excitation network (SENet)}
+
+\begin{description}
+    \item[Squeeze-and-excitation module] \marginnote{Squeeze-and-excitation module}
+        Block that weighs the channels of the input activation.
+        Given the $c$-th channel of the input activation $\vec{x}_c$, the output $\tilde{\vec{x}}_c$ is computed as:
+        \[ \tilde{\vec{x}}_c = s_c \vec{x}_c \]
+        where $s_c \in [0, 1]$ is the scaling factor.
+
+        The two operations of a squeeze-and-excitation block are:
+        \begin{descriptionlist}
+            \item[Squeeze]
+                Global average pooling to obtain a channel-wise vector.
+
+            \item[Excitation]
+                Feed-forward network that first compresses the input channels by a ratio $r$ (typically $16$) and then restores them.
+        \end{descriptionlist}
+
+
+    \item[Squeeze-and-excitation network (SENet)]
+        Deep ResNet/ResNeXt with squeeze-and-excitation modules.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/se_resnet.png}
+            \caption{SE-ResNet module}
+        \end{figure}
+\end{description}
+
+
+
+\section{MobileNetV2}
+
+\begin{description}
+    \item[Depth-wise separable convolution] \marginnote{Depth-wise separable convolution} 
+        Use grouped convolutions to reduce the computational cost of standard convolutions. The operations of filtering and combining features are split:
+        \begin{descriptionlist}
+            \item[Depth-wise convolution]
+                Processes each channel in isolation. In other words, a grouped convolution with groups equal to the number of input channels is applied.
+
+            \item[Context point-wise convolution]
+                $1 \times 1$ convolution applied after the depth-wise convolution to reproduce the channel-wide effect of standard convolutions.
+        \end{descriptionlist}
+
+        \begin{remark}
+            The gain in computation is up to 10 times the FLOPs of normal convolutions.
+        \end{remark}
+
+        \begin{remark}
+            Depth-wise convolutions are less expressive than normal convolutions.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/_depthwise_conv.pdf}
+        \end{figure}
+\end{description}
+
+\begin{remark}
+    The $3 \times 3$ convolution in bottleneck residual blocks process a compressed version of the input activation, which might cause loss of information when passing through the ReLUs.
+\end{remark}
+
+\begin{description}
+    \item[Inverted residual block] \marginnote{Inverted residual block}
+        Modified bottleneck block defined as follows:
+        \begin{enumerate}
+            \item A $1 \times 1$ convolution to expand the input channels by a factor of $t$. 
+            \item A $3 \times 3$ depth-wise convolution.
+            \item A $1 \times 1$ convolution to compress the channels back to the original shape.
+        \end{enumerate}
+        Moreover, non-linearity between residual blocks is removed as a result of theoretical studies.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/_inverted_residual.pdf}
+        \end{figure}
+\end{description}
+
+\begin{description}
+    \item[MobileNetV2] \marginnote{MobileNetV2} 
+        Stack of inverted residual blocks.
+        \begin{itemize}
+            \item The number of channels grows slower compared to other architectures.
+            \item The stem layer is lightweight due to the low number of intermediate channels.
+            \item Due to the small number of channels, the number of channels in the activation are expanded before passing to the fully-connected layers.
+        \end{itemize}
+
+        \begin{remark}
+            Stride $2$ is applied to the middle $3 \times 3$ convolution when downsampling is needed.
+        \end{remark}
+
+        \begin{table}[H]
+            \centering
+            \caption{\parbox[t]{0.6\linewidth}{Architecture of MobileNetV2 with expansion factor ($t$), number of channels ($c$), number of times a block is repeated ($n$), and stride ($s$).}}
+            \small
+            \begin{tabular}{cccccc}
+                \toprule
+                \textbf{Input}                       & \textbf{Operator}                      & $t$ & $c$     & $n$ & $s$ \\
+                \midrule
+                $2242 \times 3$             & \texttt{conv2d}               & - & 32    & 1 & 2 \\
+                \midrule
+                $1122 \times 32$            & \texttt{bottleneck}           & 1 & 16    & 1 & 1 \\
+                $1122 \times 16$            & \texttt{bottleneck}           & 6 & 24    & 2 & 2 \\
+                $562 \times 24$             & \texttt{bottleneck}           & 6 & 32    & 3 & 2 \\
+                $282 \times 32$             & \texttt{bottleneck}           & 6 & 64    & 4 & 2 \\
+                $142 \times 64$             & \texttt{bottleneck}           & 6 & 96    & 3 & 1 \\
+                $142 \times 96$             & \texttt{bottleneck}           & 6 & 160   & 3 & 2 \\
+                $72 \times 160$             & \texttt{bottleneck}           & 6 & 320   & 1 & 1 \\
+                \midrule
+                $72 \times 320$             & \texttt{conv2d $1\times1$}    & - & 1280  & 1 & 1 \\
+                \midrule
+                $72 \times 1280$            & \texttt{avgpool $7\times7$}   & - & -     & 1 & - \\
+                $1 \times 1 \times 1280$    & \texttt{conv2d $1\times1$}    & - & k     & - & 1 \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+\end{description}
+
+
+
+\section{Model scaling}
+
+\begin{description}
+    \item[Single dimension scaling]
+        Scaling a baseline model by width, depth, or resolution. It generally always improve the accuracy.
+
+        \begin{description}
+            \item[Width scaling] \marginnote{Width scaling}
+                Increase the number of channels.
+            \item[Depth scaling] \marginnote{Depth scaling}
+                Increase the number of blocks.
+            \item[Resolution scaling] \marginnote{Resolution scaling}
+                Increase the spatial dimension of the activations. 
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/single_model_scaling.png}
+            \caption{\parbox[t]{0.7\linewidth}{Top-1 accuracy variation with width, depth, and resolution scaling on EfficientNet}}
+        \end{figure}
+
+    \item[Compound scaling] \marginnote{Compound scaling}
+        Scaling across multiple dimensions.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/compound_scaling.png}
+            \caption{Width scaling for different fixed depths and resolutions}
+        \end{figure}
+
+        \begin{description}
+            \item[Compound scaling coefficient]
+                Use a compound coefficient $\phi$ to scale dimensions and systematically control the FLOPs increase.
+                \begin{remark}
+                    $\phi=0$ represents the baseline model.
+                \end{remark}
+
+                The multiplier for depth ($d$), width ($w$), and resolution ($r$) are determined as:
+                \[ d = \alpha^\phi \qquad w = \beta^\phi \qquad r = \gamma^\phi \]
+                where $\alpha$, $\beta$, and $\gamma$ are subject to:
+                \[ \alpha \cdot \beta^2 \cdot \gamma^2 \approx 2 \qquad \text{with } \alpha, \beta, \gamma \geq 1 \]
+                By enforcing this constraint, FLOPs will approximately grow by $2^\phi$ (i.e., double) for each increase of $\phi$. 
+
+                In practice, $\alpha$, $\beta$, and $\gamma$ are determined through grid search.
+
+                \begin{remark}
+                    The constraint is formulated in this way as FLOPS scales linearly with depth but quadratically with width and resolution.
+                \end{remark}
+        \end{description}
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{./img/_model_scaling.pdf}
+    \caption{Model scaling approaches}
+\end{figure}
+
+
+\subsection{Wide ResNet}
+
+\begin{description}
+    \item[Wide ResNet (WRN)] \marginnote{Wide ResNet (WRN)}
+        ResNet scaled width-wise.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/wide_resnet.png}
+        \end{figure}
+
+        \begin{remark}
+            Wider layers are easier to parallelize on GPUs.
+        \end{remark}
+\end{description}
+
+
+
+\section{EfficientNet}
+
+\begin{description}
+    \item[Neural architecture search (NAS)] \marginnote{Neural architecture search (NAS)}
+        Train a controller neural network using gradient policy to output network architectures.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/neural_architecture_search.png}
+        \end{figure}
+
+        \begin{remark}
+            Although effective, we usually cannot extract guiding principles from the architecture outputted by NAS.
+        \end{remark}
+
+    \item[EfficientNet-B0] \marginnote{EfficientNet-B0}
+        Architecture obtained through neural architecture search starting from MobileNet.
+
+        Scaling the baseline model (B0) allowed obtaining high accuracies with a controlled number of FLOPs.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/efficientnet_scaling.png}
+        \end{figure}
+\end{description}
+
+
+
+\section{RegNet}
+
+\begin{description}
+    \item[Design space] \marginnote{Design space}
+        Space of a parametrized population of neural network architectures. By sampling networks from a design space, it is possible to determine a distribution and evaluate it using statistical tools.
+
+        \begin{remark}
+            Comparing distributions is more robust than searching for a single well performing architecture (as in NAS).
+        \end{remark}
+    
+    \item[RegNet] \marginnote{RegNet}
+        Classic stem-body-head architecture (similar to ResNeXt with fewer constraints) with four stages. Each stage $i$ has the following parameters:
+        \begin{itemize}
+            \item Number of blocks (i.e., depth) $d_i$.
+            \item Width of the blocks $w_i$ (so each stage does not necessarily double the number of channels).
+            \item Number of groups of each block $g_i$.
+            \item Bottleneck ratio of each block $b_i$.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/regnet.png}
+        \end{figure}
+
+        In other words, RegNet defines a $16$-dimensional design space. To evaluate the architectures, the following is done:
+        \begin{enumerate}
+            \item Sample $n=500$ models from the design space and train them on a low-epoch training regime.
+            \item Determine the error empirical cumulative distribution function $F$ computed as the fraction of models with an error less than $e$:
+            \[ F(e) = \frac{1}{n} \sum_{i=1}^{n} \mathbf{1}[e_i < e] \]
+            \item Evaluate the design space by plotting $F$.
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.25\linewidth]{./img/edf.png}
+                    \caption{Example of cumulative distribution}
+                \end{figure}
+
+                \begin{remark}
+                    Similarly to the ROC curve, the plot of the perfect design space is a straight line at $1.0$ probability starting from $0\%$ error rate.
+                \end{remark}
+            \item Repeat by fixing or finding relationships between parameters (i.e., try to reduce the search space).
+        \end{enumerate}
+\end{description}
+
+\begin{remark}
+    In the original paper, RegNet outperformed EfficientNet. However, results were computed by retraining EfficientNet using the same hyperparameter configuration of RegNet, while the original paper of EfficientNet explicitly tuned its hyperparameters to maximize the results.
+\end{remark}
