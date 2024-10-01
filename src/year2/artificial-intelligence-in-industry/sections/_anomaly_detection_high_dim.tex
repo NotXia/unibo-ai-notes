@@ -198,7 +198,7 @@ The KDE model, bandwidth, and threshold are fitted as in \Cref{ch:ad_low}.
     \item[Autoencoder for anomaly detection]
         By evaluating the quality of the reconstruction, an autoencoder can be used for anomaly detection:
         \[ \Vert x - d(e(x, \theta_e), \theta_d) \Vert_2^2 \geq \varepsilon \]
-        
+
         The advantages of this approach are the following:
         \begin{itemize}
             \item The size of the neural network does not scale with the training data.
@@ -212,3 +212,84 @@ The KDE model, bandwidth, and threshold are fitted as in \Cref{ch:ad_low}.
 \begin{remark}
     It is always a good idea to normalize the input of a neural network to have a more stable gradient descent. Moreover, with normalized data, common weight initialization techniques make the output approximately normalized too.
 \end{remark}
+
+\begin{remark}
+    Counterintuitively, neural networks have a higher bias compared to traditional machine learning techniques for mainly two reasons:
+    \begin{itemize}
+        \item A change in a single parameter affects the whole network.
+        \item Training using SGD inherently prevents overfitting. 
+    \end{itemize}
+\end{remark}
+
+
+\begin{theorem}
+    Under the following assumptions:
+    \begin{itemize}
+        \item Normally distributed noise (i.e., distance between prediction and ground truth),
+        \item Independent noise among each output component (i.e., columns),
+        \item Same variance (i.e., homoscedasticity) in the noise of each output component,
+    \end{itemize}
+    autoencoders are trained as density estimators.
+
+    \begin{remark}
+        When minimizing MSE, these assumptions hold.
+    \end{remark}
+
+    \begin{proof}
+        When training an autoencoder $h$ using MSE on $m$ examples with $n$ features, the following problem is solved:
+        \[ 
+            \begin{split}
+                \arg\min_{\theta} \Vert h(\vec{x}, \theta) - \vec{x} \Vert_2^2 
+                    &= \arg\min_{\theta} \sum_{i=1}^{m} \sum_{j=1}^{n} (h_j(\vec{x}_i, \theta) - \vec{x}_{i,j})^2 \\
+                    &= \arg\min_{\theta} \log\exp \left( \sum_{i=1}^{m} \sum_{j=1}^{n} (h_j(\vec{x}_i, \theta) - \vec{x}_{i,j})^2 \right) \\
+                    &= \arg\min_{\theta} \log \prod_{i=1}^{m} \exp \left( \sum_{j=1}^{n} (h_j(\vec{x}_i, \theta) - \vec{x}_{i,j})^2 \right) \\
+                    &= \arg\min_{\theta} \log \prod_{i=1}^{m} \exp \left( (h(\vec{x}_i, \theta) - \vec{x}_{i})^T \matr{I} (h(\vec{x}_i, \theta) - \vec{x}_{i}) \right)
+            \end{split}
+        \]
+        The following adjustments can be done without altering the problem:
+        \begin{itemize}
+            \item Negate the argument of $\exp$ and solve a maximization problem,
+            \item Multiply the argument of $\exp$ by $\frac{1}{2}\sigma$, for some constant $\sigma$,
+            \item Multiply $\exp$ by $\frac{1}{\sqrt{2\pi}\sigma}$.
+        \end{itemize}
+        The problem becomes:
+        \[ \arg\max_{\theta} \log \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi}\sigma} \exp \left( -\frac{1}{2} (h(\vec{x}_i, \theta) - \vec{x}_{i})^T (\sigma\matr{I}) (h(\vec{x}_i, \theta) - \vec{x}_{i}) \right) \]
+        which is the PDF of a multivariate normal distribution $f(\vec{x}_i, h(\vec{x}_i), \sigma\matr{I})$ with a diagonal covariance matrix. More specifically, this is a distribution:
+        \begin{itemize}
+            \item Centered on $h(\vec{x}_i)$,
+            \item With independent normal components,
+            \item With components with uniform variance.
+        \end{itemize}
+
+        Therefore, when using MSE as loss, training is a likelihood maximization problem.
+    \end{proof}
+\end{theorem}
+
+
+\begin{description}
+    \item[Threshold optimization]
+        The threshold can be determined in the same way as in \Cref{sec:ad_taxi_kde_uni}.
+
+    \item[Multiple signal analysis]
+        With autoencoders, it is possible to compare the reconstruction error of single components. 
+
+        \begin{remark}
+            In most cases, reconstruction errors are often concentrated on a few features.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\linewidth]{./img/_ad_hpc_multi_signal.pdf}
+                \caption{Reconstruction error of each feature}
+            \end{figure}
+        \end{remark}
+
+        \begin{remark}
+            It is possible to rank the feature with the highest reconstruction error to provide more insights.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\linewidth]{./img/_ad_hpc_multi_signal_rank.pdf}
+                \caption{Top-20 features with the largest error}
+            \end{figure}
+        \end{remark}
+\end{description}
