@@ -293,3 +293,16 @@ The KDE model, bandwidth, and threshold are fitted as in \Cref{ch:ad_low}.
             \end{figure}
         \end{remark}
 \end{description}
+
+
+\begin{remark}
+    In industrial use-cases, a usually well working approach consists of building an estimator for the sensors. More specifically, observed variables can be split into:
+    \begin{itemize}
+        \item Controlled variables $x_c$.
+        \item Measured variables $x_s$.
+    \end{itemize}
+    During anomaly detection, controlled variables should not be used to determine anomalous behaviors. In addition, there is a causal relation between the two groups as measured variables are caused by the controlled variables ($x_c \rightarrow x_s$).
+
+    A well working method is to use a regressor $f$ as a causal model, such that:
+    \[ x_s \approx f(x_c; \theta) \]
+\end{remark}

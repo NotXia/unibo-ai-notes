@@ -85,16 +85,144 @@ Interpolate a function to determine missing points. Possible methods are:
     \item Spline.
 \end{itemize}
 
-
-
 \begin{remark}
     (R)MSE assumes that the data is normally distributed, independent, and with the same variability at all points. This is not usually true with time series.
 \end{remark}
 
+
+\subsection{Density estimator}
+
+A density estimator can be used to determine a distribution from all the available data. Given an estimator $f(x, \theta)$ for $\prob{x}$, predictions can be obtained through maximum a posteriori (MAP):
+\[ \arg\max_{x} f(x, \theta) \]
+
+However, MAP with density estimators is computationally expensive.
+
 \begin{remark}
-    We would like to build an estimator that is:
+    Almost all inference approaches in machine learning can be reduced to a maximum a posteriori computation.
+\end{remark}
+
+
+\subsection{Regressor}
+
+A regressor can be used to fill missing values autoregressively through a rolling forecast by repeatedly making a prediction and including the new point as a training sample.
+
+However, regression only relies on the data on one side (past or future) and each autoregressive iteration accumulates compound errors.
+
+
+\subsection{Gaussian processes}
+
+\begin{remark}
+    The ideal estimator is the one that is:
     \begin{itemize}
-        \item At least as powerful as interpolation.
-        \item Able to detect the expected variability.
+        \item At least as powerful as interpolation (i.e., considers both past and future data).
+        \item Able to detect the expected variability (i.e., a measure of confidence).
     \end{itemize}
+\end{remark}
+
+\begin{description}
+    \item[Gaussian process] \marginnote{Gaussian process}
+        Stochastic process (i.e., collection of indexed random variables) such that:
+        \begin{itemize}
+            \item The index variables $x$ are continuous and represents an input of arbitrary dimensionality.
+            \item The variable $y_x$ represents the output for $x$.
+        \end{itemize}
+
+        The random variables $y_x$ respect the following assumptions:
+        \begin{itemize}
+            \item They follow a Gaussian distribution.
+            \item The standard deviation depends on the distance between a point and the given observations (i.e., a confidence measure).
+            \item $y_x$s are correlated. Therefore, every finite subset of $y_x$ variables follows a multivariate normal distribution.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/gp_example.png}
+            \caption{
+                \parbox[t]{0.6\linewidth}{Example of Gaussian process. The red line represents the mean and the gray area the confidence interval.}
+            }
+        \end{figure}
+
+        \begin{remark}
+            The PDF of a multivariate normal distribution is defined by the mean vector $\vec{\mu}$ and the covariance matrix $\matr{\Sigma}$. By recentering ($\vec{\mu}=\nullvec$), knowing $\matr{\Sigma}$ is enough to compute the joint or conditional density.
+        \end{remark}
+
+        \begin{remark}
+            To fill missing values, the conditional density $f(y_x | \bar{y}_{\bar{x}})$ is used to infer a new observation $y_x$ given a set of known observations $\bar{y}_x$.
+        \end{remark}
+
+
+    \item[Naive implementation] \phantom{}
+        \begin{description}
+            \item[Training] 
+                Given the training observations $\bar{y}_x$, the covariance matrix can be defined as a parametrized function $\matr{\Sigma}(\theta)$ and optimized for maximum likelihood:
+                \[ \arg\max_{\theta} f(\bar{y}_{\bar{x}}, \theta) \]
+                where $f$ is the joint PDF of a multivariate normal distribution.
+
+            \item[Inference] 
+                To infer the variable $y_x$ associated to an input $x$, the joint distribution $f(y_x | \bar{y}_{\bar{x}})$ has to be computed:
+                \[ f(y_x | \bar{y}_{\bar{x}}) = \frac{f(y_x, \bar{y}_{\bar{x}})}{f(\bar{y}_{\bar{x}})} \]
+                \begin{itemize}
+                    \item $f(\bar{y}_{\bar{x}})$ can be computed using the $\matr{\Sigma}$ determined during training, which is an $n \times n$ matrix assuming $n$ training observations.
+                    \item $f(y_x, \bar{y}_{\bar{x}})$ introduces an additional variable and would require an $(n+1) \times (n+1)$ covariance matrix which cannot be determined without further assumptions.
+                \end{itemize}
+        \end{description}
+
+    \item[Kernel implementation]
+        It is assumed that the covariance of two variables can be determined through parametrized kernel functions $K_\theta(x_i, x_j)$.
+
+        \begin{remark}
+            Typically, the kernel is a distance measure.
+        \end{remark}
+
+        \begin{description}
+            \item[Training]
+                Given the training observations $\bar{y}_x$ and a parametrized kernel function $K_\theta(x_i, x_j)$, training is done by optimizing the kernel for maximum likelihood (e.g., gradient descent).
+
+                The trained model is represented by both the kernel parameters $\theta$ and the training samples $\bar{y}_x$.
+
+            \item[Inference] 
+                Given a new input $x$, the joint distribution $f(y_x | \bar{y}_{\bar{x}})$ can be computed by obtaining $\matr{\Sigma}_{\bar{x}}$ and $\matr{\Sigma}_{x, \bar{x}}$ using the kernel.
+        \end{description}
+
+    \item[Common kernels] \phantom{}
+        \begin{description}
+            \item[Radial basis function] 
+                Based on the Euclidean distance $d(x_i, x_j)$ between the input points:
+                \[ K(x_i, x_j) = e^{-\frac{d(x_i, x_j)^2}{2l}} \]
+                where $l$ is a parameter and represents the scale.
+
+            \item[White kernel]
+                Captures the noise in the data:
+                \[ K(x_i, x_j) = \begin{cases}
+                    \sigma^2 & \text{iff $x_i = x_j$} \\
+                    0 & \text{otherwise}
+                \end{cases} \]
+                where $\sigma$ is a parameter and represents the noise level.
+
+            \item[Constant kernel]
+                Represents a learnable constant factor, useful to tune the magnitude of other kernels.
+
+            \item[Exp-Sine-Squared]
+                Captures a period:
+                \[ K(x_i, x_j) = e^{-2 \frac{\sin^2 \left( \pi \frac{d(x_i, x_j)}{p} \right)}{l^2}} \]
+                where $l$ and $p$ are parameters representing periodicity and scale, respectively.
+
+            \item[Dot product]
+                Is more or less able to capture a trend:
+                \[ K(x_i, x_j) = \sigma^2 + x_i x_j \]
+                where $\sigma$ is a parameter and represents the base level of correlation.
+
+                \begin{remark}
+                    This kernel is not translation-invariant
+                \end{remark}
+        \end{description}
+
+        \begin{remark}
+            Bounding the domain of the parameters of a kernel can help control training.
+        \end{remark}
+\end{description}
+
+
+\begin{remark}
+    With Gaussian processes, as we have both the prediction and the confidence interval, likelihood can be used as evaluation metric.
 \end{remark}
