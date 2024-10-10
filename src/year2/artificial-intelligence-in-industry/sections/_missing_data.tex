@@ -226,3 +226,76 @@ However, regression only relies on the data on one side (past or future) and eac
 \begin{remark}
     With Gaussian processes, as we have both the prediction and the confidence interval, likelihood can be used as evaluation metric.
 \end{remark}
+
+\begin{remark}
+    With Gaussian processes, by predicting points far away from the training observations (i.e., extrapolation), the mean starts to fall to $0$. Only when there is a period, predictions outside the reference observations can be reasonably made.
+\end{remark}
+
+\begin{remark}
+    As the reference observations and the trained kernel are detached, it is possible to change reference observations without retraining.
+\end{remark}
+
+\begin{description}
+    \item[Inference]
+        As changing reference observations can be done without retraining the kernel, the whole series can be used when doing inference to obtain more accurate results.
+
+        To fill missing values, there are two main strategies:
+        \begin{descriptionlist}
+            \item[Prediction]
+                Use the mean as filling value.
+
+            \item[Sampling]
+                Use mean and variance to sample a point to fill the missing value. Clipping might be needed to make the sampled point valid (e.g., prevent negative values for traffic).
+        \end{descriptionlist}
+        \begin{remark}
+            Using the mean results in a smoother filling, while sampling produces more realistic data.
+        \end{remark}
+\end{description}
+
+
+\subsection{Multiplicative ensemble}
+
+\begin{remark}
+    Gaussian process alone only accounts for covariance and do not consider input-dependent variance (i.e., variance of the traffic at the same week day and time on different days).
+\end{remark}
+
+\begin{remark}
+    Variance scales via multiplication but not summation:
+    \[ Var(x + \alpha) = Var(x) \qquad Var(\alpha x) = \alpha^2 Var(x) \]
+    for a constant $\alpha$.
+\end{remark}
+
+\begin{description}
+    \item[Multiplicative ensemble]
+        Product of the outputs of two models $f$ and $g$:
+        \[ g(x, \lambda) f(x, \theta) \]
+        More specifically, the training process aims to obtain:
+        \[ g(x_i, \lambda) f(x_i, \theta) \approx y_i \Rightarrow f(x_i, \theta) \approx \frac{y_i}{g(x_i, \lambda)} \]
+        In other words, $f$ is trained on a series with variance altered by $g$.
+
+        For this specific problem, $f$ is a Gaussian process and $g$ a standard deviation model.
+\end{description}
+
+\begin{description}
+    \item[Standard deviation model] 
+        A simple standard deviation model consists of mapping time intervals to their standard deviations. This approach is sensitive to the choice of the granularity of the interval (time unit in this problem):
+        \begin{itemize}
+            \item If it has too many missing values or too little samples, it is not enough to compute a reliable standard deviation.
+            \item If it is too coarse, the computed standard deviation is not useful.
+        \end{itemize}
+
+        \begin{remark}
+            From empirical considerations, the central limit theorem is observable starting from $30$ samples. Therefore, $30$ data points are enough to make a reasonably stable prediction of the standard deviation.
+        \end{remark}
+
+        As the final model might be too coarse, the following can be done:
+        \begin{descriptionlist}
+            \item[Upsampling] 
+                Use a finer grain unit (i.e., x-axis, time unit in this problem) and fill missing values through linear interpolation.
+
+            \item[Smoothing]
+                Smooth the upsampled data through a low-pass filter.
+
+                For this problem, an exponentially weighted moving average works best as recent data are more relevant.
+        \end{descriptionlist}
+\end{description}
