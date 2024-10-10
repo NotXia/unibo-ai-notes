@@ -13,7 +13,7 @@
         \end{figure}
 
     \item[Autoregressive generation] \marginnote{Autoregressive generation}
-        A transformer generates the output sequence progressively given the input sequence and the past outputted tokens. At the beginning, the first token provided as the past output is a special start-of-sequence token. Generation is terminated when a special end-of-sequence token is generated.
+        A transformer generates the output sequence progressively given the input sequence and the past outputted tokens. At the beginning, the first token provided as the past output is a special start-of-sequence token (\texttt{<SoS>}). Generation is terminated when a special end-of-sequence token (\texttt{<EoS>}) is generated.
 
         \begin{figure}[H]
             \centering
@@ -204,6 +204,10 @@
                     \end{split}
                 \]
 
+                \begin{remark}
+                    In post-norm transformers, residual connections are ``disrupted'' by layer normalization.
+                \end{remark}
+
             \item[Pre-norm transformer] Normalization is done inside the residual connection:
                 \[
                     \begin{split}
@@ -231,8 +235,169 @@
             \end{subfigure}
         \end{figure}
 
-
         \begin{remark}
             Of all the components in an encoder, attention heads are the only one that allow interaction between tokens.
         \end{remark}
+\end{description}
+
+
+\subsection{Decoder}
+
+\begin{description}
+    \item[Decoder stack] \marginnote{Decoder stack}
+        Composed of $L$ decoder layers.
+
+    \item[Decoder layer] \marginnote{Decoder layer}
+        Layer to autoregressively generate tokens.
+
+        Its main components are:
+        \begin{descriptionlist}
+            \item[Multi-head self-attention]
+                Processes the input tokens.
+
+            \item[Encoder-decoder multi-head attention/Cross-attention] \marginnote{Cross-attention}
+                Uses as query the output of the previous \texttt{MHSA} layer, and as keys and values the output of the encoder stack. In other words, it allows the tokens passed through the decoder to attend the input sequence.
+
+                \begin{remark}
+                    The output of cross-attention can be seen as an additive delta to improve the activations $\vec{z}^{(i)}_j$ obtained from the first MHSA layer.
+                \end{remark}
+
+                \begin{remark}
+                    As queries are independent to each other, and keys and values are constants coming from the encoder, cross-attention works in a token-wise fashion.
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/_cross_attention.pdf}
+                    \caption{Cross-attention data flow}
+                \end{figure}
+
+            \item[Feed-forward network]
+                MLP applied after cross-attention.
+        \end{descriptionlist}
+
+        \begin{remark}
+            As for the encoder, there is a post-norm and pre-norm formulation.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/_transformer_decoder.pdf}
+            \caption{Decoder in post-norm transformer}
+        \end{figure}
+
+
+    \item[Parallel training]
+        When training, as the ground truth is known, it is possible to train all decoder outputs in a single pass. Given a target sequence \texttt{[$\texttt{<SoS>}, t_1, \dots, t_n, \texttt{<EoS>}$]}, it is processed by the decoder in the following way:
+        \begin{itemize}
+            \item The input is \texttt{[$\texttt{<SoS>}, t_1, \dots, t_n$]} (i.e., without end-of-sequence token).
+            \item The expected output \texttt{[$t_1, \dots, t_n, \texttt{<EoS>}$]} (i.e., without start-of-sequence token).
+        \end{itemize}
+        In other words, with a single pass, it is expected that each input token generates the correct output token.
+
+        \begin{remark}
+            Without changes to the self-attention layer, a token at position $i$ in the input is able to attend to future tokens at position $\geq i+1$. This causes a data leak as, during inference, autoregressive generation do not have access to future tokens.
+        \end{remark}
+
+        \begin{description}
+            \item[Masked self-attention] \marginnote{Masked self-attention}
+                Modification to self-attention to prevent tokens to attend at future positions (i.e., at their right). This can be done by either setting the similarity scores with future tokens to $-\infty$ or directly setting the corresponding attention weights to $0$ (i.e., make the attention weights a triangular matrix).
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{./img/_masked_self_attention.pdf}
+                \end{figure}
+        \end{description}
+\end{description}
+
+
+\subsection{Positional encoding}
+
+\begin{remark}[Self-attention equivariance to permutation]
+    By permuting the input sequence of a self-attention layer, the corresponding outputs will be the same as if it were the original sequence, but it is affected by the same permutation. Therefore, self-attention alone does not have information on the ordering of the tokens.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{./img/_self_attention_permutation.pdf}
+    \end{figure}
+\end{remark}
+
+\begin{description}
+    \item[Positional encoding] \marginnote{Positional encoding}
+        Vector of shape $d_Y$ added to the embeddings to encode positional information. Positional encoding can be:
+        \begin{descriptionlist}
+            \item[Fixed] 
+                The vector associated to each position is fixed and known before training.
+                \begin{example}
+                    The original transformer paper proposed the following encoding:
+                    \[
+                        \texttt{pe}_{\texttt{pos}, 2i} = \sin \left( \frac{\texttt{pos}}{10000^{2i/d_Y}} \right)
+                        \qquad
+                        \texttt{pe}_{\texttt{pos}, 2i+1} = \cos \left( \frac{\texttt{pos}}{10000^{2i/d_Y}} \right)
+                    \]
+                    where $\texttt{pos}$ indicates the position of the token and $i$ is the dimension of the position encoding vector (i.e., even indexes use $\sin$ and odd indexes use $\cos$).
+                \end{example}
+
+            \item[Learned] 
+                The vector for position encoding is learned alongside the other parameters.
+        \end{descriptionlist}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{./img/_transformer_position_encoding.pdf}
+        \end{figure}
+\end{description}
+
+
+\begin{remark}[Transformer vs recurrent neural networks]
+    Given a sequence of $n$ tokens with $d$-dimensional embeddings, self-attention and RNN can be compared as follows:
+    \begin{itemize}
+        \item The computational complexity of self-attention is $O(n^2 \cdot d)$ whereas for RNN is $O(n \cdot d^2)$. Depending on the task, $n$ might be a big value.
+        \item The number of sequential operations for training is $O(1)$ for self-attention (parallel training) and $O(n)$ for RNN (not parallelizable).
+        \item The maximum path length (i.e., maximum number of operations before a token can attend to all the others) is $O(1)$ for self-attention (through the multi-head self-attention layer) and $O(n)$ for RNN (it needs to process each token individually while maintaining a memory).
+    \end{itemize}
+\end{remark}
+
+
+
+\section{Vision transformer}
+
+\begin{remark}
+    Using single pixels as tokens is unfeasible due to the complexity scaling of transformers as an $H \times W$ image results in an attention matrix of $(HW)^2$ entries.
+
+    \indenttbox
+    \begin{example}
+        Consider an ImageNet image with shape $224 \times 224$. The attention weights will have $(224^2)^2 = 2.5 \text{ bln}$ entries which would require $5 \text{ GB}$ to store them in half-precision. A classic $12$ layers with $8$ heads transformer would require $483 \text{ GB}$ of memory to only store all attention matrices.
+    \end{example}
+\end{remark}
+
+\begin{remark}
+    Compared to text, image pixels are more redundant and less semantically rich. Therefore, processing all of them together is not strictly necessary.
+\end{remark}
+
+\begin{description}
+    \item[Patch] \marginnote{Patch}
+        Given an image of size $C \times H \times W$, it is divided into patches of size $P \times P$ along the spatial dimension. Each patch is converted into a $Y_D$-dimensional embedding for a transformer as follows:
+        \begin{enumerate}
+            \item Flatten the patch into a $P^2C$ vector.
+            \item Linearly transform it through a learned projection matrix $W_E \in \mathbb{R}^{P^2C \times Y_D}$.
+            \item Add positional information.
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_vit_patch.pdf}
+        \end{figure}
+
+    \item[Vision transformer (ViT)] \marginnote{Vision transformer (ViT)}
+        Transformer encoder that processes embedded patches. A special classification token (\texttt{[CLS]}, as in BERT) is appended at the beginning of the sequence to encode the image representation and its embedding is passed through a traditional classifier to obtain the logits.
+
+        \begin{remark}
+            The (pre-norm) transformer encoder used in vision is the same one as in NLP.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\linewidth]{./img/_vision_transformer.pdf}
+        \end{figure}
 \end{description}
