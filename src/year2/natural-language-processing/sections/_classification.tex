@@ -1,0 +1,131 @@
+\chapter{Text classification}
+
+
+\section{Common tasks}
+
+\begin{description}
+    \item[Sentiment analysis/Opinion mining] \marginnote{Sentiment analysis/Opinion mining}
+        Detection of attitudes. It can involve detecting:
+        \begin{itemize}
+            \item The holder of attitude (i.e., the source).
+            \item The target of attitude (i.e., the aspect).
+            \item The type of attitude (e.g., positive and negative).
+            \item The text containing the attitude. 
+        \end{itemize}
+
+    \item[Spam detection]
+    \item[Language identification]
+    \item[Authorship attribution]
+    \item[Subject category classification] 
+\end{description}
+
+
+\section{Classification}
+
+\begin{description}
+    \item[Classification task] \marginnote{Classification task}
+        Given an input $x$ and a set of possible classes $Y = \{ y_1, \dots, y_M \}$, a classifier determines the class $\hat{y} \in Y$ associated to $x$.
+
+        Classification can be:
+        \begin{descriptionlist}
+            \item[Rule-based] \marginnote{Rule-based}
+                Based on fixed (possibly handwritten) rules.
+
+                \begin{example}
+                    Blacklist, whitelist, regex, \dots
+                \end{example}
+
+            \item[In-context learning] \marginnote{In-context learning}
+                Provide a decoder (i.e., generative) large language model a prompt describing the task and the possible classes.
+
+                \begin{example}
+                    Zero-shot learning, few-shot learning, \dots
+                \end{example}
+
+            \item[Supervised machine learning] \marginnote{Supervised machine learning}
+                Use a training set of $N$ labeled data $\{ (d_i, c_i) \}$ to fit a classifier.
+
+                An ML model can be:
+                \begin{descriptionlist}
+                    \item[Generative] Informally, it learns the distribution of the data.
+                    \item[Discriminative] Informally, it learns to exploit the features to determine the class.
+                \end{descriptionlist}
+        \end{descriptionlist}
+\end{description}
+
+
+\section{Naive Bayes}
+
+\begin{description}
+    \item[Bag-of-words (BoW)] \marginnote{Bag-of-words (BoW)}
+        Represents a document using the frequencies of its words.
+
+        Given a vocabulary $V$ and a document $d$, the bag-of-words embedding of $d$ is a vector in $\mathbb{N}^{\vert V \vert}$ where the $i$-th position contains the number of occurrences of the $i$-th token in $d$.
+
+    \item[Multinomial naive Bayes classifier] \marginnote{Multinomial naive Bayes classifier}
+        Probabilistic (i.e., generative) classifier based on the assumption that features are independent given the class.
+
+        Given a document $d = \{ w_1, \dots, w_n \}$, a naive Bayes classifier returns the class $\hat{c}$ with maximum posterior probability:
+        \[
+            \begin{split}
+                \hat{c} &= \arg\max_{c \in C} \prob{c | d} \\
+                &= \arg\max_{c \in C} \underbrace{\prob{d | c}}_{\text{likelihood}} \underbrace{\prob{c}}_{\text{prior}} \\
+                &= \arg\max_{c \in C} \prob{w_1, \dots, w_n | c} \prob{c} \\
+                &= \arg\max_{c \in C} \prod_{i} \prob{w_i | c} \prob{c} \\
+                &= \arg\max_{c \in C} \sum_{i} \log\prob{w_i | c} \log\prob{c} \\
+            \end{split}
+        \]
+
+        Given a training set $D$ with $N_c$ classes and a vocabulary $V$, $\prob{w_i | c}$ and $\prob{c}$ are determined during training by maximum likelihood estimation as follows:
+        \[
+            \prob{c} = \frac{N_c}{\vert D \vert}
+            \qquad
+            \prob{w_i | c} = \frac{\texttt{count}(w_i, c)}{\sum_{v \in V} \texttt{count}(v, c)}
+        \]
+        where $\texttt{count}(w, c)$ counts the occurrences of the word $w$ in the training samples with class $c$.
+
+        \begin{remark}
+            Laplace smoothing is used to avoid zero probabilities.
+        \end{remark}
+
+        \begin{remark}
+            Stop words can be removed from the training set as they are usually not relevant.
+        \end{remark}
+
+        \begin{remark}
+            The likelihood part of the equation ($\sum_{i} \log\prob{w_i | c}$) can be seen as a set of class-specific 1-gram language models.
+        \end{remark}
+\end{description}
+
+\begin{example}
+    Given the following training set for sentiment analysis with two classes:
+    \begin{table}[H]
+        \centering
+        \footnotesize
+        \begin{tabular}{cl}
+            \toprule
+            \textbf{Class} & \textbf{Document} \\
+            \midrule
+            \texttt{-} & \texttt{just plain boring} \\
+            \texttt{-} & \texttt{entirely predictable and lacks energy} \\
+            \texttt{-} & \texttt{no surprises and very few laughs} \\
+            \texttt{+} & \texttt{very powerful} \\
+            \texttt{+} & \texttt{the most fun film of the summer} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    We want to classify the sentence ``\texttt{predictable with no fun}''. Excluding stop words (i.e., \texttt{with}), we need to compute:
+    \[
+        \begin{split}
+            \prob{\texttt{+} | \texttt{predictable with no fun}} &= \prob{\texttt{+}} \prob{\texttt{predictable} | \texttt{+}} \prob{\texttt{no} | \texttt{+}} \prob{\texttt{fun} | \texttt{+}} \\
+            \prob{\texttt{-} | \texttt{predictable with no fun}} &= \prob{\texttt{-}} \prob{\texttt{predictable} | \texttt{-}} \prob{\texttt{no} | \texttt{-}} \prob{\texttt{fun} | \texttt{-}}
+        \end{split}
+    \]
+    A vocabulary of $20$ tokens can be used to represent the training samples. The required likelihoods and priors with Laplace smoothing are computed as:
+    \[
+        \begin{gathered}
+            \prob{\texttt{+}} = \frac{2}{5} \qquad \prob{\texttt{predictable} | \texttt{+}} = \frac{0+1}{9+20} \quad \prob{\texttt{no} | \texttt{+}} = \frac{0+1}{9+20} \quad \prob{\texttt{fun} | \texttt{+}} = \frac{1+1}{9+20} \\
+            \prob{\texttt{-}} = \frac{3}{5} \qquad \prob{\texttt{predictable} | \texttt{-}} = \frac{1+1}{14+20} \quad \prob{\texttt{no} | \texttt{-}} = \frac{1+1}{14+20} \quad \prob{\texttt{fun} | \texttt{-}} = \frac{0+1}{14+20}
+        \end{gathered}
+    \]
+\end{example}
