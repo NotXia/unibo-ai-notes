@@ -400,4 +400,82 @@
             \centering
             \includegraphics[width=0.55\linewidth]{./img/_vision_transformer.pdf}
         \end{figure}
+
+        \begin{remark}
+            Differently from convolutional neural networks where convolutions are the major source of FLOPs, in ViT the number of FLOPs heavily depends on the length of the input sequence due to the quadratic complexity of the attention mechanism.
+        \end{remark}
+
+    \item[ViT variants]
+        The main size-wise variants of ViT are the following:
+        \begin{center}
+            \small
+            \begin{tabular}{cccccc}
+                \toprule
+                \textbf{Model} & \textbf{Layers} & \textbf{Heads} & \textbf{Hidden size} & \textbf{MLP size} & \textbf{Parameters} \\
+                \midrule
+                ViT-base    & 12 & 12 & 768 & 3072 & 86 M \\
+                ViT-large   & 24 & 16 & 1024 & 4096 & 307 M \\
+                ViT-huge    & 32 & 16 & 1280 & 5120 & 632 M \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+        Note that, by convention, the MLP size is four times the hidden size.
+
+        Moreover, ViT models can also vary depending on the size of the input patch.
+
+        The overall notation to denote size and patch is: ViT-\texttt{<size>}/\texttt{<patch size>}.
+
+    \item[Results]
+        The main experimental observations and results using vision transformer are the following:
+        \begin{itemize}
+            \item The first embedding projection $W_E$ for RGB images shows a similar behavior to convolutions as they tend to recognize edges and color variations.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.45\linewidth]{./img/_vit_projection_rgb.pdf}
+                \caption{
+                    \parbox[t]{0.7\linewidth}{
+                        Visualization of the columns of the patches linear projection matrix $W_E$. Each column has shape $3P^2$ and can be reshaped to be a $3 \times P \times P$ image.
+                    }
+                }
+            \end{figure}
+
+            \item The learned positional embeddings are able to encode information about the row and column positioning of the patches.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.33\linewidth]{./img/_vit_embedding_similarity.pdf}
+                \caption{
+                    \parbox[t]{0.7\linewidth}{
+                        Cosine similarity of the positional encoding of each patch compared to all the others
+                    }
+                }
+            \end{figure}
+
+            \item Attention heads at the lower layers attend at both positions around the patch and far from them. Higher layers, as with convolutions, attend to distant patches.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.33\linewidth]{./img/_vit_head_distance.pdf}
+                \caption{
+                    Mean attention distance of the heads of ViT-large/16
+                }
+            \end{figure}
+
+            \item On ImageNet top-1 accuracy, ViT outperforms a large ResNet only when pre-trained on a large dataset.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.4\linewidth]{./img/_vit_results.pdf}
+                \caption{
+                    \parbox[t]{0.7\linewidth}{
+                        ImageNet top-1 accuracy with different pre-training datasets. BiT represents ResNet (two variants).
+                    }
+                }
+            \end{figure}
+        \end{itemize}
+
+        \begin{remark}
+            Comparison between convolutional neural networks and vision transformer is not straightforward.
+        \end{remark}
+
+        \begin{remark}
+            On an execution efficiency point-of-view, the currently more common inference hardware is more optimized for convolutions.
+        \end{remark}
 \end{description}
