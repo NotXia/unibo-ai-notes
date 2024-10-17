@@ -37,8 +37,8 @@
 
         \begin{description}
             \item[True/false positive criteria] 
-                Given a threshold $\rho_\texttt{IoU}$, a detection $BB_i$ is a true positive (\texttt{TP}) w.r.t. a ground truth $\hat{BB_j}$ if it is classified with the same class and:
-                \[ \texttt{IoU}(BB_i, \hat{BB_j}) > \rho_\texttt{IoU} \]
+                Given a threshold $\rho_\texttt{IoU}$, a detection $BB_i$ is a true positive (\texttt{TP}) w.r.t. a ground-truth $\widehat{BB_j}$ if it is classified with the same class and:
+                \[ \texttt{IoU}(BB_i, \widehat{BB_j}) > \rho_\texttt{IoU} \]
 
                 \begin{remark}
                     Confidence can also be considered when determining a match through a threshold $\rho_\text{min}$.
@@ -46,8 +46,8 @@
         \end{description}
 
     \item[Recall]
-        Measures the number of ground truth objects that have been found:
-        \[ \texttt{recall} = \frac{\vert \texttt{TP} \vert}{\vert \text{ground truth boxes} \vert} \]
+        Measures the number of ground-truth objects that have been found:
+        \[ \texttt{recall} = \frac{\vert \texttt{TP} \vert}{\vert \text{ground-truth boxes} \vert} \]
 
     \item[Precision]
         Measures the number of correct detections among all the predictions:
@@ -62,7 +62,7 @@
     \end{figure}
 
     \item[Precision-recall curve]
-        Plot that relates precision and recall.
+        Plot that relates all possible precisions and recalls of a detector.
 
         \begin{example}
             Consider the following image and the bounding boxes found by a detector:
@@ -71,7 +71,7 @@
                 \includegraphics[width=0.4\linewidth]{./img/_example_precision_recall_curve1.pdf}
                 \caption{
                     \parbox[t]{0.6\linewidth}{
-                        Ground truth (yellow boxes) and predictions (orange boxes) with their confidence score
+                        Ground-truth (yellow boxes) and predictions (orange boxes) with their confidence score
                     }
                 }
             \end{figure}
@@ -87,4 +87,267 @@
                 Recall is monotonically decreasing, while precision can both decrease and increase.
             \end{remark}
         \end{example}
+
+        \begin{description}
+            \item[Average precision (AP)] \marginnote{Average precision (AP)}
+                Area under the precision-recall curve.
+
+            \item[Mean average precision (mAP)] \marginnote{Mean AP (mAP)}
+                Mean AP over the possible classes.
+
+            \item[COCO mean average precision] \marginnote{COCO mAP}
+                Compute for each class the average AP over varying $\rho_\texttt{IoU}$ (e.g., in the original paper, $\rho_\texttt{IoU} \in [0.5, 0.95]$ with $0.05$ steps) and further average them over the possible classes.
+
+                \begin{remark}
+                    Higher COCO mAP indicates a detector with good localization capabilities.
+                \end{remark}
+        \end{description}
+\end{description}
+
+
+
+\section{Viola-Jones}
+
+\begin{description}
+    \item[Viola-Jones] \marginnote{Viola-Jones object detection}
+        General framework for object detection, mainly applied to faces.
+
+        It is one of the first successful applications of machine learning in computer vision and has the following basis:
+        \begin{itemize}
+            \item Use AdaBoost to learn an ensemble of features.
+            \item Use multi-scale rectangular features computed efficiently using integral images.
+            \item Cascade to obtain real-time speed.
+        \end{itemize}
+\end{description}
+
+
+\subsection{Boosting}
+
+\begin{description}
+    \item[Weak learner] \marginnote{Weak learner}
+        Classifier with an error rate slightly higher than a random classifier (i.e., in a balanced binary task, accuracy slightly higher than $50\%$).
+
+        \begin{description}
+            \item[Decision stump] \marginnote{Decision stump}
+                Classifier that learns a threshold for a single feature (i.e., decision tree with depth 1).
+        \end{description}
+
+    \item[Strong learner] \marginnote{Strong learner}
+        Classifier with an accuracy strongly correlated with the ground-truth.
+
+    \item[Adaptive boosting (AdaBoost)] \marginnote{Adaptive boosting (AdaBoost)}
+        Ensemble of $M$ weak learners $\texttt{WL}_i$ that creates a strong learner $\texttt{SL}$ as the linear combination of their predictions (i.e., weighted majority vote):
+        \[ \texttt{SL}(x) = \left( \sum_{i=1}^{M} \alpha_i \texttt{WL}_i(x) > 0 \right) \]
+
+    \item[Training] \marginnote{Boosting training}
+        Given $N$ training samples $(x^{(i)}, y^{(i)})$ and $M$ untrained weak learners $\texttt{WL}_i$, training is done sequentially by tuning a learner at the time:
+        \begin{enumerate}
+            \item Uniformly weigh each sample: $w^{(i)} = \frac{1}{N}$.
+            \item For each weak learner $\texttt{WL}_j$ ($j=1, \dots, M$):
+            \begin{enumerate}
+                \item Fit the weak learner on the weighted training data.
+                \item Compute its error rate:
+                \[ \varepsilon_j = \sum_{i: x^{(i)} \text{ misclassified}} w^{(i)} \]
+                \item Compute the reweigh factor:
+                \[ \beta_j = \frac{1 - \varepsilon_j}{\varepsilon_j} \]
+                \item Increase the weight of misclassified samples:
+                \[ w^{(i)} = w^{(i)} \beta_j \]
+                and re-normalize all samples so that their weights sum to $1$.
+            \end{enumerate}
+            \item Define the strong classifier as:
+            \[ \texttt{SL}(x) = \left( \sum_{j} \ln(\beta_j) \texttt{WL}_j(x) > 0 \right) \]
+        \end{enumerate}
+
+        \begin{example}
+            \small
+            Consider the problem of spam detection with two features $x_1$ and $x_2$ (number of URL and capitalized words, respectively).
+            The training samples and their initial weights are the following:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.3\linewidth]{./img/_adaboost_example1.pdf}
+            \end{figure}
+            We want to train an ensemble of $3$ decision stumps $\texttt{WL}_{j}$.
+
+            Let's say that the first weak classifier learns to detect spam using the criteria $x_1 > 3$. The error rate and reweigh factor are:
+            \[
+                \varepsilon_1 = \frac{1}{8} + \frac{1}{8} \qquad
+                \beta_1 = \frac{1 - \varepsilon_1}{\varepsilon_1} = 3
+            \]
+            The new reweighed and normalized samples are:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_adaboost_example2.pdf}
+            \end{figure}
+
+            Now, assume that the second classifier learns $x_1 > 10$. The error rate and reweigh factor are:
+            \[ \varepsilon_2 = \frac{1}{12} + \frac{1}{12} \qquad
+            \beta_2 = \frac{1 - \varepsilon_2}{\varepsilon_2} = 5 \]
+            The new reweighed and normalized samples are:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/_adaboost_example3.pdf}
+            \end{figure}
+
+            Finally, the third classifier learns $x_2 > 20$. The error rate and reweigh factor are:
+            \[ \varepsilon_3 = \frac{1}{20} + \frac{1}{20} + \frac{3}{20} \qquad
+            \beta_3 = \frac{1 - \varepsilon_3}{\varepsilon_3} = 3 \]
+
+            The strong classifier is defined as:
+            \[ \texttt{SL}(x) = \begin{cases}
+                1 & \text{if $\big( \ln(3)\texttt{WL}_1(x) + \ln(5)\texttt{WL}_2(x) + \ln(3)\texttt{WL}_3(x) \big) \geq 0$} \\
+                -1 & \text{otherwise}
+            \end{cases} \]
+        \end{example}
+
+    \item[Haar-like features] \marginnote{Haar-like features}
+        For face detection, a $24 \times 24$ patch of the image is considered (for now) and the weak classifiers define rectangular filters composed of 2 to 4 subsections applied at fixed positions of the patch.
+
+        Given a patch $x$, a weak learned $\texttt{WL}_j$ classifies it as:
+        \[
+            \texttt{WL}_j(x) = \begin{cases}
+                1 & \text{if $s_j f_j \geq s_j \rho_j$} \\
+                -1 & \text{otherwise}
+            \end{cases}
+        \]
+        where the learned parameters are:
+        \begin{itemize}
+            \item The size and position of the filter ($f_j$ is the result of applying the filter).
+            \item The polarity $s_j$.
+            \item The threshold $\rho_j$.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.6\linewidth}
+                \centering
+                \includegraphics[width=0.5\linewidth]{./img/_haar_like_example.pdf}
+                \caption{Filter applied on a patch}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}{0.35\linewidth}
+                \centering
+                \includegraphics[width=0.65\linewidth]{./img/_haar_like_filters_example.pdf}
+                \caption{Other possible filters}
+            \end{subfigure}
+            \caption{Example of filters}
+        \end{figure}
+
+        \begin{remark}
+            AdaBoost is used to select a subset of the most effective filters.
+        \end{remark}
+\end{description}
+
+
+\subsection{Integral images}
+
+\begin{description}
+    \item[Integral image] \marginnote{Integral image}
+        Given an image $I$, its corresponding integral image $II$ is defined as:
+        \[ II(i, j) = \sum_{i' \leq i, j' \leq j} I(i', j') \]
+        In other words, the value at coordinates $(i, j)$ in the integral image is the sum of all the pixels of the original image in an area that starts from the top-left corner and has as bottom-right corner the pixel at $(i, j)$.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/_integral_image.pdf}
+            \caption{Example of integral image}
+        \end{figure}
+
+        \begin{remark}
+            In practice, the integral image can be computed recursively as:
+            \[ II(i, j) = II(i, j-1) + II(i-1, j) - II(i-1, j-1) + I(i, j) \]
+        \end{remark}
+
+    \item[Fast feature computation] \marginnote{Fast feature computation}
+        Given an image $I$ and its integral image $II$, the sum of the pixels in a rectangular area of $I$ can be computed in constant time as:
+        \[ II(A) - II(B) - II(C) + II(D) \]
+        where $A$, $B$, $C$, and $D$ are coordinates defined as in \Cref{fig:integral_image_features}.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/_integral_image_feature.pdf}
+            \caption{Summation of the pixels in the blue area}
+            \label{fig:integral_image_features}
+        \end{figure}
+
+    \item[Multi-scale sliding window] \marginnote{Multi-scale sliding window}
+        During inference, Viola-Jones is a sliding window detector that scans the image considering patches of fixed size.
+
+        To achieve scale-invariance, patches of different size are used, scaling the rectangular filters accordingly.
+
+        \begin{remark}
+            The integral image allows to compute the features in constant time independently of the patch size.
+        \end{remark}
+\end{description}
+
+
+\subsection{Cascade}
+
+\begin{description}
+    \item[Cascade] \marginnote{Cascade}
+        To obtain real-time predictions, a hierarchy of classifiers is used to quickly reject background patches. The first classifier considers a few features while the following ones use more.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/_viola_jones_cascade.pdf}
+        \end{figure}
+\end{description}
+
+
+\subsection{Non-maximum suppression}
+
+\begin{description}
+    \item[Non-maximum suppression (NMS)] \marginnote{Non-maximum suppression (NMS)}
+        Algorithm to obtain a single bounding box from several overlapping ones. Given the set of all the bounding boxes with their confidence that a detector found, NMS works as follows:
+        \begin{enumerate}
+            \item Until there are unchecked boxes:
+            \begin{enumerate}
+                \item Consider the bounding box with the highest confidence.
+                \item Eliminate all boxes with overlap higher than a chosen threshold (e.g., $\texttt{IoU} > 0.5$).
+            \end{enumerate}
+        \end{enumerate}
+
+        \begin{remark}
+            If two objects are close, NMS might detect them as a single instance.
+        \end{remark}
+\end{description}
+
+
+
+\section{CNN object localization}
+
+\begin{description}
+    \item[Object localization] \marginnote{Object localization}
+        Subset of object detection problems where it is assumed that there is only a single object to detect.
+
+    \item[CNN for object localization] \marginnote{CNN for object localization}
+        A pre-trained CNN can be used as feature extractor with two heads:
+        \begin{descriptionlist}
+            \item[Classification head] Used to determine the class.
+            \item[Regression head] Used to determine the bounding box.
+        \end{descriptionlist}
+
+        Given:
+        \begin{itemize}
+            \item The ground-truth class $c^{(i)}$ and bounding box $BB^{(i)}$,
+            \item The predicted class logits $\texttt{scores}^{(i)}$ and bounding box $\widehat{BB}^{(i)}$,
+        \end{itemize} 
+        training is a multi-task learning problem with two losses:
+        \[ \mathcal{L}^{(i)} = \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}^{(i)}), \mathbbm{1}[c^{(i)}] \right) + \lambda \mathcal{L}_\text{MSE}\left(\widehat{BB}^{(i)}, BB^{(i)} \right) \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/_cnn_object_localization.pdf}
+            \caption{Localizer with AlexNet as feature extractor and 1000 classes}
+        \end{figure}
+
+        \begin{remark}
+            A localization CNN can be used as a sliding window detector to detect multiple objects.
+
+            An additional background class (\texttt{bg}) has to be added to mark patches without an object. Moreover, when a patch belongs to the background, the loss related to the bounding box should be ignored. Therefore, the loss becomes:
+            \[ \mathcal{L}^{(i)} = \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}^{(i)}), \mathbbm{1}[c^{(i)}] \right) + \lambda \mathbbm{1}[c^{(i)} \neq \texttt{bg}] \mathcal{L}_\text{MSE}\left(\widehat{BB}^{(i)}, BB^{(i)} \right) \]
+            where $\mathbbm{1}[c^{(i)} \neq \texttt{bg}]$ is $1$ iff the ground-truth class $c^{(i)}$ is not the background class.
+
+            This approach has two main problems:
+            \begin{itemize}
+                \item Background patches are usually more frequent, requiring additional work to balance the dataset or mini-batch.
+                \item There are too many patches to check.
+            \end{itemize}
+        \end{remark}
 \end{description}
