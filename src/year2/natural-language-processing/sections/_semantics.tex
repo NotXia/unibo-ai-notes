@@ -1,0 +1,258 @@
+\chapter{Semantics}
+
+
+\section{Traditional semantic representation}
+
+\begin{description}
+    \item[Lemma/citation form] \marginnote{Lemma}
+        Syntactic form of a word.
+
+        \begin{example}
+            The word \texttt{pipe}.
+        \end{example}
+
+    \item[Word sense] \marginnote{Word sense}
+        Meaning component of a word.
+
+        \begin{description}
+            \item[Polysemous lemma] Lemma with multiple senses. 
+            \begin{example}
+                Possible senses of the word \texttt{pipe} are: the music instrument, the conduit to transport material, \dots.
+            \end{example}
+        \end{description}
+
+    \item[Supersense] \marginnote{Supersense}
+        Semantic category for senses.
+
+    \item[Word sense disambiguation (WSD)] \marginnote{Word sense disambiguation (WSD)}
+        Task of determining the correct sense of a word.
+\end{description}
+
+
+\subsection{Sense relations}
+
+\begin{description}
+    \item[Synonym] \marginnote{Synonym}
+        Relation of (near) identity between two senses of two different words (i.e., same propositional meaning).
+
+        \begin{remark}[Principle of contrast]
+            A different linguistic form is probably due to some, maybe subtle, difference in meaning.
+        \end{remark}
+
+    \item[Antonym] \marginnote{Antonym}
+        Relation of opposition, with respect to one feature of meaning, between two senses. More specifically, antonyms can be:
+        \begin{itemize}
+            \item An opposition between two ends of a scale (e.g., \texttt{long}/\texttt{short}).
+            \item A reversive (e.g., \texttt{up}/\texttt{down}).
+        \end{itemize}
+
+    \item[Subordination] \marginnote{Subordination}
+        Specificity (i.e., is-a) relation between two senses.
+
+        \begin{example}
+            \texttt{car} is a subordinate of \texttt{vehicle}.
+        \end{example}
+
+    \item[Superordination] \marginnote{Superordination}
+        Generalization relation between two senses.
+
+        \begin{example}
+            \texttt{furniture} is a superordinate of \texttt{lamp}.
+        \end{example}
+
+    \item[Meronym] \marginnote{Meronym}
+        Part-of relation between two senses.
+\end{description}
+
+\begin{remark}
+    Relations among word senses can be seen as a graph.
+\end{remark}
+
+
+\subsection{Common ontologies}
+
+\begin{description}
+    \item[WordNet] \marginnote{WordNet}
+        Database of semantic relations of English words.
+
+    \item[BabelNet] \marginnote{BabelNet}
+        Multilingual database of semantic relations.
+\end{description}
+
+
+\subsection{Word relations}
+
+\begin{description}
+    \item[Word similarity] \marginnote{Word similarity}
+        Measure the meaning similarity of words (i.e., relation between words and not senses).
+
+        \begin{remark}
+            Working with words is easier than senses.
+        \end{remark}
+
+        \begin{example}
+            Cat and dog are not synonyms but have similar meaning (i.e., pets).
+        \end{example}
+
+    \item[Word relatedness] \marginnote{Word relatedness}
+        Measure the context relation of words.
+
+        \begin{example}
+            \texttt{car}/\texttt{bike} are similar while \texttt{car}/\texttt{fuel} are related but not similar.
+        \end{example}
+
+        \begin{description}
+            \item[Semantic field] \marginnote{Semantic field}
+                Words that cover a particular domain and have structured relations with each other.
+
+                \begin{example}
+                    In the context of a hospital, \texttt{surgeon}, \texttt{scalpel}, \texttt{nurse}, \texttt{anesthetic}, and \texttt{hospital} belong to the same semantic field.
+                \end{example}
+
+                \begin{description}
+                    \item[Topic model] \marginnote{Topic model}
+                        Unsupervised method to cluster the topics in a document based on how a word is used in its context.
+                \end{description}
+
+            \item[Semantic frames] \marginnote{Semantic frames}
+                Words that describe the perspective or participants of a particular event.
+
+                \begin{example}
+                    In a commercial transaction, a \texttt{buyer} trades \texttt{money} with a \texttt{seller} in return of some \texttt{good or service}.
+                \end{example}
+
+                \begin{description}
+                    \item[Semantic role labeling (SRL)] \marginnote{Semantic role labeling (SRL)}
+                        Task of determining the frames and their semantic role.
+                \end{description}
+        \end{description}
+\end{description}
+
+
+\section{Vector semantics}
+
+\begin{description}
+    \item[Connotation] \marginnote{Connotation}
+        Affective meaning of a word.
+
+        \begin{remark}
+            As described in \Cref{sec:affective_meaning}, emotions can be represented in a vector space. Therefore, word meanings can also be represented as vectors.
+        \end{remark}
+
+    % \item[Vector semantics] \marginnote{Vector semantics}
+    %     Define a word by its environment or distribution in language use.
+    
+    \item[Vector semantics intuitions]
+        Vector semantics lay on two intuitions:
+        \begin{descriptionlist}
+            \item[Distributionalism intuition] \marginnote{Distributionalism intuition}
+                The meaning of a word is defined by its environment or distribution (i.e., neighboring words). Words with a similar distribution are likely to have the same meaning.
+
+            \item[Vector intuition] \marginnote{Vector intuition}
+                Define the meaning of a word as a point in an $N$-dimensional space.
+        \end{descriptionlist}
+
+    \item[Embedding] \marginnote{Embedding}
+        Vector representation of a word where words with a similar meaning are nearby in the vector space.
+
+        Two common embedding models are:
+        \begin{descriptionlist}
+            \item[TF-IDF] \marginnote{TF-IDF}
+                Sparse embedding based on the counts of nearby words.
+
+            \item[Word2vec] \marginnote{Word2vec}
+                Dense embedding learned by training a classifier to distinguish nearby and far-away words.
+        \end{descriptionlist}
+\end{description}
+
+
+\subsection{Co-occurrence (sparse) embeddings}
+
+\begin{description}
+    \item[Co-occurrence matrix] \marginnote{Co-occurrence matrix}
+        Matrix representing the frequency that words occur with the others.
+
+        Different design choices can be considered:
+        \begin{itemize}
+            \item Matrix design.
+            \item Reweighing.
+            \item Dimensionality reduction.
+            \item Vector comparison metric.
+        \end{itemize}
+
+    \item[Matrix design] 
+        Shape and content of the co-occurrence matrix.
+
+        \begin{description}
+            \item[Term-document matrix] \marginnote{Term-document matrix}
+                Given a vocabulary $V$ and a set of documents $D$, a term-document matrix has shape $|V| \times |D|$ and counts the occurrences of each word in each document.
+
+                \begin{remark}
+                    This representation allows to encode both documents (i.e., by considering the matrix column-wise) and words (i.e., by considering the matrix row-wise).
+                \end{remark}
+
+                \begin{example}
+                    An excerpt of a possible term-document matrix for Shakespeare is:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccccc}
+                            \toprule
+                            & \textit{As You Like It} & \textit{Twelfth Night} & \textit{Julius Caesar} & \textit{Henry V} \\
+                            \midrule
+                            \texttt{battle} & 1 & 0 & 7 & 13 \\
+                            \texttt{good} & 114 & 80 & 62 & 89 \\
+                            \texttt{fool} & 36 & 58 & 1 & 4 \\
+                            \texttt{wit} & 20 & 15 & 2 & 3 \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    The representation for the document \textit{As You Like It} is $[1, 114, 36, 20]$, while the representation of the word \texttt{battle} is $[1, 0, 7, 13]$.
+                \end{example}
+
+            \item[Word-word matrix] \marginnote{Word-word matrix}
+                Given a vocabulary $V$, a word-word matrix has shape $|V| \times |V|$. Rows represent target words and columns are context words.
+                Given a training corpus, the word at each row is represented by counting its co-occurrences with the others within a context of $N$ words.
+
+                \begin{remark}
+                    A larger context window captures more semantic information. A smaller window captures more syntactic information.
+                \end{remark}
+
+                \begin{example}
+                    A possible word-word matrix is:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccccccccc}
+                            \toprule
+                            & \texttt{aardvark} & \dots & \texttt{computer} & \texttt{data} & \texttt{result} & \texttt{pie} & \texttt{sugar} & \dots \\
+                            \midrule
+                            \texttt{cherry} & 0 & \dots & 2 & 8 & 9 & 442 & 25 & \dots \\
+                            \texttt{strawberry} & 0 & \dots & 0 & 0 & 1 & 60 & 19 & \dots \\
+                            \texttt{digital} & 0 & \dots & 1670 & 1683 & 85 & 5 & 4 & \dots \\
+                            \texttt{information} & 0 & \dots & 3325 & 3982 & 378 & 5 & 13 & \dots \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                \end{example}
+        \end{description}
+
+    \item[Reweighing] 
+        Rescale the value of the components of the vectors (e.g., make a probability, length normalization, TF-IDF, \dots).
+
+        \begin{remark}[Frequency paradox]
+            Raw frequencies are not an ideal representation for words as they are skewed and not discriminative. Moreover, overly frequent words (e.g., stop words) do not provide context information.
+        \end{remark}
+
+    \item[Dimensionality reduction] 
+        Reduce the dimensionality of the embeddings.
+
+    \item[Vector comparison] 
+        Metric to determine the distance of two embeddings.
+
+        \begin{description}
+            \item[Dot product] $\vec{w} \cdot \vec{v} = \sum_{i=1}^{n} w_i v_i$.
+            \item[Length] Compare the length $|\vec{v}| = \sqrt{\sum_{i=1}^{n} v_i^2}$ of the vectors.
+            \item[Cosine similarity] $\frac{\vec{w} \cdot \vec{v}}{|\vec{w}| \, |\vec{v}|}$.
+        \end{description}
+\end{description}
