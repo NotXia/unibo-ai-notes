@@ -283,9 +283,14 @@
 \begin{description}
     \item[Cascade] \marginnote{Cascade}
         To obtain real-time predictions, a hierarchy of classifiers is used to quickly reject background patches. The first classifier considers a few features while the following ones use more.
+
+        \begin{remark}
+            The simpler classifiers have a high recall so that they do not discard faces.
+        \end{remark}
+
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.85\linewidth]{./img/_viola_jones_cascade.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_viola_jones_cascade.pdf}
         \end{figure}
 \end{description}
 
@@ -310,7 +315,10 @@
 
 
 
-\section{CNN object localization}
+\section{CNN for object detection}
+
+
+\subsection{Object localization}
 
 \begin{description}
     \item[Object localization] \marginnote{Object localization}
@@ -333,7 +341,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.95\linewidth]{./img/_cnn_object_localization.pdf}
+            \includegraphics[width=0.9\linewidth]{./img/_cnn_object_localization.pdf}
             \caption{Localizer with AlexNet as feature extractor and 1000 classes}
         \end{figure}
 
@@ -349,5 +357,357 @@
                 \item Background patches are usually more frequent, requiring additional work to balance the dataset or mini-batch.
                 \item There are too many patches to check.
             \end{itemize}
+        \end{remark}
+\end{description}
+
+
+\subsection{Region proposal}
+
+\begin{description}
+    \item[Region proposal] \marginnote{Region proposal}
+        Class of algorithms to find regions likely to contain an object.
+
+        \begin{description}
+            \item[Selective search] \marginnote{Selective search}
+            Region proposal algorithm that works as follows:
+            \begin{enumerate}
+                \item Segment the image into superpixels (i.e., uniform regions).
+                \item Merge superpixels based on similarity of color, texture, or size. Each aggregation generates a proposed region.
+                \item Repeat until everything collapses in a single region.
+            \end{enumerate}
+        \end{description}
+
+        \begin{remark}
+            Region proposal algorithms should have a high recall.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/selective_search.png}
+            \caption{Example of some iterations of selective search}
+        \end{figure}
+
+    \item[Region-based CNN (R-CNN)] \marginnote{Region-based CNN (R-CNN)}
+        Use a CNN for object localization with selective search. The workflow is the following:
+        \begin{enumerate}
+            \item Run selective search to get the proposals.
+            \item For each proposal:
+            \begin{enumerate}
+                \item Warp the proposed crop to the input shape of the CNN.
+                \item Feed the warped crop to the CNN to get:
+                \begin{itemize}
+                    \item A class prediction.
+                    \item A bounding box correction (as selective search already gives a box).
+                \end{itemize}
+            \end{enumerate}
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_r_cnn.pdf}
+            \caption{Example of R-CNN using AlexNet}
+        \end{figure}
+
+        \begin{description}
+            \item[Bounding box correction] \marginnote{Bounding box correction}
+                Given a selective search bounding box $BB_{\text{SS}}$ and the network predicted correction $\hat{t}$:
+                \[ 
+                    BB_{\text{SS}} = (x_{\text{SS}}, y_{\text{SS}}, w_{\text{SS}}, h_{\text{SS}})
+                    \qquad
+                    \hat{t} = (\Delta\hat{x}, \Delta\hat{y}, \Delta\hat{w}, \Delta\hat{h})
+                \]
+                the output box $BB_{\text{out}}$ is given by:
+                \[ 
+                    BB_{\text{out}} = ( 
+                        x_{\text{SS}} + w_{\text{SS}}\Delta\hat{x},
+                        y_{\text{SS}} + h_{\text{SS}}\Delta\hat{y},
+                        w_{\text{SS}} \exp(\Delta\hat{w}),
+                        h_{\text{SS}} \exp(\Delta\hat{h})
+                    ) 
+                \]
+                where the center is a translation relative to the box size and the dimensions are log-space scaled.
+
+                \begin{remark}
+                    This formulation is due to the fact that a neural network tend to output smaller values, so overall it results an easier task to learn.
+                \end{remark}
+
+                \begin{description}
+                    \item[Training] 
+                    Given a training sample $x^{(i)}$ with class $c^{(i)}$ and bounding box $BB^{(i)} = [x_\text{GT}, y_\text{GT}, w_\text{GT}, h_\text{GT}]$, the selective search box $BB_\text{SS}^{(i)}$ associated to it during training is the one with the most overlap, while the others are considered background. The target correction $t^{(i)} = [\Delta x, \Delta y, \Delta w, \Delta h]$ is computed as:
+                    \[ 
+                        \Delta x = \frac{x_\text{GT} - x_\text{SS}}{w_\text{SS}}
+                        \quad
+                        \Delta y = \frac{y_\text{GT} - y_\text{SS}}{h_\text{SS}}
+                        \quad
+                        \Delta w = \ln\left(\frac{w_\text{GT}}{w_\text{SS}} \right)
+                        \quad
+                        \Delta w = \ln\left( \frac{h_\text{GT}}{h_\text{SS}} \right)
+                    \]
+                    The loss is then defined as:
+                    \[ \mathcal{L}^{(i)} = \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}^{(i)}), \mathbbm{1}[c^{(i)}] \right) + \lambda \mathbbm{1}[c^{(i)} \neq \texttt{bg}] \mathcal{L}_\text{MSE}\left(\widehat{t}^{(i)}, t^{(i)} \right) \]
+
+                \end{description}
+        \end{description}
+
+        \begin{remark}
+            Empirically, it has been observed that feature computation, fine-tuning, bounding box correction, and architecture are important to increase mAP.
+        \end{remark}
+
+        \begin{remark}
+            Instead of AlexNet, any other CNN can potentially be used.
+        \end{remark}
+
+        \begin{remark}
+            R-CNN is slow as it requires to process each proposed crop.
+        \end{remark}
+
+    \item[Fast R-CNN] \marginnote{Fast R-CNN}
+        Optimization to R-CNNs that avoids processing overlapping pixels of the proposed crops with the CNN multiple times:
+        \begin{enumerate}
+            \item Process the original image with the feature extractor section of the CNN.
+            \item Compute the proposed crops from the feature extractor activations and adjust to the correct shapes through pooling.
+            \item Feed each crop to the remaining fully-connected layers of the CNN and the task-specific heads.
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_fast_r_cnn.pdf}
+            \caption{Example of fast R-CNN using AlexNet}
+        \end{figure}
+
+        \begin{description}
+            \item[Region of interest pool (RoIPool)] \marginnote{Region of interest pool (RoIPool)}
+                Given an input activation of shape $C_a \times H_a \times W_a$ and the desired output spatial dimension $H_o \times W_o$, RoIPool allows to obtain an output of shape $C_a \times H_o \times W_o$ as follows:
+                \begin{enumerate}
+                    \item Project the proposed region from the original image to the feature extractor activations.
+                    \item Snap the projection to grid (i.e., apply rounding).
+                        \begin{remark}
+                            As a single pixel in the activation encodes multiple pixels of the input image, snapping might lose some information.
+                        \end{remark}
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.85\linewidth]{./img/_roipool_snap.pdf}
+                            \caption{Project and snap operations}
+                        \end{figure}
+                    \item Apply max pooling with kernel of approximately size $\left\lceil \frac{H_r}{H_O} \right\rceil \times \left\lceil \frac{W_r}{W_O} \right\rceil$ and stride approximately $\left\lfloor \frac{H_r}{H_O} \right\rfloor \times \left\lfloor \frac{W_r}{W_O} \right\rfloor$.
+                        \begin{remark}
+                            Approximations are needed as the spatial dimension of the crop might not be directly convertible to the desired output shape. So, some iterations might not use the precise kernel size or stride.
+                        \end{remark}
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.85\linewidth]{./img/_roipool_maxpool.pdf}
+                            \caption{Pooling operation with varying kernel size}
+                        \end{figure}
+                \end{enumerate}
+
+                \begin{remark}
+                    Snapping and approximate pooling introduce two sources of quantization.
+                \end{remark}
+
+            \item[Huber loss] \marginnote{Huber loss}
+                Instead of L2, fast R-CNN uses the Huber (i.e., smooth L1) loss to compare bounding boxes:
+                \[ 
+                    \begin{gathered}
+                        \mathcal{L}_{BB}^{(i)} = \sum_{d \in \{ x, y, w, h \}} \mathcal{L}_\text{huber}\left( \Delta\hat{d}^{(i)} - \Delta d^{(i)} \right) \\
+                        \mathcal{L}_\text{huber}(a) = \begin{cases}
+                            \frac{1}{2}a^2 & \text{if $|a| \leq 1$} \\
+                            |a| - \frac{1}{2} & \text{otherwise}
+                        \end{cases}
+                    \end{gathered}
+                \]
+
+                \begin{remark}
+                    L2 grows quadratically with the loss which makes it sensitive to outliers. Smooth L1 maintains the gradient constant to $1$ for big values.
+                \end{remark}
+        \end{description}
+
+        \begin{remark}
+            Fast R-CNN reduces the number of FLOPs when applying the convolutions but moves the bottleneck to the feed-forward layers.
+            \begin{table}[H]
+                \centering
+                \footnotesize
+                \begin{tabular}{rcc}
+                    \toprule
+                    & \textbf{Conv FLOPs} & \textbf{FF FLOPs} \\
+                    \midrule
+                    \textbf{R-CNN} & $n \cdot 2154$ M & $n \cdot 117$ M \\
+                    \textbf{Fast R-CNN} & $\num{16310}$ M & $n \cdot 117$ M \\
+                    \bottomrule
+                \end{tabular}
+                \caption{FLOPs comparison with AlexNet as CNN and $n$ proposals}
+            \end{table}
+        \end{remark}
+
+        \begin{remark}
+            The slowest component of fast R-CNN is selective search.
+        \end{remark}
+
+    \item[Faster R-CNN] \marginnote{Faster R-CNN}
+        Selective search is dropped and a region proposal network (RPN) is used:
+        \begin{enumerate}
+            \item Pass the input image through the feature extractor section of the CNN.
+            \item Feed the activations to the RPN to determine the regions of interest.
+            \item Continue as in fast R-CNN.
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn.pdf}
+            \caption{Example of faster R-CNN using AlexNet}
+        \end{figure}
+
+        \begin{description}
+            \item[Region proposal network (RPN)] \marginnote{Region proposal network (RPN)}
+            Network that takes as input the image activations of shape $C_L \times H_L \times W_L$ and outputs:
+            \begin{itemize}
+                \item The objectness scores of shape $2 \times H_L \times W_L$.
+                    \begin{remark}
+                        The two channels are due to the fact that the original paper uses a two-way softmax, which in practice is equivalent to a sigmoid.
+                    \end{remark}
+                \item The proposed boxes of shape $4 \times H_L \times W_L$.
+            \end{itemize}
+            In other words, an RPN makes a prediction at each input pixel.
+
+            \begin{remark}
+                RPN has a small fixed receptive field (that should roughly be the size of an object), but can  predict boxes larger than it.
+            \end{remark}
+
+            \begin{remark}
+                As is, RPN is basically solving object detection as it has to determine the exact box for the objects, which might be a difficult task.
+            \end{remark}
+
+            \begin{description}
+                \item[Anchor] \marginnote{Anchor}
+                    Known bounding box with fixed scale and aspect-ratio.
+
+                \begin{description}
+                    \item[Anchor correction] \marginnote{Anchor correction}
+                        Make an RPN predict a correction for a known anchor whose center is positioned at the center of the receptive field.
+
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.8\linewidth]{./img/_rpn_anchor.pdf}
+                            \caption{Example of an iteration of a 1-anchor RPN}
+                        \end{figure}
+
+                    \item[$\mathbf{k}$ anchors correction] \marginnote{$k$ anchors correction}
+                        Consider $k$ different anchors so that the RPN outputs $k$ objectness scores (overall shape of $2k \times H_L \times W_L$) and $k$ corrections (overall shape of $4k \times H_L \times W_L$) at each pixel.
+
+                        \begin{remark}
+                            Virtually, this can be seen as putting together the outputs of $k$ different $1$-anchor RPN (with different anchors).
+                        \end{remark}
+                \end{description}
+
+                \item[Architecture]
+                    An RPN is implemented as a two-layer CNN:
+                    \begin{enumerate}
+                        \item A $3 \times 3$ convolution with padding $1$, stride $0$, $256$ output channels, and ReLU as activation.
+                        \item Two parallel $1 \times 1$ convolutions with no padding and stride $1$ with $2k$ and $4k$ output channels, respectively.
+                    \end{enumerate}
+                    \begin{figure}[H]
+                        \raggedleft
+                        \includegraphics[width=0.7\linewidth]{./img/_rpn_architecture.pdf}
+                    \end{figure}
+            \end{description}
+
+            \begin{remark}
+                Only the proposals with the highest objectness scores are considered at training and test time.
+            \end{remark}
+
+            \begin{description}
+                \item[Training]
+                    Given a training image $x^{(i)}$ and a bounding box $BB_\text{GT}$, the $j$-th anchor $BB_A$ can be a:
+                    \begin{descriptionlist}
+                        \item[Negative anchor] 
+                            $BB_A$ has objectness score $o^{(i, j)} = 0$ (i.e., it contains background) if $\texttt{IoU}(BB_{GT}, BB_A) < 0.3$.
+                        \item[Positive anchor] 
+                            $BB_A$ has objectness score $o^{(i, j)} = 1$ (i.e., it contains an object) whether:
+                            \begin{itemize}
+                                \item $\texttt{IoU}(BB_{GT}, BB_A) \geq 0.7$.
+                                \item $\texttt{IoU}(BB_{GT}, BB_A)$ is the largest and none of the others are $\geq 0.7$.
+                            \end{itemize}
+                        \item[Ignored anchor] 
+                            $BB_A$ is not considered for this sample in all other cases.
+                    \end{descriptionlist}
+
+                    A mini-batch is composed of all the positive anchors and it is filled with negative anchors to reach the desired size.
+
+                    \begin{remark}
+                        Differently from R-CNN, multiple boxes have a positive label as it is ambiguous to determine which anchor is responsible for recognizing a particular object.
+                    \end{remark}
+            \end{description}
+        \end{description}
+\end{description} 
+
+\begin{remark}
+    R-CNN is unable to detect objects smaller than the grid size.
+\end{remark}
+
+
+\subsection{Multi-scale detection}
+
+\begin{description}
+    \item[Image pyramid multi-scale detection] \marginnote{Image pyramid multi-scale detection}
+        Obtain a feature pyramid by feeding the input image to the convolutional feature extractor at different scales.
+
+        \begin{remark}
+            This approach creates effective features at different scales, but it is computationally expensive.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_image_pyramid_multi_scale.pdf}
+        \end{figure}
+
+    \item[CNN pyramid multi-scale detection] \marginnote{CNN pyramid multi-scale detection}
+        CNNs naturally produce a pyramid of features composed of the activations at each stage.
+
+        \begin{remark}
+            This approach do not affect computational cost, but features at smaller scales have bad semantic quality as they are at the beginning of the network.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_cnn_pyramid_multi_scale.pdf}
+        \end{figure}
+
+    \item[Feature pyramid network (FPN)] \marginnote{Feature pyramid network (FPN)}
+        Network that enhances small scale features (at the beginning of the network) by combining them with high resolution and semantically rich features (at the end of the network).
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/_fpn_flow.pdf}
+            \caption{General FPN flow}
+        \end{figure}
+
+        \begin{description}
+            \item[Top-down path] 
+                Given the activation $A^{(L)}$ at layer $L$ and the activation $A^{(L-1)}$ at layer $L-1$, the top-down path computes the enhanced features as follows:
+                \begin{enumerate}
+                    \item Obtain $\bar{A}^{(L)}$ by upsampling $A^{(L)}$ using nearest neighbor to match the spatial dimension of $A^{(L-1)}$.
+                    \item Obtain $\bar{A}^{(L-1)}$ by applying a $1 \times 1$ convolution to $A^{(L-1)}$ to match the number of channels of $A^{(L)}$.
+                    \item Sum $\bar{A}^{(L)}$ and $\bar{A}^{(L-1)}$, and apply a $3 \times 3$ convolution to reduce aliasing artifacts caused by upsampling.
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.65\linewidth]{./img/_fpn_top_down.pdf}
+                    \caption{FPN top-down flow}
+                \end{figure}
+        \end{description}
+
+    \item[Faster R-CNN with FPN] \marginnote{Faster R-CNN with FPN}
+        The FPN is used with the feature extractor to obtain a pyramid of features $P_1, \dots, P_n$. A proposal of the RPN is assigned to the most suited level of the pyramid $P_k$.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn_fpn.pdf}
+            \caption{Example of faster R-CNN with FPN}
+        \end{figure}
+
+        \begin{remark}
+            Given a proposal of the RPN with size $w \times h$, the most suited level of the pyramid $P_k$ is determined by the following formula:
+            \[ k = \left\lfloor k_0 + \log_2\left(\frac{\sqrt{wh}}{224}\right) \right\rfloor \]
+            where $k_0$ is the level of the feature map at which a $224 \times 224$ proposal should be mapped to.
         \end{remark}
 \end{description}
