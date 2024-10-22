@@ -1,4 +1,4 @@
-\chapter{Semantics}
+\chapter{Semantics embedding}
 
 
 \section{Traditional semantic representation}
@@ -166,7 +166,7 @@
 \end{description}
 
 
-\subsection{Co-occurrence (sparse) embeddings}
+\subsection{Sparse embeddings}
 
 \begin{description}
     \item[Co-occurrence matrix] \marginnote{Co-occurrence matrix}
@@ -238,10 +238,143 @@
         \end{description}
 
     \item[Reweighing] 
-        Rescale the value of the components of the vectors (e.g., make a probability, length normalization, TF-IDF, \dots).
+        Rescale the vectors to emphasize important features and down-weigh irrelevant words.
 
         \begin{remark}[Frequency paradox]
             Raw frequencies are not an ideal representation for words as they are skewed and not discriminative. Moreover, overly frequent words (e.g., stop words) do not provide context information.
+        \end{remark}
+
+        \begin{description}
+            \item[Term frequency-inverse document frequency (TF-IDF)] \marginnote{Term frequency-inverse document frequency (TF-IDF)}
+                Based on term-document occurrences. Given a word $t$ and a document $d$, it is computed as:
+                \[ \texttt{tf-idf}(t, d) = \texttt{tf}(t, d) \cdot \texttt{idf}(t) \]
+                where:
+                \begin{descriptionlist}
+                    \item[Term frequency (\texttt{tf})] 
+                        Log-transformed frequency count of a word $t$ in a document $d$:
+                        \[ 
+                            \texttt{tf}(t, d) = \begin{cases}
+                                1 + \log_{10}\left( \texttt{count}(t, d) \right) & \text{if $\texttt{count}(t, d) > 0$} \\
+                                0 & \text{otherwise}
+                            \end{cases} 
+                        \]
+
+                    \item[Inverse document frequency (\texttt{idf})]
+                        Inverse occurrence count of a word $t$ across all documents:
+                        \[ \texttt{idf}(t) = \log_{10}\left( \frac{N}{\texttt{df}_t} \right) \]
+                        where $\texttt{df}_t$ is the number of documents in which the term $t$ occurs.
+
+                        \begin{remark}
+                            Words that occur in a few documents have a high \texttt{idf}. Therefore, stop words, which appear often, have a low \texttt{idf}.
+                        \end{remark}
+                \end{descriptionlist}
+
+                \begin{example}
+                    Consider the term-document matrix with \texttt{tf} in parentheses:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccccc}
+                            \toprule
+                            & \textit{As You Like It} & \textit{Twelfth Night} & \textit{Julius Caesar} & \textit{Henry V} \\
+                            \midrule
+                            \texttt{battle} & 1 ($1$) & 0 ($0$) & 7 ($1.845$) & 13 ($2.114$) \\
+                            \texttt{good} & 114 ($3.057$) & 80 ($2.903$) & 62 ($2.792$) & 89 ($2.949$) \\
+                            \texttt{fool} & 36 ($2.553$) & 58 ($2.763$) & 1 ($1$) & 4 ($1.602$) \\
+                            \texttt{wit} & 20 ($2.301$) & 15 ($2.176$) & 2 ($1.301$) & 3 ($1.477$) \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    Assume that the \texttt{df} and \texttt{idf} of the words are:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccc}
+                            \toprule
+                            \textbf{Word} & \texttt{df} & \texttt{idf} \\
+                            \midrule
+                            \texttt{battle} & $21$ & $0.246$ \\
+                            \texttt{good} & $37$ & $0$ \\
+                            \texttt{fool} & $36$ & $0.012$ \\
+                            \texttt{wit} & $34$ & $0.037$ \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    The resulting TF-IDF weighted matrix is:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccccc}
+                            \toprule
+                            & \textit{As You Like It} & \textit{Twelfth Night} & \textit{Julius Caesar} & \textit{Henry V} \\
+                            \midrule
+                            \texttt{battle} & $0.246$ & 0 & $0.454$ & $0.520$ \\
+                            \texttt{good} & 0 & 0 & 0 & 0 \\
+                            \texttt{fool} & $0.030$ & $0.033$ & $0.001$ & $0.002$ \\
+                            \texttt{wit} & $0.085$ & $0.081$ & $0.048$ & $0.054$ \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                \end{example}
+
+            \item[Positive point-wise mutual information (PPMI)] \marginnote{Positive point-wise mutual information (PPMI)}
+                Based on term-term occurrences. Given a word $w$ and a context word $c$, it determines whether they are correlated or occur by chance as follows:
+                \[ \texttt{PPMI}(w, c) = \max\left\{ \texttt{PMI}(w, c), 0 \right\} \]
+                where:
+                \begin{descriptionlist}
+                    \item[Point-wise mutual information (\texttt{PMI})]
+                    \[ \texttt{PMI}(w, c) = \log_2\left( \frac{\prob{w, c}}{\prob{w}\prob{c}} \right) \in (-\infty, +\infty) \]
+                    where:
+                    \begin{itemize}
+                        \item The numerator is the probability that $w$ and $c$ co-occur by correlation.
+                        \item The denominator is the probability that $w$ and $c$ co-occur by chance.
+                    \end{itemize} 
+
+                    \begin{remark}
+                        $\texttt{PMI} > 1$ indicates correlated co-occurrence. Otherwise, it is by chance.
+                    \end{remark}
+                \end{descriptionlist}
+
+                \begin{remark}[Weighting \texttt{PPMI}]
+                    \texttt{PMI} is biased towards infrequent events and returns very high values for them. This can be solved by either:
+                    \begin{itemize}
+                        \item Using add-$k$ smoothing (typically, $k \in [0.1, 3]$).
+                        \item Slightly increasing the probability of rare context words such that $\mathcal{P}_\alpha(c) = \frac{\texttt{count}(c)^\alpha}{\sum_{c'}\texttt{count}(c')^\alpha}$ (typically, $\alpha=0.75$).
+                    \end{itemize}
+                \end{remark}
+
+                \begin{example}
+                    Consider the term-term matrix:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{cccccc|c}
+                            \toprule
+                            & \texttt{computer} & \texttt{data} & \texttt{result} & \texttt{pie} & \texttt{sugar} & $\texttt{count}(w)$ \\
+                            \midrule
+                            \texttt{cherry} & $2$ & $8$ & $9$ & $442$ & $25$ & $486$ \\
+                            \texttt{strawberry} & $0$ & $0$ & $1$ & $60$ & $19$ & $80$ \\
+                            \texttt{digital} & $1670$ & $1683$ & $85$ & $5$ & $4$ & $3447$ \\
+                            \texttt{information} & $3325$ & $3982$ & $378$ & $5$ & $13$ & $7703$ \\
+                            \midrule
+                            $\texttt{count}(c)$ & $4977$ & $5673$ & $473$ & $512$ & $61$ & $11716$ \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                    The PPMI between \texttt{information} and \texttt{data} con be computed as:
+                    \[
+                        \begin{split}
+                            \prob{\texttt{information}, \texttt{data}} &= \frac{3982}{11716} = 0.3399 \\
+                            \prob{\texttt{information}} &= \frac{7703}{11716} = 0.6575 \\
+                            \prob{\texttt{data}} &= \frac{5673}{11716} = 0.4872 \\
+                            \texttt{PPMI}(\texttt{information}, \texttt{data}) &= \max\left\{ \log_2\left( \frac{0.3399}{0.6575 \cdot 0.4872} \right), 0 \right\} = 0.0944
+                        \end{split}
+                    \]
+                \end{example}
+        \end{description}
+
+        \begin{remark}
+            Reweighing loses information about the magnitude of the counts.
         \end{remark}
 
     \item[Dimensionality reduction] 
@@ -255,4 +388,82 @@
             \item[Length] Compare the length $|\vec{v}| = \sqrt{\sum_{i=1}^{n} v_i^2}$ of the vectors.
             \item[Cosine similarity] $\frac{\vec{w} \cdot \vec{v}}{|\vec{w}| \, |\vec{v}|}$.
         \end{description}
+\end{description}
+
+
+\subsection{Dense embeddings}
+
+\begin{remark}
+    Dense embeddings are usually:
+    \begin{itemize}
+        \item Easier to process with machine learning algorithms.
+        \item Able to generalize better than simply counting.
+        \item Handle synonyms better.
+    \end{itemize}
+\end{remark}
+
+\begin{description}
+    \item[Neural language modeling] \marginnote{Neural language modeling}
+        Use a neural network to predict the next word $w_{n+1}$ given an input sequence $w_{1..n}$. The general flow is the following:
+        \begin{enumerate}
+            \item Encode the input words into one-hot vectors ($\mathbb{R}^{|V| \times n}$). 
+            \item Project the input vectors with an embedding matrix $\matr{E} \in \mathbb{R}^{d \times |V|}$ that encodes them into $d$-dimensional vectors.
+            \item Pass the embedding into the hidden layers.
+            \item The final layer is a probability distribution over the vocabulary ($\mathbb{R}^{|V| \times 1}$).
+        \end{enumerate}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_neural_language_model_example.pdf}
+            \caption{Example of neural language model with a context of $3$ tokens}
+        \end{figure}
+
+        \begin{remark}
+            The embedding matrix $\matr{E}$ can be used independently to embed words. In fact, by construction, the $i$-th column of $\matr{E}$ represents the embedding of the $i$-th token of the vocabulary.
+        \end{remark}
+
+        \begin{description}
+            \item[Training] 
+                Given a text corpus, training is done sequentially in a self-supervised manner by sliding a context window over the sequence. At each iteration, the next word is predicted and cross-entropy is used as loss.
+
+                \begin{remark}
+                    The initial embedding matrix is usually initialized using statistical methods and not randomly.
+                \end{remark}
+        \end{description}
+
+    \item[Word2vec] \marginnote{Word2vec}
+        Based on the idea of using a binary classifier to determine whether a word $c$ is likely to appear near the target word $w$. 
+
+        Given a context word $c$ and a target word $w$, the problem can be solved using a logistic regressor (i.e., use the dot product to measure vector similarity):
+        \[ 
+            \prob{\texttt{+} | w, c} = \sigma(\vec{c} \cdot \vec{w}) 
+            \qquad
+            \prob{\texttt{-} | w, c} = 1 - \prob{\texttt{+} | w, c}
+        \]
+        where $\vec{w} \in \mathbb{R}^{d}$ and $\vec{c} \in \mathbb{R}^{d}$ are the columns of the learned embedding matrix for the words $w$ and $c$, respectively.
+
+        Moreover, it is assumed that context words are independent, therefore, if the context is a sequence, it is computed as follows::
+        \[ \prob{\texttt{+} | w, c_{1..L}} = \prod_{i=1}^{L} \sigma(\vec{c}_i \cdot \vec{w}) \]
+
+        \begin{description}
+            \item[Training]
+                Given a text corpus, chosen target words and their neighbors are considered positive examples. Negative examples are obtained by randomly sampling other words.
+
+                When training, two variants are possible:
+                \begin{descriptionlist}
+                    \item[Continuous bag-of-words (CBOW)]
+                        Given the context words, predict the target word.
+
+                    \item[Skip-grams]
+                        Given the target word, predict the (position independent) context words.
+                \end{descriptionlist}
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.65\linewidth]{./img/word2vec_alternatives.png}
+                \end{figure}
+        \end{description}
+
+        \begin{remark}
+            In practice, Word2vec learns two sets of embeddings $\matr{W} \in \mathbb{R}^{|V| \times d}$ and $\matr{C} \in \mathbb{R}^{|V| \times d}$ for the target and context words, respectively. At the end, they can either be averaged, concatenated, or one can be dropped.
+        \end{remark}
 \end{description}
