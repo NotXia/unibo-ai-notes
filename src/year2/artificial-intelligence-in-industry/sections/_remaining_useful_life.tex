@@ -1,23 +1,22 @@
 \chapter{Remaining useful life: Turbofan engines}
 
 
+Maintenance can be of three types:
+\begin{descriptionlist}
+    \item[Reactive maintenance]
+        Repair when something is broken.
+
+    \item[Preventive maintenance]
+        Periodically change something, in a conservative way, before it breaks.
+
+    \item[Predictive maintenance]
+        Change when something is close to break.
+\end{descriptionlist}
+
+Remaining useful life (RUL) is a metric useful for predictive maintenance.
+
+
 \section{Data}
-
-\begin{remark}
-    Maintenance can be of three types:
-    \begin{descriptionlist}
-        \item[Reactive maintenance]
-            Repair when something is broken.
-
-        \item[Preventive maintenance]
-            Periodically change something, in a conservative way, before it breaks.
-
-        \item[Predictive maintenance]
-            Change when something is close to break.
-    \end{descriptionlist}
-
-    Remaining useful life (RUL) is a metric useful for predictive maintenance.
-\end{remark}
 
 The dataset contains run-to-failure experiments on NASA turbofan engines. Excluding domain specific features, the main columns are:
 \begin{descriptionlist}
@@ -211,14 +210,47 @@ Predict RUL with a classifier $f_\varepsilon$ (for a chosen $\varepsilon$) that 
                 \end{remark}
 
             \item[Bayesian surrogate-based optimization] \marginnote{Bayesian surrogate-based optimization}
-                Method to optimize a black-box function $f$. It is assumed that $f$ is expensive to evaluate and a surrogate model (i.e., a proxy function) is instead used to optimize it.
+                Class of approaches to optimize a black-box function $f$ under trivial constraints. It is assumed that $f$ is expensive to evaluate and a surrogate model (i.e., a proxy function) is instead used to optimize it.
 
-                Formally, Bayesian optimization solves problems in the form:
+                Formally, Gaussian surrogate-based optimization solves problems in the form:
                 \[ \min_{x \in B} f(x) \]
-                where $B$ is a box (i.e., hypercube). $f$ is optimized through a surrogate model $g$ and each time $f$ is actually used to evaluate the model, $g$ is improved.
+                where $B$ is a box (i.e., hypercube). $f$ is optimized through a surrogate model $\hat{f}$ that is trained on some observations from $f$ (prior). At each iteration, an acquisition function that uses $\hat{f}$ is used to determine a new point to explore and evaluate with $f$. The newly discovered sample (posterior) is used to improve $\hat{f}$ and the process is repeated.
 
                 \begin{remark}
                     Under the correct assumptions, the result is optimal.
                 \end{remark}
+
+                \begin{description}
+                    \item[Gaussian process surrogate]
+                        A good surrogate model should be able to accurately approximate all available training samples and provide a prediction confidence.
+
+                        A Gaussian process has these properties and can be used as surrogate model.
+
+                    \item[Acquisition function]
+                        Function to determine which point to explore next. It should account for both predictions and confidence.
+
+                        \begin{remark}
+                            Acquisition functions should balance exploration (i.e., area with low predictions) and exploitation (i.e., area with high confidence).
+                        \end{remark}
+
+                        \begin{description}
+                            \item[Lower confidence bound]
+                                Acquisition function defined as:
+                                \[ \texttt{LCB}(x) = \mu(x) - Z_\alpha \sigma(x) \]
+                                where $\mu(x)$ and $\sigma(x)$ are the predicted mean and standard deviation, respectively. $Z_\alpha$ is a multiplier for the confidence interval.
+                        \end{description}
+                \end{description}
+
+                Given a set of training samples $\{ x_i, y_i \}$ and a black-box function $f$, surrogate-based optimization does the following:
+                \begin{enumerate}
+                    \item Until a termination condition is not met:
+                    \begin{enumerate}
+                        \item Train a surrogate model $\hat{f}$ on $\{ x_i, y_i \}$ to approximate $f$.
+                        \item Optimize an acquisition function $a_{\hat{f}}(x)$ to find the next data point $x'$ to explore.
+                        \item Evaluate $x'$ with the black-box function $y' = f(x')$.
+                        \item Store $y'$ if it is the current best optimum for $f$.
+                        \item Add $(x', y')$ to the training set.
+                    \end{enumerate}
+                \end{enumerate}
         \end{description}
 \end{description}
