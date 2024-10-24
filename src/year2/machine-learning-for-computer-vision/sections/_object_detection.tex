@@ -444,7 +444,7 @@
                         \Delta w = \ln\left( \frac{h_\text{GT}}{h_\text{SS}} \right)
                     \]
                     The loss is then defined as:
-                    \[ \mathcal{L}^{(i)} = \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}^{(i)}), \mathbbm{1}[c^{(i)}] \right) + \lambda \mathbbm{1}[c^{(i)} \neq \texttt{bg}] \mathcal{L}_\text{MSE}\left(\widehat{t}^{(i)}, t^{(i)} \right) \]
+                    \[ \mathcal{L}^{(i)} = \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}^{(i)}), \mathbbm{1}[c^{(i)}] \right) + \lambda \mathbbm{1}[c^{(i)} \neq \texttt{bg}] \mathcal{L}_\text{MSE}\left(\hat{t}^{(i)}, t^{(i)} \right) \]
 
                 \end{description}
         \end{description}
@@ -644,7 +644,7 @@
 \end{remark}
 
 
-\subsection{Multi-scale detection}
+\subsection{Multi-scale detectors}
 
 \begin{description}
     \item[Image pyramid multi-scale detection] \marginnote{Image pyramid multi-scale detection}
@@ -710,4 +710,338 @@
             \[ k = \left\lfloor k_0 + \log_2\left(\frac{\sqrt{wh}}{224}\right) \right\rfloor \]
             where $k_0$ is the level of the feature map at which a $224 \times 224$ proposal should be mapped to.
         \end{remark}
+\end{description}
+
+\begin{remark}
+    R-CNN and its improvements can be seen as a detector with two stages:
+    \begin{descriptionlist}
+        \item[Stage 1] 
+            Passes the input image into the feature extractor and RPN to obtain the activations and proposals.
+        \item[Stage 2] 
+            Passes each proposal through RoI pooling and per-region classification and correction.
+    \end{descriptionlist}
+\end{remark}
+
+
+\subsection{One-stage detectors}
+
+\begin{description}
+    \item[One-stage detector] \marginnote{One-stage detector}
+        Drop the second stage of R-CNNs and let the RPN determine both the bounding box and the class.
+
+        As an objectness score is available, it is used to determine whether the region contains background (i.e., there is no need to add a background class).
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/_one_stage_detector.pdf}
+        \end{figure}
+
+    \item[Multi-label classification] \marginnote{Multi-label classification}
+        Task in which classes are not mutually exclusive (i.e., multiple classes can be assigned to the same object).
+
+        With $C$ classes, the architecture of a multi-label detector has $C$ independent sigmoid functions at the output layer. Given the predictions for the $j$-th box of the $i$-th sample $\vec{s}^{(i, j)} \in \mathbb{R}^{C}$ and the ground-truth $\vec{y}^{(i, j)} \in \{0, 1\}^{C}$, the classification loss is defined as:
+        \[ 
+            \mathcal{L}(\vec{s}^{(i, j)}, \vec{y}^{(i, j)}) = \sum_{k=1}^{C} \texttt{BCE}\left( \sigma(\vec{s}_k^{(i, j)}), \vec{y}_k^{(i, j)} \right)
+        \]
+
+        \begin{remark}
+            Not assigning a class (i.e., $\forall k = 1 \dots C: \vec{y}_k^{(i, j)} = 0$) can also be used to model the background class.
+        \end{remark}
+
+        \begin{remark}
+            Even if the task is multi-class classification, it has been observed that multiple sigmoids perform better.
+        \end{remark}
+
+    \item[YOLOv3] \marginnote{YOLOv3}
+        One-stage detector that uses DarkNet-53 as backbone for feature extraction and learned anchors.
+
+        \begin{description}
+            \item[DarkNet-53]
+                Architecture based on bottleneck residual blocks and multi-scale concatenated features (in FPN they were summed).
+
+                It is optimized to obtain a good accuracy-speed trade-off.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{./img/_darknet.pdf}
+                \end{figure}
+
+            \item[Learned anchors] \marginnote{Learned anchors}
+                Size and aspect-ratio of the anchors are determined using $k$-means on the training set boxes. The distance between a box $BB$ and a centroid $BB_\text{centroid}$ is computed as:
+                \[ 1 - \texttt{IoU}(BB_\text{centroid}, BB) \]
+
+                \begin{remark}
+                    YOLOv2 uses $k=5$, while YOLOv3 uses $k=9$.
+                \end{remark}
+        \end{description}
+\end{description}
+
+\begin{remark}[Class unbalance]
+    The object detection task is usually unbalanced towards (easy) negative boxes (i.e., background). RPNs and one-stage detectors are particularly sensitive to this problem as they always have to evaluate each possible anchor (two-stage detectors are less affected as they only consider top-scored proposals). This unbalance may cause:
+    \begin{itemize}
+        \item Suboptimal models as easy negative boxes still have a non-zero loss and, being the majority, they make gradient descent unnecessarily consider them.
+        \item Inefficient training due to the fact that random sampled mini-batches will mostly contain easy negative boxes that do not provide useful learning information.
+    \end{itemize}
+
+    \begin{description}
+        \item[Hard negative mining] 
+            Sort negative anchors by classification loss and apply NMS. Only top scoring anchors are used in mini-batches. 
+            \begin{remark}
+                This approach allows to reduce the effect of unbalancing, but only a subset of negative examples are used to train the model.
+            \end{remark}
+    \end{description}
+\end{remark}
+
+\begin{description}
+    \item[RetinaNet] \marginnote{RetinaNet}
+        One-stage detector that uses ResNet with FPN as feature extractor. The classification and regression heads are $3 \times 3$ convolutions that do not share parameters (differently from the traditional RPN). Moreover, several tweaks have been considered to deal with class unbalance.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_retinanet.pdf}
+        \end{figure}
+
+        \begin{remark}
+            The standard cross-entropy has a non-negligible magnitude even for correctly classified examples. Therefore, easy negative boxes over-weigh the overall loss even if they are already well-classified (i.e., with output probability $p \gg 0.5$).
+        \end{remark}
+
+        \begin{description}
+            \item[Binary focal loss] \marginnote{Binary focal loss}
+                Given the output probability $p$ and ground-truth label $y$, consider the following notation:
+                \[
+                    \begin{gathered}
+                        p_t = \begin{cases}
+                            p & \text{if $y=1$} \\
+                            1-p & \text{otherwise}
+                        \end{cases} 
+                        \\
+                        \texttt{BCE}(p, y) = \texttt{BCE}(p_t) = -\ln(p_t) = \begin{cases}
+                            -\ln(p) & \text{if $y=1$} \\
+                            -\ln(1-p) & \text{otherwise}
+                        \end{cases}
+                    \end{gathered}
+                \]
+                Binary focal loss down-weighs the loss as follows:
+                \[ \texttt{BFL}_\gamma(p_t) = (1-p_t)^\gamma\texttt{BCE}(p_t) = -(1-p_t)^\gamma \ln(p_t) \]
+                where $\gamma$ is a hyperparameter ($\gamma=0$ is equivalent to the standard unweighted \texttt{BCE}).
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.45\linewidth]{./img/_focal_loss.pdf}
+                    \caption{Focal loss for varying $\gamma$}
+                \end{figure}
+
+                \begin{example}
+                    Consider a focal loss with $\gamma = 2$. The down-weigh factors for varying $p_t$ are:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{cl}
+                            \toprule
+                            $p_t$ & $(1-p_t)^\gamma$ \\
+                            \midrule
+                            $0.9$ & $(0.1)^2 = 0.01 = \frac{1}{100}$ \\ 
+                            $0.6$ & $(0.4)^2 = 0.16 \approx \frac{1}{6}$ \\ 
+                            $0.4$ & $(0.6)^2 = 0.36 \approx \frac{1}{3}$ \\ 
+                            $0.1$ & $(0.9)^2 = 0.81 \approx \frac{4}{5}$ \\ 
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                \end{example}
+
+            \item[Binary class weights] \marginnote{Binary class weights}
+                Weigh the loss value of the positive class by $\alpha \in [0, 1]$ and the negative class by $(1 - \alpha)$.
+
+                Consider the following notation:
+                \[ \alpha_t = \begin{cases}
+                    \alpha & \text{if $y=1$} \\
+                    1-\alpha & \text{otherwise}
+                \end{cases} \]
+                Binary cross-entropy with class weights can be defined as:
+                \[ \texttt{WBCE}(p_t) = \alpha_t \texttt{BCE}(p_t) = -\alpha_t \ln(p_t) \]
+
+                On the same note, $\alpha$-balanced binary focal loss can be defined as:
+                \[ \texttt{WBFL}_\gamma(p_t) = \alpha_t \texttt{BFL}_\gamma(p_t) = -\alpha_t (1-p_t)^\gamma \ln(p_t) \]
+
+                \begin{remark}
+                    Class weights and focal loss are complementary: the former balances the importance of positive and negative classification errors, while the latter focuses on the hard examples of each class.
+                \end{remark}
+
+            \item[RetinaNet loss]
+                RetinaNet is applied to all anchors $A$ using the $\alpha$-balanced binary focal loss for classification and the same bounding box loss as R-CNN:
+                \[ \mathcal{L}^{(i)} = \sum_{j=1}^{A} \left( \sum_{k=1}^{C} \texttt{WBFL}_\gamma\left( \sigma(\vec{s}_k^{(i, j)}), \vec{y}_k^{(i, j)} \right) + \lambda \mathbbm{1}[\vec{y}^{(i, j)} \neq \nullvec] \mathcal{L}_\text{huber}\left(\hat{t}^{(i)} - t^{(i)} \right) \right) \]
+
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.49\linewidth}
+                        \centering
+                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_foreground.pdf}
+                    \end{subfigure}
+                    \hfill
+                    \begin{subfigure}{0.49\linewidth}
+                        \centering
+                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_background.pdf}
+                    \end{subfigure}
+                    \caption{
+                        \parbox[t]{0.7\linewidth}{
+                            Cumulative loss contribution for varying $\sigma$ of the focal loss. Note that for the background examples, the contribution to the loss becomes more relevant only when the majority of the samples (i.e., the most difficult ones) has been considered.
+                        }
+                    }
+                \end{figure}
+
+            \item[Model initialization] \marginnote{Model initialization}
+                Instead of initializing biases to $0$ (i.e., equiprobable classes), set them to account for unbalanced classes.
+
+                Consider a newly initialized network with input $\vec{x}$, weights $\vec{w} \sim \mathcal{N}(\mu=0, \sigma)$, and bias $b$. The output activation $s$ is computed as:
+                \[ s = \vec{w}\vec{x} + b \approx r + b \quad \text{with } r \sim \mathcal{N}(\mu=0, \sigma) \] 
+                Assume that we want to force the output probability to be $\psi$, we have that:
+                \[ 
+                    \begin{aligned}
+                        \sigma(r + b) &= \psi \\
+                        \sigma(b) &= \psi & \text{as $\mathbb{E}[r] = 0$} \\
+                        \frac{1}{1+e^{-b}} &= \psi \\
+                        b &= -\ln\left( \frac{1-\psi}{\psi} \right) \\
+                    \end{aligned}
+                \]
+                A reasonable value for $\psi$ is the empirical ratio of the positive class: 
+                \[
+                    \psi = \frac{|\text{positives}|}{|\text{positives}| + |\text{negatives}|}
+                \]
+
+                \begin{example}
+                    Assume an imbalanced dataset with a ratio 1:100 of positive to negative examples. We would like to initialize the bias $b$ so that the model outputs $\psi = \frac{1}{100} = 0.01$ (i.e., more likely to classify as negative at the beginning). Therefore, we have that:
+                    \[ b = -\ln\left( \frac{1 - 0.01}{0.01} \right) \approx -4.6 \]
+                \end{example}
+        \end{description}
+\end{description}
+
+\begin{remark}
+    Anchor-based detectors have the following limitations:
+    \begin{itemize}
+        \item Anchors are a subset of all possible boxes. Their application is inefficient as they are sort of brute forcing the problem.
+        \item Multiple anchors are viable boxes for the same object and NMS is needed to post-process the predictions.
+        \item During training, the anchor assigned to the ground-truth is selected through hand-crafted rules and thresholds.
+    \end{itemize}
+\end{remark}
+
+
+\subsection{Keypoint-based detectors}
+
+\begin{description}
+    \item[CenterNet] \marginnote{CenterNet}
+        Anchor-free object detector based on keypoints.
+
+        Given an input image of size $3 \times H \times W$, CenterNet outputs:
+        \begin{descriptionlist}
+            \item[Heatmap] A matrix $\hat{Y} \in [0, 1]^{C \times \frac{H}{R} \times \frac{W}{R}}$ where $R$ is the output stride (usually small, e.g., $R = 4$). Each value scores the ``keypoint-ness'' of that pixel for a given class.
+            \item[Offset] A matrix $\hat{O} \in \mathbb{R}^{2 \times \frac{H}{R} \times \frac{W}{R}}$ that indicates an offset for each point of the heatmap to map them from the strided shape back to the original one.
+            \item[Bounding box size] A matrix $\hat{S} \in \mathbb{R}^{2 \times \frac{H}{R} \times \frac{W}{R}}$ that indicates the width and height of the bounding box originated from each point of the heatmap.
+        \end{descriptionlist}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/centernet_outputs.png}
+        \end{figure}
+
+        \begin{description}
+            \item[Architecture] 
+                The backbone of CenterNet is a convolutional encoder-decoder (i.e., first downsample with the encoder and then upsample with the decoder) also used for keypoint detection or semantic segmantation. The output of the backbone is fed to three different branches composed of a $3 \times 3$ convolution, ReLU, and a $1 \times 1$ convolution.
+
+            \item[Inference]
+                Predictions are determined as follows:
+                \begin{enumerate}
+                    \item Find the local maxima of the heatmap $\hat{Y}$.
+                    \item For each local maximum at channel $c^{(m)}$ and position $(x^{(m)}, y^{(m)})$ of $\hat{Y}$:
+                    \begin{enumerate}
+                        \item Determine the bounding box center coordinates using the corresponding offsets in $\hat{O}$:
+                        \[ (x^{(m)} + \hat{O}_x^{(m)}, y^{(m)} + \hat{O}_y^{(m)}) \]
+                        \item Determine the box size using the corresponding values $(\hat{S}_W^{(m)}, \hat{S}_H^{(m)})$ in $\hat{S}$.
+                    \end{enumerate}
+                \end{enumerate}
+
+                \begin{remark}
+                    NMS is implicit with the local maxima search operation.
+                \end{remark}
+
+            \item[Training]
+                Given a ground-truth keypoint (i.e., the center of a box) $p = (x_p, y_p)$ of class $c$, its coordinates are projected onto the output heatmap coordinate system as $\tilde{p} = (\left\lfloor \frac{x_p}{R} \right\rfloor, \left\lfloor \frac{y_p}{R} \right\rfloor)$.
+
+                The target heatmap $Y_c^{(p)}$ for class $c$ is created as follows:
+                \[
+                    Y_c^{(p)}[x, y] = \begin{cases}
+                        1 & \text{if $(x, y) = \tilde{p}$} \\
+                        \exp\left( -\frac{(x-x_{\tilde{p}})^2 + (y-y_{\tilde{p}})^2}{2\sigma_p^2} \right) & \text{otherwise}
+                    \end{cases}
+                \]
+                In other words, to help training, the heatmap at $\tilde{p}$ is $1$ and it smoothly decreases to $0$ while moving away from $\tilde{p}$.
+
+                The loss is the following:
+                \[ \mathcal{L}^{(p)} = \mathcal{L}_\text{heatmap}^{(p)} + \mathcal{L}_\text{box}^{(p)} \]
+                where:
+                \begin{itemize}
+                    \item $\mathcal{L}_\text{heatmap}^{(p)}$ is the binary focal loss applied pixel-wise with an additional weighting factor:
+                    \[ \mathcal{L}_\text{heatmap}^{(p)} = \sum_{x, y, c} \begin{cases}
+                        \hfill -(1-\hat{Y}_c[x, y])^\gamma \ln(\hat{Y}_c[x, y]) & \text{if $Y_c[x, y] = 1$} \\
+                        -(1-Y_c[x, y])^\beta \cdot (\hat{Y}_c[x, y])^\gamma \ln(1-\hat{Y}_c[x, y]) & \text{otherwise} \\
+                    \end{cases} \]
+                    where $(1-Y_c[x, y])^\beta$ reduces the loss at positions close to the ground truth. $\gamma$ and $\beta$ are hyperparameters ($\gamma=2$ and $\beta=4$ in the original paper).
+                    \item $\mathcal{L}_\text{box}^{(p)}$ is the Huber loss to compare bounding boxes.
+                \end{itemize}
+        \end{description}
+
+    \begin{remark}
+        CenterNet can solve other tasks such as 3D bounding box estimation or pose estimation.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\linewidth]{./img/_centernet_other_tasks.png}
+        \end{figure}
+    \end{remark}
+
+    \begin{remark}
+        Keypoints can be seen as a special case of anchors, but:
+        \begin{itemize}
+            \item They are only based on location and not overlap.
+            \item They do not rely on manual thresholds.
+            \item There is no need for NMS.
+        \end{itemize}
+
+        However, CenterNet still relies on some hand-crafted design decisions such as the windows size to detect local maxima and the output stride.
+    \end{remark}
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./img/_object_detection_map_speed_plot.pdf}
+    \caption{
+        \parbox[t]{0.5\linewidth}{
+            mAP -- speed comparison of the various object detection approaches
+        }
+    }
+\end{figure}
+
+
+\subsection{Transformer-based detectors}
+
+\begin{description}
+    \item[Detection transformer (DETR)] \marginnote{Detection transformer (DETR)}
+        Method based on two ideas:
+        \begin{itemize}
+            \item Use transformers to predict a set of objects in a single pass (i.e., solve a set prediction problem).
+            \item Use the bipartite matching (i.e., Hungarian) loss as set prediction loss that forces a unique matching between predictions and ground-truths.
+        \end{itemize}
+
+        \begin{description}
+            \item[Parallel decoding] \marginnote{Parallel decoding}
+                Generate all outputs of a decoder in a single pass (instead of doing it autoregressively).
+
+                \begin{description}
+                    \item[Object queries] \marginnote{Object queries}
+                        Learned positional encodings that are fed to the decoder.
+
+                        \begin{remark}
+                            In object detection, there are no other generated output tokens to feed into the decoder for parallel decoding. Therefore, only the learned positional encodings are used.
+                        \end{remark}
+                \end{description}
+        \end{description}
 \end{description}
