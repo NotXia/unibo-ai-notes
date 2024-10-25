@@ -34,12 +34,6 @@ jobs:
           path: .currpdfs
 
 
-      - name: Install LaTeX
-        run: |
-            sudo apt update
-            sudo apt install -y latexmk texlive texlive-science texlive-latex-extra texlive-fonts-extra texlive-bibtex-extra biber
-        
-
       - name: Prepare output directory
         run: |
           mkdir ${GITHUB_WORKSPACE}/.compiled
@@ -47,10 +41,8 @@ jobs:
 
       - name: Compile
         run: |
-          bash ${GITHUB_WORKSPACE}/utils/compile.sh \
-            ${GITHUB_WORKSPACE}/src \
-            ${GITHUB_WORKSPACE}/.compiled \
-            ${GITHUB_WORKSPACE}/.currpdfs
+          docker pull ghcr.io/notxia/unibo-ai-notes:main
+          docker run -v .:/notes ghcr.io/notxia/unibo-ai-notes:main
 
       - name: Generate README
         run: |
