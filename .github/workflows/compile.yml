@@ -42,7 +42,7 @@ jobs:
       - name: Compile
         run: |
           docker pull ghcr.io/notxia/unibo-ai-notes:main
-          docker run -v .:/notes ghcr.io/notxia/unibo-ai-notes:main
+          docker run -v ${GITHUB_WORKSPACE}:/notes ghcr.io/notxia/unibo-ai-notes:main
 
       - name: Generate README
         run: |
