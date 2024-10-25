@@ -391,7 +391,7 @@
 \end{description}
 
 
-\subsection{Dense embeddings}
+\subsection{Dense non-contextual embeddings}
 
 \begin{remark}
     Dense embeddings are usually:
@@ -432,38 +432,236 @@
         \end{description}
 
     \item[Word2vec] \marginnote{Word2vec}
-        Based on the idea of using a binary classifier to determine whether a word $c$ is likely to appear near the target word $w$. 
+        Word embedding framework that encodes a target word based on the context words near it.
 
-        Given a context word $c$ and a target word $w$, the problem can be solved using a logistic regressor (i.e., use the dot product to measure vector similarity):
-        \[ 
-            \prob{\texttt{+} | w, c} = \sigma(\vec{c} \cdot \vec{w}) 
-            \qquad
-            \prob{\texttt{-} | w, c} = 1 - \prob{\texttt{+} | w, c}
-        \]
-        where $\vec{w} \in \mathbb{R}^{d}$ and $\vec{c} \in \mathbb{R}^{d}$ are the columns of the learned embedding matrix for the words $w$ and $c$, respectively.
+        Two training variants are available in Word2vec:
+        \begin{descriptionlist}
+            \item[Continuous bag-of-words (CBOW)]
+                Given the context words, predict the target word.
 
-        Moreover, it is assumed that context words are independent, therefore, if the context is a sequence, it is computed as follows::
-        \[ \prob{\texttt{+} | w, c_{1..L}} = \prod_{i=1}^{L} \sigma(\vec{c}_i \cdot \vec{w}) \]
+            \item[Skip-gram]
+                Given the target word, predict the (position independent) context words.
+        \end{descriptionlist}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/word2vec_alternatives.png}
+        \end{figure}
 
         \begin{description}
-            \item[Training]
-                Given a text corpus, chosen target words and their neighbors are considered positive examples. Negative examples are obtained by randomly sampling other words.
+            \item[Skip-gram model] \marginnote{Skip-gram model}
+                Given a context word $c$ and a target word $w$, a classifier is trained to determine whether $c$ appears in the context of $w$. After training, the weights of the classifier are used as the skip-gram model to embed words.
 
-                When training, two variants are possible:
-                \begin{descriptionlist}
-                    \item[Continuous bag-of-words (CBOW)]
-                        Given the context words, predict the target word.
+                \begin{remark}
+                    In practice, for an easier optimization, the skip-gram model learns two sets of embeddings $\matr{W} \in \mathbb{R}^{|V| \times d}$ and $\matr{C} \in \mathbb{R}^{|V| \times d}$ for the target and context words, respectively. Therefore, it has two sets of parameters $\matr{\theta} = \langle\matr{W}, \matr{C}\rangle$. At the end, they can either be averaged, concatenated, or one can be dropped.
+                \end{remark}
 
-                    \item[Skip-grams]
-                        Given the target word, predict the (position independent) context words.
-                \end{descriptionlist}
-                \begin{figure}[H]
-                    \centering
-                    \includegraphics[width=0.65\linewidth]{./img/word2vec_alternatives.png}
-                \end{figure}
+                \begin{description}
+                    \item[Training (softmax)]
+                        Given the target word $w$ and context word $c$, and their embeddings $\vec{w}$ and $\vec{c}$, the skip-gram model computes their similarity as the dot product. The probability that $c$ is in the context of $w$ is then computed though a softmax as:
+                        \[ 
+                            \prob{c | w; \matr{\theta}} = \frac{\exp(\vec{c} \cdot \vec{w})}{\sum_{v \in V} \exp(\vec{v} \cdot \vec{w})}
+                        \]
+
+                        Given a training sequence $w_1, \dots, w_T$ and a context window of size $m$, training is done by iterating over each possible target word $w_t$ and considering the conditional probabilities of its neighbors. Then, the loss is defined as the average negative log-likelihood defined as follows:
+                        \[
+                            \begin{split}
+                                \mathcal{L}(\matr{\theta}) = -\frac{1}{T} \sum_{t=1}^{T} \sum\limits_{\substack{-m \leq j \leq m\\j \neq 0}} \log\left( \prob{w_{t+j} | w_t; \matr{\theta}} \right)
+                            \end{split}
+                        \]
+
+                        \begin{remark}
+                            Due to the normalization factor over the whole vocabulary, using softmax for training is expensive.
+                        \end{remark}
+
+                    \item[Training (negative sampling)] \marginnote{Skip-gram with negative sampling (SGNS)}
+                        Use a binary logistic regressor as classifier. The two classes are:
+                        \begin{itemize}
+                            \item Context words within the context window (positive label).
+                            \item Words randomly sampled (negative label).
+                        \end{itemize} 
+                        The probabilities can be computed as:
+                        \[ 
+                            \prob{\texttt{+} | w, c; \matr{\theta}} = \sigma(\vec{c} \cdot \vec{w}) 
+                            \qquad
+                            \prob{\texttt{-} | w, c; \matr{\theta}} = 1 - \prob{\texttt{+} | w, c; \matr{\theta}}
+                        \]
+
+                        It is assumed context-independent words, therefore, if the context is a sequence, the probability is computed as follows:
+                        \[ \prob{\texttt{+} | w, c_{1..L}; \matr{\theta}} = \prod_{i=1}^{L} \sigma(\vec{c}_i \cdot \vec{w}) \]
+
+                        At each iteration, the batch is composed of a single positive examples and $K$ negative examples randomly sampled according to their weighted unigram probability $\mathcal{P}_\alpha(w) = \frac{\texttt{count}(w)^\alpha}{\sum_{v \in V} \texttt{count}(v)^\alpha}$ ($\alpha$ it used to give rarer words a slightly higher probability).
+
+                        Given a batch, the loss is defined as:
+                        \[
+                            \begin{split}
+                                \mathcal{L}(\matr{\theta}) &= -\log\left( \prob{\texttt{+} | w, c^\text{pos}; \matr{\theta}} \prod_{i=1}^{K} \prob{\texttt{-} | w, c^\text{neg}_{i}; \matr{\theta}} \right) \\
+                                &= - \left( \log\left( \sigma(\vec{c}^\text{pos} \cdot \vec{w}) \right) + \sum_{i=1}^{K} \log\left( \sigma(-\vec{c}^\text{neg}_{i} \cdot \vec{w}) \right) \right)
+                            \end{split}
+                        \]
+                \end{description}
         \end{description}
 
+
+    \item[fastText] \marginnote{fastText}
+        Extension of Word2vec based on subwords to deal with out-of-vocabulary words.
+
+        A word is represented both as itself and a bag of $n$-grams. Both whole words and $n$-grams have an embedding. The overall embedding of a word is represented through the sum of its constituent $n$-grams.
+
+        \begin{example}
+            With $n=3$, the word \texttt{where} is represented both as \texttt{<where>} and \texttt{<wh, whe, her, ere, re>} (\texttt{<} and \texttt{>} are boundary characters).
+        \end{example}
+
+    \item[GloVe] \marginnote{GloVe}
+        Based on the term-term co-occurrence (within a window) probability matrix that indicates for each word its probability of co-occurring with the other words.
+
+        Similarly to Word2vec, the objective is to learn two sets of embeddings $\matr{\theta} = \langle\matr{W}, \matr{C}\rangle$ such that their similarity is close to their log-probability of co-occurring. Given the term-term matrix $\matr{X}$, the loss for a target word $w$ and a context word $c$ is defined as:
+        \[ \mathcal{L}(\matr{\theta}) = \left( \vec{c} \cdot \vec{w} - \log( \matr{X}[c, w] ) \right)^2 \]
+
         \begin{remark}
-            In practice, Word2vec learns two sets of embeddings $\matr{W} \in \mathbb{R}^{|V| \times d}$ and $\matr{C} \in \mathbb{R}^{|V| \times d}$ for the target and context words, respectively. At the end, they can either be averaged, concatenated, or one can be dropped.
+            Empirically, for GloVe it has been observed that the final embedding matrix obtain as $\matr{W} + \matr{C}$ works better.
         \end{remark}
+
+        \begin{example}
+            A possible term-term co-occurrence probability for the words \texttt{ice} and \texttt{steam} is the following:
+            \begin{table}[H]
+                \centering
+                \footnotesize
+                \begin{tabular}{ccccc}
+                    \toprule
+                    & $k=\texttt{solid}$ & $k=\texttt{gas}$ & $k=\texttt{water}$ & $k=\texttt{fashion}$ \\
+                    \midrule
+                    $\prob{k | \texttt{ice}}$ & $1.9 \times 10^{-4}$ & $6.6 \times 10^{-5}$ & $3.0 \times 10^{-3}$ & $1.7 \times 10^{-5}$ \\
+                    $\prob{k | \texttt{steam}}$ & $2.2 \times 10^{-5}$ & $7.8 \times 10^{-4}$ & $2.2 \times 10^{-3}$ & $1.8 \times 10^{-5}$ \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+            \texttt{ice} is more likely to co-occur with \texttt{solid} while \texttt{steam} is more likely to co-occur with \texttt{gas}. GloVe uses this information when determining the embeddings.
+        \end{example}
+\end{description}
+
+
+
+\section{Embeddings properties}
+
+
+\subsection{Embeddings similarity}
+
+\begin{description}
+    \item[Context size] \marginnote{Context size}
+        The window size used to collect counts or determine context words can result in different embeddings.
+
+        As a general rule, smaller windows tend to capture more syntactic features while a larger window encodes more topically related but not necessarily similar words.
+
+    \item[Similarity orders] \marginnote{Similarity orders}
+        Two words have:
+        \begin{descriptionlist}
+            \item[First-order co-occurrence] 
+                If they are nearby each other.
+            \item[Second-order co-occurrence] 
+                If they have similar context words.
+        \end{descriptionlist}
+
+    \item[Relational similarity] \marginnote{Relational similarity}
+        Dense embeddings are able to capture relational meanings.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/embedding_relations.png}
+        \end{figure}
+
+        \begin{description}
+            \item[Parallelogram model] 
+                Given the problem ``$a \text{ is to } b \text{ as } a^* \text{ is to } b^*$'' ($a : b :: a^* : b^*$), the parallelogram model solves it as:
+                \[ b^* = \arg\min_x \texttt{distance}(x, b-a+a^*) \]
+
+                \begin{example}
+                    In Word2vec, the following operation between embeddings can be done:
+                    \[ \texttt{Paris} - \texttt{France} + \texttt{Italy} \approx \texttt{Rome} \]
+                \end{example}
+
+                \begin{remark}
+                    Even if it sometimes works, parallelogram model is not guaranteed to always produce the expected result.
+                \end{remark}
+        \end{description}
+\end{description}
+
+
+\subsection{Embeddings analysis}
+
+\begin{description}
+    \item[Word history] \marginnote{Word history}
+        Trained on different corpora, dense embeddings can provide a semantic evolution of words by analyzing its neighboring embeddings.
+
+        \begin{example}
+            \phantom{}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/_embedding_history.png}
+                \caption{
+                    \parbox[t]{0.7\linewidth}{
+                        Neighboring embeddings of the same words encoded using Word2vec trained on different corpora from different decades
+                    }
+                }
+            \end{figure}
+        \end{example}
+
+        \begin{example}
+            \phantom{}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.25\linewidth]{./img/embedding_sentiment_history.png}
+                \caption{
+                    \parbox[t]{0.7\linewidth}{
+                        Sentiment for the word \texttt{terrific} analyzed using the embeddings obtained by training on different corpora
+                    }
+                }
+            \end{figure}
+        \end{example}
+
+    \item[Cultural bias] \marginnote{Cultural bias}
+        Embeddings reflect implicit biases in the training corpus.
+
+        \begin{description}
+            \item[Implicit association test] 
+                Determine how associated are concepts and attributes.
+
+                \begin{example}
+                    Using the parallelogram model to solve:
+                    \[ \texttt{father} : \texttt{doctor} :: \texttt{mother} : x \]
+                    finds as the closest words $x =$ \texttt{homemaker}, \texttt{nurse}, \texttt{receptionist}, \dots
+                \end{example}
+
+                \begin{example}
+                    African-American and Chinese names are closer to unpleasant words compared to European-American names.
+                \end{example}
+
+                \begin{example}
+                    Using the Google News dataset as training corpus, there is a correlation between the women bias of the jobs embeddings and the percentage of women over men in those jobs.
+
+                    Woman bias for a word $w$ is computed as:
+                    \[ d_\text{women}(w) - d_\text{men}(w) \]
+                    where $d_\text{women}(w)$ is the average embedding distance between words representing women (e.g., \texttt{she}, \texttt{female}, \dots) and the word $w$. The same idea is applied to $d_\text{men}(w)$.
+
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.6\linewidth]{./img/_embedding_women_occupation.pdf}
+                        \caption{
+                            \parbox[t]{0.7\linewidth}{
+                                Relationship between the relative percentage of women in an occupation and the women bias.
+                            }
+                        }
+                    \end{figure}
+
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.6\linewidth]{./img/embedding_women_occupation_bias.png}
+                        \caption{
+                            \parbox[t]{0.7\linewidth}{
+                                Average women bias vs average women occupation difference over time.
+                            }
+                        }
+                    \end{figure}
+                \end{example}
+        \end{description}
 \end{description}
