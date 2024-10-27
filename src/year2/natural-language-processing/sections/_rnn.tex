@@ -39,7 +39,7 @@
     \begin{description}
         \item[Training]
             Given the predicted distribution $\hat{\vec{y}}^{(t)}$ and ground-truth $\vec{y}^{(t)}$ at step $t$, the loss is computed as the cross-entropy:
-            \[ \mathcal{L}^{(t)}(\matr{\theta}) = - \sum_{v \in V} \vec{y}_v^{(t)} \log\left( \hat{\vec{y}}_w^{(t)} \right) \]
+            \[ \mathcal{L}^{(t)}(\matr{\theta}) = - \sum_{v \in V} \vec{y}_v^{(t)} \log\left( \hat{\vec{y}}_v^{(t)} \right) \]
 
             \begin{description}
                 \item[Teacher forcing] \marginnote{Teacher forcing}
