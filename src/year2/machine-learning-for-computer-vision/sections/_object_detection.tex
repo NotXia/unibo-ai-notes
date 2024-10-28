@@ -644,7 +644,7 @@
 \end{remark}
 
 
-\subsection{Multi-scale detectors}
+\subsection{Multi-scale detectors} \label{sec:multiscale_detector}
 
 \begin{description}
     \item[Image pyramid multi-scale detection] \marginnote{Image pyramid multi-scale detection}
@@ -1012,11 +1012,9 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{./img/_object_detection_map_speed_plot.pdf}
+    \includegraphics[width=0.75\linewidth]{./img/_object_detection_map_speed_plot.pdf}
     \caption{
-        \parbox[t]{0.5\linewidth}{
-            mAP -- speed comparison of the various object detection approaches
-        }
+        mAP -- speed comparison of the various object detection approaches
     }
 \end{figure}
 
@@ -1028,7 +1026,7 @@
         Method based on two ideas:
         \begin{itemize}
             \item Use transformers to predict a set of objects in a single pass (i.e., solve a set prediction problem).
-            \item Use the bipartite matching (i.e., Hungarian) loss as set prediction loss that forces a unique matching between predictions and ground-truths.
+            \item Use the Hungarian (i.e., bipartite matching) loss as set prediction loss that forces a unique matching between predictions and ground-truths.
         \end{itemize}
 
         \begin{description}
@@ -1043,5 +1041,155 @@
                             In object detection, there are no other generated output tokens to feed into the decoder for parallel decoding. Therefore, only the learned positional encodings are used.
                         \end{remark}
                 \end{description}
+
+            \item[Architecture]
+                Given an input image $I$ of size $H \times W \times 3$, DETR does the following:
+                \begin{enumerate}
+                    \item Pass the input $I$ through a CNN feature extractor to obtain an activation $A$ of shape $\frac{H}{32} \times \frac{W}{32} \times 2048$.
+                    \item Use a $1 \times 1$ convolution to adjust the number of channels of $A$ from $2048$ to $d$.
+                    \item Add positional encoding to $A$.
+                    \item Pass the activation $A$ through the transformer encoder to obtain the keys and values for the decoder.
+                    \item Pass the learned object queries through the decoder to obtain the outputs $O_i$.
+                    \item Pass each output $O_i$ through an MLP to obtain class and box predictions.
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/_detr_architecture.pdf}
+                \end{figure}
+
+            \item[Hungarian loss] \marginnote{Hungarian loss}
+                Consider for simplicity a problem with $2$ classes (plus background). Given:
+                \begin{itemize}
+                    \item $N$ predictions $\{ \hat{y}_i = (\hat{p}_i, \hat{b}_i) \}_{i=1}^N$ where $\hat{p}_i$ is the class probability distribution and $\hat{b}_i$ describes the bounding box normalized w.r.t. the image size.
+                    \item $O$ ground-truth boxes padded to $N$ with background classes $\{ \hat{y}_i = (c_i, b_i) \}_{i=1}^O \cup \{ \hat{y}_i = \varnothing \}_{i=N - O}^{N}$ where $c_i$ is the class, $b_i$ describes the bounding box normalized w.r.t. the image size, and $\varnothing$ represents the background class.
+                \end{itemize}
+
+                The Hungarian loss is defined in two steps:
+                \begin{enumerate}
+                    \item Solve the bipartite matching problem of finding the optimal permutation $\sigma^*$ that associates each prediction to a unique ground-truth box while minimizing the matching loss $\mathcal{L}_\text{match}$ defined as follows:
+                    \[ 
+                        \mathcal{L}_\text{match}(\hat{y}_i, y_j) = \begin{cases}
+                            -\hat{p}_i[c_j] + \mathcal{L}_\text{box}(\hat{b}_i, b_j) & \text{if $c_j \neq \varnothing$} \\
+                            0 & \text{otherwise}
+                        \end{cases} 
+                    \]
+                    where $\mathcal{L}_\text{box}$ is a loss based on the linear combination of the Huber loss and IoU.
+
+                    The overall problem is the following:
+                    \[ \sigma^* = \arg\min_\sigma \sum_{i=1}^{N} \mathcal{L}_\text{match}(\hat{y}_{\sigma(i)}, y_i) \]
+
+                    \item Given the optimal permutation $\sigma^*$, compute the loss as:
+                    \[ \mathcal{L}_\text{hungarian}(\hat{y}, y) = \sum_{i=1}^{N} \left( - \ln\left( \hat{p}_{\sigma^*(i)}(c_i) \right) + \mathbbm{1}[c_i \neq \varnothing] \mathcal{L}_\text{box}(\hat{b}_{\sigma^*(i)}, b_i) \right) \]
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.5\linewidth]{./img/hungarian_loss.png}
+                    \caption{
+                        Possible permutations and optimal permutation (in orange).
+                    }
+                \end{figure}
         \end{description}
+
+        \begin{remark}
+            Results show that faster R-CNN + FPN is better for smaller object and DETR performs best with larger objects.
+        \end{remark}
+
+        \begin{remark}[Visualization]
+            By analyzing the main components of DETR, the following can be observed:
+            \begin{descriptionlist}
+                \item[Encoder] The encoder tend to solve a segmentation problem (i.e., determine what the object is).
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.8\linewidth]{./img/detr_encoder.png}
+                        \caption{
+                            \parbox[t]{0.75\linewidth}{Self-attention map of some pixels at the last encoder. Yellow tiles indicate that the analyzed pixel attends to that patch.}
+                        }
+                    \end{figure}
+
+                \item[Decoder] The decoder tend to attend at object boundaries (i.e., determine where the object is).
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.8\linewidth]{./img/detr_decoder.png}
+                        \caption{
+                            \parbox[t]{0.75\linewidth}{Decoder attention. Highlighted areas have a higher attention weight.}
+                        }
+                    \end{figure}
+
+                \item[Object query] Each object query tend to be specialized in recognizing objects in specific areas.
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.8\linewidth]{./img/detr_object_query.png}
+                        \caption{
+                            \parbox[t]{0.75\linewidth}{Position of the predictions of each object query. Green dots represent small boxes, red large horizontal boxes, and blue large vertical boxes.}
+                        }
+                    \end{figure}
+            \end{descriptionlist}
+        \end{remark}
 \end{description}
+
+
+\begin{subappendices}
+    \section{EfficientDet}
+        \begin{remark}
+            When working with object detection, there are many options to scale a model:
+            \begin{descriptionlist}
+                \item[Backbone] Change the CNN to refine the input image.
+                \item[Image resolution] Change the resolutions produced by the CNN.
+                \item[Multi-scale feature representation] Change the architecture of the multi-scale detector.
+                \item[Detector head] Change the classification and regression heads.
+            \end{descriptionlist}
+        \end{remark}
+
+        \begin{description}
+            \item[EfficientDet] \marginnote{EfficientDet}
+                Similarly to MobileNet and EfficientNet, EfficientDet uses a compound scaling coefficient $\phi$ to scale up the model (using heuristic rules).
+
+                \begin{remark}
+                    Before EfficientDec, other multi-scale feature representations have been introduced:
+                    \begin{descriptionlist}
+                        \item[FPN] 
+                            As described in \Cref{sec:multiscale_detector}.
+
+                        \item[PANet] \marginnote{PANet}
+                            Based on FPN with an additional bottom-up path to merge higher resolution features with coarser ones.
+
+                        \item[NAS-FPN] \marginnote{NAS-FPN}
+                            Base block found using neural architecture search. Multiple blocks are repeated to obtain the multi-scale features.
+                    \end{descriptionlist}
+
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.65\linewidth]{./img/multiscale_comparison.png}
+                    \end{figure}
+                \end{remark}
+
+                \begin{description}
+                    \item[Weighted bi-directional feature pyramid network (BiFPN)] \marginnote{Weighted bi-directional feature pyramid network (BiFPN)}
+                        Architecture to represent multi-scale features with the following characteristics:
+                        \begin{itemize}
+                            \item Applied as repeated blocks (i.e., as NAS-FPN).
+                            \item Based on PANet with the following changes:
+                            \begin{itemize}
+                                \item Activations generated by only one parent activation are removed and the connections are adjusted.
+                                \item Add a connection between input and output node of a block.
+                                \item Use depth-wise separable convolutions.
+                                \item Add learnable weights to weigh features at different resolutions. 
+                            \end{itemize}
+                            The output $P_i^\text{out}$ at the $i$-th scale is therefore computed as:
+                            \[ 
+                                \begin{split}
+                                    P_i^\text{out} &= \texttt{conv}\left( \frac{w_{i, 1} P_i^\text{in} + w_{i, 2} P_i^\text{top-down} + w_{i, 3} \texttt{downsample}(P_{i-1}^\text{out})}{w_{i, 1} + w_{i, 2} + w_{i, 3} + \varepsilon} \right) \\
+                                    P_i^\text{top-down} &= \texttt{conv}\left( w_{i, 1}' P_i^\text{in} + w_{i+1, \text{td}} \texttt{upsample}(P_{i+1}^\text{top-down}) \right)
+                                \end{split}
+                            \]
+
+                            \begin{figure}[H]
+                                \centering
+                                \includegraphics[width=0.15\linewidth]{./img/bifpn.png}
+                            \end{figure}
+                        \end{itemize}
+                \end{description}
+        \end{description}
+\end{subappendices}
