@@ -254,3 +254,103 @@ Predict RUL with a classifier $f_\varepsilon$ (for a chosen $\varepsilon$) that 
                 \end{enumerate}
         \end{description}
 \end{description}
+
+
+\subsection{Survival analysis model}
+
+\begin{remark}
+    Chronologically, this approach has been presented after \Cref{ch:ap_hospital}.
+\end{remark}
+
+\begin{description}
+    \item[Survival analysis model] \marginnote{Survival analysis model}
+        Probabilistic model to estimate the survival time of an entity.
+
+    \item[Survival analysis formalization]
+        Consider a random variable $T$ to model the survival time. The simplest model can be defined as:
+        \[ t \sim \prob{T} \]
+        Remaining survival time depends on the time $\bar{t}$, therefore we have that:
+        \[ t \sim \prob{T \mid \bar{t}} \]
+        Remaining survival time also depends on the past sensor readings $X_{\leq \bar{t}}$ and future readings $X_{> \bar{t}}$ (at this stage, we want to capture what affects the survival time, even if we do not have access to some variables), therefore we have that:
+        \[ t \sim \prob{T \mid \bar{t}, X_{\leq \bar{t}}, X_{> \bar{t}}} \]
+
+        \begin{description}
+            \item[Marginalization] 
+                Average over all the possible outcomes of a random variable to cancel it out.
+
+                For this problem, we do not have access to the future sensor readings, so we can marginalize them:
+                \[ t = \underset{X_{> \bar{t}} \sim \prob{X_{> \bar{t}}}}{\mathbb{E}} \left[ \prob{T \mid \bar{t}, X_{\leq \bar{t}}} \right] \]
+        \end{description}
+
+        \begin{remark}
+            In probabilistic terms, the regression approach previously taken can be modelled as:
+            \[ t \sim \mathcal{N}(\mu(X_{\bar{t}}), \sigma) \]
+            where $\mu(\cdot)$ is the regressor.
+
+            Compared to the survival analysis model, there are the following differences:
+            \begin{itemize}
+                \item Regressor only reasons on the sensor readings $X_{\bar{t}}$ at a single time step. 
+                \item Regressor does not consider the current time.
+                \item Regressor assumes normal distribution with constant variance.
+            \end{itemize}
+        \end{remark}
+
+    \item[Neuro-probabilistic model]
+        We can assume that the model follows a normal distribution parametrized on both the mean and standard deviation:
+        \[ t \sim \mathcal{N}(\mu(X_{\bar{t}}, \bar{t}), \sigma(X_{\bar{t}}, \bar{t})) \]
+
+        \begin{remark}
+            The readings of a single time step are used as it can be shown that using multiple time steps does not yield significant improvements for this dataset.
+        \end{remark}
+
+        \begin{description}
+            \item[Architecture]
+                Use a neural network that output both $\mu$ and $\sigma$ that are passed to a distribution head.
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/_rul_neuroprobabilistic.pdf}
+        \end{figure}
+\end{description}
+
+
+% \subsection{Survival function}
+
+% \begin{description}
+%     \item[Censoring] \marginnote{Censoring}
+%         Hide from the dataset key events.
+
+%         \begin{remark}
+%             For this dataset, it is more realistic to use partial runs as run-to-failure experiments are expensive to obtain.
+%             \begin{figure}[H]
+%                 \centering
+%                 \includegraphics[width=0.7\linewidth]{./img/_rul_censoring.pdf}
+%                 \caption{Example of partial runs}
+%             \end{figure}
+%         \end{remark}
+
+%     \item[Survival function] \marginnote{Survival function}
+%         Given the random variable $T$ to model survival time, the survival function $S$ is defined as:
+%         \[ S(\bar{t}) = \prob{T > \bar{t}} \]
+%         In other words, it is the probability of surviving at least until time $\bar{t}$.
+
+%         For this problem, the survival function can account for past sensor readings:
+%         \[ S(\bar{t}, X_{\leq \bar{t}}) = \prob{T > \bar{t} \mid X_{\leq \bar{t}}} \]
+
+%     \item[Hazard function] \marginnote{Hazard function}
+%         Given the random variable $T$ to model survival time, the hazard function $\lambda$ is defined as:
+%         \[ \lambda(\bar{t}) = \prob{T > \bar{t} \mid T > \bar{t}-1} \]
+%         In other words, it is the conditional probability of not surviving at time $\bar{t}$ knowing that the entity survived until time $\bar{t}-1$.
+
+%         With discrete time, the survival function can be factorized using the hazard function:
+%         \[ S(\bar{t}) = (1-\lambda(\bar{t})) \cdot (1 - \lambda(\bar{t}-1)) \cdot \dots \]
+
+%         For this problem, the hazard function is the following:
+%         \[ 
+%             \begin{gathered}
+%                 \lambda(\bar{t}, X_{\bar{t}}) = \prob{T > \bar{t} \mid T > \bar{t}-1, X_{\bar{t}}} \\
+%                 S(\bar{t}, X_{\bar{t}}) = (1-\lambda(\bar{t}, X_{\bar{t}})) \cdot (1 - \lambda(\bar{t}-1, X_{\bar{t}-1})) \cdot \dots
+%             \end{gathered}
+%         \]
+% \end{description}

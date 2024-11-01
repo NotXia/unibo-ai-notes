@@ -1,4 +1,4 @@
-\chapter{Arrivals prediction: Hospital emergency room}
+\chapter{Arrivals prediction: Hospital emergency room} \label{ch:ap_hospital}
 
 
 \section{Data}
@@ -22,7 +22,7 @@ Each row of the dataset represents a patient and the features are:
 \section{Approaches}
 
 \begin{remark}
-    MSE assumes that the conditional distribution of the predictions follows a normal distribution.
+    MSE assumes that the conditional distribution $\prob{y | x; \theta}$ of the predictions follows a normal distribution (i.e., $y \sim \mathcal{N}(\mu(x; \theta), \sigma)$).
 \end{remark}
 
 \begin{remark}
@@ -107,13 +107,17 @@ Each row of the dataset represents a patient and the features are:
                 Some considerations must be made:
                 \begin{descriptionlist}
                     \item[Only positive rates] 
-                        As $\hat{\lambda}$ must be positive, it is possible to combine a logarithm and an exponentiation to achieve this:
+                        As $\hat{\lambda}$ must be positive, it is possible to combine a logarithm (i.e., assume that the MLP outputs a log-rate) and an exponentiation to achieve this:
                         \[
                             \begin{split}
                                 \log(\hat{\lambda}) &= \texttt{MLP}(x) \\
                                 \texttt{out} &= \texttt{Poisson}\left( \cdot, \exp\left(\log(\hat{\lambda})\right) \right) = \texttt{Poisson}(\cdot, \hat{\lambda})
                             \end{split}
                         \]
+
+                        \begin{remark}
+                            A strictly positive activation function can also be used.
+                        \end{remark}
 
                     \item[Standardization]
                         The input of the network can be standardized. On the other hand, standardizing the output is wrong as the Poisson distribution is discrete.
@@ -133,4 +137,59 @@ Each row of the dataset represents a patient and the features are:
                         \end{remark}
                 \end{descriptionlist}
         \end{description}
+
+        \begin{remark}
+            With one-hot encoding, a linear model can be non-linearized into a lookup table.
+
+            \indenttbox
+            \begin{example}
+                \phantom{}
+
+                \begin{minipage}[t]{0.3\linewidth}
+                    Consider the dataset:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{c|c}
+                            \toprule
+                            $x$ & $y$ \\
+                            \midrule
+                            $0$ & $1$ \\
+                            $1$ & $4$ \\
+                            $2$ & $2$ \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                \end{minipage}
+                \begin{minipage}[t]{0.65\linewidth}
+                    A linear model learns a straight line:
+                    \[ f(x) = \alpha x \]
+                \end{minipage}\\[1em]
+                \begin{minipage}[t]{0.3\linewidth}
+                    With the dataset:
+                    \begin{table}[H]
+                        \centering
+                        \footnotesize
+                        \begin{tabular}{ccc|c}
+                            \toprule
+                            $x_0$ & $x_1$ & $x_2$ & $y$ \\
+                            \midrule
+                            $1$ & $0$ & $0$ & $1$ \\
+                            $0$ & $1$ & $0$ & $4$ \\
+                            $0$ & $0$ & $1$ & $2$ \\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+                \end{minipage}
+                \begin{minipage}[t]{0.65\linewidth}
+                    A linear model learns a linear combination:
+                    \[ f(x) = \alpha x_0 + \beta x_1 + \gamma x_2 \]
+                    Which allows to easily learn the dataset with $\alpha=1$, $\beta=4$, and $\gamma=2$
+                \end{minipage}
+            \end{example}
+        \end{remark}
+
+        \begin{remark}
+            Having access to the distribution allows to compute all possible statistics. For instance, it is possible to plot mean and standard deviation.
+        \end{remark}
 \end{description}
