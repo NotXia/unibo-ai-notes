@@ -18,6 +18,11 @@
 
         The mean IoU is computed as:
         \[ \texttt{mIoU} = \frac{1}{C} \sum_{c=1}^{C} \texttt{IoU}_c \]
+
+
+        \begin{remark}
+            Mean IoU is not strictly correlated to human's perception of segmentation. A small gain in \texttt{mIoU} might correspond to a large visual improvement.
+        \end{remark}
 \end{description}
 
 
@@ -119,4 +124,286 @@
                     \end{itemize}
                 \end{remark}
         \end{description}
+\end{description}
+
+
+\subsection{R-CNN}
+
+\begin{description}
+    \item[R-CNN for segmentation] \marginnote{R-CNN for segmentation}
+        Slide a window across each pixel of the input image. Each slice is passed through an R-CNN to determine the class of the pixel at the center of the window.
+
+        The loss for an example $i$ is the sum of the cross-entropy losses at each pixel $(u, v)$:
+        \[ \mathcal{L}^{(i)} = \sum_{(u, v)} \mathbbm{1}\left( c_{(u, v)}^{(i)} \right) \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}_{(u, v)}) \right) \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\linewidth]{./img/_segmentation_rcnn.pdf}
+            \caption{R-CNN for segmentation with $20$ ($+1$) classes}
+        \end{figure}
+\end{description}
+
+
+\subsection{Fully convolutional network}
+
+\begin{description}
+    \item[Standard up-sampling] \marginnote{Standard up-sampling}
+        Non-learned operator to increase the spatial dimension of the input image. Possible approaches are:
+        \begin{descriptionlist}
+            \item[Nearest neighbor]
+                Fill the new pixels with the value of the nearest one.
+            \item[Bilinear interpolation]
+                Fill the new pixels by interpolating the nearest ones.
+        \end{descriptionlist}
+
+    \item[Fully convolutional network (FCN)] \marginnote{Fully convolutional network (FCN)}
+        Pass the whole input image into a CNN and use the activation to determine the class of each pixel. The flow is the following:
+        \begin{descriptionlist}
+            \item[Backbone] Pass the input image through a CNN.
+            \item[Scoring layer] Apply a $1 \times 1$ convolution on the output activation to obtain the correct number of channels (one per class).
+            \item[Up-sampling] Apply an up-sampling operator to restore the input spatial dimension.
+        \end{descriptionlist}
+
+        \begin{remark}
+            Without learned non-linear up-sampling operators, the output mask is dependent on the total stride of the CNN. Therefore, a coarse final activation will result in a coarse segmentation mask.
+        \end{remark}
+
+        \begin{description}
+            \item[Pyramid of FCNs] \marginnote{Pyramid of FCNs}
+                Stack of FCNs with skips (i.e., merges) to up-sample multiple activations at different resolutions.
+                \begin{descriptionlist}
+                    \item[FCN-32S] 
+                        FCN that applies the backbone CNN up until the last layer $L$ obtaining a total stride of $32$. This results in a very coarse mask.
+
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.85\linewidth]{./img/_fcn_32.pdf}
+                        \end{figure}
+
+                    \item[FCN-16S] 
+                        FCN that applies the backbone CNN up until the layer $L-1$ and then branches into two paths:
+                        \begin{itemize}
+                            \item A branch continues into the $L$-th layer as in FCN-32S. Up-sampling is done to match the spatial dimension of the other branch so that it can be used as a skip.
+                            \item A branch passes through a scoring layer and is summed to the output of the other branch before up-sampling to the image spatial dimension.
+                        \end{itemize}
+
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.85\linewidth]{./img/_fcn_16.pdf}
+                        \end{figure}
+
+                    \item[FCN-8S] 
+                        As FCN-16S where the skip comes from FCN-16S.
+
+                        \begin{figure}[H]
+                            \raggedleft
+                            \includegraphics[width=0.85\linewidth]{./img/_fcn_8.pdf}
+                        \end{figure}
+                \end{descriptionlist}
+
+                \begin{remark}
+                    Ablation study found out that:
+                    \begin{itemize}
+                        \item Results do not show significant improvements after stride $8$ (i.e., the initial stages of the backbone CNN are less relevant for the segmentation task).
+                        \item Fine-tuning the backbone is important.
+                        \item There is no significant difference in training end-to-end (i.e., directly FCN-8S) and coarse-to-fine (i.e., progressively train starting from FCN-32S up to FCN-8S)
+                        \item Skips between resolutions to merge them are important.
+                    \end{itemize}
+                \end{remark}
+        \end{description}
+\end{description}
+
+
+\subsection{U-Net}
+
+\begin{description}
+    \item[Transposed convolution] \marginnote{Transposed convolution}
+        Operator to invert the spatial down-sampling of a convolution.
+
+        Given a convolution with convolutional matrix $K$, a transposed convolution is obtained by applying $K^T$ to the image.
+
+        In practice, a transposed convolution can be obtained by sliding the kernel on the output activation (instead of input). The values at the output activation correspond to the product between the input pixel and the kernel. If multiple kernels overlap at the same output pixel, its value is obtained as the sum of all the values that end up in that position.
+
+        \begin{example}
+            Consider images with $1$ channel. Given a $3 \times 3$ input image and a $3 \times 3$ transposed convolution kernel with stride $2$, the output activation has spatial dimension $5 \times 5$ and is obtained as follows:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_transposed_convolution.pdf}
+            \end{figure}
+        \end{example}
+
+        \begin{remark}
+            A transposed convolution is usually initialized as a bilinear interpolator. For instance, a $3 \times 3$ kernel is initialized as:
+            \[ 
+                \begin{bmatrix}
+                    \frac{1}{4} & \frac{1}{2} & \frac{1}{4} \\
+                    \frac{1}{2} & 1 & \frac{1}{2} \\
+                    \frac{1}{4} & \frac{1}{2} & \frac{1}{4} \\
+                \end{bmatrix}
+            \]
+        \end{remark}
+
+        \begin{remark}
+            Transposed convolutions can be seen as convolutions with a fractional stride.
+        \end{remark}
+
+        \begin{remark}
+            Transposed convolutions are also called deconvolutions (this is technically wrong as deconvolutions are the full inverse of convolutions), up-convolutions, fractionally/backward strided convolutions.
+        \end{remark}
+
+        \begin{remark}
+            In generative tasks, transposed convolutions generate checkerboard artifacts. Darker pixels are due to the fact that they result from the summation of multiple kernel applications.
+        \end{remark}
+
+    \item[U-Net] \marginnote{U-Net}
+        Encoder-decoder architecture for segmentation:
+        \begin{descriptionlist}
+            \item[Encoder] Backbone CNN that down-samples the input image.
+            \item[Decoder] Symmetric structure to the encoder that up-samples the activation using transposed convolutions and further refines them with normal $3 \times 3$ convolutions.
+        \end{descriptionlist}
+        Each level of the encoder is connected to its corresponding level in the decoder through a skip connection that concatenates the activations.
+
+        The scoring layer is only applied at the end to adjust the number of channels.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_unet.pdf}
+            \caption{
+                \parbox[t]{0.7\linewidth}{
+                    U-Net structure. Note that in the original paper, convolutions have padding \texttt{valid} and the input is provided from a sliding window. Modern implementations have padding \texttt{same} and same input and output spatial dimension.
+                }
+            }
+        \end{figure}
+
+        \begin{remark}
+            Intuitively, the two components of a U-Net do the following:
+            \begin{descriptionlist}
+                \item[Encoder] Determine what is in the image.
+                \item[Decoder] Determine where the objects are.
+            \end{descriptionlist}
+        \end{remark}
+\end{description}
+
+
+\subsection{Dilated CNN}
+
+\begin{remark}
+    The standard classification backbone approach has some shortcomings:
+    \begin{itemize}
+        \item Predictions made using the activation at higher layers are semantically rich but spatially coarse.
+        \item Predictions made using the activation at lower layers are semantically poorer but have a higher spatial resolution.
+    \end{itemize}
+\end{remark}
+
+\begin{description}
+    \item[Dilated/atrous convolution] \marginnote{Dilated/atrous convolution}
+        Given a dilation rate $r$, a dilated convolution is equivalent to applying a kernel with an $r-1$ gap between weights.
+
+        Formally, a dilated convolution with kernel $K$ and dilation rate $r$ applied on an image $I$ is computed as follows:
+        \[
+            [K * I](j, i) = \sum_{n=1}^{C} \sum_{m} \sum_{l} K_n(m, l) I_n(j - r \cdot m, i - r \cdot l) + b
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/_dilated_convolution.pdf}
+            \caption{Example of $3 \times 3$ dilated convolutions with increasing dilation rate}
+        \end{figure}
+        
+        \begin{remark}
+            By stacking dilated convolutions with exponentially increasing dilation rate $r_l = 2^l$, it is possible to achieve the following effects:
+            \begin{itemize}
+                \item Exponential growth in receptive field. At the $l$-th level the receptive field is $(2^{l+1} - 1) \times (2^{l+1} - 1)$.
+                \item Linear growth in the number of parameters.
+                \item Unchanged resolution.
+            \end{itemize}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_dilated_convolution_exponential.pdf}
+            \end{figure}
+        \end{remark}
+
+    \item[Dilated ResNet] \marginnote{Dilated ResNet}
+        ResNet composed of standard stages up until a certain layer. The remaining ones are dilated stages.
+
+        \begin{description}
+            \item[Dilated bottleneck residual block]
+                Standard bottleneck residual block composed of convolutions with kernels $1 \times 1 \mapsto 3 \times 3 \mapsto 1 \times 1$ where the middle $3 \times 3$ convolution is a dilated convolution.
+
+            \item[Dilated stage]
+                Given a dilation rate $r$, a dilated stage is built as follows:
+                \begin{itemize}
+                    \item The first bottleneck block has stride $1$ (instead of $2$) and dilation rate $\frac{r}{2}$.
+                    \item The remaining blocks have stride $1$ and dilation rate $r$.
+                \end{itemize}
+
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.45\linewidth}
+                        \centering
+                        \includegraphics[width=0.9\linewidth]{./img/_dilated_resnet_stage1.pdf}
+                        \caption{ResNet with standard stages}
+                    \end{subfigure}
+                    \begin{subfigure}{0.45\linewidth}
+                        \centering
+                        \includegraphics[width=0.9\linewidth]{./img/_dilated_resnet_stage2.pdf}
+                        \caption{ResNet with two dilated stages}
+                    \end{subfigure}
+                \end{figure}
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\linewidth]{./img/_dilated_resnet.pdf}
+            \caption{Dilated ResNet with total stride $8$}
+        \end{figure}
+
+        \begin{remark}
+            In principle, it is possible to process the input image without altering the resolution. However, this approach is computationally more expensive as the activations are larger. Therefore, the first standard ResNet stages are kept to apply some stride. As in FCN, a total stride of $8$ (up to the second stage) or $16$ (up to the third stage) is used.
+        \end{remark}
+
+
+    \item[DeepLab v3] \marginnote{DeepLab v3}
+        Architecture based on dilated ResNet that considers objects at multiple scales.
+
+        \begin{description}
+            \item[Atrous spatial pyramid pooling (ASPP)] \marginnote{Atrous spatial pyramid pooling (ASPP)}
+                Module that takes as input the activation of the dilated ResNet backbone and applies separate $3 \times 3$ convolutions with large dilation rates to encode spatial context. The final output is the concatenation of the activations of each convolution.
+
+            \item[Curriculum training]
+                Training is done in two steps:
+                \begin{enumerate}
+                    \item Train with a total stride of $16$ (i.e., only the last ResNet stage is dilated). This allows for a faster training with larger batches.
+                    \item Fine-tune with a total stride of $8$ (i.e., the last two stages are dilated). This results in spatially larger and more detailed activations.
+                \end{enumerate}
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/_deeplabv3.pdf}
+        \end{figure}
+
+    \item[DeepLab v3+] \marginnote{DeepLab v3+}
+        Architecture based on the ASPP of DeepLab v3 and the decoder of U-Net.
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_deeplabv3plus_1.pdf}
+                \caption{DeepLab v3}
+            \end{subfigure}
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_deeplabv3plus_2.pdf}
+                \caption{U-Net}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}{0.3\linewidth}
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/_deeplabv3plus_3.pdf}
+                \caption{DeepLab v3+}
+            \end{subfigure}
+        \end{figure}
 \end{description}
