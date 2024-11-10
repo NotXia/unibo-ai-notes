@@ -135,7 +135,7 @@ Predict RUL with a regressor $f$ and set a threshold to trigger maintenance:
 \end{description}
 
 
-\subsection{Classifier}
+\subsection{Classifier} \label{sec:rul_classifier_naive}
 
 Predict RUL with a classifier $f_\varepsilon$ (for a chosen $\varepsilon$) that determines whether a failure will occur in $\varepsilon$ steps:
 \[ f_\varepsilon(x, \theta) = \begin{cases}
@@ -256,7 +256,7 @@ Predict RUL with a classifier $f_\varepsilon$ (for a chosen $\varepsilon$) that 
 \end{description}
 
 
-\subsection{Survival analysis model}
+\subsection{Survival analysis (regression)}
 
 \begin{remark}
     Chronologically, this approach has been presented after \Cref{ch:ap_hospital}.
@@ -315,42 +315,125 @@ Predict RUL with a classifier $f_\varepsilon$ (for a chosen $\varepsilon$) that 
 \end{description}
 
 
-% \subsection{Survival function}
+\subsection{Survival analysis (classification)}
 
-% \begin{description}
-%     \item[Censoring] \marginnote{Censoring}
-%         Hide from the dataset key events.
+\begin{description}
+    \item[Censoring] \marginnote{Censoring}
+        Hide key events from the dataset.
 
-%         \begin{remark}
-%             For this dataset, it is more realistic to use partial runs as run-to-failure experiments are expensive to obtain.
-%             \begin{figure}[H]
-%                 \centering
-%                 \includegraphics[width=0.7\linewidth]{./img/_rul_censoring.pdf}
-%                 \caption{Example of partial runs}
-%             \end{figure}
-%         \end{remark}
+        \begin{remark}
+            For this dataset, it is more realistic to have more partial runs than run-to-failure experiments as they are expensive to obtain.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/_rul_censoring.pdf}
+                \caption{Example of partial runs}
+            \end{figure}
+        \end{remark}
 
-%     \item[Survival function] \marginnote{Survival function}
-%         Given the random variable $T$ to model survival time, the survival function $S$ is defined as:
-%         \[ S(\bar{t}) = \prob{T > \bar{t}} \]
-%         In other words, it is the probability of surviving at least until time $\bar{t}$.
+    \item[Survival function] \marginnote{Survival function}
+        Given the random variable $T$ to model survival time, the survival function $S$ is defined as:
+        \[ S(\bar{t}) = \prob{T > \bar{t}} \]
+        In other words, it is the probability of surviving at least until time $\bar{t}$.
 
-%         For this problem, the survival function can account for past sensor readings:
-%         \[ S(\bar{t}, X_{\leq \bar{t}}) = \prob{T > \bar{t} \mid X_{\leq \bar{t}}} \]
+        For this problem, the survival function can account for past sensor readings $X_{\leq \bar{t}}$:
+        \[ S(\bar{t}, X_{\leq \bar{t}}) = \prob{T > \bar{t} \mid X_{\leq \bar{t}}} \]
 
-%     \item[Hazard function] \marginnote{Hazard function}
-%         Given the random variable $T$ to model survival time, the hazard function $\lambda$ is defined as:
-%         \[ \lambda(\bar{t}) = \prob{T > \bar{t} \mid T > \bar{t}-1} \]
-%         In other words, it is the conditional probability of not surviving at time $\bar{t}$ knowing that the entity survived until time $\bar{t}-1$.
+    \item[Hazard function] \marginnote{Hazard function}
+        Given the random variable $T$ to model survival time, the hazard function $\lambda$ is defined as:
+        \[ \lambda(\bar{t}) = \prob{T < \bar{t} \mid T > \bar{t}-1} \]
+        In other words, it is the conditional probability of not surviving at time $\bar{t}$ knowing that the entity survived until time $\bar{t}-1$.
 
-%         With discrete time, the survival function can be factorized using the hazard function:
-%         \[ S(\bar{t}) = (1-\lambda(\bar{t})) \cdot (1 - \lambda(\bar{t}-1)) \cdot \dots \]
+        With discrete time, the survival function can be factorized using the hazard function:
+        \[ S(\bar{t}) \approx (1-\lambda(\bar{t})) \cdot (1 - \lambda(\bar{t}-1)) \cdot \dots \]
 
-%         For this problem, the hazard function is the following:
-%         \[ 
-%             \begin{gathered}
-%                 \lambda(\bar{t}, X_{\bar{t}}) = \prob{T > \bar{t} \mid T > \bar{t}-1, X_{\bar{t}}} \\
-%                 S(\bar{t}, X_{\bar{t}}) = (1-\lambda(\bar{t}, X_{\bar{t}})) \cdot (1 - \lambda(\bar{t}-1, X_{\bar{t}-1})) \cdot \dots
-%             \end{gathered}
-%         \]
-% \end{description}
+        \begin{remark}
+            The hazard function only depends on one observation.
+        \end{remark}
+
+        \begin{remark}
+            The fact that the probability of not surviving is used is for historical reasons.
+        \end{remark}
+
+        For this problem, the hazard function is the following:
+        \[ 
+            \begin{gathered}
+                \lambda(\bar{t}, X_{\bar{t}}) = \prob{T < \bar{t} \mid T > \bar{t}-1, X_{\bar{t}}} \\
+                S(\bar{t}, X_{\bar{t}}) \approx (1-\lambda(\bar{t}, X_{\bar{t}})) \cdot (1 - \lambda(\bar{t}-1, X_{\bar{t}-1})) \cdot \dots
+            \end{gathered}
+        \]
+
+    \item[Hazard estimator]
+            We want to train an estimator $\hat{\lambda}_\theta(\bar{t}, x_{\bar{t}})$ for the hazard function.
+
+            Consider the $k$-th experiment that ended at time $e^{(k)}$. The probability of the survival event can be modelled as follows:
+            \[
+                \underbrace{ 
+                    \vphantom{\prod_{t=1}^{e^{(k)}-1}}
+                    \hat{\lambda}_\theta(e^{(k)}, x^{(k)}_{e^{(k)}})
+                }_{\qquad\mathllap{\text{Not surviving at time $e^{(k)}$}}}
+                \underbrace{ 
+                    \prod_{t=1}^{e^{(k)}-1} (1 - \hat{\lambda}_\theta(t, x^{(k)}_{t}))
+                }_{\mathrlap{\text{Surviving until time $e^{(k)}-1$}}\qquad}
+            \]
+
+            \begin{description}
+                \item[Training] 
+                    In likelihood maximization terms, the problem for $m$ experiments is formulated as:
+                    \[
+                        \arg\max_\theta \prod_{k=1}^{m} \left(
+                            \hat{\lambda}_\theta(e^{(k)}, x^{(k)}_{e^{(k)}})
+                            \prod_{t=1}^{e^{(k)}-1} (1 - \hat{\lambda}_\theta(t, x^{(k)}_{t}))
+                        \right)
+                    \]
+                    Let $d^{(k)}_{t} = 1 \iff t = e^{(k)}$ (i.e., $1$ when not surviving at time $t$), the problem can be rewritten as:
+                    \[
+                        \begin{split}
+                            &\arg\max_\theta \prod_{k=1}^{m} \prod_{t=1}^{e^{(k)}}
+                                d^{(k)}_{t} \hat{\lambda}_\theta(t, x^{(k)}_{t}) + (1-d^{(k)}_{t})(1-\hat{\lambda}_\theta(t, x^{(k)}_{t})) \\
+                            &= \arg\max_\theta \sum_{k=1}^{m} \sum_{t=1}^{e^{(k)}}
+                                \log\left( d^{(k)}_{t} \hat{\lambda}_\theta(t, x^{(k)}_{t}) + (1-d^{(k)}_{t})(1-\hat{\lambda}_\theta(t, x^{(k)}_{t})) \right) \\
+                            &= \arg\max_\theta \sum_{k=1}^{m} \sum_{t=1}^{e^{(k)}}
+                                d^{(k)}_{t} \log\left(\hat{\lambda}_\theta(t, x^{(k)}_{t})\right) + (1-d^{(k)}_{t}) \log\left(1-\hat{\lambda}_\theta(t, x^{(k)}_{t})\right) \\
+                            &= \arg\min_\theta -\sum_{k=1}^{m} \sum_{t=1}^{e^{(k)}}
+                                d^{(k)}_{t} \log\left(\hat{\lambda}_\theta(t, x^{(k)}_{t})\right) + (1-d^{(k)}_{t}) \log\left(1-\hat{\lambda}_\theta(t, x^{(k)}_{t})\right) \\
+                        \end{split}
+                    \]
+                    Which corresponds to a binary cross-entropy minimization problem where $d^{(k)}_{t}$ can be seen as the class. Therefore, $\hat{\lambda}_\theta(t, x^{(k)}_{t})$ can be seen as a classifier.
+
+                    \begin{remark}
+                        This shows that the classification approach used in \Cref{sec:rul_classifier_naive} is not strictly wrong. Instead of predicting whether the machine fails in $\varepsilon$ time steps, in probabilistic terms, the correct approach is to consider whether the machine fails at a time step $t$ knowing it survived at time $t-1$.
+                    \end{remark}
+
+                    \begin{remark}
+                        Censored data skews the distribution of the data. Sample weights can be used to deal with the issue.
+                    \end{remark}
+            \end{description}
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{./img/_rul_survival_analysis_classifier.pdf}
+    \caption{Failure probability of the classifier}
+\end{figure}
+
+\begin{description}
+    \item[Inference] \phantom{}
+        Given a threshold $\varepsilon$, maintenance is triggered when:
+        \[ \hat{\lambda}(t, x_t) \geq \varepsilon \]
+
+    \item[Forecasting] 
+        Determine the probability of surviving $n$ more steps as:
+        \[ 
+            \begin{split}
+                \frac{S(t+n)}{S(t)} &= \prod_{h=0}^{n} (1 - \lambda(t+h, X_{t+h})) \\
+                &\approx \prod_{h=0}^{n} (1 - \hat{\lambda}(t+h, x^{(k)}_{t+h}))
+            \end{split}
+        \]
+        However, this would require accessing future values of $X_t$. Possible workarounds are:
+        \begin{itemize}
+            \item Ignore time-varying inputs (i.e., sort of marginalization) so that $\hat{\lambda}(t+h, x_{t+h}) \approx \hat{\lambda}(t+h, x^{(k)})$ where $x^{(k)}$ only contains stable information.
+            \item Predict future values of $x^{(k)}_t$ by training another estimator.
+            \item Assume that all the variables $x^{(k)}_t$ are stable for some time so that:
+            \[ \frac{S(t+n)}{S(t)} \approx \prod_{h=0}^{n} (1 - \hat{\lambda}(t+h, x^{(k)}_{t})) \]
+        \end{itemize}
+\end{description}
