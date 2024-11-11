@@ -407,3 +407,260 @@
             \end{subfigure}
         \end{figure}
 \end{description}
+
+
+
+\section{Instance segmentation}
+
+\begin{description}
+    \item[Instance segmentation] \marginnote{Instance segmentation}
+        Task of segmenting and classifying all instances of the objects of interest (i.e., intersection between object detection and semantic segmentation).
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{./img/obj_detection_and_segmentation.png}
+        \end{figure}
+\end{description}
+
+
+\subsection{Mask R-CNN}
+
+\begin{description}
+    \item[Mask R-CNN] \marginnote{Mask R-CNN}
+        Architecture based on faster R-CNN with a modification to RoI pool and the addition of a CNN head to predict the segmentation mask.
+
+        \begin{description}
+            \item[RoI align] \marginnote{RoI align}
+                Modification to RoI pool to avoid quantization. It works as follows:
+                \begin{enumerate}
+                    \item Divide the proposal into equal subregions without snapping to grid.
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.7\linewidth]{./img/_roi_align1.pdf}
+                    \end{figure}
+                    \item Sample some values following a regular grid within each subregion. Use bilinear interpolation to determine the values of the sampled points (as they are most likely not be pixel-perfect).
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.7\linewidth]{./img/_roi_align2.pdf}
+                    \end{figure}
+                    \item Max or average pool the sampled values in each subregion.
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.7\linewidth]{./img/_roi_align3.pdf}
+                    \end{figure}
+                \end{enumerate}
+
+            \item[Mask head] \marginnote{Mask head}
+                Fully-convolutional network that takes the output of RoI align and predicts a binary mask with resolution $28 \times 28$ for each class. It is composed of convolutions, a transposed convolution, and a scoring layer.
+
+                In practice, the bounding box predicted by the standard R-CNN flow is used to determine how to warp the segmentation mask onto the original image.
+
+                \begin{remark}
+                    Empirical experiments show that solving a multi-label problem (i.e., multiple sigmoids) is better than a multi-class problem (i.e., softmax).
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.85\linewidth]{./img/_mask_rcnn_head.pdf}
+                \end{figure}
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/_mask_rcnn.pdf}
+            \caption{Overall architecture of mask R-CNN}
+        \end{figure}
+
+        \begin{description}
+        \item[Training]
+            The R-CNN flow is trained in the standard way. 
+
+            Given the ground-truth class $c$ and mask $m$, and the predicted mask $\hat{m}$, the mask head is trained using the following loss:
+            \[ \mathcal{L}_\text{mask}(c, m) = \frac{1}{28 \times 28} \sum_{u=0}^{27} \sum_{v=0}^{27} \mathcal{L}_\text{BCE}\left( \hat{m}_{c}[u, v], m[u, v] \right) \]
+            In other words, the ground-truth mask is compared against the predicted mask for the correct class.
+
+        \item[Inference]
+            The class prediction of R-CNN is used to select the correct channel of the mask head. The bounding box of R-CNN is used to decide how to warp the segmentation mask onto the image.
+    \end{description}
+\end{description}
+
+\begin{remark}
+    By attaching a different head to predict keypoints, this framework can be adapted for human pose estimation.
+\end{remark}
+
+
+
+\section{Panoptic segmentation}
+
+\begin{description}
+    \item[Things] \marginnote{Things}
+        Countable object categories that can be split into individual instances.
+
+    \item[Stuff] \marginnote{Stuff}
+        Uncountable amorphous regions (e.g., background)
+
+    \item[Panoptic segmentation] \marginnote{Panoptic segmentation}
+        Task of classifying each pixel of the image. Objects of interest (i.e., things) are treated as in instance segmentation. Background and non-relevant textures (i.e., stuff) are treated as in semantic segmentation.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/segmentation_types.png}
+        \end{figure}
+\end{description}
+
+
+\subsection{Panoptic feature pyramid network}
+
+\begin{description}
+    \item[Panoptic feature pyramid network] \marginnote{Panoptic feature pyramid network}
+        Modification of mask R-CNN with an additional path for stuff prediction that works as follows:
+        \begin{enumerate}
+            \item Rescale and merge FPN feature maps.
+            \item Pass the result through a fully-convolutional network to predict stuff masks.
+        \end{enumerate}
+
+        When generating the predictions, the mask head (for things prediction) has the priority over the stuff head.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/_panoptic_fpn.pdf}
+        \end{figure}
+\end{description}
+
+
+\subsection{MaskFormer}
+
+\begin{remark}
+    With convolutions, semantic segmentation has been solved by classifying each pixel into a class. On the other hand, instance and panoptic segmentation partition the image into masks and classify them.
+
+    It is intuitive to show that solving a mask classification problem can solve all types of segmentation.
+\end{remark}
+
+\begin{description}
+    \item[MaskFormer] \marginnote{MaskFormer}
+        Modification of DETR for pixel-wise predictions.
+
+        \begin{description}
+            \item[Architecture (naive)] 
+                An additional path is inserted at the output of the transformer decoder that passes each of its output into a multi layer perceptron to predict a binary mask.
+
+                \begin{remark}
+                    This approach attempts to predict full-resolution masks from spatially coarse features.
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/_maskformer_naive.pdf}
+                \end{figure}
+
+            \item[Architecture (pixel decoder)] 
+                The following operations are added:
+                \begin{enumerate}
+                    \item A pixel decoder is used to compute pixel-wise embeddings from the output of the CNN backbone.
+                    \item An MLP is added to compute mask embeddings from the outputs of the transformer decoder.
+                    \item The dot product between mask and pixel embeddings allows to compute the output binary masks.
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/_maskformer_decoder.pdf}
+                \end{figure}
+
+            \item[Inference]
+                Given the output class probabilities $\vec{p}_1, \dots, \vec{p}_N$ and masks $\matr{m}_1, \dots, \matr{m}_N$, inference is done as follows:
+                \begin{enumerate}
+                    \item Determine the class $c_i$ of the $i$-th mask from the distribution $\vec{p}_i$.
+                    \item Classify each pixel $(u, v)$ as follows:
+                    \begin{enumerate}
+                        \item For each mask $i$ that is not background, compute the following score:
+                        \[ s_i = \vec{p}_i(c_i) \cdot \matr{m}_i(u, v) \]
+                        \item Select the mask with the highest score $s_i$ as the one associated to the pixel.
+                    \end{enumerate}
+                \end{enumerate}
+
+                \begin{remark}
+                    Up-sampling might be needed to match the shape of the mask to the original image.
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{./img/_maskformer_inference.pdf}
+                \end{figure}
+        \end{description}
+
+    \begin{remark}
+        Although it is able to solve all types of segmentation, MaskFormer do not have state-of-the-art results and it is hard to train.
+    \end{remark}
+\end{description}
+
+
+\subsection{Masked-attention mask transformer (Mask2Former)}
+
+\begin{description}
+    \item[Mask2Former] \marginnote{Mask2Former}
+        Modification of MaskFormer with the addition of:
+        \begin{itemize}
+            \item Masked attention in the transformer decoder for faster training and better results.
+            \item Multi-scale high-resolution features in the pixel-decoder for multi-scale detection.
+            \item Training speed-up by not supervising all pixels (i.e., not all pixels of the mask are trained at once, like a sort of dropout).
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/_mask2former.pdf}
+        \end{figure}
+\end{description}
+
+
+
+\begin{subappendices}
+
+\section{Appendix: Spatial pyramid pooling layer}
+    \begin{description}
+        \item[Spatial pyramid pooling layer (SPP)] \marginnote{Spatial pyramid pooling layer (SPP)}
+            Method to obtain a representation with a fixed-resolution containing different scales.
+
+            The input image is first passed through the CNN backbone. Then, the feature map is max-pooled with a fixed number of variable-size windows before being flattened.
+
+            \begin{remark}
+                This can be seen as an extension of global average pooling to preserve spatially localized information.
+            \end{remark}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{./img/_spp.pdf}
+            \end{figure}
+    \end{description}
+
+
+    \subsection{DeepLab v2 ASPP}
+
+    ASPP in DeepLab v2 emulates SPP through dilated convolutions with increasing rate that are concatenated and aggregated through a $1 \times 1$ convolution.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{./img/aspp_deeplabv2.png}
+    \end{figure}
+
+    \begin{remark}
+        When the dilation rate grows, the actual number of relevant weights that are not applied to the padding decreases.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/_dilated_conv_weights.pdf}
+        \end{figure}
+    \end{remark}
+
+
+    \subsection{DeepLab v3 ASPP}
+
+    ASPP on DeepLab v3 is formed by dilated convolutions and a path that computes global image features to emulate larger dilation rates (i.e., avoid wasting computation on padding with dilated convolutions with a large rate).
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{./img/_deeplabv3_aspp.pdf}
+        \caption{
+            ASPP with stride-16. With stride-8, rates are doubled.
+        }
+    \end{figure}
+\end{subappendices}
