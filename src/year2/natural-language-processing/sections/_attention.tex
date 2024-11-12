@@ -121,12 +121,15 @@
 
 
 
-\section{Transformers}
+\section{Transformer decoder (for language modelling)}
+
+
+\subsection{Self-attention}
 
 \begin{description}
     \item[Self-attention] \marginnote{Self-attention}
         Component that allows to compute the representation of a token considering the other ones in the input sequence. 
-        
+
         Given an input embedding $\vec{x}_i \in \mathbb{R}^{1 \times d_\text{model}}$, self-attention relies on the following values:
         \begin{descriptionlist}
             \item[Queries] \marginnote{Queries}
@@ -169,4 +172,75 @@
                 \vec{a}_i = \sum_{t: t \leq i} \vec{\alpha}_{i,t} \vec{v}_t
             \end{gathered}
         \]
+\end{description}
+
+
+\subsection{Components}
+
+\begin{description}
+    \item[Input embedding] \marginnote{Input embedding}
+        The input is tokenized using standard tokenizers (e.g., BPE, SentencePiece, \dots). Each token is encoded using a learned embedding matrix.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/_transformer_embedding.pdf}
+        \end{figure}
+
+    \item[Positional encoding] \marginnote{Positional encoding}
+        Learned position embeddings to encode positional information are added to the input token embeddings.
+
+        \begin{remark}
+            Without positional encoding, transformers are invariant to permutations.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/_positional_encoding.pdf}
+        \end{figure}
+
+    \item[Transformer block] \marginnote{Transformer block}
+        Module with the same input and output dimensionality (i.e., allows stacking multiple blocks) composed of:
+        \begin{descriptionlist}
+            \item[Multi-head attention] \marginnote{Multi-head attention}
+                Uses $h$ different self-attention blocks with different queries, keys, and values. Value vectors are of size $\frac{d_v}{h}$. The final projection $W_O$ is applied on the concatenation of the outputs of each head.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.5\linewidth]{./img/_multi_head_attention.pdf}
+                \end{figure}
+
+            \item[Feedforward layer]
+                Fully-connected 2-layer network applied at each position of the attention output:
+                \[ \texttt{FFN}(\vec{x}_i) = \texttt{ReLU}(\vec{x}_i\matr{W}_1 + \vec{b}_1)\matr{W}_2 + \vec{b}_2 \]
+                Where the hidden dimension $d_\text{ff}$ is usually larger than $d_\text{model}$.
+
+            \item[Normalization layer]
+                Applies token-wise normalization (i.e., layer norm) to help training stability.
+
+            \item[Residual connection]
+                Helps to propagate information during training.
+
+                \begin{remark}[Residual stream]
+                    An interpretation of residual connections is the residual stream where the input token in enhanced by the output of multi-head attention and the feedforward network.
+
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.38\linewidth]{./img/_residual_stream.pdf}
+                    \end{figure}
+                \end{remark}
+        \end{descriptionlist}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/_attention_block.pdf}
+            \caption{Overall attention block}
+        \end{figure}
+
+    \item[Language modelling head] \marginnote{Language modelling head}
+        Takes as input the output corresponding to a token of the transformer blocks stack and outputs a distribution over the vocabulary.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/_lm_head.pdf}
+        \end{figure}
 \end{description}
