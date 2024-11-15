@@ -108,7 +108,85 @@
                     $k$ is fixed and does not account for the shape of the distribution.
                 \end{remark}
 
-            \item[Top-p sampling]
+            \item[Top-p/nucleus sampling]
                 Consider the most likely words such that their probability mass adds up to $p$. Then, apply random sampling on their normalized distribution.
+        \end{description}
+\end{description}
+
+
+
+\section{Training}
+
+
+\subsection{Pre-training}
+
+\begin{description}
+    \item[Pre-training] \marginnote{Pre-training}
+        Use self-supervision and teacher forcing to train the whole context window in parallel on a large text corpus.
+
+        \begin{remark}
+            Results are highly dependent on the training corpora. Important aspects to consider are:
+            \begin{descriptionlist}
+                \item[Language] Most of the available data is in English.
+                \item[Data quality] Prefer high-quality sources such as Wikipedia or books. Boilerplate removal and deduplication might be needed. 
+                \item[Safety filtering] Toxicity removal might be needed
+                \item[Ethical and legal issues] Use of copyrighted material, permission from data owners, use of private information, \dots
+            \end{descriptionlist}
+        \end{remark}
+
+    \item[Scaling laws] \marginnote{Scaling laws}
+        Empirical laws that put in relationship:
+        \begin{itemize}
+            \item Non-embedding parameters $N$ ($N \approx 2 d_\text{model} n_\text{layer} (2 d_\text{attention} + d_\text{ff})$),
+            \item Training data size $D$,
+            \item Compute budget $C$ (i.e., training iterations).
+        \end{itemize}
+        By keeping two of the three factors constant, the loss $\mathcal{L}$ of an LLM can be estimated as a function of the third variable:
+        \[ 
+            \mathcal{L}(N) = \left( \frac{N_c}{N} \right)^{\alpha N} 
+            \qquad
+            \mathcal{L}(D) = \left( \frac{D_c}{D} \right)^{\alpha D} 
+            \qquad
+            \mathcal{L}(C) = \left( \frac{C_c}{C} \right)^{\alpha C} 
+        \]
+\end{description}
+
+
+\subsection{Fine-tuning}
+
+\begin{description}
+    \item[Fine-tuning] \marginnote{Fine-tuning}
+        Specialize an LLM to a specific domain or task.
+
+        \begin{description}
+            \item[Continued pre-training] \marginnote{Continued pre-training}
+                Continue pre-training with a domain-specific corpus.
+
+            \item[Model adaptation]
+                Specialize a model by adding new learnable parameters.
+
+                \begin{description}
+                    \item[Parameter-efficient fine-tuning (PEFT)] \marginnote{Parameter-efficient fine-tuning (PEFT)}
+                        Continue training a selected subset of parameters.
+
+                        \begin{description}
+                            \item[Low-rank adaptation (LoRA)] \marginnote{Low-rank adaptation (LoRA)}
+                                Method to update weights by learning an offset that uses fewer parameters.
+
+                                Consider a weight matrix $\matr{W} \in \mathbb{R}^{d \times k}$, LoRA decomposes the update into two learnable matrices $\matr{A} \in \mathbb{R}^{d \times r}$ and $\matr{B} \in \mathbb{R}^{r \times k}$ (with $r \ll d, k$). Weights update is performed as:
+                                \[ \matr{W}_{\text{fine-tuned}} = \matr{W}_{\text{pre-trained}} + \matr{AB} \]
+
+                                \begin{figure}[H]
+                                    \centering
+                                    \includegraphics[width=0.35\linewidth]{./img/_lora.pdf}
+                                \end{figure}
+                        \end{description}
+
+                    \item[Task-specific fine-tuning] \marginnote{Task-specific fine-tuning}
+                        Add a new trainable head on top of the model.
+                \end{description}
+
+            \item[Supervised fine-tuning] \marginnote{Supervised fine-tuning}
+                Continue training using a supervised dataset to align the model to human's expectation.
         \end{description}
 \end{description}

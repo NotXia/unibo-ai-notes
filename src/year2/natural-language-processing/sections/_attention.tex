@@ -144,15 +144,15 @@
             \end{descriptionlist}
         where $\matr{W}_Q \in \mathbb{R}^{d_\text{model} \times d_k}$, $\matr{W}_K \in \mathbb{R}^{d_\text{model} \times d_k}$, and $\matr{W}_V \in \mathbb{R}^{d_\text{model} \times d_v}$ are parameters.
 
-        Then, the attention weights $\vec{\alpha}_{i,j}$ between two embeddings $\vec{x}_i$ and $\vec{x}_j$ are computed as:
+        Then, the attention weights $\alpha_{i,j}$ between two embeddings $\vec{x}_i$ and $\vec{x}_j$ are computed as:
         \[
             \begin{gathered}
-                \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \cdot \vec{k}_j}{\sqrt{d_k}} \\
-                \vec{\alpha}_{i,j} = \texttt{softmax}_j\left( \texttt{scores}(\vec{x}_i, \vec{x}_j) \right)
+                \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \\
+                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{scores}(\vec{x}_i, \vec{x}_1), \dots, \texttt{scores}(\vec{x}_i, \vec{x}_T)\right] \right) \\
             \end{gathered}
         \]
         The output $\vec{a}_i \in \mathbb{R}^{1 \times d_v}$ is a weighted sum of the values of each token:
-        \[ \vec{a}_i = \sum_{t} \vec{\alpha}_{i,t} \vec{v}_t \]
+        \[ \vec{a}_i = \sum_{t} \alpha_{i,t} \vec{v}_t \]
 
         To maintain the input dimension, a final projection $\matr{W}_O \in \mathbb{R}^{d_v \times d_\text{model}}$ is applied.
 
@@ -166,12 +166,18 @@
         Self-attention mechanism where only past tokens can be used to determine the representation of a token at a specific position. It is computed by modifying the standard self-attention as:
         \[
             \begin{gathered}
-                \forall j \leq i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \cdot \vec{k}_j}{\sqrt{d_k}} \qquad
-                \forall j > i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = \nullvec \\
-                \vec{\alpha}_{i,j} = \texttt{softmax}_j\left( \texttt{scores}(\vec{x}_i, \vec{x}_j) \right) \\
-                \vec{a}_i = \sum_{t: t \leq i} \vec{\alpha}_{i,t} \vec{v}_t
+                \forall j \leq i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \qquad
+                \forall j > i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = -\infty \\
+                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{scores}(\vec{x}_i, \vec{x}_1), \dots, \texttt{scores}(\vec{x}_i, \vec{x}_T)\right] \right) \\
+                \vec{a}_i = \sum_{t: t \leq i} \alpha_{i,t} \vec{v}_t
             \end{gathered}
         \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.2\linewidth]{./img/_masked_attention.pdf}
+            \caption{Score matrix with causal attention}
+        \end{figure}
 \end{description}
 
 
@@ -195,7 +201,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.4\linewidth]{./img/_positional_encoding.pdf}
+            \includegraphics[width=0.45\linewidth]{./img/_positional_encoding.pdf}
         \end{figure}
 
     \item[Transformer block] \marginnote{Transformer block}
@@ -206,7 +212,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\linewidth]{./img/_multi_head_attention.pdf}
+                    \includegraphics[width=0.6\linewidth]{./img/_multi_head_attention.pdf}
                 \end{figure}
 
             \item[Feedforward layer]
