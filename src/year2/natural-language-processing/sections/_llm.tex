@@ -143,12 +143,13 @@
         \end{itemize}
         By keeping two of the three factors constant, the loss $\mathcal{L}$ of an LLM can be estimated as a function of the third variable:
         \[ 
-            \mathcal{L}(N) = \left( \frac{N_c}{N} \right)^{\alpha N} 
+            \mathcal{L}(N) = \left( \frac{N_c}{N} \right)^{\alpha_N} 
             \qquad
-            \mathcal{L}(D) = \left( \frac{D_c}{D} \right)^{\alpha D} 
+            \mathcal{L}(D) = \left( \frac{D_c}{D} \right)^{\alpha_D} 
             \qquad
-            \mathcal{L}(C) = \left( \frac{C_c}{C} \right)^{\alpha C} 
+            \mathcal{L}(C) = \left( \frac{C_c}{C} \right)^{\alpha_C} 
         \]
+        where $N_c$, $D_c$, $C_c$, $\alpha_N$, $\alpha_D$, and $\alpha_C$ are constants determined empirically based on the model architecture.
 \end{description}
 
 
