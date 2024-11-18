@@ -64,7 +64,8 @@
 \end{description}
 
 
-\section{Face verification}
+
+\section{Metric learning losses}
 
 \begin{description}
     \item[Face verification] \marginnote{Face verification}
@@ -79,6 +80,8 @@
         \end{remark}
 \end{description}
 
+
+\subsection{Contrastive loss}
 
 \begin{description}
     \item[Siamese network training] \marginnote{Siamese network training}
@@ -121,4 +124,255 @@
             \begin{remark}
                 With L2 regularization, the fact that the second term is not lower-bounded is not strictly a problem as the weights lay on a hyper-sphere and therefore set a bound to the output. Still, there is no need to push the embeddings excessively far away.
             \end{remark}
+
+    \item[DeepID2] \marginnote{DeepID2}
+            CNN trained using contrastive and cross-entropy loss.
+
+            \begin{description}
+                \item[Test-time augmentation]
+                    The trained network is used as follows:
+                    \begin{enumerate}
+                        \item Process 200 fixed crops of the input image.
+                        \item Select the top-25 crops.
+                        \item Use PCA to reduce the concatenation of the output $4000$-dimensional vector into a $180$-dimensional embedding.
+                    \end{enumerate}
+            \end{description}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/deepid2.png}
+                \caption{DeepID2 on a single crop}
+            \end{figure}
 \end{description}
+
+\begin{remark}
+    Contrastive loss indirectly (i.e., separately) enforces that similar entities should be close and different ones should be distant.
+\end{remark}
+
+
+\subsection{Triplet loss} \label{sec:triplet_loss}
+
+\begin{description}
+    \item[Triplet loss] \marginnote{Triplet loss}
+        Enforces at the same time that embeddings should be close for the same entity and distant for different ones.
+
+        \begin{description}
+            \item[Naive formulation] 
+                Given:
+                \begin{itemize}
+                    \item An anchor image $A$ (i.e., reference image),
+                    \item A positive image $P$,
+                    \item A negative image $N$,
+                \end{itemize}
+                The triplet loss is defined as:
+                \[ \Vert f(P) - f(A) \Vert_2^2 < \Vert f(N) - f(A) \Vert_2^2 \]
+
+                \begin{remark}
+                    This definition does not guarantee sufficient inter-class distance and also risks training collapse (i.e., constant embeddings close to 0 satisfy the loss).
+                \end{remark}
+
+            \item[Margin formulation] 
+                Given a margin $m$, the triplet loss is defined as:
+                \[ 
+                    \begin{gathered}
+                        \Vert f(P) - f(A) \Vert_2^2 + m < \Vert f(N) - f(A) \Vert_2^2 \\
+                        \Vert f(P) - f(A) \Vert_2^2 - \Vert f(N) - f(A) \Vert_2^2 + m < 0 \\
+                        \mathcal{L}_\text{triplet}(A, P, N) = \max \left\{ 0,  \Vert f(P) - f(A) \Vert_2^2 - \Vert f(N) - f(A) \Vert_2^2 + m \right\}
+                    \end{gathered}
+                \]
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.45\linewidth]{./img/_triplet_loss.pdf}
+                \end{figure}
+
+                \begin{remark}
+                    Differently from contrastive loss, triplet loss naturally prevents collapse using a single hyperparameter $m$.
+                \end{remark}
+
+                \begin{remark}
+                    By considering an anchor, a face recognition dataset is composed of a few positive images and lots of negative images. If the embedding of a negative image is already far enough, the loss will be $0$ and does not affect training, making convergence slow.
+                \end{remark}
+        \end{description}
+
+    \item[Semi-hard negative mining] \marginnote{Semi-hard negative mining}
+        Given an anchor $A$, a batch of $B$ samples is formed as follows:
+        \begin{enumerate}
+            \item Sample $D \ll B$ identities.
+            \item For each identity, sample a bunch of images.
+            \item Consider all possible anchor-positive pairs $(A, P)$. Randomly sample a negative image $N$ and create a triplet $(A, P, N)$ if it is semi-hard (i.e., within the margin):
+            \[ \Vert f(P) - f(A) \Vert_2^2 < \Vert f(N) - f(A) \Vert_2^2 < \Vert f(P) - f(A) \Vert_2^2 + m \]
+            Repeat this process until the batch is filled.
+        \end{enumerate}
+
+        \begin{remark}
+            Batches are formed on-line (i.e., during training).
+        \end{remark}
+
+        \begin{remark}
+            It has been seen that hard-negatives ($\Vert f(P) - f(A) \Vert_2^2 > \Vert f(N) - f(A) \Vert_2^2$) make training harder.
+        \end{remark}
+
+    \item[FaceNet] \marginnote{FaceNet}
+        Architecture based on the backbone of Inception-v1 with the following modifications:
+        \begin{itemize}
+            \item Some max pooling layers are substituted with L2 pooling.
+            \item The output embedding is divided by its L2 norm to normalize it.
+        \end{itemize}
+
+        \begin{remark}
+            DeepID2 was trained on a small dataset (CelebFaces+) with test time augmentation. On the other hand, FaceNet was training on a very large dataset (LFW). Ultimately, FaceNet has better performance.
+        \end{remark}
+\end{description}
+
+
+\subsection{ArcFace loss}
+
+\begin{remark}
+    With L2 normalized outputs, the embeddings lay on a hypersphere. Therefore, it is possible to compare them using the cosine similarity:
+    \[ 
+        \cos(\alpha) 
+            = \frac{\langle \tilde{f}(x_1), \tilde{f}(x_2) \rangle}{\Vert \tilde{f}(x_1) \Vert_2 \Vert \tilde{f}(x_2) \Vert_2} 
+            = \frac{\langle \tilde{f}(x_1), \tilde{f}(x_2) \rangle}{1} 
+            = \tilde{f}(x_1)^T \tilde{f}(x_2)
+    \]
+    where $\tilde{f}(x) = \frac{f(x)}{\Vert f(x) \Vert}$ is the normalized embedding.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{./img/_embedding_l2_norm_effect.pdf}
+    \end{figure}
+\end{remark}
+
+\begin{remark}
+    With normalized embeddings, classification with softmax as pre-training objective becomes more reasonable. The advantage with softmax is that it does not require sampling informative negative examples. However, as is, it is unable to identify well separated cluster.
+\end{remark}
+
+\begin{remark}[Recall: linear classifiers]
+    A linear classifier is equivalent to performing template matching. Each column of the weight matrix represents a template.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{./img/_template_matching.pdf}
+    \end{figure}
+\end{remark}
+
+\begin{description}
+    \item[ArcFace loss] \marginnote{ArcFace loss}
+        Modification to softmax to enforce clustered classes.
+
+        Consider a classification head with a linear layer added on top of the embedding model during training. The weight matrix $\matr{W}$ of the linear layer has a column for each identity. If $\matr{W}$ is L2 normalized ($\tilde{\matr{W}}$), applying the linear layer is equivalent to computing the cosine similarity between the embedding and each identity template. 
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.5\linewidth]{./img/_arcface_softmax.pdf}
+                \caption{Softmax}
+            \end{subfigure}
+            \begin{subfigure}{0.48\linewidth}
+                \centering
+                \includegraphics[width=0.5\linewidth]{./img/_arcface_cluster.pdf}
+                \caption{ArcFace}
+            \end{subfigure}
+            \caption{
+                \parbox[t]{0.7\linewidth}{
+                    Classification results with L2 normalized embeddings. Points represent embeddings and colors are the classes. The points marked by the radii are the templates. Note that with softmax there is no clear distinction between identities.
+                }
+            }
+        \end{figure}
+
+        To enforce that the embedding must be closer to the correct template, the logit $\vec{s}_y$ of the true identity $y$ can be modified with a penalty $m$:
+        \[ \vec{s}_y = \cos\left( \arccos(\langle \tilde{\matr{W}}_y, \tilde{f}(x) \rangle) + m \right) \]
+        Intuitively, the penalty makes softmax ``think'' that the error is bigger than what it really is, making it push the embedding closer to the correct template.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{./img/_arcface_penalty.pdf}
+            \caption{Penalty application with \texttt{Curie} as the correct class}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.95\linewidth]{./img/_arcface_flow.png}
+            \caption{Overall ArcFace flow}
+        \end{figure}
+\end{description}
+
+
+\subsection{NT-Xent / N-pairs / InfoNCE loss}
+
+\begin{description}
+    \item[Angular triplet loss] \marginnote{Angular triplet loss}
+        Consider the triplet loss (without margin) defined in \Cref{sec:triplet_loss} rewritten in angular form:
+        \[ \mathcal{L}_\text{angular\_triplet}(A, P, N) = \max \left\{ 0, \tilde{f}(A)^T \tilde{f}(N) - \tilde{f}(A)^T \tilde{f}(P) \right\} \]
+
+        To avoid the need of sampling negatives, it is possible to consider all of them in the optimization process as follows:
+        \[ 
+            \begin{split}
+                \mathcal{L}&_\text{$n+1$-tuples}(A, P, N_1, \dots, N_n) \\
+                &= \max \left\{ 
+                    0, 
+                    \left(\tilde{f}(A)^T \tilde{f}(N_1) - \tilde{f}(A)^T \tilde{f}(P)\right),
+                    \dots,
+                    \left(\tilde{f}(A)^T \tilde{f}(N_n) - \tilde{f}(A)^T \tilde{f}(P)\right)
+                \right\} 
+            \end{split}
+        \]
+
+        \begin{remark}
+            Backpropagating \texttt{max} considers the gradient of the maximally violating triplet only (i.e., the hardest one which, as seen, is not ideal).
+        \end{remark}
+\end{description}
+
+\begin{remark}[Recall: cross-entropy with softmax]
+    When minimizing cross-entroy with softmax, the loss for a single sample is computed as:
+    \[ 
+        -\log\left( \frac{ \exp(\vec{s}_{y^{(i)}}) }{\sum_{k=1}^{C} \exp(\vec{s}_k)} \right) =
+        - \vec{s}_{y^{(i)}} + \log\left( \sum_{k=1}^{C} \exp(\vec{s}_k) \right)
+    \]
+    The term $\log( \sum_{k=1}^{C} \exp(\vec{s}_k) )$ is known as the \texttt{logsumexp} and it is usually approximated as the \texttt{max} of the logit:
+    \[ \log \left( \sum_{k=1}^{C} \exp(\vec{s}_k) \right) \approx \max_k \vec{s}_k \]
+    Or, seen on the other side, \texttt{logsumexp} is an approximation of \texttt{max}.
+\end{remark}
+
+\begin{description}
+    \item[N-pairs/InfoNCE loss] \marginnote{N-pairs/InfoNCE loss}
+        Use the \texttt{logsumexp} as an approximation of \texttt{max} so that all negatives contribute to the gradient step:
+        \[
+            \footnotesize
+            \begin{split}
+                \mathcal{L}_\text{InfoNCE}(A, P, N_1, \dots, N_n) &= \texttt{logsumexp}\left( 0, 
+                \left(\tilde{f}(A)^T \tilde{f}(N_1) - \tilde{f}(A)^T \tilde{f}(P)\right),
+                \dots, \left(\tilde{f}(A)^T \tilde{f}(N_n) - \tilde{f}(A)^T \tilde{f}(P)\right) \right) \\
+                &= \log\left( e^0 + \sum_{i=1}^{n} \exp\left(\tilde{f}(A)^T\tilde{f}(N_i) - \tilde{f}(A)^T\tilde{f}(P)\right) \right) \\
+                &= \log\left( 1 + \exp\left(-\tilde{f}(A)^T\tilde{f}(P)\right) \sum_{i=1}^{n} \exp\left(\tilde{f}(A)^T\tilde{f}(N_i)\right) \right) \\
+                &= \log\left(
+                    \frac{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right)}{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right)}
+                    \left[1 + \exp\left(-\tilde{f}(A)^T\tilde{f}(P)\right) \sum_{i=1}^{n} \exp\left(\tilde{f}(A)^T\tilde{f}(N_i)\right) \right] 
+                    \right) \\
+                &= \log\left( \frac{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right) + \sum_{i=1}^{n} \exp\left(\tilde{f}(A)^T\tilde{f}(N_i)\right)}{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right)} \right) \\
+                &= -\log\left( \frac{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right)}{\exp\left( \tilde{f}(A)^T\tilde{f}(P) \right) + \sum_{i=1}^{n} \exp\left(\tilde{f}(A)^T\tilde{f}(N_i)\right)} \right) \\
+            \end{split}
+        \]
+
+        \begin{remark}
+            In the literature, this loss is known as N-pairs (2016) or InfoNCE (2018).
+        \end{remark}
+
+    \item[NT-Xent loss] \marginnote{NT-Xent loss}
+        Add a temperature $\tau$ to N-pairs/InfoNCE loss so that more negatives are relevant when backpropagating:
+        \[ 
+            \small
+            \mathcal{L}_\text{NT-Xent}(A, P, N_1, \dots, N_n) =
+            -\log\left( \frac{\exp\left( \frac{\tilde{f}(A)^T\tilde{f}(P)}{\tau} \right)}{\exp\left( \frac{\tilde{f}(A)^T\tilde{f}(P)}{\tau} \right) + \sum_{i=1}^{n} \exp\left(\frac{\tilde{f}(A)^T\tilde{f}(N_i)}{\tau}\right)} \right)
+        \]
+
+        \begin{remark}
+            This loss is sometimes identified as the contrastive loss.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    Empirical studies found out that the different metric learning losses all perform similarly with fixed hyperparameters while avoiding test set feedback (i.e., avoid leaking test data into training).
+\end{remark}
