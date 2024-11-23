@@ -362,10 +362,10 @@ The dataset contains anonymized biomedical data and is composed of a binary targ
 \end{description}
 
 
-\subsection{Semantics for feature selection}
+\subsection{Optimization-oriented feature selection}
 
 \begin{description}
-    \item[Semantics for feature selection] \marginnote{Semantics for feature selection}
+    \item[Optimization-oriented feature selection] \marginnote{Optimization-oriented feature selection}
         Given the set of features $\mathcal{J}$, solve the problem:
         \[ \arg\min_{\mathcal{S} \subseteq \mathcal{J}} \left\{ |\mathcal{S}|: \forall (x, y).\, \hat{y} = \hat{f}_\mathcal{S}(x_\mathcal{S}), \mathcal{L}(y, \hat{y}) \leq \theta \right\} \]
         In other words, this is the problem of determining the smallest subset of features $\mathcal{S}$ such that a model $\hat{f}_\mathcal{S}$ trained only considering them has an acceptable performance.
@@ -384,3 +384,159 @@ The dataset contains anonymized biomedical data and is composed of a binary targ
             This approach aims at obtaining the best possible performance. Therefore, it is reasonable for a normal machine learning problem. However, for determining features importance, this is not ideal.
         \end{remark}
 \end{description}
+
+
+\subsection{Statistical hypothesis testing}
+
+\begin{description}
+    \item[Statistical hypothesis testing] \marginnote{Statistical hypothesis testing}
+        Given:
+        \begin{itemize}
+            \item A random (possibly multivariate) variable $X$,
+            \item A hypothesis $H(X)$.
+        \end{itemize}
+        We can define:
+        \begin{itemize}
+            \item A competing null hypothesis $H_0(X)$,
+            \item An experimental statistics $T[X]$ (e.g., expected value).
+        \end{itemize} 
+
+        \begin{remark}
+            $H_0$ is often the negation of $H$ and $T[X]$ is a value that supports the hypothesis when large enough.
+        \end{remark}
+
+        By assuming that the null hypothesis holds, we need to compute:
+        \begin{itemize}
+            \item The empirical value $T[x \mid H_0]$.
+            \item The theoretical probability $\prob{T[X \mid H_0]}$.
+        \end{itemize}
+
+        \begin{description}
+            \item[$p$-value] \marginnote{$p$-value} 
+                Probability $\prob{T[X \mid H_0]}$ of observing an empirical value as extreme as $\prob{T[X]}$ under the null hypothesis (e.g., $\prob{T[X \mid H_0] \geq t}$ or  $\prob{T[X \mid H_0] \leq t}$, depending on the case). If $p < 1-\alpha$, for a given confidence interval $\alpha$ (e.g., $0.95$), $H_0$ is likely false.
+        \end{description}
+\end{description}
+
+\begin{example}
+    For this problem:
+    \begin{itemize}
+        \item Variables can be feature-target pairs $(X, Y)$.
+        \item The hypothesis can be $H \equiv \text{``$X$ is important to predict $Y$''}$ (following a given correlation score $r[X, Y]$ such as average Shapely value, permutation importance, \dots).
+        \item The null hypothesis can be $H_0 \equiv \text{``X is important by chance''}$.
+    \end{itemize}
+
+    Given the correlation score for the original dataset $r^* = r[x, y]$, we can define the following inequality:
+    \[ r[\tilde{x}, \tilde{y}] \leq r^* \]
+    where $(\tilde{x}, \tilde{y})$ is sampled from $(\tilde{X}, \tilde{Y})$, which is a similar but uncorrelated version of $(X, Y)$. If $X$ and $Y$ are correlated, it is expected that the inequality holds most of the time, otherwise it should be half of the time. Therefore, we can define the test statistics for this problem as:
+    \[ T[X, Y \mid H_0] \equiv \sum_{i=1}^{m} \prob{r[\tilde{X}, \tilde{Y}] \leq r^*} \]
+    where $m$ is the number of samples drawn from $(\tilde{X}, \tilde{Y})$. If $T[X, Y \mid H_0] \sim \frac{m}{2}$, we can state that $X$ and $Y$ might not be correlated.
+
+    The test $r[\tilde{X}, \tilde{Y}] \leq r^*$ has a binary outcome and therefore its theoretical probability follows a Bernoulli distribution (if $H_0$ holds, it follows $\mathcal{B}(\frac{1}{2})$). If the experiment is repeated $n$ times, the probability of $T[X, Y \mid H_0]$ follows a binomial distribution $\mathcal{B}(n, \frac{1}{2})$.
+
+    In practice, to create an uncorrelated dataset $(\tilde{X}, \tilde{Y})$, it is possible to permute the values of a feature in $X$. Then, it is possible to compute the empirical value $T[X, Y \mid H_0]$ and match it against the theoretical probability. The $p$-value can be computed as:
+    \[ p = \prob{T[X, Y \mid H_0] \geq t} \]
+    where $t$ defines a target interval in the distribution and depends on the theoretical distribution and the confidence level $\alpha$. If $p < 1-\alpha$, we can reject $H_0$. To reduce sampling noise, the experiment can be repeated multiple times.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{./img/_biomed_pvalue.pdf}
+        \caption{
+            \parbox[t]{0.5\linewidth}{
+                Binomial distribution with 30 samples. The interval defined with $\alpha=0.95$ is in green.
+            }
+        }
+    \end{figure}
+\end{example}
+
+\begin{remark}
+    When $p < 1-\alpha$, it is possible to reject $H_0$ and state that $H$ is most likely true. However, in all other cases nothing can be concluded. 
+
+    With binary hypotheses, it is possible to negate $H$ and repeat the procedure with $\lnot H$, allowing to create two target intervals to have more information.
+\end{remark}
+
+\begin{example}
+    For this case, we have that:
+    \begin{itemize}
+        \item The negated hypothesis is $\lnot H \equiv$ ``$X$ is not important to predict $Y$''.
+        \item $H_0$ remains the same.
+        \item The test statistics becomes $n - T[X, Y \mid H_0]$.
+    \end{itemize}
+    
+    By proceeding as before, we can ultimately obtain the following intervals:
+    \begin{itemize}
+        \item One that supports $H$.
+        \item One that supports $\lnot H$.
+        \item One where no claim can be made.
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{./img/_biomed_pvalue_two_tails.pdf}
+    \end{figure}
+\end{example}
+
+
+\begin{description}
+    \item[Boruta] \marginnote{Boruta}
+        Algorithm for feature selection based on statistical hypothesis testing with the hypothesis $H \equiv$ ``feature $j$ is important among those in the dataset according to a given metric''
+
+        Given a dataset $(X, Y)$, Boruta works as follows:
+        \begin{enumerate}
+            \item Augment the dataset with a permuted version $\tilde{X}_j$ of each feature (shadow features).
+            \item Run the statistical test based on:
+            \[ \phi_j((x, \tilde{x}), y) > \max_{j \in \tilde{X}} \phi_j((x, \tilde{x}), y) \]
+            where $\phi$ is a feature importance metric (e.g., obtained from decision trees). Intuitively, the importance of a feature $j$ is compared with the importances of the shadow features.
+            \item Repeat the experiment multiple times.
+        \end{enumerate}
+
+        \begin{remark}
+            Due to the maximum operation, the theoretical distribution of $T$ is mostly binomial. So, some statistical corrections are applied.
+        \end{remark}
+
+        \begin{remark}
+            Boruta tests both positive and negative hypothesis. Therefore, it is able to determine whether a feature is important, unimportant, or be undecided.
+        \end{remark}
+\end{description}
+
+
+\subsection{Ground-truth check}
+
+The synthetic dataset used in this section is described by the following causal graph:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{./img/biomed_causal_graph.png}
+\end{figure}
+where:
+\begin{itemize}
+    \item Black variables are relevant for the target.
+    \item Gray variables are latent.
+    \item Red variables are irrelevant.
+\end{itemize}
+
+This graph has some common patterns:
+\begin{descriptionlist}
+    \item[Mediator] 
+        A variable $A$ that hides the effect of another variable $B$. If $A$ affects the target, then $B$ also does.
+
+    \begin{example}
+        In the causal graph, $X_2$ is a mediator between $X_0$, $X_1$ and $Y$, which might cause problems to detect $X_0$ and $X_1$ as relevant features. $X_2$ also mediates for $Z_0$, which, in this case, has a positive effect as $Z_0$ is not observed.
+    \end{example}
+
+    \begin{remark}
+        Strongly correlated features (e.g., mediator-mediator) might mislead algorithms when determining relevant features as a model might partition the importance between the two features.
+    \end{remark}
+
+    \item[Confounder]
+        A variable $A$ that has effect on two variables $B_1$ and $B_2$. Therefore, it correlates $B_1$ and $B_2$. This might cause to mistakenly consider a variable important for predicting the target.
+
+        \begin{example}
+            In the causal graph, $Z_1$ causes a confounder between $X_0$ and $X_4$. $X_4$ might be considered a relevant feature.
+        \end{example}
+\end{descriptionlist}
+
+Overall, Boruta is able to: 
+\begin{itemize}
+    \item Identity all causal variables.
+    \item Correctly estimate the distribution of almost all the variables.
+    \item Determine monotonic effects and mediators.
+\end{itemize}
