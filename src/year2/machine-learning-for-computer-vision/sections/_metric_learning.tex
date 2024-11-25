@@ -376,3 +376,106 @@
 \begin{remark}
     Empirical studies found out that the different metric learning losses all perform similarly with fixed hyperparameters while avoiding test set feedback (i.e., avoid leaking test data into training).
 \end{remark}
+
+
+% \begin{description}
+%     \item[GrokNet]
+% \end{description}
+
+
+\section{Zero-shot classification}
+
+\begin{description}
+    \item[Zero-shot classification] \marginnote{Zero-shot classification}
+        Classify images from the test set of a dataset without training on its training set.
+
+        \begin{remark}
+            Natural language supervision works well for zero-shot classification by connecting the representation of images and texts. An easy way to obtain image-text pairs is to use the \texttt{alt} tag of HTML images (i.e., the description of the image used by screen readers).
+        \end{remark}
+\end{description}
+
+
+\subsection{Contrastive language-image pre-training (CLIP)}
+
+\begin{description}
+    \item[Contrastive language-image pre-training (CLIP)] \marginnote{Contrastive language-image pre-training (CLIP)}
+        Network composed of:
+        \begin{descriptionlist}
+            \item[Text encoder] 
+                Transformer encoder where the \texttt{[EOS]} token is used as the representation of the sequence.
+
+            \item[Image encoder] 
+                ResNet with global average pooling or ViT where the \texttt{[CLS]} token is used as representation.
+        \end{descriptionlist}
+        A linear projection is used to match the shapes of the two encoders.
+
+        \begin{description}
+            \item[Training] 
+                Given a batch of text-image pairs $(t_1, i_1), \dots, (t_N, i_N)$, texts and images are processed by their respective encoders. The embeddings $T_j$, $I_j$ are then compared pairwise: text and image embeddings corresponding to the same entity are considered a positive class, otherwise, they represent a negative class.
+                NT-Xent loss is computed across the images by fixing a text or vice versa.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{./img/_clip_training.pdf}
+                    \caption{
+                        \parbox[t]{0.6\linewidth}{CLIP training flow. NT-Xent loss is applied column or row-wise in the dot product matrix.}
+                    }
+                \end{figure}
+
+                \begin{remark}
+                    It has been seen that as bag-of-words approach for the text encoder is better than using transformers.
+                \end{remark}
+
+                \begin{remark}
+                    As the NT-Xent loss is used, a large batch size is used.
+                \end{remark}
+
+                \begin{remark}
+                    CLIP with ViT-L/14 is the ``standard'' version. It has been pre-trained for an additional epoch on images with a higher resolution, similarly to FixRes (i.e., deal with different train and test resolutions).
+                \end{remark}
+
+            \item[Inference]
+                Given an image to classify, it is embedded and compared with the embeddings of prompts referencing the classes (e.g., \texttt{a photo of a [object]}). The closest one is considered as the predicted class.
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.85\linewidth]{./img/_clip_inference.pdf}
+                \end{figure}
+        \end{description}
+
+        \begin{remark}
+            CLIP features are robust to distribution shifts (i.e., the network does not take ``shortcuts'' when classifying).
+
+            \indenttbox
+            \begin{example}
+                As lesions in x-ray images are marked by the doctors, a network trained to detect lesions might actually learn to predict the mark put by the doctors.
+            \end{example}
+
+            \begin{figure}[H]
+                \centering
+                \begin{subfigure}{0.35\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/_clip_resnet_distributional_shift.pdf}
+                \end{subfigure}
+                \hfill
+                \begin{subfigure}{0.6\linewidth}
+                    \centering
+                    \includegraphics[width=\linewidth]{./img/_clip_resnet_distributional_shift_datasets.pdf}
+                \end{subfigure}
+            \end{figure}
+        \end{remark}
+\end{description}
+
+\begin{remark}[CLIP for text-conditioned generative models]
+    CLIP can be used as a loss for a generative model to condition generation based on a prompt. Given a desired prompt, the steps are the following:
+    \begin{enumerate}
+        \item Freeze both the generator and CLIP.
+        \item Feed the generator a random input $z$ to generate an image.
+        \item Embed the generated image with CLIP and compare it to the embedding of the prompt.
+        \item Gradient ascent is used to improve $z$ aiming to maximize the similarity.
+    \end{enumerate}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{./img/_clip_generation_conditioning.pdf}
+    \end{figure}
+\end{remark}
