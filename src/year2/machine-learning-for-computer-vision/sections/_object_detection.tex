@@ -12,7 +12,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.45\linewidth]{./img/_object_detection_example.pdf}
+            \includegraphics[width=0.45\linewidth]{./img/_object_detection_example.jpg}
         \end{figure}
 
         \begin{remark}
@@ -55,7 +55,7 @@
 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\linewidth]{./img/obj_det_recall_precision.png}
+        \includegraphics[width=0.7\linewidth]{./img/obj_det_recall_precision.jpg}
         \caption{
             Recall and precision in different scenarios
         }
@@ -68,7 +68,7 @@
             Consider the following image and the bounding boxes found by a detector:
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.4\linewidth]{./img/_example_precision_recall_curve1.pdf}
+                \includegraphics[width=0.4\linewidth]{./img/_example_precision_recall_curve1.jpg}
                 \caption{
                     \parbox[t]{0.6\linewidth}{
                         Ground-truth (yellow boxes) and predictions (orange boxes) with their confidence score
@@ -79,7 +79,7 @@
             By sorting the confidence scores, it is possible to plot the precision-recall curve by varying the threshold $\rho_\text{min}$:
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.4\linewidth]{./img/_example_precision_recall_curve2.pdf}
+                \includegraphics[width=0.4\linewidth]{./img/_example_precision_recall_curve2.jpg}
             \end{figure}
 
             \indenttbox
@@ -164,7 +164,7 @@
             The training samples and their initial weights are the following:
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.3\linewidth]{./img/_adaboost_example1.pdf}
+                \includegraphics[width=0.3\linewidth]{./img/_adaboost_example1.jpg}
             \end{figure}
             We want to train an ensemble of $3$ decision stumps $\texttt{WL}_{j}$.
 
@@ -176,7 +176,7 @@
             The new reweighed and normalized samples are:
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.9\linewidth]{./img/_adaboost_example2.pdf}
+                \includegraphics[width=0.9\linewidth]{./img/_adaboost_example2.jpg}
             \end{figure}
 
             Now, assume that the second classifier learns $x_1 > 10$. The error rate and reweigh factor are:
@@ -185,7 +185,7 @@
             The new reweighed and normalized samples are:
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.7\linewidth]{./img/_adaboost_example3.pdf}
+                \includegraphics[width=0.7\linewidth]{./img/_adaboost_example3.jpg}
             \end{figure}
 
             Finally, the third classifier learns $x_2 > 20$. The error rate and reweigh factor are:
@@ -220,13 +220,13 @@
             \centering
             \begin{subfigure}{0.6\linewidth}
                 \centering
-                \includegraphics[width=0.5\linewidth]{./img/_haar_like_example.pdf}
+                \includegraphics[width=0.5\linewidth]{./img/_haar_like_example.jpg}
                 \caption{Filter applied on a patch}
             \end{subfigure}
             \hfill
             \begin{subfigure}{0.35\linewidth}
                 \centering
-                \includegraphics[width=0.65\linewidth]{./img/_haar_like_filters_example.pdf}
+                \includegraphics[width=0.65\linewidth]{./img/_haar_like_filters_example.jpg}
                 \caption{Other possible filters}
             \end{subfigure}
             \caption{Example of filters}
@@ -247,7 +247,7 @@
         In other words, the value at coordinates $(i, j)$ in the integral image is the sum of all the pixels of the original image in an area that starts from the top-left corner and has as bottom-right corner the pixel at $(i, j)$.
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.45\linewidth]{./img/_integral_image.pdf}
+            \includegraphics[width=0.45\linewidth]{./img/_integral_image.jpg}
             \caption{Example of integral image}
         \end{figure}
 
@@ -262,7 +262,7 @@
         where $A$, $B$, $C$, and $D$ are coordinates defined as in \Cref{fig:integral_image_features}.
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.5\linewidth]{./img/_integral_image_feature.pdf}
+            \includegraphics[width=0.5\linewidth]{./img/_integral_image_feature.jpg}
             \caption{Summation of the pixels in the blue area}
             \label{fig:integral_image_features}
         \end{figure}
@@ -290,7 +290,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_viola_jones_cascade.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_viola_jones_cascade.jpg}
         \end{figure}
 \end{description}
 
@@ -341,7 +341,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.9\linewidth]{./img/_cnn_object_localization.pdf}
+            \includegraphics[width=0.9\linewidth]{./img/_cnn_object_localization.jpg}
             \caption{Localizer with AlexNet as feature extractor and 1000 classes}
         \end{figure}
 
@@ -383,7 +383,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.45\linewidth]{./img/selective_search.png}
+            \includegraphics[width=0.45\linewidth]{./img/selective_search.jpg}
             \caption{Example of some iterations of selective search}
         \end{figure}
 
@@ -404,7 +404,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_r_cnn.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_r_cnn.jpg}
             \caption{Example of R-CNN using AlexNet}
         \end{figure}
 
@@ -471,7 +471,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_fast_r_cnn.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_fast_r_cnn.jpg}
             \caption{Example of fast R-CNN using AlexNet}
         \end{figure}
 
@@ -486,7 +486,7 @@
                         \end{remark}
                         \begin{figure}[H]
                             \raggedleft
-                            \includegraphics[width=0.85\linewidth]{./img/_roipool_snap.pdf}
+                            \includegraphics[width=0.85\linewidth]{./img/_roipool_snap.jpg}
                             \caption{Project and snap operations}
                         \end{figure}
                     \item Apply max pooling with kernel of approximately size $\left\lceil \frac{H_r}{H_O} \right\rceil \times \left\lceil \frac{W_r}{W_O} \right\rceil$ and stride approximately $\left\lfloor \frac{H_r}{H_O} \right\rfloor \times \left\lfloor \frac{W_r}{W_O} \right\rfloor$.
@@ -495,7 +495,7 @@
                         \end{remark}
                         \begin{figure}[H]
                             \raggedleft
-                            \includegraphics[width=0.85\linewidth]{./img/_roipool_maxpool.pdf}
+                            \includegraphics[width=0.85\linewidth]{./img/_roipool_maxpool.jpg}
                             \caption{Pooling operation with varying kernel size}
                         \end{figure}
                 \end{enumerate}
@@ -552,7 +552,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn.jpg}
             \caption{Example of faster R-CNN using AlexNet}
         \end{figure}
 
@@ -586,7 +586,7 @@
 
                         \begin{figure}[H]
                             \raggedleft
-                            \includegraphics[width=0.8\linewidth]{./img/_rpn_anchor.pdf}
+                            \includegraphics[width=0.8\linewidth]{./img/_rpn_anchor.jpg}
                             \caption{Example of an iteration of a 1-anchor RPN}
                         \end{figure}
 
@@ -606,7 +606,7 @@
                     \end{enumerate}
                     \begin{figure}[H]
                         \raggedleft
-                        \includegraphics[width=0.7\linewidth]{./img/_rpn_architecture.pdf}
+                        \includegraphics[width=0.7\linewidth]{./img/_rpn_architecture.jpg}
                     \end{figure}
             \end{description}
 
@@ -656,7 +656,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.6\linewidth]{./img/_image_pyramid_multi_scale.pdf}
+            \includegraphics[width=0.6\linewidth]{./img/_image_pyramid_multi_scale.jpg}
         \end{figure}
 
     \item[CNN pyramid multi-scale detection] \marginnote{CNN pyramid multi-scale detection}
@@ -668,7 +668,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_cnn_pyramid_multi_scale.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_cnn_pyramid_multi_scale.jpg}
         \end{figure}
 
     \item[Feature pyramid network (FPN)] \marginnote{Feature pyramid network (FPN)}
@@ -676,7 +676,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.7\linewidth]{./img/_fpn_flow.pdf}
+            \includegraphics[width=0.7\linewidth]{./img/_fpn_flow.jpg}
             \caption{General FPN flow}
         \end{figure}
 
@@ -691,7 +691,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.65\linewidth]{./img/_fpn_top_down.pdf}
+                    \includegraphics[width=0.65\linewidth]{./img/_fpn_top_down.jpg}
                     \caption{FPN top-down flow}
                 \end{figure}
         \end{description}
@@ -701,7 +701,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn_fpn.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_faster_r_cnn_fpn.jpg}
             \caption{Example of faster R-CNN with FPN}
         \end{figure}
 
@@ -733,7 +733,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.95\linewidth]{./img/_one_stage_detector.pdf}
+            \includegraphics[width=0.95\linewidth]{./img/_one_stage_detector.jpg}
         \end{figure}
 
     \item[Multi-label classification] \marginnote{Multi-label classification}
@@ -763,7 +763,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.8\linewidth]{./img/_darknet.pdf}
+                    \includegraphics[width=0.8\linewidth]{./img/_darknet.jpg}
                 \end{figure}
 
             \item[Learned anchors] \marginnote{Learned anchors}
@@ -798,7 +798,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.8\linewidth]{./img/_retinanet.pdf}
+            \includegraphics[width=0.8\linewidth]{./img/_retinanet.jpg}
         \end{figure}
 
         \begin{remark}
@@ -827,7 +827,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.45\linewidth]{./img/_focal_loss.pdf}
+                    \includegraphics[width=0.45\linewidth]{./img/_focal_loss.jpg}
                     \caption{Focal loss for varying $\gamma$}
                 \end{figure}
 
@@ -875,12 +875,12 @@
                     \centering
                     \begin{subfigure}{0.49\linewidth}
                         \centering
-                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_foreground.pdf}
+                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_foreground.jpg}
                     \end{subfigure}
                     \hfill
                     \begin{subfigure}{0.49\linewidth}
                         \centering
-                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_background.pdf}
+                        \includegraphics[width=0.85\linewidth]{./img/_focal_cdf_background.jpg}
                     \end{subfigure}
                     \caption{
                         \parbox[t]{0.7\linewidth}{
@@ -940,7 +940,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.5\linewidth]{./img/centernet_outputs.png}
+            \includegraphics[width=0.5\linewidth]{./img/centernet_outputs.jpg}
         \end{figure}
 
         \begin{description}
@@ -994,7 +994,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.55\linewidth]{./img/_centernet_other_tasks.png}
+            \includegraphics[width=0.55\linewidth]{./img/_centernet_other_tasks.jpg}
         \end{figure}
     \end{remark}
 
@@ -1012,7 +1012,7 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{./img/_object_detection_map_speed_plot.pdf}
+    \includegraphics[width=0.75\linewidth]{./img/_object_detection_map_speed_plot.jpg}
     \caption{
         mAP -- speed comparison of the various object detection approaches
     }
@@ -1055,7 +1055,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.75\linewidth]{./img/_detr_architecture.pdf}
+                    \includegraphics[width=0.75\linewidth]{./img/_detr_architecture.jpg}
                 \end{figure}
 
             \item[Hungarian loss] \marginnote{Hungarian loss}
@@ -1085,7 +1085,7 @@
 
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\linewidth]{./img/hungarian_loss.png}
+                    \includegraphics[width=0.5\linewidth]{./img/hungarian_loss.jpg}
                     \caption{
                         Possible permutations and optimal permutation (in orange).
                     }
@@ -1102,7 +1102,7 @@
                 \item[Encoder] The encoder tend to solve a segmentation problem (i.e., determine what the object is).
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.8\linewidth]{./img/detr_encoder.png}
+                        \includegraphics[width=0.8\linewidth]{./img/detr_encoder.jpg}
                         \caption{
                             \parbox[t]{0.75\linewidth}{Self-attention map of some pixels at the last encoder. Yellow tiles indicate that the analyzed pixel attends to that patch.}
                         }
@@ -1111,7 +1111,7 @@
                 \item[Decoder] The decoder tend to attend at object boundaries (i.e., determine where the object is).
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.8\linewidth]{./img/detr_decoder.png}
+                        \includegraphics[width=0.8\linewidth]{./img/detr_decoder.jpg}
                         \caption{
                             \parbox[t]{0.75\linewidth}{Decoder attention. Highlighted areas have a higher attention weight.}
                         }
@@ -1120,7 +1120,7 @@
                 \item[Object query] Each object query tend to be specialized in recognizing objects in specific areas.
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.8\linewidth]{./img/detr_object_query.png}
+                        \includegraphics[width=0.8\linewidth]{./img/detr_object_query.jpg}
                         \caption{
                             \parbox[t]{0.75\linewidth}{Position of the predictions of each object query. Green dots represent small boxes, red large horizontal boxes, and blue large vertical boxes.}
                         }
@@ -1161,7 +1161,7 @@
 
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.65\linewidth]{./img/multiscale_comparison.png}
+                        \includegraphics[width=0.65\linewidth]{./img/multiscale_comparison.jpg}
                     \end{figure}
                 \end{remark}
 
@@ -1187,7 +1187,7 @@
 
                             \begin{figure}[H]
                                 \centering
-                                \includegraphics[width=0.15\linewidth]{./img/bifpn.png}
+                                \includegraphics[width=0.15\linewidth]{./img/bifpn.jpg}
                             \end{figure}
                         \end{itemize}
                 \end{description}
