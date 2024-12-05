@@ -242,4 +242,131 @@
 
             Note that $V_S$ and $\tau$ must be positive values. We can use the same trick as in \Cref{sec:arrivals_neuroprob} by using $\exp\log$ with a scaling factor to start with a reasonable guess.
         \end{example}
+
+    \item[ODE learning improvements]
+        \phantom{}
+        \begin{description}
+            \item[Training speed/Network depth]
+                Given a sequence of training measurements $\{ y_k \}_{k=0}^n$, view them as a sequence of pairs $\{ (y_{k-1}, y_k) \}_{k=1}^n$. During training, each pair trains a distinct ODE, each with shared parameters. The overall problem becomes:
+                \[
+                    \begin{gathered}
+                        \arg\min_\theta \sum_{k=1}^{n} \mathcal{L}(\hat{y}_k(t_k), y_k) \\
+                        \begin{split}
+                            \text{subject to }& \dot{\hat{y}}_k = f(\hat{y}_k, t; \theta) \qquad\forall k = 1, \dots, n \\
+                            & \hat{y}_k(t_{k-1}) = y_{k-1} \qquad\forall k = 1, \dots, n
+                        \end{split}
+                    \end{gathered}
+                \]
+
+                \begin{remark}
+                    This approach is only possible if full states are available and the loss is separable. Moreover, it is not strictly equivalent to the original problem as compound errors are disregarded.
+                \end{remark}
+
+                \begin{remark}
+                    Training now requires shallower networks and mini-batches can be used.
+                \end{remark}
+
+            \item[Accuracy improvement]
+                Accuracy issues are due to the fact that the Euler method intrinsically has low performance. As the problem consists of fitting a curve, the model might need to estimate wrong parameters to achieve a better result. 
+
+                Therefore, if the objective is to fit a curve, this is not necessarily a problem. However, if the correct parameters are the goal, a more accurate integration method is needed.
+
+                \begin{remark}
+                    A straightforward approach to achieve better results is to increase the granularity of the steps of the Euler method (i.e., use more steps).
+                \end{remark}
+        \end{description}
+
+    \item[Universal ODE (UDE)] \marginnote{Universal ODE (UDE)}
+        Use black-box functions as the parameter of an ODE:
+        \[ \dot{y} = f(y, t, U(y, t; \theta)) \]
+        where $U$ is a universal approximator (e.g., a neural network).
+
+        \begin{example}
+            Consider the SIR (susceptible-infected-recovered) model for epidemic modeling:
+            \[
+                \begin{split}
+                    \dot{S} &= -\beta \frac{1}{N} SI \\
+                    \dot{I} &= +\beta \frac{1}{N} SI - \gamma I \\
+                    \dot{R} &= +\gamma I
+                \end{split}
+            \]
+            Non-pharmaceutical interventions (NPI) (e.g., masks) have an effect on $\beta$, making it time dependent:
+            \[
+                \begin{split}
+                    \dot{S} &= -\beta(t) \frac{1}{N} SI \\
+                    \dot{I} &= +\beta(t) \frac{1}{N} SI - \gamma I \\
+                    \dot{R} &= +\gamma I
+                \end{split}
+            \]
+            For this example, we assume $\beta(t)$ is modeled as:
+            \[ \beta(t) = \beta_0 \prod_{i \in \mathcal{I}} e_i \]
+            where $\beta_0$ is the baseline spread if nothing is done, $\mathcal{I}$ is the set of active NPIs, and $e_i$ is the effect of the $i$-th NPI.
+
+            In practice, the time argument for $\beta$ is to retrieve the active NPIs at time $t$, therefore, the overall model can be formulated as:
+            \[
+                \begin{split}
+                    \dot{S} &= -\beta(\texttt{NPI}(t)) \frac{1}{N} SI \\
+                    \dot{I} &= +\beta(\texttt{NPI}(t)) \frac{1}{N} SI - \gamma I \\
+                    \dot{R} &= +\gamma I
+                \end{split}
+            \]
+
+            Architecturally, a neural network as in ODE can be used. The only addition is that it takes as input the active NPIs.
+        \end{example}
+\end{description}
+
+
+\subsection{Physics informed neural network}
+
+\begin{description}
+    \item[Physics informed neural network (PINN)] \marginnote{Physics informed neural network (PINN)}
+        Use a neural network to predict the state at time $t$:
+        \[ \hat{y}(t; \theta) \approx y(t) \]
+
+        \begin{remark}
+            ODEs predict the derivative of the change of the state, while PINNs directly predict the next state. This allows for faster inference as integration (i.e., Euler method) is no longer needed.
+        \end{remark}
+
+        \begin{description}
+            \item[Training]
+                The training objective is similar to the one of UDE, with some changes to the constraints:
+                \[
+                    \begin{gathered}
+                        \arg\min_\theta \mathcal{L}(\hat{y}(t, \theta), y) \\
+                        \begin{split}
+                            \text{subject to }& \dot{\hat{y}}(t; \theta) = f(\hat{y}(t; \theta), t) \\
+                            & \hat{y}(t_0; \theta) = y_0
+                        \end{split}
+                    \end{gathered}
+                \]
+                where the first constraint imposes some physics knowledge and depends on the input (not the parameters).
+
+                \begin{remark}
+                    A PINN can be seen as neural network that learns ODE integration.
+                \end{remark}
+
+                In practice, the overall loss can be formulated as a Lagrangian:
+                \[ 
+                    \begin{split}
+                        \mathcal{L}(y, \hat{y}, t, \theta) = &\mathcal{L}(\hat{y}(t; \theta), y) \\
+                        &+ \lambda_{de}^T \Vert \dot{\hat{y}}(t; \theta) - f(\hat{y}(t; \theta), t) \Vert^2_2 \\
+                        &+ \lambda_{bc}^T \Vert \dot{\hat{y}}(t; \theta) - y_0 \Vert^2_2 \\
+                    \end{split}
+                \]
+                where $\lambda_{de}^T$ and $\lambda_{bc}^T$ are multipliers.
+
+                \begin{remark}
+                    If needed, the loss can be generalized further.
+                \end{remark}
+
+                \begin{remark}
+                    If the physics ($f$) is known, the two constraints can be enforced without data points as only time steps (which can be discretized and decided a priori) are needed. Moreover, the derivative ($\dot{\hat{y}}(t; \theta)$) w.r.t. $t$ can be computed using automatic differentiation.
+
+                    Therefore, during training, it is possible to rely on the two constraints more than the loss.
+                \end{remark}
+
+                \begin{remark}
+                    Finding the weights $\lambda_{de}^T$ and $\lambda_{bc}^T$ can be tricky depending on the reliability and robustness of the physics model that is used. Cross-validation can be used if unsure and dual ascent can be used if the model is trusted.
+                \end{remark}
+        \end{description}
 \end{description}

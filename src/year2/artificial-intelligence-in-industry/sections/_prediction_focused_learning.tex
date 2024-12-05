@@ -1,0 +1,199 @@
+\chapter{Predict and optimize}
+
+
+\section{Approaches}
+
+
+\subsection{Prediction focused learning}
+
+\begin{description}
+    \item[Prediction focused learning] \marginnote{Prediction focused learning}
+        Inference method that solves an optimization problem by using inputs predicted by an estimator. More specifically, there are two steps:
+        \begin{descriptionlist}
+            \item[Predict] 
+                Train a predictor for the parameters of the problem. The optimal predictor $h$ has the following parameters:
+                \[ \theta^* = \arg\min_\theta \left\{ \mathbb{E}_{(x, y) \sim P(X, Y)}[\mathcal{L}(y, \hat{y})] \mid \hat{y} = h(x, \theta) \right\} \]
+
+            \item[Optimize] 
+                Solve an optimization problem with the estimated parameters as input:
+                \[ z^*(y) = \arg\min_\vec{z} \left\{ f(\vec{z}, y) \mid \vec{z} \in F \right\} \]
+                where $\vec{z}$ is the decision vector, $f$ is the cost function, $F$ is the feasible space, and $y$ is the output of the predictor $h$.
+        \end{descriptionlist}
+
+        Therefore, during inference, the following is computed:
+        \[ z^*(h(x; \theta)) = z^*(\hat{y}) \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{./img/dfl_setup.png}
+        \end{figure}
+
+        \begin{remark}
+            This approach is asymptotically correct. The perfect predictor allows to reach the optimal result.
+        \end{remark}
+
+        \begin{remark}
+            The predictor should be trained for minimal decision cost (instead of maximal accuracy) so that the optimizer can make the correct choice.
+        \end{remark}
+
+        \begin{example}
+            Consider the problem:
+            \[ \arg\min_{z} \{y_0 z_0 + y_1 z_1 \mid z_0 + z_1 = 1, z \in \{0, 1\}^2\} \]
+            with some ground-truth $y_0$ and $y_1$.
+            Assume that the predictor can only learn a model of form:
+            \[ \hat{y}_0 = \theta^2x \qquad \hat{y}_1 = 0.5 \cdot \theta \]
+            By maximizing accuracy, the following predictions are obtained:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/_pfl_example1.pdf}
+            \end{figure}
+            The intersection point is important for optimization. In this case, predictions are not ideal. Instead, by minimizing decision cost, the following predictions are made:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\linewidth]{./img/_pfl_example2.pdf}
+            \end{figure}
+        \end{example}
+\end{description}
+
+
+\subsection{Decision focused learning}
+
+\begin{description}
+    \item[Decision focused learning (DFL)] \marginnote{Decision focused learning (DFL)}
+        PFD where linear cost functions are assumed. The optimization problem is therefore:
+        \[ z^*(y) = \arg\min_z \{ y^Tz \mid z \in F \} \]
+        where $y$ cannot be measured but depends on some observable $x$ (i.e., $X, Y \sim P(X, Y)$).
+
+        The training problem of the predictor aims to minimize the decision cost and is defined as:
+        \[ 
+            \theta^* = \arg\min_\theta = \left\{ \mathbb{E}_{(x, y) \sim P(X,Y)} \left[ \texttt{regret}(y, \hat{y}) \mid \hat{y} = h(x, \theta) \right] \right\} 
+        \]
+
+        \begin{description}
+            \item[Regret] \marginnote{Regret}
+                Measures the difference between the solution obtained using the predictor and the perfect solution. It is defined as:
+                \[ \texttt{regret}(y, \hat{y}) = y^T z^*(\hat{y}) - y^T z^*(y) \]
+                where:
+                \begin{itemize}
+                    \item $z^*(y)$ is the best solution with access to the ground-truth (i.e., an oracle).
+                    \item $z^*(\hat{y})$ is the solution computed with the estimated parameters.
+                \end{itemize}
+
+                \begin{remark}
+                    Optimizing regret is equivalent to optimizing the cost function, but regret is lower-bounded at $0$.
+                \end{remark}
+
+                \begin{remark}
+                    Regret is non-differentiable in many points and, when it is, its gradient is not informative. In practice, a surrogate for regret is used instead.
+                \end{remark}
+
+                \begin{example}
+                    Consider a collection of normally distributed data $(x, y)$:
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.75\linewidth]{./img/_dfl_regret_example1.pdf}
+                    \end{figure}
+
+                    The regret landscape for varying parameter $\theta$ is:
+                    \begin{figure}[H]
+                        \centering
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_regret_example2.pdf}
+                            \caption{Regret for a single sample}
+                        \end{subfigure}
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_regret_example3.pdf}
+                            \caption{Regret for a batch}
+                        \end{subfigure}
+                    \end{figure}
+                \end{example}
+
+            \item[Self-contrastive loss] \marginnote{Self-contrastive loss}
+                Surrogate for regret defined as:
+                \[ \hat{y}^T z^*(y) - \hat{y}^T z^*(\hat{y}) \] 
+                The idea is that a good prediction vector $\hat{y}$ should make the optimal cost $\hat{y}^T z^*(y)$ not worse than the cost of the estimated one $\hat{y}^T z^*(\hat{y})$.
+
+                \begin{remark}
+                    By differentiating over $\hat{y}$, the result is a subgradient (i.e., coefficient used to compute a non-defined gradient) and it is computed as:
+                    \[ \nabla(\hat{y}^T z^*(y) - \hat{y}^T z^*(\hat{y})) = z^*(y) - z^*(\hat{y}) \]
+                \end{remark}
+
+                \begin{remark}
+                    Self-contrastive loss creates spurious minima (i.e., false minima that are not in the regret) as a trivial solution is to predict $\hat{y} = 0$.
+                \end{remark}
+
+                \begin{example}
+                    The self-contrastive loss using the same data as before is:
+                    \begin{figure}[H]
+                        \centering
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_self_contrastive_example1.pdf}
+                            \caption{Self-contrastive loss for a single sample}
+                        \end{subfigure}
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_self_contrastive_example2.pdf}
+                            \caption{Self-contrastive loss for a batch}
+                        \end{subfigure}
+                    \end{figure}
+                \end{example}
+
+            \item[SPO+ loss] \marginnote{SPO+ loss}
+                Surrogate for regret defined as a perturbed version of the self-contrastive loss:
+                \[ 
+                    \texttt{spo+}(y, \hat{y}) = \hat{y}^T_\text{spo} z^*(y) - \hat{y}^T_\text{spo} z^*(\hat{y}_\text{spo}) \qquad \text{with } \hat{y}_\text{spo} = 2 \hat{y} - y
+                \]
+
+                \begin{remark}
+                    With many samples, the spurious minima tend to cancel out.
+                \end{remark}
+
+                \begin{example}
+                    The SPO+ loss using the same data as before is:
+                    \begin{figure}[H]
+                        \centering
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_spop_example1.pdf}
+                            \caption{SPO+ for a single sample}
+                        \end{subfigure}
+                        \begin{subfigure}{0.49\linewidth}
+                            \centering
+                            \includegraphics[width=\linewidth]{./img/_dfl_spop_example2.pdf}
+                            \caption{SPO+ for a batch}
+                        \end{subfigure}
+                    \end{figure}
+                \end{example}
+        \end{description}
+
+        \begin{remark}
+            DLF are slow to train as each iteration requires to solve an optimization problem.
+        \end{remark}
+
+        \begin{description}
+            \item[DLF training speed-up] \phantom{}
+            \begin{description}
+                \item[Warm start] 
+                    Initialize a DFL network with PFL weights.
+    
+                \item[Solution caching] 
+                    Assuming that the feasible space is constant, caching can be done as follows:
+                    \begin{enumerate}
+                        \item Initialize the cache $\mathcal{S}$ with the true optimal solutions $z^*(y_i)$.
+                        \item When it is required to compute $z^*(\hat{y})$:
+                        \begin{itemize}
+                            \item With probability $p$, invoke the solver and compute the real solution. The newly computed value is cached.
+                            \item With probability $p-1$, do a cache lookup as:
+                            \[ \hat{z}^*(\hat{y}) = \arg\min_z \{ f(z) \mid z \in \mathcal{S} \} \]
+                        \end{itemize}
+                    \end{enumerate}
+            \end{description}
+        \end{description}
+\end{description}
+
+\begin{remark}
+    PFL with more complex networks allows reaching comparable performance to DLF.
+\end{remark}
