@@ -546,3 +546,197 @@
 \begin{remark}
     Adversarial losses can also be used in supervised problems (e.g., generate a colored version of a black-and-white image).
 \end{remark}
+
+
+
+\section{Diffusion models}
+
+\begin{description}
+    \item[Diffusion model] \marginnote{Diffusion model}
+        Architecture that generates an image by iteratively denoising the input latent vector.
+
+        \begin{remark}
+            Empirical results show that the generation quality is generally better than other models. However, inference is slow.
+        \end{remark}
+
+    \item[Training]
+        Given an image $\matr{x}_0$, training is done in two steps:
+        \begin{description}
+            \item[Forward process] 
+                The original image $\matr{x}_0$ is iteratively transformed into a latent image $\matr{x}_T$ by adding noise (i.e., transform the complex distribution $q(\matr{x}_0)$ of the original image into a simpler one $q(\matr{x}_T)$).
+            \item[Reverse process] 
+                The latent image $\matr{x}_T$ is iteratively denoised to reconstruct the original image $\matr{x}_0$.
+        \end{description} 
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{./img/diffusion_model.jpg}
+        \end{figure}
+\end{description}
+
+
+\subsection{Forward process}
+
+\begin{description}
+    \item[Forward process] \marginnote{Forward process}
+        Given an image $\matr{x}_{t-1}$, produce a noisier version of it as:
+        \[ 
+            \begin{gathered}
+                \matr{x}_t = \sqrt{1-\beta_t} \matr{x}_{t-1} + \sqrt{\beta_t}\matr{\varepsilon}_t \\
+                \matr{x}_t \sim q(\matr{x}_t \mid \matr{x}_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\matr{x}_{t-1}, \beta_t\matr{I})
+            \end{gathered}
+        \]
+        where:
+        \begin{itemize}
+            \item $\matr{\varepsilon}_t \sim \mathcal{N}(0; \matr{I})$ is the noise
+            \item $\beta_t \in [0,1)$ is a hyperparameter (noise schedule) and represents the variance.
+            \item $\sqrt{1-\beta_t} \matr{x}_{t-1}$ is the mean.
+        \end{itemize}
+
+        \begin{remark}
+            $\sqrt{1-\beta_t} \matr{x}_{t-1}$ and $\beta_t$ are the mean and variance due to the fact that sampling a vector $\vec{x}$ from a Gaussian distribution with mean $\vec{\mu}$ and covariance matrix $\matr{\Sigma}$ is equivalent to:
+            \[ \vec{x} = \vec{\mu} + \matr{\Sigma}^{\frac{1}{2}}\vec{y} \qquad \text{where } \vec{y} \sim \mathcal{N}(0; \matr{I}) \]
+            If $\matr{\Sigma} = \sigma^2\matr{I}$, it holds that $\matr{\Sigma}^{\frac{1}{2}} = \sigma \matr{I}$ and we have that:
+            \[ \vec{x} = \vec{\mu} + (\sigma\matr{I})\vec{y} \]
+        \end{remark}
+
+        \begin{remark}
+            This step does not have learnable parameters.
+        \end{remark}
+
+    \item[Diffusion kernel] \marginnote{Diffusion kernel}
+        It is possible to generate the latent vector $\matr{x}_t$ at time $t$ directly from $\matr{x}_0$ as:
+        \[ \matr{x}_t = \sqrt{\prod_{i=1}^{t}(1-\beta_i)} \cdot \matr{x}_0 + \sqrt{1-\prod_{i=1}^{t}(1-\beta_i)} \cdot \vec{\varepsilon} \qquad \text{where } \matr{\varepsilon} \sim \mathcal{N}(0; \matr{I}) \]
+        By setting the intermediate constant $\alpha_t = \prod_{i=1}^{t}(1-\beta_i)$, we have that:
+        \[ 
+            \begin{gathered}
+                \matr{x}_t = \sqrt{\alpha_t} \matr{x}_0 + \sqrt{1-\alpha_t}\matr{\varepsilon} \\
+                \matr{x}_t \sim q(\matr{x}_t \mid \matr{x}_0) = \mathcal{N}(\sqrt{\alpha_t}\matr{x}_0; (1-\alpha_t)\matr{I})
+            \end{gathered}
+        \]
+
+        \begin{remark}
+            As $\beta_t < 1$, it holds that $\lim\limits_{t \rightarrow +\infty} \alpha_t = 0$. In other words, for large $t = T$, only noise remains in the latent vector:
+            \[ q(\matr{x}_T \mid \matr{x}_0) = q(\matr{x}_T) = \mathcal{N}(0; \matr{I}) \]
+            Which achieves the goal of transforming a complex distribution $q(\matr{x}_0)$ into a simpler one (i.e., Gaussian).
+        \end{remark}
+
+        \begin{example}
+            Consider the 1D case where $x$ represents a pixel. By using a linear scheduling for $\beta_t$ as follows:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/diffusion_kernel_example1.jpg}
+            \end{figure}
+            We obtain that some diffusion kernels for varying $t$ with $x_0 = 1$ are the following (note that the signal converges to $\mathcal{N}(0; 1)$):
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/diffusion_kernel_example2.jpg}
+            \end{figure}
+        \end{example}
+
+        \begin{remark}
+            As the forward process is stochastic, the same starting pixel can produce a different resulting pixel. Therefore, diffusion models work with trajectories in latent space.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.6\linewidth]{./img/diffusion_model_trajectory.jpg}
+                \caption{
+                    \parbox[t]{0.6\linewidth}{
+                        Trajectories starting from $x_0 = 1$. The dashed lines mark the $\mu_t \pm 3\sigma_t$ area.
+                    }
+                }
+            \end{figure}
+        \end{remark}
+\end{description}
+
+
+\subsection{Reverse process}
+
+\begin{remark}
+    In principle, one could invert the forward process by applying Bayes rule:
+    \[ q(\matr{x}_{t-1} \mid \matr{x}_t) = q(\matr{x}_t \mid \matr{x}_{t-1}) \frac{q(\matr{x}_{t-1})}{q(\matr{x}_t)} \]
+    However, closed-form expressions for $q(\matr{x}_{t-1})$ and $q(\matr{x}_{t})$ are not available.
+
+    By exploiting the Markov chain properties, it is possible to compute the conditional distribution w.r.t. $\matr{x}_0$, which is available at training time, as:
+    \[ 
+        q(\matr{x}_{t-1} \mid \matr{x}_t, \matr{x}_0) = 
+        q(\matr{x}_t \mid \matr{x}_{t-1}, \matr{x}_0) \frac{q(\matr{x}_{t-1} \mid \matr{x}_0)}{q(\matr{x}_t \mid \matr{x}_0)} = 
+        \underbrace{{q(\matr{x}_t \mid \matr{x}_{t-1})}}_{\text{Forward process}}
+        \underbrace{\frac{q(\matr{x}_{t-1} \mid \matr{x}_0)}{q(\matr{x}_t \mid \matr{x}_0)}}_{\text{Diffusion kernels}}
+    \]
+    It can be shown that this is equivalent to:
+    \[ q(\matr{x}_{t-1} \mid \matr{x}_t, \matr{x}_0) = \mathcal{N}\left( \frac{1-\alpha_{t-1}}{1-\alpha_t}\sqrt{1-\beta_t}\matr{x}_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t}\beta_t \matr{x}_0; \frac{\beta_t(1-\alpha_{t-1})}{1-\alpha_t} \matr{I} \right) \]
+    However, this formulation requires knowing $\matr{x}_0$, which is only available at training time, making inference impossible.
+\end{remark}
+
+\begin{description}
+    \item[Learned reverse process] \marginnote{Learned reverse process}
+        Learn a Markov chain of probabilistic mappings to reconstruct the original image $\matr{x}_0$ starting from the latent vector $\matr{x}_T$:
+        \[
+            \begin{split}
+                p(\matr{x}_T) &= \mathcal{N}(0; \matr{I}) = q(\matr{x}_T) \\
+                p(\matr{x}_{t-1} \mid \matr{x}_t) &= \mathcal{N}(\mu_t(\matr{x}_t; \matr{\theta}_t); \sigma_t\matr{I})
+            \end{split}
+        \]
+        where:
+        \begin{itemize}
+            \item $\mu_t(\matr{x}_t; \matr{\theta}_t)$ is a neural network to estimate the mean of $p(\matr{x}_{t-1} \mid \matr{x}_t)$.
+            \item $\sigma_t$ is, for the case of simple diffusion models, predetermined.
+        \end{itemize}
+
+        \begin{remark}
+            In general, $p(\matr{x}_{t-1} \mid \matr{x}_t)$ does not necessarily follow a Gaussian distribution as this is only true for $\beta_t \rightarrow 0$. However, by using small $\beta_t$ and large $T$, it can be approximately considered Gaussian.
+        \end{remark}
+
+        \begin{description}
+            \item[Training]
+                The training objective for a set of real images $\{ \matr{x}_0^{(i)} \}_{i=1}^{I}$ is:
+                \[ \matr{\theta}_1^*, \dots, \matr{\theta}_T^* = \arg\max_{\matr{\theta}_1, \dots, \matr{\theta}_T} \sum_{i=1}^{I} \log\left( p(\matr{x}_0^{(i)} \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \right) \]
+                As each image is obtained as a sequence of latents, we have that:
+                \[
+                    \begin{aligned}
+                        p&(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \\
+                        &= p(\matr{x}_0 \mid \matr{x}_1, \dots, \matr{x}_T, \matr{\theta}_1, \dots, \matr{\theta}_T) p(\matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) 
+                            & p(x, y | z) = p(x | y, z)p(y | z) \\
+                        &= p(\matr{x}_0 \mid \matr{x}_1, \matr{\theta}_1) p(\matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_2, \dots, \matr{\theta}_T) 
+                            & \text{Markov chain} \\
+                        &= \dots & \text{Repeat} \\
+                        &= p(\matr{x}_0 \mid \matr{x}_1, \matr{\theta}_1) \left( \prod_{t=2}^{T} p(\matr{x}_{t-1} \mid \matr{x}_t, \matr{\theta}_t) \right) p(\matr{x}_T)
+                    \end{aligned}
+                \]
+                And the likelihood of $\matr{x}_0$ can be computed through marginalization over the latent images as follows:
+                \[ p(\matr{x}_0^{(i)} \mid \matr{\theta}_1, \dots, \matr{\theta}_T) = \int p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \]
+                However, in practice this approach is computationally intractable due to the high number and high dimensionality of the latent variables.
+
+                \begin{description}
+                    \item[Evidence lower bound (ELBO)] \marginnote{Evidence lower bound (ELBO)}
+                        Method to compute a lower-bound of the log-likelihood. During training, we aim to maximize this bound as a proxy to maximize the likelihood.
+
+                        \begin{lemma}[Jensen's inequality]
+                            Given a concave function $f(\cdot)$ and the expectation of the data $x$. It holds that:
+                            \[ f(\mathbb{E}_{x \sim p(x)}[x]) \geq \mathbb{E}_{x \sim p(x)}[f(x)] \]
+
+                            \begin{example}
+                                Consider the logarithm function and a discrete random variable. It holds that:
+                                \[ \log\left( \mathbb{E}_{x \sim p(x)}[x] \right) \geq \mathbb{E}_{x \sim p(x)}[\log(x)] \Rightarrow \log\left( \sum_{x \in \mathbb{X}} p(x)x \right) \geq \sum_{x \in \mathbb{X}} (p(x)\log(x)) \]
+                            \end{example}
+
+                            \begin{figure}[H]
+                                \centering
+                                \includegraphics[width=0.4\linewidth]{./img/jensen_inequality.jpg}
+                                \caption{Visualization of the Jensen's inequality}
+                            \end{figure}
+                        \end{lemma}
+
+                        ELBO is computed as follows:
+                        \[ 
+                            \begin{split}
+                                \log&(p(\matr{x}_0 \mid \matr{\theta}_1, \dots, \matr{\theta}_T)) \\ 
+                                &= \log\left( \int p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \right) \\
+                                &= \log\left( \int \frac{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)}{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)} p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \right) \\
+                                &= \log\left( \mathbb{E}_{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)}\left[ \frac{p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T)}{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)} \right] \right) \\
+                            \end{split}
+                        \]
+                \end{description}
+        \end{description}
+\end{description}
