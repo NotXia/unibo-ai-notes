@@ -81,5 +81,72 @@
                 \]
                 In other words, each token in $V_\text{dom}$ is encoded as the average of embeddings of the tokens that compose it in the starting embedding model (if the token appear in both vocabularies, the embedding is the same).
         \end{description}
+\end{description}
 
+
+
+\section{In-context learning}
+
+\begin{description}
+    \item[Prompting] \marginnote{Prompting}
+        Pass a prompt to the language model to condition generation.
+
+        More formally, a prompt is defined by means of a prompting function $f_\text{prompt}(\cdot)$ that formats an input text $x$. $f_\text{prompt}$ typically has a slot for the input and a slot for the answer (e.g., the class in case of classification). The prompt is then fed to the language model that searches the highest scoring word $\hat{z}$ to fill the answer as follows:
+        \[ \hat{z} = \arg\max \prob{ f_\text{fill}(f_\text{prompt}(x), z); \theta } \]
+        Where $f_\text{fill}(f_\text{prompt}(x), z)$ inserts $z$ in the prompt. In other word, we are looking for the word that makes the model least perplexed.
+
+        \begin{example}
+            A prompt for sentiment analysis of movie reviews might be:
+            \begin{center}
+                \texttt{[X] Overall, it was a [Z] movie.}
+            \end{center}
+            Where \texttt{[X]} is the placeholder for the review and \texttt{[Z]} is for the class.
+        \end{example}
+
+        \begin{remark}
+            The prompt does not necessarily need to be text (i.e., discrete/hard prompts). Continuous/soft prompts (i.e., embeddings) can also be used to condition generation.
+        \end{remark}
+
+
+    \item[Zero-shot learning] \marginnote{Zero-shot learning}
+        Solve a task by providing a language model the description of the problem in natural language.
+
+    \item[One-shot learning] \marginnote{One-shot learning}
+        Solve a task by providing a language model the description of the problem in natural language and a single demonstration (i.e., an example).
+
+    \item[Few-shot learning] \marginnote{Few-shot learning}
+        Solve a task by providing a language model the description of the problem in natural language and a few demonstrations.
+
+        \begin{remark}
+            Empirical results show that not too many examples are required. Also, too many examples might reduce performance.
+        \end{remark}
+\end{description}
+
+\begin{remark}
+    Some studies show that an explanation for in-context learning is that causal attention has the same effect of gradient updates (i.e., the left part of the prompt influences the right part).
+
+    Another possible explanation is based on the concept of induction heads which are attention heads that specialize in predicting repeated sequences (i.e., in-context learning is seen as the capability of imitating past data). Ablation studies show that by identifying and removing induction heads, in-context learning performance of a model drastically drops.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{./img/induction_head.png}
+        \caption{Example of induction head}
+    \end{figure}
+\end{remark}
+
+\begin{description}
+    \item[Prefix-tuning] \marginnote{Prefix-tuning}
+        Soft prompting technique that learns some prefix embeddings for a specific task to add to the prompt while keeping the rest of the model frozen.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{./img/prefix_tuning.png}
+        \end{figure}
+
+    \item[Chain-of-thought prompting] \marginnote{Chain-of-thought prompting}
+        Provide in the prompt examples of reasoning to make the model provide the output step-by-step.
+
+        \begin{remark}
+            Empirical results show that the best prompt for chain-of-thought is to add to the prompt \texttt{think step by step}.
+        \end{remark}
 \end{description}
