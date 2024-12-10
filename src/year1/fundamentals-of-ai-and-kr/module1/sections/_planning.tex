@@ -559,7 +559,7 @@ def resolveThreats(plan):
 
         \item Now, we choose as action $\texttt{BUY(X, drill)}$ and as unsolved precondition $\texttt{sells(X, drill)}$.
             This can be solved from the action $\texttt{start}$ with effect $\texttt{sells(hws, drill)}$.
-            We make the substitution $\texttt{X}/\texttt{drill}$ and 
+            We make the substitution $\texttt{X}/\texttt{hws}$ and 
             add $\langle \texttt{start}, \texttt{BUY(hws, drill)}, \texttt{sells(hws, drill)} \rangle$ to the causal links.
             The same process can be repeated for $\texttt{BUY(X, milk)}$ and $\texttt{BUY(X, banana)}$:
             \begin{center}
