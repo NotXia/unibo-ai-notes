@@ -551,6 +551,11 @@
 
 \section{Diffusion models}
 
+\def\x{\matr{x}}
+\def\params{\matr{\theta}}
+\def\noise{\matr{\varepsilon}}
+
+
 \begin{description}
     \item[Diffusion model] \marginnote{Diffusion model}
         Architecture that generates an image by iteratively denoising the input latent vector.
@@ -560,12 +565,12 @@
         \end{remark}
 
     \item[Training]
-        Given an image $\matr{x}_0$, training is done in two steps:
+        Given an image $\x_0$, training is done in two steps:
         \begin{description}
             \item[Forward process] 
-                The original image $\matr{x}_0$ is iteratively transformed into a latent image $\matr{x}_T$ by adding noise (i.e., transform the complex distribution $q(\matr{x}_0)$ of the original image into a simpler one $q(\matr{x}_T)$).
+                The original image $\x_0$ is iteratively transformed into a latent image $\x_T$ by adding noise (i.e., transform the complex distribution $q(\x_0)$ of the original image into a simpler one $q(\x_T)$).
             \item[Reverse process] 
-                The latent image $\matr{x}_T$ is iteratively denoised to reconstruct the original image $\matr{x}_0$.
+                The latent image $\x_T$ is iteratively denoised to reconstruct the original image $\x_0$.
         \end{description} 
 
         \begin{figure}[H]
@@ -579,22 +584,22 @@
 
 \begin{description}
     \item[Forward process] \marginnote{Forward process}
-        Given an image $\matr{x}_{t-1}$, produce a noisier version of it as:
+        Given an image $\x_{t-1}$, produce a noisier version of it as:
         \[ 
             \begin{gathered}
-                \matr{x}_t = \sqrt{1-\beta_t} \matr{x}_{t-1} + \sqrt{\beta_t}\matr{\varepsilon}_t \\
-                \matr{x}_t \sim q(\matr{x}_t \mid \matr{x}_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\matr{x}_{t-1}, \beta_t\matr{I})
+                \x_t = \sqrt{1-\beta_t} \x_{t-1} + \sqrt{\beta_t}\noise_t \\
+                \x_t \sim q(\x_t \mid \x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\x_{t-1}, \beta_t\matr{I})
             \end{gathered}
         \]
         where:
         \begin{itemize}
-            \item $\matr{\varepsilon}_t \sim \mathcal{N}(0; \matr{I})$ is the noise
+            \item $\noise_t \sim \mathcal{N}(0; \matr{I})$ is the noise
             \item $\beta_t \in [0,1)$ is a hyperparameter (noise schedule) and represents the variance.
-            \item $\sqrt{1-\beta_t} \matr{x}_{t-1}$ is the mean.
+            \item $\sqrt{1-\beta_t} \x_{t-1}$ is the mean.
         \end{itemize}
 
         \begin{remark}
-            $\sqrt{1-\beta_t} \matr{x}_{t-1}$ and $\beta_t$ are the mean and variance due to the fact that sampling a vector $\vec{x}$ from a Gaussian distribution with mean $\vec{\mu}$ and covariance matrix $\matr{\Sigma}$ is equivalent to:
+            $\sqrt{1-\beta_t} \x_{t-1}$ and $\beta_t$ are the mean and variance due to the fact that sampling a vector $\vec{x}$ from a Gaussian distribution with mean $\vec{\mu}$ and covariance matrix $\matr{\Sigma}$ is equivalent to:
             \[ \vec{x} = \vec{\mu} + \matr{\Sigma}^{\frac{1}{2}}\vec{y} \qquad \text{where } \vec{y} \sim \mathcal{N}(0; \matr{I}) \]
             If $\matr{\Sigma} = \sigma^2\matr{I}$, it holds that $\matr{\Sigma}^{\frac{1}{2}} = \sigma \matr{I}$ and we have that:
             \[ \vec{x} = \vec{\mu} + (\sigma\matr{I})\vec{y} \]
@@ -605,20 +610,20 @@
         \end{remark}
 
     \item[Diffusion kernel] \marginnote{Diffusion kernel}
-        It is possible to generate the latent vector $\matr{x}_t$ at time $t$ directly from $\matr{x}_0$ as:
-        \[ \matr{x}_t = \sqrt{\prod_{i=1}^{t}(1-\beta_i)} \cdot \matr{x}_0 + \sqrt{1-\prod_{i=1}^{t}(1-\beta_i)} \cdot \vec{\varepsilon} \qquad \text{where } \matr{\varepsilon} \sim \mathcal{N}(0; \matr{I}) \]
+        It is possible to generate the latent vector $\x_t$ at time $t$ directly from $\x_0$ as:
+        \[ \x_t = \sqrt{\prod_{i=1}^{t}(1-\beta_i)} \cdot \x_0 + \sqrt{1-\prod_{i=1}^{t}(1-\beta_i)} \cdot \noise \qquad \text{where } \noise \sim \mathcal{N}(0; \matr{I}) \]
         By setting the intermediate constant $\alpha_t = \prod_{i=1}^{t}(1-\beta_i)$, we have that:
         \[ 
             \begin{gathered}
-                \matr{x}_t = \sqrt{\alpha_t} \matr{x}_0 + \sqrt{1-\alpha_t}\matr{\varepsilon} \\
-                \matr{x}_t \sim q(\matr{x}_t \mid \matr{x}_0) = \mathcal{N}(\sqrt{\alpha_t}\matr{x}_0; (1-\alpha_t)\matr{I})
+                \x_t = \sqrt{\alpha_t} \x_0 + \sqrt{1-\alpha_t}\noise \\
+                \x_t \sim q(\x_t \mid \x_0) = \mathcal{N}(\sqrt{\alpha_t}\x_0; (1-\alpha_t)\matr{I})
             \end{gathered}
         \]
 
         \begin{remark}
             As $\beta_t < 1$, it holds that $\lim\limits_{t \rightarrow +\infty} \alpha_t = 0$. In other words, for large $t = T$, only noise remains in the latent vector:
-            \[ q(\matr{x}_T \mid \matr{x}_0) = q(\matr{x}_T) = \mathcal{N}(0; \matr{I}) \]
-            Which achieves the goal of transforming a complex distribution $q(\matr{x}_0)$ into a simpler one (i.e., Gaussian).
+            \[ q(\x_T \mid \x_0) = q(\x_T) = \mathcal{N}(0; \matr{I}) \]
+            Which achieves the goal of transforming a complex distribution $q(\x_0)$ into a simpler one (i.e., Gaussian).
         \end{remark}
 
         \begin{example}
@@ -653,90 +658,552 @@
 \subsection{Reverse process}
 
 \begin{remark}
-    In principle, one could invert the forward process by applying Bayes rule:
-    \[ q(\matr{x}_{t-1} \mid \matr{x}_t) = q(\matr{x}_t \mid \matr{x}_{t-1}) \frac{q(\matr{x}_{t-1})}{q(\matr{x}_t)} \]
-    However, closed-form expressions for $q(\matr{x}_{t-1})$ and $q(\matr{x}_{t})$ are not available.
+    In principle, one could invert the forward process by applying Bayes' rule:
+    \[ q(\x_{t-1} \mid \x_t) = q(\x_t \mid \x_{t-1}) \frac{q(\x_{t-1})}{q(\x_t)} \]
+    However, closed-form expressions for $q(\x_{t-1})$ and $q(\x_{t})$ are not available.
 
-    By exploiting the Markov chain properties, it is possible to compute the conditional distribution w.r.t. $\matr{x}_0$, which is available at training time, as:
+    By exploiting the Markov chain properties, it is possible to compute the conditional distribution w.r.t. $\x_0$, which is available at training time, as:
     \[ 
-        q(\matr{x}_{t-1} \mid \matr{x}_t, \matr{x}_0) = 
-        q(\matr{x}_t \mid \matr{x}_{t-1}, \matr{x}_0) \frac{q(\matr{x}_{t-1} \mid \matr{x}_0)}{q(\matr{x}_t \mid \matr{x}_0)} = 
-        \underbrace{{q(\matr{x}_t \mid \matr{x}_{t-1})}}_{\text{Forward process}}
-        \underbrace{\frac{q(\matr{x}_{t-1} \mid \matr{x}_0)}{q(\matr{x}_t \mid \matr{x}_0)}}_{\text{Diffusion kernels}}
+        q(\x_{t-1} \mid \x_t, \x_0) = 
+        q(\x_t \mid \x_{t-1}, \x_0) \frac{q(\x_{t-1} \mid \x_0)}{q(\x_t \mid \x_0)} = 
+        \underbrace{{q(\x_t \mid \x_{t-1})}}_{\text{Forward process}}
+        \underbrace{\frac{q(\x_{t-1} \mid \x_0)}{q(\x_t \mid \x_0)}}_{\text{Diffusion kernels}}
     \]
     It can be shown that this is equivalent to:
-    \[ q(\matr{x}_{t-1} \mid \matr{x}_t, \matr{x}_0) = \mathcal{N}\left( \frac{1-\alpha_{t-1}}{1-\alpha_t}\sqrt{1-\beta_t}\matr{x}_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t}\beta_t \matr{x}_0; \frac{\beta_t(1-\alpha_{t-1})}{1-\alpha_t} \matr{I} \right) \]
-    However, this formulation requires knowing $\matr{x}_0$, which is only available at training time, making inference impossible.
+    \[ q(\x_{t-1} \mid \x_t, \x_0) = \mathcal{N}\left( \frac{1-\alpha_{t-1}}{1-\alpha_t}\sqrt{1-\beta_t}\x_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t}\beta_t \x_0; \frac{\beta_t(1-\alpha_{t-1})}{1-\alpha_t} \matr{I} \right) \]
+    However, this formulation requires knowing $\x_0$, which is only available at training time, making inference impossible.
 \end{remark}
 
 \begin{description}
-    \item[Learned reverse process] \marginnote{Learned reverse process}
-        Learn a Markov chain of probabilistic mappings to reconstruct the original image $\matr{x}_0$ starting from the latent vector $\matr{x}_T$:
+    \item[Learned reverse process (mean)] \marginnote{Learned reverse process (mean)}
+        Learn a Markov chain of probabilistic mappings to reconstruct the original image $\x_0$ starting from the latent vector $\x_T$:
         \[
             \begin{split}
-                p(\matr{x}_T) &= \mathcal{N}(0; \matr{I}) = q(\matr{x}_T) \\
-                p(\matr{x}_{t-1} \mid \matr{x}_t) &= \mathcal{N}(\mu_t(\matr{x}_t; \matr{\theta}_t); \sigma_t\matr{I})
+                p(\x_T) &= \mathcal{N}(0; \matr{I}) = q(\x_T) \\
+                p(\x_{t-1} \mid \x_t) &= \mathcal{N}(\mu_t(\x_t; \params_t); \sigma_t\matr{I})
             \end{split}
         \]
         where:
         \begin{itemize}
-            \item $\mu_t(\matr{x}_t; \matr{\theta}_t)$ is a neural network to estimate the mean of $p(\matr{x}_{t-1} \mid \matr{x}_t)$.
+            \item $\mu_t(\x_t; \params_t)$ is a neural network to estimate the mean of $p(\x_{t-1} \mid \x_t)$.
             \item $\sigma_t$ is, for the case of simple diffusion models, predetermined.
         \end{itemize}
 
         \begin{remark}
-            In general, $p(\matr{x}_{t-1} \mid \matr{x}_t)$ does not necessarily follow a Gaussian distribution as this is only true for $\beta_t \rightarrow 0$. However, by using small $\beta_t$ and large $T$, it can be approximately considered Gaussian.
+            In general, $p(\x_{t-1} \mid \x_t)$ does not necessarily follow a Gaussian distribution as this is only true for $\beta_t \rightarrow 0$. However, by using small $\beta_t$ and large $T$, it can be approximately considered Gaussian.
         \end{remark}
 
         \begin{description}
-            \item[Training]
-                The training objective for a set of real images $\{ \matr{x}_0^{(i)} \}_{i=1}^{I}$ is:
-                \[ \matr{\theta}_1^*, \dots, \matr{\theta}_T^* = \arg\max_{\matr{\theta}_1, \dots, \matr{\theta}_T} \sum_{i=1}^{I} \log\left( p(\matr{x}_0^{(i)} \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \right) \]
-                As each image is obtained as a sequence of latents, we have that:
-                \[
-                    \begin{aligned}
-                        p&(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \\
-                        &= p(\matr{x}_0 \mid \matr{x}_1, \dots, \matr{x}_T, \matr{\theta}_1, \dots, \matr{\theta}_T) p(\matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) 
-                            & p(x, y | z) = p(x | y, z)p(y | z) \\
-                        &= p(\matr{x}_0 \mid \matr{x}_1, \matr{\theta}_1) p(\matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_2, \dots, \matr{\theta}_T) 
-                            & \text{Markov chain} \\
-                        &= \dots & \text{Repeat} \\
-                        &= p(\matr{x}_0 \mid \matr{x}_1, \matr{\theta}_1) \left( \prod_{t=2}^{T} p(\matr{x}_{t-1} \mid \matr{x}_t, \matr{\theta}_t) \right) p(\matr{x}_T)
-                    \end{aligned}
+            \item[Loss]
+                The loss function for a set of images $\{ \x_0^{(i)} \}_{i=1}^{I}$ is based on the MSE of the predicted means:
+                \[ 
+                    \small
+                    \begin{split}
+                        &\mathcal{L}(\params_1, \dots, \params_T) \\
+                        &= \sum_{i=1}^{I}\Bigg( 
+                            -\log\left( \mathcal{N}(\x_0^{(i)}; \mu_1(\x_1^{(i)}; \params_1), \sigma_1\matr{I}) \right) +
+                            \sum_{t=2}^{T} \frac{1}{2\sigma_t} \bigg\Vert 
+                                \matr{\mu}_{q(x_{t-1} \mid x_t, x_0)} -
+                                \mu_t(\x_t^{(i)}; \matr{\theta_t}) \vphantom{\frac{\sqrt{0_0}}{0_0}}
+                            \bigg\Vert^2
+                        \Bigg) \\
+                        &= \sum_{i=1}^{I}\Bigg( 
+                            \underbrace{-\log\left( \mathcal{N}(\x_0^{(i)}; \mu_1(\x_1^{(i)}; \params_1), \sigma_1\matr{I}) \right)}_{\text{Reconstruction of $x_0$ from $x_1$}} +
+                            \sum_{t=2}^{T} \frac{1}{2\sigma_t} \bigg\Vert 
+                                \underbrace{\frac{1-\alpha_{t-1}}{1-\alpha_t} \sqrt{1-\beta_t} \x_t^{(i)} + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t}\beta_t\x_0^{(i)}}_{\text{Ground-truth mean of $q(x_{t-1} \mid x_t, x_0)$}} -
+                                \underbrace{\mu_t(\x_t^{(i)}; \matr{\theta_t}) \vphantom{\frac{\sqrt{0_0}}{0_0}}}_{\text{Prediction}}
+                            \bigg\Vert^2
+                        \Bigg)
+                    \end{split}
                 \]
-                And the likelihood of $\matr{x}_0$ can be computed through marginalization over the latent images as follows:
-                \[ p(\matr{x}_0^{(i)} \mid \matr{\theta}_1, \dots, \matr{\theta}_T) = \int p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \]
-                However, in practice this approach is computationally intractable due to the high number and high dimensionality of the latent variables.
 
-                \begin{description}
-                    \item[Evidence lower bound (ELBO)] \marginnote{Evidence lower bound (ELBO)}
-                        Method to compute a lower-bound of the log-likelihood. During training, we aim to maximize this bound as a proxy to maximize the likelihood.
+                \begin{remark}
+                    As $T$ is usually large, the MSE term has more relevance.
+                \end{remark}
 
-                        \begin{lemma}[Jensen's inequality]
-                            Given a concave function $f(\cdot)$ and the expectation of the data $x$. It holds that:
-                            \[ f(\mathbb{E}_{x \sim p(x)}[x]) \geq \mathbb{E}_{x \sim p(x)}[f(x)] \]
+                \begin{marginbar}{darkgray}{0}{thick}
+                \begin{proof}
+                    The overall training objective for a set of real images $\{ \x_0^{(i)} \}_{i=1}^{I}$ is to maximize the likelihood of the reconstructed image:
+                    \[ \params_1^*, \dots, \params_T^* = \arg\max_{\params_1, \dots, \params_T} \sum_{i=1}^{I} \log\left( p(\x_0^{(i)} \mid \params_1, \dots, \params_T) \right) \]
 
-                            \begin{example}
-                                Consider the logarithm function and a discrete random variable. It holds that:
-                                \[ \log\left( \mathbb{E}_{x \sim p(x)}[x] \right) \geq \mathbb{E}_{x \sim p(x)}[\log(x)] \Rightarrow \log\left( \sum_{x \in \mathbb{X}} p(x)x \right) \geq \sum_{x \in \mathbb{X}} (p(x)\log(x)) \]
-                            \end{example}
+                    \indenttbox
+                    \begin{marginbar}{darkgray}{0}{thick}
+                    \begin{lemma}[Latents joint probabilites] \label{th:latents_joint}
+                        As each image is obtained as a sequence of latents, we have that:
+                        \begin{equation}
+                            \begin{aligned}
+                                p&(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T) \\
+                                &= p(\x_0 \mid \x_1, \dots, \x_T, \params_1, \dots, \params_T) p(\x_1, \dots, \x_T \mid \params_1, \dots, \params_T) 
+                                    & \text{\small $p(x, y | z) = p(x | y, z)p(y | z)$} \\
+                                &= p(\x_0 \mid \x_1, \params_1) p(\x_1, \dots, \x_T \mid \params_2, \dots, \params_T) 
+                                    & {\text{\small Markov chain}} \\
+                                &= \dots & {\text{\small Repeat}} \\
+                                &= p(\x_0 \mid \x_1, \params_1) \left( \prod_{t=2}^{T} p(\x_{t-1} \mid \x_t, \params_t) \right) p(\x_T)
+                            \end{aligned}
+                        \end{equation}
+                    \end{lemma}
+                    \end{marginbar}
 
-                            \begin{figure}[H]
-                                \centering
-                                \includegraphics[width=0.4\linewidth]{./img/jensen_inequality.jpg}
-                                \caption{Visualization of the Jensen's inequality}
-                            \end{figure}
-                        \end{lemma}
+                    By using \Cref{th:latents_joint}, the likelihood of $\x_0$ can be computed through marginalization over the latent images as follows:
+                    \[ p(\x_0^{(i)} \mid \params_1, \dots, \params_T) = \int p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T) \, d\x_1 \dots d\x_T \]
+                    However, in practice this approach is computationally intractable due to the high number and high dimensionality of the latent variables.
 
-                        ELBO is computed as follows:
+                    \indenttbox
+                    \begin{marginbar}{darkgray}{0}{thick}
+                    \begin{lemma}[Jensen's inequality]
+                        Given a concave function $f(\cdot)$ and the expectation of the data $x$. It holds that:
+                        \[ f(\mathbb{E}_{x \sim p(x)}[x]) \geq \mathbb{E}_{x \sim p(x)}[f(x)] \]
+
+                        \indenttbox
+                        \begin{example}
+                            Consider the logarithm function and a discrete random variable. It holds that:
+                            \[ \log\left( \mathbb{E}_{x \sim p(x)}[x] \right) \geq \mathbb{E}_{x \sim p(x)}[\log(x)] \Rightarrow \log\left( \sum_{x \in \mathbb{X}} p(x)x \right) \geq \sum_{x \in \mathbb{X}} (p(x)\log(x)) \]
+                        \end{example}
+
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.45\linewidth]{./img/jensen_inequality.jpg}
+                            \caption{Visualization of Jensen's inequality}
+                        \end{figure}
+                    \end{lemma}
+                    \end{marginbar}
+
+                    \indenttbox
+                    \begin{marginbar}{darkgray}{0}{thick}
+                    \begin{lemma}[Evidence lower bound (ELBO)] \marginnote{Evidence lower bound (ELBO)}
+                        Method to compute a lower-bound of the log-likelihood. It holds that:
                         \[ 
                             \begin{split}
-                                \log&(p(\matr{x}_0 \mid \matr{\theta}_1, \dots, \matr{\theta}_T)) \\ 
-                                &= \log\left( \int p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \right) \\
-                                &= \log\left( \int \frac{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)}{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)} p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T) \, d\matr{x}_1 \dots d\matr{x}_T \right) \\
-                                &= \log\left( \mathbb{E}_{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)}\left[ \frac{p(\matr{x}_0, \matr{x}_1, \dots, \matr{x}_T \mid \matr{\theta}_1, \dots, \matr{\theta}_T)}{q(\matr{x}_1, \dots, \matr{x}_T \mid \matr{x}_0)} \right] \right) \\
+                                \log&(p(\x_0 \mid \params_1, \dots, \params_T)) \\ 
+                                &= \log\left( \int p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T) \, d\x_1 \dots d\x_T \right) \\
+                                &= \log\left( \int \frac{q(\x_1, \dots, \x_T \mid \x_0)}{q(\x_1, \dots, \x_T \mid \x_0)} p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T) \, d\x_1 \dots d\x_T \right) \\
+                                &= \log\left( \mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \frac{p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T)}{q(\x_1, \dots, \x_T \mid \x_0)} \right] \right) \\
                             \end{split}
                         \]
-                \end{description}
+                        By applying Jensen's inequality, ELBO is computed as:
+                        \[
+                            \begin{split}
+                                \log&\left( \mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \frac{p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T)}{q(\x_1, \dots, \x_T \mid \x_0)} \right] \right) \geq \\
+                                &\mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \log\left( \frac{p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T)}{q(\x_1, \dots, \x_T \mid \x_0)} \right) \right] = \texttt{ELBO}(\params_1, \dots, \params_T)
+                            \end{split}
+                        \]
+                    \end{lemma}
+                    \end{marginbar}
+
+                    During training, we aim to maximize ELBO as a proxy to maximize the likelihood. By applying \Cref{th:latents_joint} to the argument of the logarithm in ELBO, we have that:
+                    \[
+                        \begin{aligned}
+                            &\log\left( \frac{p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T)}{q(\x_1, \dots, \x_T \mid \x_0)} \right) \\
+                            &= \log\left( \frac{p(\x_0 \mid \x_1, \params_1) \left( \prod_{t=2}^{T} p(\x_{t-1} \mid \x_t, \params_t) \right) p(\x_T)}{q(\x_1 \mid \x_0) \prod_{t=2}^T q(\x_t \mid \x_{t-1}, \x_0)} \right) \\
+                            &= \log\left( \frac{p(\x_0 \mid \x_1, \params_1)}{q(\x_1 \mid \x_0)} \right) + \log\left( \frac{\prod_{t=2}^{T} p(\x_{t-1} \mid \x_t, \params_t)}{\prod_{t=2}^T q(\x_t \mid \x_{t-1}, \x_0)} \right) + \log(p(\x_T)) \\
+                            &= \log\left( \frac{p(\x_0 \mid \x_1, \params_1)}{q(\x_1 \mid \x_0)} \right) + \log\left( \prod_{t=2}^{T} \left( \frac{p(\x_{t-1} \mid \x_t, \params_t)}{q(\x_{t-1} \mid \x_{t}, \x_0)} \frac{q(\x_{t-1} \mid \x_0)}{q(\x_t \mid \x_0)} \right) \right) + \log(p(\x_T)) 
+                                & \text{\small Bayes on denom.} \\
+                        \end{aligned}
+                    \]
+                    The second term introduced by Bayes' rule can be simplified as follows:
+                    \[
+                        \begin{aligned}
+                            \prod_{t=2}^T \frac{q(\x_{t-1} \mid \x_0)}{q(\x_t \mid \x_0)} &= \frac{q(\x_1 \mid \x_0)}{\cancel{q(\x_2 \mid \x_0)}} \frac{\cancel{q(\x_2 \mid \x_0)}}{\cancel{q(\x_3 \mid \x_0)}} \cdots \frac{\cancel{q(\x_{T-1} \mid \x_0)}}{q(\x_T \mid \x_0)} \\
+                            &= \frac{q(\x_1 \mid \x_0)}{q(\x_T \mid \x_0)} \\
+                            &= \frac{q(\x_1 \mid \x_0)}{q(\x_T)} & \text{\parbox{0.2\linewidth}{\small Time $T$ is known to be $\mathcal{N}(0; \matr{I})$}}
+                        \end{aligned}
+                    \]
+                    Therefore, we have that:
+                    \[
+                        \begin{aligned}
+                            &\log\left( \frac{p(\x_0 \mid \x_1, \params_1)}{\cancel{q(\x_1 \mid \x_0)}} \right) + \log\left( \frac{\cancel{q(\x_1 \mid \x_0)}}{q(\x_T)} \prod_{t=2}^{T} \frac{p(\x_{t-1} \mid \x_t, \params_t)}{q(\x_{t-1} \mid \x_{t}, \x_0)} \right) + \log(p(\x_T)) \\
+                            &= \log\left( p(\x_0 \mid \x_1, \params_1) \right) + \log\left(\prod_{t=2}^{T} \frac{p(\x_{t-1} \mid \x_t, \params_t)}{q(\x_{t-1} \mid \x_{t}, \x_0)} \right) + \log\left( \frac{p(\x_T)}{q(\x_T)} \right) 
+                                & \text{\parbox{0.29\linewidth}{\small $\frac{p(\x_T)}{q(\x_T)} \approx 1$ as they are both $\mathcal{N}(0; \matr{I})$}} \\
+                            &= \log\left( p(\x_0 \mid \x_1, \params_1) \right) + \sum_{t=2}^{T} \log\left(\frac{p(\x_{t-1} \mid \x_t, \params_t)}{q(\x_{t-1} \mid \x_{t}, \x_0)} \right)
+                        \end{aligned}
+                    \]
+
+                    By going back to ELBO, we have that:
+                    \[
+                        \small
+                        \begin{aligned}
+                            &\texttt{ELBO}(\params_1, \dots, \params_T) = \mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \log\left( \frac{p(\x_0, \x_1, \dots, \x_T \mid \params_1, \dots, \params_T)}{q(\x_1, \dots, \x_T \mid \x_0)} \right) \right] \\
+                            &\approx \mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \log\left( p(\x_0 \mid \x_1, \params_1) \right) + \sum_{t=2}^{T} \log\left(\frac{p(\x_{t-1} \mid \x_t, \params_t)}{q(\x_{t-1} \mid \x_{t}, \x_0)} \right) \right] \\
+                            &= \mathbb{E}_{q(\x_1 \mid \x_0)}\left[ \log\left( p(\x_0 \mid \x_1, \params_1) \right) \right] - \sum_{t=2}^{T} \mathbb{E}_{q(\x_1, \dots, \x_T \mid \x_0)}\left[ \log\left(\frac{q(\x_{t-1} \mid \x_{t}, \x_0)}{p(\x_{t-1} \mid \x_t, \params_t)} \right) \right] \\
+                            & & \hspace{-2.5cm}\text{\small $\mathbb{E}_{q(x, y)} = \mathbb{E}_{q(y)} \mathbb{E}_{q(x \mid y)}$} \\
+                            &= \mathbb{E}_{q(\x_1 \mid \x_0)}\left[ \log\left( p(\x_0 \mid \x_1, \params_1) \right) \right] - \sum_{t=2}^{T} \mathbb{E}_{q(\x_t \mid \x_0)}\mathbb{E}_{q(\x_1, \dots, \x_{t-1}, \x_{t+1}, \dots, \x_T \mid \x_t, \x_0)}\left[ \log\left(\frac{q(\x_{t-1} \mid \x_{t}, \x_0)}{p(\x_{t-1} \mid \x_t, \params_t)} \right) \right] \\
+                            &= \mathbb{E}_{q(\x_1 \mid \x_0)}\left[ \log\left( p(\x_0 \mid \x_1, \params_1) \right) \right] - \sum_{t=2}^{T} \mathbb{E}_{q(\x_t \mid \x_0)}\mathbb{E}_{q(\x_{t-1} \mid \x_t, \x_0)}\left[ \log\left(\frac{q(\x_{t-1} \mid \x_{t}, \x_0)}{p(\x_{t-1} \mid \x_t, \params_t)} \right) \right] \\
+                            &= \mathbb{E}_{q(\x_1 \mid \x_0)}\left[ \log\left( p(\x_0 \mid \x_1, \params_1) \right) \right] - \sum_{t=2}^{T} \mathbb{E}_{q(\x_t \mid \x_0)}\Big[ D_\text{KL}\big(q(\x_{t-1} \mid \x_t, \x_0) \Vert p(\x_{t-1} \mid \x_t, \params_t)\big) \Big] \\
+                        \end{aligned}
+                    \]
+
+                    To make ELBO a computable loss function, we have to:
+                    \begin{itemize}
+                        \item Approximate expectations with Monte Carlo.
+                        \item Expand $p$ and $q$ with their definition. 
+                        \item Expand the KL divergence. As it is between two Gaussians with constant covariance matrices, it can be computed in closed form as:
+                        \[ 
+                            \begin{split}
+                                D_\text{KL}&\big(q(\x_{t-1} \mid \x_t, \x_0) \Vert p(\x_{t-1} \mid \x_t, \params_t)\big) \\
+                                &= \frac{1}{2\sigma_t} \left\Vert \matr{\mu}_{q(\x_{t-1} \mid \x_t, \x_0)} - \matr{\mu}_{p(\x_{t-1} \mid \x_t, \params_t)} \right\Vert^2 + c \\
+                                &= \frac{1}{2\sigma_t} \left\Vert \left(\frac{1-\alpha_{t-1}}{1-\alpha_t} \sqrt{1-\beta_t} \x_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t} \beta_t \x_0\right) - \mu_t(\x_t; \params_t) \right\Vert^2 + c
+                            \end{split}
+                        \]
+                        where $c$ is a constant.
+                    \end{itemize}
+
+                    Finally, the loss is defined from ELBO as:
+                    \[
+                        \small
+                        - \sum_{i=1}^{I}\Bigg( 
+                            \log\left( \mathcal{N}(\x_0^{(i)}; \mu_1(\x_1^{(i)}; \params_1), \sigma_1\matr{I}) \right) -
+                            \sum_{t=2}^{T} \frac{1}{2\sigma_t} \bigg\Vert 
+                                \frac{1-\alpha_{t-1}}{1-\alpha_t} \sqrt{1-\beta_t} \x_t^{(i)} + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t}\beta_t\x_0^{(i)} -
+                                \mu_t(\x_t^{(i)}; \matr{\theta_t}) \vphantom{\frac{\sqrt{0_0}}{0_0}}
+                            \bigg\Vert^2
+                        \Bigg)
+                    \]
+                \end{proof}
+                \end{marginbar}
+        \end{description}
+
+
+    \item[Learned reverse process (noise)] \marginnote{Learned reverse process (noise)}
+        Learn a network $\varepsilon_t(\x_t; \params_t)$ to predict the noise at time $t$ instead of the mean.
+
+        \begin{description}
+            \item[Loss]
+                The loss function is the MSE between noises:
+                \[ 
+                    \mathcal{L}(\params_1, \dots, \params_T) = 
+                    \sum_{i=1}^{I} \left( \sum_{t=1}^{T} \frac{\beta_t^2}{(\alpha_{t-1})(1-\beta_t)} \left\Vert \varepsilon_t\left( \sqrt{\alpha_t} \x_0^{(i)} + \sqrt{1-\alpha_t} \noise_t; \params_t \right) - \noise_t \right\Vert^2 \right)
+                \]
+        \end{description}
+
+        \begin{remark}
+            In practice, this approach works better.
+        \end{remark}
+
+        \begin{marginbar}{darkgray}{0}{thick}
+        \begin{theorem}
+            Predicting the noise is equivalent to predicting the mean.
+
+            \begin{proof}
+                Consider the diffusion kernel:
+                \[ \x_t = \sqrt{\alpha_t} \x_0 + \sqrt{1-\alpha_t} \noise_t \iff \x_0 = \frac{1}{\sqrt{\alpha_t}}\x_t + \frac{\sqrt{1-\alpha_t}}{\sqrt{\alpha_t}}\noise_t \]
+                By substituting $\x_0$ in the definition of the mean of $q(\x_{t-1} \mid \x_t, \x_0)$, we have that:
+                \[
+                    \begin{split}
+                        \matr{\mu}_{q(\x_{t-1} \mid \x_t, \x_0)} &= \frac{1-\alpha_{t-1}}{1-\alpha_t} \sqrt{1-\beta_t} \x_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t} \beta_t \x_0 \\
+                        &= \frac{1-\alpha_{t-1}}{1-\alpha_t} \sqrt{1-\beta_t} \x_t + \frac{\sqrt{\alpha_{t-1}}}{1-\alpha_t} \beta_t \left( \frac{1}{\sqrt{\alpha_t}}\x_t + \frac{\sqrt{1-\alpha_t}}{\sqrt{\alpha_t}}\noise_t \right) \\
+                        &= \dots \\
+                        &= \frac{1}{\sqrt{1-\beta_t}}\x_t - \frac{\beta_t}{\sqrt{1-\alpha_{t-1}}\sqrt{1-\beta_t}} \noise_t
+                    \end{split}
+                \]
+                Therefore, with $\varepsilon_t(\x_t; \params_t)$ it is possible to obtain the mean.
+
+                Moreover, the MSE term of the loss becomes:
+                \[
+                    \begin{split}
+                        &\left\Vert \matr{\mu}_{q(\x_{t-1} \mid \x_t, \x_0)} - \mu(\x_t; \params_t) \right\Vert^2 \\
+                        &= \left\Vert \left( \frac{1}{\sqrt{1-\beta_t}}\x_t - \frac{\beta_t}{\sqrt{1-\alpha_{t-1}}\sqrt{1-\beta_t}} \noise_t \right) - \left( \frac{1}{\sqrt{1-\beta_t}}\x_t - \frac{\beta_t}{\sqrt{1-\alpha_{t-1}}\sqrt{1-\beta_t}} \varepsilon(\x_t; \params_t) \right) \right\Vert^2 \\
+                        &= \frac{\beta_t^2}{\alpha_{t-1}(1-\beta_t)} \Vert \varepsilon(\x_t; \params_t) - \noise_t \Vert^2 \\
+                        &= \frac{\beta_t^2}{\alpha_{t-1}(1-\beta_t)} \Vert \varepsilon(\sqrt{\alpha_t}\x_0 + \sqrt{1-\alpha_t}\noise_t; \params_t) - \noise_t \Vert^2
+                    \end{split}
+                \]
+
+                Therefore, the loss that only uses MSE computed on $I$ images is:
+                \[ \sum_{i=1}^{I} \left( \sum_{t=1}^{T} \frac{\beta_t^2}{(\alpha_{t-1})(1-\beta_t)} \left\Vert \varepsilon_t\left( \sqrt{\alpha_t} \x_0^{(i)} + \sqrt{1-\alpha_t} \noise_t; \params_t \right) - \noise_t \right\Vert^2 \right) \]
+            \end{proof}
+        \end{theorem}
+        \end{marginbar}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{./img/diffusion_model_training.jpg}
+        \caption{Diffusion models training flow}
+    \end{figure}
+\end{description}
+
+
+\subsection{Architecture}
+
+\begin{description}
+    \item[Generation architecture]
+        Standard U-Net or transformers to predict the noise.
+
+        \begin{description}
+            \item[U-Net with self-attention]
+                Add global self-attention at the layers of the backbone where the resolution of the image is sufficiently small. It is applied as follows:
+                \begin{enumerate}
+                    \item Flatten the spatial dimension to obtain $C$ 1D activations.
+                    \item Pass the flattened activations through the self-attention layer.
+                    \item Reshape the output to match the original activation.
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.7\linewidth]{./img/unet_attention.jpg}
+                \end{figure}
         \end{description}
 \end{description}
+
+
+\begin{description}
+    \item[Time conditioning] \marginnote{Time conditioning}
+        In practice, the same network with the same set of weights is used to process each time step. Therefore, some time information has to be injected.
+
+        Use transformer positional encoding, refined through some fully-connected layers to obtain an activation encoding time information. Then, two approaches are possible:
+        \begin{descriptionlist}
+            \item[Concatenation] 
+                The time activation is concatenated along every spatial dimension of the image activations.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/diffusion_model_time_conditioning1.jpg}
+                \end{figure}
+
+            \item[Adaptive group normalization] 
+                The time activation is used as the modulator for adaptive group normalization (similar mechanism to AdaIN).
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.75\linewidth]{./img/diffusion_model_time_conditioning2.jpg}
+                \end{figure}
+        \end{descriptionlist}
+\end{description}
+
+
+\subsection{Inference}
+
+\begin{description}
+    \item[Denoising diffusion probabilistic model (DDPM)] \marginnote{Denoising diffusion probabilistic model (DDPM)}
+        Given a random latent $\x_T \sim \mathcal{N}(0; \matr{I})$, generation is done as follows:
+        \begin{enumerate}
+            \item For $t = T, \dots, 2$:
+                \begin{enumerate}
+                    \item Compute the mean of $p(\x_{t-1} \mid \x_t)$ by predicting the noise:
+                    \[ \matr{\mu}_t = \frac{1}{\sqrt{1-\beta_t}}\x_t - \frac{\beta_t}{\sqrt{1-\alpha_{t-1}}\sqrt{1-\beta_t}} \varepsilon_t(\x_t; \matr{\theta}) \]
+                    \item Sample the next less noisy image from $p(\x_{t-1} \mid \x_t)$:
+                    \[ \x_{t-1} = \matr{\mu}_t + \sigma_t \noise_t \qquad \text{with } \noise_t \sim \mathcal{N}(0; \matr{I}) \]
+                \end{enumerate}
+            \item Use the mean of $p(\x_0 \mid \x_1)$ as the output image:
+            \[ \x_0 = \frac{1}{\sqrt{1-\beta_t}}\x_1 - \frac{\beta_1}{\sqrt{1-\alpha_{0}}\sqrt{1-\beta_1}} \varepsilon_1(\x_1; \matr{\theta}) \]
+        \end{enumerate}
+
+        \begin{remark}
+            In the original paper, a linear schedule for $\beta_t$ has been used. This results in a schedule for $\alpha_t$ that made the image mostly noise very quickly.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/ddpm_schedule.jpg}
+            \end{figure}
+        \end{remark}
+
+    \item[Improved DDPM (IDDPM)] \marginnote{Improved DDPM (IDDPM)}
+        Use a cosine schedule for $\alpha_t$ (with $\beta_t = 1-\frac{\alpha_t}{\alpha_{t-1}}$) so that the trajectory does not destroy the image too quickly.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.85\linewidth]{./img/iddpm_schedule.jpg}
+        \end{figure}
+\end{description}
+
+\begin{remark}
+    The loss of diffusion models (with DDPM) only considers the marginal $q(\x_t \mid \x_0)$:
+    \[ \sum_{i=1}^{I} \Bigg( \sum_{t=1}^{T} \frac{\beta_t^2}{(\alpha_{t-1})(1-\beta_t)} \Big\Vert \varepsilon_t
+    \big( \underbrace{\sqrt{\alpha_t} \x_0^{(i)} + \sqrt{1-\alpha_t} \noise_t; \params_t}_\text{Sampled from $q(\x_t \mid \x_0)$} \big)
+     - \noise_t \Big\Vert^2 \Bigg) \]
+    Therefore, any new family of forward processes that use this same diffusion kernel (i.e., able to sample $\x_t$ conditioned to only $\x_0$) can reuse a pre-trained DDPM model.
+\end{remark}
+
+\begin{description}
+    \item[Denoising diffusion implicit model (DDIM)] \marginnote{Denoising diffusion implicit model (DDIM)}
+        \begin{description}
+            \item[Forward process] 
+                Use a family of non-Markovian forward distributions conditioned on the real image $\x_0$ and parametrized by a positive standard deviation $\vec{\sigma}$ defined as:
+                \[ q_\vec{\sigma}(\x_1, \dots, \x_T \mid x_0) = q_{\sigma_T}(\x_T \mid \x_0) \prod_{t=2}^{T} q_{\sigma_t}(\x_{t-1} \mid \x_t, \x_0) \]
+                where:
+                \[
+                    \begin{gathered}
+                        q_{\sigma_T}(\x_T \mid \x_0) = \mathcal{N}(0, \matr{I}) \\
+                        q_{\sigma_t}(\x_{t-1} \mid \x_t, \x_0) = \mathcal{N}\left( \sqrt{\alpha_{t-1}}\x_0 + \sqrt{1-\alpha_{t-1}-\alpha_t^2} \frac{\x_t - \sqrt{\alpha_t} \x_0}{\sqrt{1-\alpha_t}}; \sigma_t^2\matr{I} \right)
+                    \end{gathered}
+                \]
+
+                With this definition, it can be shown that:
+                \[ q_{\sigma_t}(\x_t \mid \x_0) = \mathcal{N}(\sqrt{\alpha_t}\x_0; (1-\alpha_t)\matr{I}) \]
+
+                \begin{remark}
+                    With a specific choice for $\vec{\sigma}$ ($\sigma_t = \sqrt{\frac{1-\alpha_{t-1}}{1-\alpha_t}}\sqrt{1-\frac{\alpha_t}{\alpha_{t-1}}}$), it is possible to obtain DDPM (i.e., DDIM is a generalization of DDPM).
+
+                    In practice, instead of tuning $\sigma_t$ directly, a proxy hyperparameter $\eta$ is used as follows:
+                    \[ \sigma_t(\eta) = \eta \sqrt{\frac{1-\alpha_{t-1}}{1-\alpha_t}}\sqrt{1-\frac{\alpha_t}{\alpha_{t-1}}} \] 
+                    In other words, $\eta$ controls $\sigma_t$ using the DDPM model as reference (with $\eta=1$ resulting in DDPM).
+                \end{remark}
+
+                \begin{remark}
+                    With $\sigma_t \rightarrow 0$, the generation process becomes more deterministic. With $\sigma_t = 0$ ($\eta=0$), the mean is always sampled (i.e., fully deterministic).
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.9\linewidth]{./img/non_markovian_forward.jpg}
+                \end{figure}
+
+            \item[Reverse process] 
+                Given a latent $\x_t$ and a DDPM model $\varepsilon_t(\cdot; \params)$, generation at time step $t$ is done as follows:
+                \begin{enumerate}
+                    \item Compute an estimate for the current time step $t$ of the real image:
+                    \[ \hat{\x}_0 = \frac{\x_t - \sqrt{\alpha_{t-1}} \varepsilon_t(\x_t; \params)}{\sqrt{\alpha_t}} = f_\params(\x_t) \]
+                    Note that the formula comes from the usual $\x_t = \sqrt{\alpha_t}\x_0 + \sqrt{1-\alpha_t}\noise_t$.
+                    \item Sample the next image from:
+                    \[ p_\params(\x_{t-1} \mid \x_t) = q_\vec{\sigma}(\x_{t-1} \mid \x_t, f_\params(\x_t)) \]
+                    (i.e., $\x_0$ in $q_\vec{\sigma}$ has been replaced with an estimation of it).
+                    The image is obtained as:
+                    \[ \x_{t-1} = \matr{\mu}_{q_\vec{\sigma}} + \matr{\Sigma}_{q_\vec{\sigma}} \noise \]
+                \end{enumerate}
+
+            \item[Accelerate sampling] \marginnote{Accelerate sampling}
+                Use a forward process that only considers a subset of time steps. This allows to skip $k$ steps in the reverse process as:
+                \[ 
+                    \begin{split}
+                        p_\params(\x_{t-k} \mid \x_t) &= q_\vec{\sigma}(\x_{t-k} \mid \x_t, \x_0) \\
+                        &= \mathcal{N}\left( \sqrt{\alpha_{t-k}}\x_0 + \sqrt{1-\alpha_{t-k}-\sigma_t^2} \frac{\x_t-\sqrt{\alpha_t}\x_0}{\sqrt{1-\alpha_t}}; \sigma_t^2\matr{I} \right) 
+                    \end{split}
+                \] 
+
+                \begin{remark}
+                    Skipped steps are actually present in the forward process as during training all steps are considered. Therefore, it is only possible to skip steps during inference.
+                \end{remark}
+
+                \begin{remark}
+                    It has been observed that determinism ($\sigma_t=0$/$\eta=0$) with accelerated generation has the best performance.
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.45\linewidth]{./img/diffusion_accelerated_sampling.jpg}
+                \end{figure}
+        \end{description}
+\end{description}
+
+
+\subsection{Interpretation of diffusion models as score estimators}
+
+\begin{description}
+    \item[Score function] \marginnote{Score function}
+        Given a probability density function $p(x)$, its score function is defined as:
+        \[ s(x) = \nabla_x\left[ \log(p(x)) \right] \]
+
+        \begin{remark}
+            Differently from a probability distribution, the score function $s$ does not have to be normalized to sum $1$. Therefore, it is easier to approximate with a neural network $s(x; \theta)$.
+        \end{remark}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.65\linewidth]{./img/score_function.jpg}
+        \end{figure}
+
+        The score function indicates which direction maximally increases $p(x)$. In other words, it defines a vector field that points towards the modes of $p(x)$.
+
+    \item[Langevin dynamics] \marginnote{Langevin dynamics}
+        Method to sample from a score function as:
+        \[ \x_{t-1} = \x_t + c \nabla_\x\left[ \log(p(x)) \right] + \sqrt{2c} \noise \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.3\linewidth]{./img/langevin_dynamics.jpg}
+        \end{figure}
+
+        \begin{remark}
+            Score functions are inaccurate in low density regions. Therefore, sampling is inaccurate in areas with fewer data points.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.65\linewidth]{./img/langevin_dynamics_low_density.jpg}
+            \end{figure}
+        \end{remark}
+
+    \item[Langevin dynamics with noise] \marginnote{Langevin dynamics with noise}
+        Add noise to the original data to make the trained score function more robust.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{./img/langevin_dynamics_noise.jpg}
+        \end{figure}
+
+        \begin{remark}
+            Larger scales of noise significantly alter the original distribution. Smaller scales of noise do not cover enough low density regions.
+        \end{remark}
+
+        \begin{description}
+            \item[Annealed Langevin dynamics] \marginnote{Annealed Langevin dynamics}
+                Use multiple scales of noise to estimate a family of score functions $s_t(\x_t; \params)$. Then, run a few steps of Langevin dynamics for $t=T, \dots, 1$, each time restarting from $t-1$.
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.7\linewidth]{./img/annealed_langevin_dynamics.jpg}
+                \end{figure}
+        \end{description}
+
+    \item[Diffusion model as score estimator]
+        The score function of an isotropic Gaussian distribution is:
+        \[ 
+            \begin{split}
+                s(\x) &= \nabla_\x\left[ \log(p(\x)) \right] \qquad \text{with } \x \sim p(\x) = \mathcal{N}(\matr{\mu}; \sigma^2\matr{I}) \\
+                &= \nabla_\x\left[ \log\left( \frac{1}{c} e^{-\frac{(\x-\matr{\mu})^2}{2\sigma^2}} \right) \right] \\
+                &= \nabla_\x\left[ \log\left(\frac{1}{c}\right) \right] + \nabla_\x\left[ -\frac{(\x - \matr{\mu})^2}{2\sigma^2} \right] \\
+                &= -\frac{\x - \matr{\mu}}{\sigma^2}
+            \end{split}
+        \]
+        As it holds that:
+        \[ \x = \matr{\mu} + \sigma\noise \iff \noise = \frac{\x - \matr{\mu}}{\sigma} \qquad \text{with } \noise \sim \mathcal{N}(0; \matr{I}) \]
+        The score function can be rewritten as an estimator of the Gaussian noise:
+        \[ s(\x) = -\frac{\x - \matr{\mu}}{\sigma^2} = -\frac{\noise}{\sigma} \]
+        Therefore, as diffusion models learn to predict $\varepsilon_t(\x_t; \params)$, they can be seen as a score function with a scaling factor $-\frac{1}{\sigma} = -\frac{1}{\sqrt{1-\alpha_t}}$.
+
+        As a result, diffusion models implicitly perform annealed Langevin dynamics when generating an image.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.3\linewidth]{./img/diffusion_model_annealing.png}
+        \end{figure}
+\end{description}
+
+
+\subsection{Class conditioning}
+
+\begin{description}
+    \item[One-hot conditioning] \marginnote{One-hot conditioning}
+        Condition generation based on a class $c$. The model predicting noise becomes:
+        \[ \varepsilon_t(\x_t; c, \params) \]
+        Architecturally, similarly to time conditioning, the one-hot encoding of the class is refined through fully-connected layers to create an embedding that is appended to the image activations.
+
+        \begin{remark}
+            This works as conditioning the likelihood with a class $c$ does not change the previous proofs.
+        \end{remark}
+
+        \begin{description}
+            \item[Cascaded diffusion models] \marginnote{Cascaded diffusion models}
+                Approach to generate high resolution images starting from some class conditioning.
+
+                Given a standard diffusion model $d_1$ and a series of super-resolution diffusion models $d_2, \dots, d_n$ with increasing resolution, the generation of an image of class $c$ is done as follows:
+                \begin{enumerate}
+                    \item Use the first diffusion model $d_1$ to generate a starting low-resolution image $\matr{I}_1$ from a latent and the class $c$.
+                    \item Iterate over the super-resolution diffusion models $i=2, \dots, n$:
+                    \begin{enumerate}
+                        \item Up-sample the previously generated image $\matr{I}_{i-1}$ to match the shape of the current diffusion model $d_i$.
+                        \item Generate a higher resolution image $\matr{I}_i$ using the diffusion model $d_i$ from a latent conditioned on the class $c$ and the previous image $\matr{I}_{i-1}$ (which is concatenated along the spatial dimension of the latent).
+                    \end{enumerate}
+                \end{enumerate}
+
+            \begin{remark}
+                Higher-resolution models in the pipeline can be seen as detail generators.
+            \end{remark}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.9\linewidth]{./img/cascaded_diffusion_models.jpg}
+            \end{figure}
+        \end{description}
+\end{description}
+
+
+
+\let\x\undefined
+\let\params\undefined
