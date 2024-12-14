@@ -32,8 +32,5 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 
 ### Year 2
 - [**Artificial Intelligence in Industry**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/artificial-intelligence-in-industry/a3i.pdf)
-- **Big Data Analytics and Text Mining**
-   - [Text mining](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/big-data-analytics-and-text-mining/module1/tm.pdf)
-   - [Big data analytics](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/big-data-analytics-and-text-mining/module2/bda.pdf)
 - [**Machine Learning for Computer Vision**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/machine-learning-for-computer-vision/ml4cv.pdf)
 - [**Natural Language Processing**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/natural-language-processing/nlp.pdf)
