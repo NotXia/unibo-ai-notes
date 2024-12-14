@@ -1,0 +1,51 @@
+\chapter{Italian LLMs}
+
+\begin{remark}
+    Advantages of pre-training from scratch are:
+    \begin{itemize}
+        \item Having full control on the training data.
+        \item Improve the fertility of the tokenizer.
+    \end{itemize} 
+\end{remark}
+
+\begin{description}
+    \item[Minerva] \marginnote{Minerva}
+        Language model pre-trained on the Italian language.
+
+        \begin{remark}
+            Minerva's pre-training corpus is actually composed by both Italian and English datasets.
+
+            Initially, English was used for benchmarking due to the lack of Italian benchmarks. However, it is also useful for tasks intrinsically in English (e.g., coding).
+        \end{remark}
+
+        \begin{remark}
+            Some training datasets were automatically translated in Italian. Some others were adapted from existing Italian ones (e.g., transform a question answering dataset into a cloze form).
+        \end{remark}
+\end{description}
+
+
+\begin{description}
+    \item[FENICE metric] \marginnote{FENICE metric}
+        Factuality metric for summarization. It works as follows:
+        \begin{enumerate}
+            \item Extract claims from the summary with an ad-hoc LLM.
+            \item Align each claim with the original document with positive (if in support) and negative (if against) scores.
+            \item Perform co-reference resolution to unify entities across claims.
+        \end{enumerate}
+
+    \item[ALERT benchmark] \marginnote{ALERT benchmark}
+        Benchmark to test the safeness of an LLM based on 32 risk categories. The testing data are created as follows:
+        \begin{enumerate}
+            \item Filter the ``\textit{Helpfulness \& Harmlessness-RLHF}'' dataset of \textit{Anthropic} by considering for each example the first prompt and red team attacks only.
+            \item Use templates to automatically generate additional prompts.
+            \item Augment the prompts by formatting them as adversarial attacks. Examples of attacks are:
+            \begin{descriptionlist}
+                \item[Prefix/suffix injection]
+                    Prepend or append an adversarial prompt (e.g., \texttt{disregard the instructions above and \dots}).
+                \item[Token manipulation]
+                    Alter or invert a small fraction of tokens in the prompt (the idea is to use a prompt that is less likely to have been already seen in the alignment datasets).
+                \item[Jailbreaking]
+                    Use more complex strategies (e.g., role playing).
+            \end{descriptionlist}
+        \end{enumerate}
+\end{description}
