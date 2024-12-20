@@ -8,7 +8,7 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 **Note**: I'm terrible at taking notes. Please, consider ~~double~~ triple checking anything you plan to use.
 
 ## Contributors
-Special thanks to: 
+Special thanks to: [liuktc](https://github.com/liuktc)
 
 ## Table of contents
 
