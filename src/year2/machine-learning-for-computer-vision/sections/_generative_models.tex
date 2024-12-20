@@ -547,6 +547,10 @@
     Adversarial losses can also be used in supervised problems (e.g., generate a colored version of a black-and-white image).
 \end{remark}
 
+\begin{remark}[BigGAN] \marginnote{BigGAN}
+    To improve realism (with loss in coverage), a latent can be sampled from only the high-probability areas of the distribution.
+\end{remark}
+
 
 
 \section{Diffusion models}
@@ -1104,6 +1108,7 @@
     \item[Langevin dynamics] \marginnote{Langevin dynamics}
         Method to sample from a score function as:
         \[ \x_{t-1} = \x_t + c \nabla_\x\left[ \log(p(x)) \right] + \sqrt{2c} \noise \]
+        where $c$ is a hyperparameter.
 
         \begin{figure}[H]
             \centering
@@ -1155,7 +1160,11 @@
         \[ \x = \matr{\mu} + \sigma\noise \iff \noise = \frac{\x - \matr{\mu}}{\sigma} \qquad \text{with } \noise \sim \mathcal{N}(0; \matr{I}) \]
         The score function can be rewritten as an estimator of the Gaussian noise:
         \[ s(\x) = -\frac{\x - \matr{\mu}}{\sigma^2} = -\frac{\noise}{\sigma} \]
-        Therefore, as diffusion models learn to predict $\varepsilon_t(\x_t; \params)$, they can be seen as a score function with a scaling factor $-\frac{1}{\sigma} = -\frac{1}{\sqrt{1-\alpha_t}}$.
+        Therefore, as diffusion models learn to predict $\varepsilon_t(\x_t; \params)$ from a Gaussian with $\sigma = \sqrt{1-\alpha_t}$, they can be seen as score functions with a scaling factor $-\sigma$:
+        \[ 
+            s(\x) = -\frac{\varepsilon_t(\x_t; \params)}{\sqrt{1-\alpha_t}} \iff 
+            \varepsilon_t(\x_t; \params) = -\sqrt{1-\alpha_t} s(\x)
+        \]
 
         As a result, diffusion models implicitly perform annealed Langevin dynamics when generating an image.
 
@@ -1166,12 +1175,12 @@
 \end{description}
 
 
-\subsection{Class conditioning}
+\subsection{Generation conditioning}
 
 \begin{description}
-    \item[One-hot conditioning] \marginnote{One-hot conditioning}
+    \item[One-hot class conditioning] \marginnote{One-hot class conditioning}
         Condition generation based on a class $c$. The model predicting noise becomes:
-        \[ \varepsilon_t(\x_t; c, \params) \]
+        \[ \varepsilon_t(\x_t, c; \params) \]
         Architecturally, similarly to time conditioning, the one-hot encoding of the class is refined through fully-connected layers to create an embedding that is appended to the image activations.
 
         \begin{remark}
@@ -1201,8 +1210,134 @@
                 \includegraphics[width=0.9\linewidth]{./img/cascaded_diffusion_models.jpg}
             \end{figure}
         \end{description}
+
+    \item[Classifier guidance] \marginnote{Classifier guidance}
+        Use a classifier to compute $p_\text{cls}(c \mid \x_t, t)$ and guide generation to a class $c$. With the interpretation of diffusion models as score estimators, the classifier is used to steer the trajectories of Langevin dynamics given the latent $\x_t$ at time $t$.
+
+        Given a latent classifier, the class-guided noise can be predicted as follows:
+        \[
+            \begin{split}
+                \varepsilon_t^{\text{cls}}(\x_t, c; \params) 
+                &= -\sqrt{1-\alpha_t} \nabla_{x_t}\Big[ \log(p(\x_t, c)) \Big] \\
+                &= -\sqrt{1-\alpha_t} \nabla_{x_t}\Big[ \log\big(p(\x_t) p_\text{cls}(c \mid \x_t, t)\big) \Big] \\
+                &= -\sqrt{1-\alpha_t} \nabla_{x_t}[ \log(p(\x_t)) ] - \sqrt{1-\alpha_t} \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \\
+                &= -\sqrt{1-\alpha_t} s(\x_t) - \sqrt{1-\alpha_t} \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \\
+                &= \varepsilon_t(\x_t; \params) - \sqrt{1-\alpha_t} \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ]
+            \end{split}
+        \]
+        In practice, a weight $w$ is used to control the strength of guidance:
+        \[ \varepsilon_t^{\text{cls}}(\x_t, c; \params) = \varepsilon_t(\x_t; \params) - w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \]
+
+        \begin{remark}
+            Guidance allows to balance the trade-off between realism and coverage (in a better way than one-hot conditioning).
+        \end{remark}
+
+        \begin{remark}
+            The best results have been obtained by using an already conditional diffusion model. Therefore, $\varepsilon_t(\x_t, c; \params)$ can be substituted in place of $\varepsilon_t(\x_t; \params)$.
+        \end{remark}
+
+        \begin{remark}
+            The classifier usually has to be trained on latents from scratch and it is domain specific.
+        \end{remark}
+
+    \item[Classifier-free guidance] \marginnote{Classifier-free guidance}
+        Generation guidance method that does not require a classifier for latents.
+
+        Consider the formulation of classifier guidance starting with a conditional generator: 
+        \[
+            \begin{split}
+                \varepsilon_t^{\text{cls}}(\x_t, c; \params) 
+                &= \varepsilon_t(\x_t, c; \params) - w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \\
+                &= - \big( - \varepsilon_t(\x_t, c; \params) + w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \big)
+            \end{split}
+        \]
+        By applying Bayes' rule on the second term, we have that:
+        \[
+            \begin{split}
+                w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ]
+                &= w \nabla_{x_t}\left[ \log\left( p(\x_t \mid c) \frac{p(c)}{p(\x_t)} \right) \right] \\
+                &= w \nabla_{x_t}\left[ \log(p(\x_t \mid c)) \right] + w \nabla_{x_t}\left[ \log(p(c)) \right] - w \nabla_{x_t}\left[ \log(p(\x_t)) \right] \\
+                &= w \nabla_{x_t}\left[ \log(p(\x_t \mid c)) \right] + 0 - w \nabla_{x_t}\left[ \log(p(\x_t)) \right] \\
+                &\approx - w \varepsilon_t(\x_t, c; \params) + w \varepsilon_t(\x_t; \params)
+            \end{split}
+        \]
+        Therefore, for guidance without a classifier, two models are required:
+        \begin{itemize}
+            \item A conditional generative model (i.e., $\varepsilon_t(\x_t, c; \params)$).
+            \item An unconditional generative model (i.e., $\varepsilon_t(\x_t; \params)$).
+        \end{itemize}
+        The overall class guided noise is computed as:
+        \[ 
+            \begin{split}
+                \varepsilon_t^{\text{cls}}(\x_t, c; \params) 
+                &= \varepsilon_t(\x_t, c; \params) + w \varepsilon_t(\x_t, c; \params) - w \varepsilon_t(\x_t; \params) \\
+                &= (1 + w) \varepsilon_t(\x_t, c; \params) - w \varepsilon_t(\x_t; \params)
+            \end{split}
+        \]
+
+        \begin{remark}
+            In practice, a single model is used for both conditional and unconditional generation.
+        \end{remark}
+
+        \begin{description}
+            \item[Training]
+                The model is trained as a one-hot class conditioned model. In addition, with probability $p_\text{uncond}$ (e.g., $0.1$), training is done unconditioned (i.e., the one-hot vector is zeroed).
+        \end{description}
+
+        \begin{remark}
+            During inference, the model has to be run twice on the latent to compute the conditioned and unconditioned noise.
+        \end{remark}
+
+    \item[Text conditioning] \marginnote{Text conditioning}
+        Embed text using an encoder and use the outputs at each token as keys and values of the cross-attentions in U-Net while the queries come from the image.
+
+        \begin{description}
+            \item[Training] 
+                Similarly to classifier-free guidance, the model is trained both with and without a conditioning prompt.
+
+                \begin{remark}
+                    The training procedure can also be generalized to negative prompts.
+                \end{remark}
+        \end{description}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.75\linewidth]{./img/diffusion_text_conditioning.jpg}
+        \end{figure}
+
+        \begin{description}
+            \item[Imagen] \marginnote{Imagen}
+                Architecture based on the following steps:
+                \begin{enumerate}
+                    \item Embed a prompt using a frozen text encoder.
+                    \item Generate an initial low-resolution image using a diffusion model that takes as input only the prompt.
+                    \item Pass the low-resolution image and the prompt embeddings through a series of super-resolution diffusion models.
+                \end{enumerate}
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.4\linewidth]{./img/imagen.jpg}
+                \end{figure}
+        \end{description}
 \end{description}
 
+
+\subsection{Latent diffusion models}
+
+\begin{description}
+    \item[Latent diffusion model] \marginnote{Latent diffusion model}
+        Use an autoencoder to generate a compressed latent image to pass through the diffusion model and decode it at the end of generation.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\linewidth]{./img/latent_diffusion.jpg}
+        \end{figure}
+
+        \begin{description}
+            \item[Stable diffusion] \marginnote{Stable diffusion}
+                Model based on latent diffusion with text conditioning.
+        \end{description}
+\end{description}
 
 
 \let\x\undefined
