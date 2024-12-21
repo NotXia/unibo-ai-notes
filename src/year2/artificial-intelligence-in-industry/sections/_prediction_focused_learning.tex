@@ -197,3 +197,157 @@
 \begin{remark}
     PFL with more complex networks allows reaching comparable performance to DLF.
 \end{remark}
+
+\begin{remark}
+    PFL cannot make perfect predictions in presence of uncertainty.
+\end{remark}
+
+
+\subsection{Two-stage stochastic optimization}
+
+\begin{description}
+    \item[Two-stage stochastic optimization (2s-SOP)] \marginnote{Two-stage stochastic optimization (2s-SOP)}
+        Optimization performed in two steps:
+        \begin{descriptionlist}
+            \item[First-stage decisions] Make an initial set of decisions from the current state.
+            \item[Recourse actions] Observe uncertainty and make a second set of decisions.
+        \end{descriptionlist}
+
+        Formally, 2s-SOP is defined as:
+        \[ \arg\min_z \left\{ f(z) + \underset{y \sim P(Y|x)}{\mathbb{E}}\left[ \min_{z''} r(z'', z, y) \right] \mid z \in F, z'' \in F''(z, y) \right\} \]
+        where:
+        \begin{itemize}
+            \item $Y$ models the uncertainty information.
+            \item $z$ and $F$ are the first-stage decisions and their feasible space, respectively.
+            \item $z''$ and $F''(z, y)$ are the recourse actions and their feasible space, respectively.
+            \item $f$ is the immediate cost function of the first-stage decisions.
+            \item $r$ is the cost of the recourse actions.
+        \end{itemize}
+
+        \begin{example}
+            Consider the case of supply planning where we buy from primary suppliers first and then from another sources (for a higher price) in case the primary suppliers are unable to satisfy the request.
+
+            In 2s-SOP, the problem can be formulated as:
+            \[ 
+                \begin{gathered}
+                    \arg\min_z c^Tz + \underset{y \sim P(Y|x)}{\mathbb{E}}\left[ \min_{z''} c''z'' \right] \\
+                    \begin{aligned}
+                        \text{subject to } &y^Tz + z'' \geq y_\text{min} \\
+                        &z \in \{ 0, 1 \}^n, z'' \in \mathbb{N}_0
+                    \end{aligned}
+                \end{gathered}
+            \]
+            where:
+            \begin{itemize}
+                \item $z_j = 1$ iff we choose the $j$-th supplier.
+                \item $c_j$ is the cost of the $j$-th supplier.
+                \item $y_j$ is the yield of the $j$-th supplier and represents the uncertainty.
+                \item $y_\text{min}$ is the minimum required yield.
+                \item $z''$ is the amount we buy at cost $c''$.
+            \end{itemize}
+        \end{example}
+
+
+    \item[2s-SOP without uncertainty] \marginnote{2s-SOP without uncertainty}
+        Solve a 2s-SOP problem by ignoring the uncertainty part (i.e., $\mathbb{E}_{y \sim P(Y|x)}\left[ \min_{z''} r(z'', z, y) \right]$).
+
+
+    \item[Scenario based 2s-SOP] \marginnote{Scenario based 2s-SOP}
+        Sample a finite set of scenarios from $P(Y | x)$ and define different recourse action variables for each scenario.
+
+        \begin{example}
+            For supply planning, the problem becomes:
+            \[ 
+                \begin{gathered}
+                    \arg\min_z c^Tz + \frac{1}{N} c'' z_{k}'' \\
+                    \begin{aligned}
+                        \text{subject to } &y^Tz + z_{k}'' \geq y_\text{min} & \forall k = 1, \dots, N \\
+                        &z \in \{ 0, 1 \}^n \\
+                        &z_k'' \in \mathbb{N}_0 & \forall k = 1, \dots, N
+                    \end{aligned}
+                \end{gathered}
+            \]
+        \end{example}
+
+        \begin{remark}
+            This approach is effective but it is computationally expensive.
+        \end{remark}
+
+
+    \item[DFL for 2s-SOP] \marginnote{DFL for 2s-SOP}
+        Consider the formulation of DFL problems:
+        \[ 
+            \theta^* = \arg\min_\theta \left\{\underset{(x, y) \sim P(X, Y)}{\mathbb{E}}\left[ \texttt{regret}(y, \hat{y}) \right] \mid \hat{y} = h(x; \theta) \right\} 
+        \]
+        To change this formulation to make it closer to 2s-SOP, we can:
+        \begin{itemize}
+            \item Use a generic cost function $g$ instead of the regret (the minimization objective does not change).
+            \item Focus on a single observable $x$ (i.e., a single instance of the problem).
+            \item Add the constraint $z^*(\hat{y}) \in F$ (which is always satisfied by construction).
+        \end{itemize}
+        The formulation becomes:
+        \[ 
+            \theta^* = \arg\min_\theta \left\{\underset{y \sim P(Y|x)}{\mathbb{E}}\left[ g(z^*(\hat{y}), y) \right] \mid \hat{y} = h(x; \theta), z^*(\hat{y}) \in F \right\} 
+        \]
+        By specifically choosing $g$ as:
+        \[ g(z, y) = \min_{z''} \left\{ f(z) + r(z'', z, y) \mid z'' \in F''(z, y) \right\} \]
+        The final problem can be formulated as:
+        \[ 
+            \begin{gathered}
+                \arg\min_\theta f(z^*(\hat{y})) + \underset{y \sim P(Y|x)}{\mathbb{E}}\left[ \min_{z''} r(z'', z^*(\hat{y}), y) \right]  \\ 
+                \begin{aligned}
+                    \text{subject to } &\hat{y} = h(x; \theta) \\ 
+                    &z^*(\hat{y}) \in F \\
+                    &z'' \in F''(z, y) \\
+                \end{aligned}
+            \end{gathered}
+        \]
+        Which is close to 2s-SOP formulated as a training problem on the parameters $\theta$ that is considering a single example (i.e., $x$ is fixed).
+
+        \begin{remark}
+            With this formulation, at inference time, only a single scenario is needed to obtain good results (i.e., more scalability). Moreover, existing solvers can be used without modifications.
+        \end{remark}
+
+        \begin{example}
+            In the supply planning case, the problem becomes:
+            \[
+                \begin{gathered}
+                    z^*(y) = \arg\min_z \left\{ \min_{z''} c^Tz + c''z_k'' \right\} \\
+                    \begin{aligned}
+                        \text{subject to } &y^Tz + z_k'' \geq y_\text{min} \\
+                        &z \in \{ 0, 1 \}^n \\
+                        &z_k'' \in \mathbb{N}_0
+                    \end{aligned}
+                \end{gathered}
+            \]
+            Note that the expected value is not needed as we are considering a single scenario.
+        \end{example}
+
+        \begin{description}
+            \item[Stochastic smoothing] \marginnote{Stochastic smoothing}
+                Apply a Gaussian kernel on the loss function to smooth it and make it differentiable.
+
+                Formally, the loss becomes:
+                \[ 
+                    \tilde{\mathcal{L}}_\text{DFL}(\theta) =
+                    \underset{\substack{(x, y) \sim P(X, Y)\\\hat{y} \sim \mathcal{N}(h(x; \theta))}}{\mathbb{E}}[ \texttt{regret}(y, \hat{y}) ]
+                \]
+
+                \begin{remark}
+                    Using more samples allows achieving better smoothing. Larger $\sigma$ allows removing flat regions but shifts the optimum.
+                \end{remark}
+
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.7\linewidth}
+                        \centering
+                        \includegraphics[width=\linewidth]{./img/_dfl_stochastic_smoothing1.pdf}
+                    \end{subfigure}
+                    \centering
+                    \begin{subfigure}{0.7\linewidth}
+                        \centering
+                        \includegraphics[width=\linewidth]{./img/_dfl_stochastic_smoothing2.pdf}
+                    \end{subfigure}
+                \end{figure}
+        \end{description}
+\end{description}
