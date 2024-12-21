@@ -37,7 +37,7 @@ jobs:
       - name: Prepare output directory
         run: |
           mkdir ${GITHUB_WORKSPACE}/.compiled
-          cp ${GITHUB_WORKSPACE}/LICENSE ${GITHUB_WORKSPACE}/.compiled
+          cp ${GITHUB_WORKSPACE}/LICENSE-pdf ${GITHUB_WORKSPACE}/.compiled/LICENSE
 
       - name: Compile
         run: |
