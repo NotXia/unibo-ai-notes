@@ -7,9 +7,6 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 
 **Note**: I'm terrible at taking notes. Please, consider ~~double~~ triple checking anything you plan to use.
 
-## Contributors
-Special thanks to: [liuktc](https://github.com/liuktc)
-
 ## Table of contents
 
 ### Year 1
@@ -37,3 +34,9 @@ Special thanks to: [liuktc](https://github.com/liuktc)
 - [**Artificial Intelligence in Industry**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/artificial-intelligence-in-industry/a3i.pdf)
 - [**Machine Learning for Computer Vision**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/machine-learning-for-computer-vision/ml4cv.pdf)
 - [**Natural Language Processing**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/natural-language-processing/nlp.pdf)
+
+
+## Contributors
+Special thanks for the help to:
+
+[![liuktc](https://images.weserv.nl/?url=https://github.com/liuktc.png&h=50&w&50&mask=circle&fit=cover&maxage=1d)](https://github.com/liuktc)
