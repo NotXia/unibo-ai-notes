@@ -74,19 +74,19 @@
             \textit{\textnormal{[...]} was called a ``stellar and versatile \texttt{acress} whose combination of sass and glamour has defined her \textnormal{[...]}''}
         }
     \end{center}
-    By using the Corpus of Contemporary English (COCA), we can determine the following words as candidates:
+    By using the Corpus of Contemporary American English (COCA), we can determine the following words as candidates:
     \[
         \texttt{actress} \cdot \texttt{cress} \cdot \texttt{caress} \cdot \texttt{access} \cdot \texttt{across} \cdot \texttt{acres}
     \]
 
     \begin{description}
-        \item[Language model] By considering a language model without context, the priors are computed as $\prob{w} = \frac{\texttt{count}(w)}{\vert \texttt{COCA} \vert}$ (where $\vert \texttt{COCA} \vert = \num{404253213}$):
+        \item[Language model] By considering a language model without context, the priors are computed as $\prob{w | \varepsilon} = \frac{\texttt{count}(w)}{\vert \texttt{COCA} \vert}$ (where $\vert \texttt{COCA} \vert = \num{404253213}$):
         \begin{table}[H]
             \centering
             \footnotesize
             \begin{tabular}{ccl}
                 \toprule
-                $w$ & $\texttt{count}(w)$ & $\prob{w}$ \\
+                $w$ & $\texttt{count}(w)$ & $\prob{w | \varepsilon}$ \\
                 \midrule
                 \texttt{actress}    & \num{9321}    & $0.0000231$   \\
                 \texttt{cress}      & \num{220}     & $0.000000544$ \\
@@ -125,15 +125,15 @@
         \footnotesize
         \begin{tabular}{cl}
             \toprule
-            $w$ & $\prob{x | w} \prob{w}$ \\
+            $w$ & $\prob{x | w} \prob{w | \varepsilon}$ \\
             \midrule
-            \texttt{actress} & $2.7 \cdot 10^{9}$ \\
-            \texttt{cress}   & $0.00078 \cdot 10^{9}$ \\
-            \texttt{caress}  & $0.0028 \cdot 10^{9}$ \\
-            \texttt{access}  & $0.019 \cdot 10^{9}$ \\
-            \texttt{across}  & $2.8 \cdot 10^{9}$ \\
-            \texttt{acres}   & $1.02 \cdot 10^{9}$ \\
-            \texttt{acres}   & $1.09 \cdot 10^{9}$ \\
+            \texttt{actress} & $2.7 \cdot 10^{-9}$ \\
+            \texttt{cress}   & $0.00078 \cdot 10^{-9}$ \\
+            \texttt{caress}  & $0.0028 \cdot 10^{-9}$ \\
+            \texttt{access}  & $0.019 \cdot 10^{-9}$ \\
+            \texttt{across}  & $2.8 \cdot 10^{-9}$ \\
+            \texttt{acres}   & $1.02 \cdot 10^{-9}$ \\
+            \texttt{acres}   & $1.09 \cdot 10^{-9}$ \\
             \bottomrule
         \end{tabular}
     \end{table}
@@ -165,8 +165,8 @@
     Finally, we have that:
     \[
         \begin{split}
-            \prob{\texttt{versatile \underline{actress} whose} | \texttt{versatile acress whose}} &= 2.7 \cdot 210 \cdot 10^{-19} \\
-            \prob{\texttt{versatile \underline{across} whose} | \texttt{versatile acress whose}} &= 2.8 \cdot 10^{-19} \\
+            \prob{\texttt{versatile \underline{actress} whose} | \texttt{versatile acress whose}} &= (2.7 \cdot 10^{-9}) \cdot (210 \cdot 10^{-10}) \\
+            \prob{\texttt{versatile \underline{across} whose} | \texttt{versatile acress whose}} &= (2.8 \cdot 10^{-9}) \cdot (1 \cdot 10^{-10}) \\
         \end{split}
     \]
     So \texttt{actress} is the most likely correction for \texttt{acress} in this model.
@@ -223,7 +223,7 @@
 
                 \begin{description}
                     \item[Estimating $\mathbf{N}$-gram probabilities]
-                        Consider the bigram case, the probability that a token $w_i$ follows $w_{i-1}$ can be determined by counting:
+                        Consider the bigram case, the probability that a token $w_i$ follows $w_{i-1}$ can be determined through counting:
                         \[ \prob{w_i | w_{i-1}} = \frac{\texttt{count}(w_{i-1} w_i)}{\texttt{count}(w_{i-1})} \]
                 \end{description}
 
@@ -272,14 +272,14 @@
         Measure the quality of a model independently of the task.
 
     \item[Perplexity (\texttt{PP})] \marginnote{Perplexity}
-        Probability-based metric based on the inverse probability of a sequence (usually the test set) normalized by the number of words:
+        Probability-based metric based on the inverse probability of a sequence (usually using the test set) normalized by the number of words:
         \[
             \begin{split}
                 \prob{w_{1..N}} &= \prod_{i} \prob{w_i | w_{1..i-1}} \\
                 \texttt{PP}(w_{1..N}) &= \prob{w_{1..N}}^{-\frac{1}{N}} \in [1, +\infty]
             \end{split}
         \]
-        A lower perplexity represents a generally better model.
+        Generally, a lower perplexity represents a better model.
 
         \begin{example}
             For bigram models, perplexity is computed as:
@@ -293,7 +293,7 @@
         \begin{remark}[Perplexity intuition]
             Perplexity can be seen as a measure of surprise of a language model when evaluating a sequence.
 
-            Alternatively, it can also be seen as a weighted average branching factor (i.e., average number of possible next words that follow any word, accounting for their probabilities). For instance, consider a vocabulary of digits and a training corpus where every digit appears with uniform probability $0.1$. The perplexity of any sequence using a 1-gram model is:
+            Alternatively, it can also be seen as a weighted average branching factor (i.e., average number of possible unique next words that follow any word, accounting for their probabilities). For instance, consider a vocabulary of digits and a training corpus where every digit appears with uniform probability $0.1$. The perplexity of any sequence using a 1-gram model is:
             \[ \texttt{PP}(w_{1..N}) = \left( 0.1^{N} \right)^{-\frac{1}{N}} = 10 \]
             Now consider a training corpus where $0$ occurs $91\%$ of the time and the other digits $1\%$ of the time. The perplexity of the sequence \texttt{0 0 0 0 0 3 0 0 0 0} is:
             \[ \texttt{PP}(\texttt{0 0 0 0 0 3 0 0 0 0}) = \left( 0.91^9 \cdot 0.01 \right)^{-\frac{1}{10}} \approx 1.73 \]
@@ -349,7 +349,7 @@ There are two types of vocabulary systems:
 
 \subsection{Unseen sequences}
 
-Only for $n$-grams that occur enough times a representative probability can be estimated. For increasing values of $n$, the sparsity grows causing many unseen $n$-grams that produce a probability of $0$, with the risk of performing divisions by zero (e.g., perplexity) or zeroing probabilities (e.g., when applying the chain rule).
+Only for $n$-grams that occur enough times a representative probability can be estimated. For increasing values of $n$, the sparsity grows causing many unseen $n$-grams that produce a probability of $0$, with the risk of performing divisions by zero (e.g., when computing perplexity) or zeroing probabilities (e.g., when applying the chain rule).
 
 \begin{description}
     \item[Laplace smoothing] \marginnote{Laplace smoothing}

@@ -138,7 +138,7 @@
             
             \item \texttt{\char`\\ w} matches a single alphanumeric or underscore character (same as \texttt{[a-zA-Z0-9\_]}).
             
-            \item \texttt{\char`\\ w} matches a single non-alphanumeric and non-underscore character (same as \texttt{[\textasciicircum\char`\\ w]}).
+            \item \texttt{\char`\\ W} matches a single non-alphanumeric and non-underscore character (same as \texttt{[\textasciicircum\char`\\ w]}).
 
             \item \texttt{\char`\\ s} matches a single whitespace (space or tab).
             
@@ -150,7 +150,11 @@
         Operator to refer to previously matched substrings.
 
         \begin{example}
-            In the regex \texttt{/the (.*)er they were, the \char`\\ 1er they will be/}, \texttt{\char`\\ 1} should match the same content matched by \texttt{(.*)}.
+            In the regex:
+            \begin{center}
+                \texttt{/the (.*)er they were, the \char`\\ 1er they will be/}
+            \end{center}
+            \texttt{\char`\\ 1} should match the same content matched by \texttt{(.*)}.
         \end{example}
 \end{description}
 
@@ -236,7 +240,7 @@ Tokenization is done by two components:
                 Given a training corpus $C$, BPE determines the vocabulary as follows:
                 \begin{enumerate}
                     \item Start with a vocabulary $V$ containing all the $1$-grams of $C$ and an empty set of merge rules $M$.
-                    \item While the desired size of the vocabulary has not been reached:
+                    \item Until the desired size of the vocabulary is reached:
                     \begin{enumerate}
                         \item Determine the pair of tokens $t_1 \in V$ and $t_2 \in V$ such that, among all the possible pairs, the $n$-gram $t_1 + t_2 = t_1t_2$ obtained by merging them is the most frequent in the corpus $C$.
                         \item Add $t_1t_2$ to $V$ and the merge rule $t_1+t_2$ to $M$.
@@ -315,7 +319,7 @@ Tokenization is done by two components:
     \item[WordPiece] \marginnote{WordPiece}
         Similar to BPE with the addition of merge rules ranking and a special leading/tailing set of characters (usually \texttt{\#\#}) to identify subwords (e.g., \texttt{new\#\#}, \texttt{\#\#est} are possible tokens).
 
-    \item[Unigram] \marginnote{Unigram}
+    \item[Unigram tokenization] \marginnote{Unigram tokenization}
         Starts with a big vocabulary and remove tokens following a loss function.
 \end{description}
 
@@ -353,7 +357,7 @@ Tokenization is done by two components:
         Reduce terms to their stem.
 
         \begin{remark}
-            Stemming is a simpler approach to lemmatization.
+            Stemming is a simpler approach than lemmatization.
         \end{remark}
 
         \begin{description}
@@ -381,10 +385,10 @@ Tokenization is done by two components:
         \end{remark}
 
     \item[Levenshtein distance] \marginnote{Levenshtein distance}
-        Edit distance where:
+        Minimum edit distance where:
         \begin{itemize}
-            \item Insertions cost $1$;
-            \item Deletions cost $1$;
+            \item Insertions cost $1$,
+            \item Deletions cost $1$,
             \item Substitutions cost $2$.
         \end{itemize}
 
