@@ -55,20 +55,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    # Adds contributors to README
-    contributors = get_contributors(args.src_path)
-    with open(args.readme_path, "a") as readme_f:
-        readme_f.write(f"\n\n## Contributors\n")
-        readme_f.write(f"Special thanks to: ")
-        contributors_strs = []
-        for i in range(len(contributors)):
-            if contributors[i]["gh_username"] is not None:
-                contributors_strs.append(f"[{contributors[i]['gh_username']}](https://github.com/{contributors[i]['gh_username']})")
-            elif len(contributors[i]["fullnames"]) > 0:
-                contributors_strs.append(f"{contributors[i]['fullnames'][-1]}")
-        readme_f.write(", ".join(contributors_strs))
-
-
     # Adds ToC to README
     notes_metadata = readMetadata(args.src_path, args.gh_link)
     with open(args.readme_path, "a") as readme_f:
@@ -87,3 +73,22 @@ if __name__ == "__main__":
                         readme_f.write(f"- **{course_name}**\n")
                         for content in course_content:
                             readme_f.write(f"   - [{content['name']}]({content['url']})\n")
+
+
+
+    # Adds contributors to README
+    contributors = get_contributors(args.src_path)
+    with open(args.readme_path, "a") as readme_f:
+        readme_f.write(f"\n\n## Contributors\n")
+        readme_f.write(f"Special thanks for the help to:\n\n")
+        contributors_strs = []
+        for i in range(len(contributors)):
+            if contributors[i]["gh_username"] is not None:
+                contributors_strs.append(
+                    f"[![{contributors[i]['gh_username']}]("
+                    f"https://images.weserv.nl/?url=https://github.com/{contributors[i]['gh_username']}.png&h=50&w&50&mask=circle&fit=cover&maxage=1d"
+                    f")](https://github.com/{contributors[i]['gh_username']})"
+                )
+            elif len(contributors[i]["fullnames"]) > 0:
+                contributors_strs.append(f"{contributors[i]['fullnames'][-1]}")
+        readme_f.write("$\\hspace{1em}$".join(contributors_strs))
