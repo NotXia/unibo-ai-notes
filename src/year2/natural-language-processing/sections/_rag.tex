@@ -16,7 +16,7 @@
         \end{figure}
 
     \item[Inverted index] \marginnote{Inverted index}
-        Mapping from terms to documents with pre-computed term frequency (and/or term positions). It allows narrowing down the document search space by considering only those that match the terms in the query.
+        Mapping from terms to documents with pre-computed term frequencies (and/or term positions). It allows narrowing down the document search space by considering only those that match the terms in the query.
 \end{description}
 
 
@@ -28,7 +28,7 @@
 
         \begin{description}
             \item[Document scoring]
-                Given a document $d$ a query $q$, and their respective embeddings $\vec{d}$ and $\vec{q}$, their similarity score is computed as their cosine similarity:
+                Given a document $d$, a query $q$, and their respective embeddings $\vec{d}$ and $\vec{q}$, their similarity score is computed as their cosine similarity:
                 \[
                     \begin{split}
                         \texttt{score}(q, d) &= \frac{\vec{q} \cdot \vec{d}}{|\vec{q}| \cdot |\vec{d}|} \\
@@ -56,18 +56,18 @@
                     \begin{table}[H]
                         \centering
                         \footnotesize
-                        \begin{tabular}{c|ccc|ccc}
+                        \begin{tabular}{c|cccc|cccc}
                             \toprule
-                            \textbf{Word} & \textbf{Count} & \textbf{TF} & $\textbf{TF-IDF}/|q|$ & \textbf{Count} & \textbf{TF} & $\textbf{TF-IDF}/|d_1|$ \\
+                            \textbf{Word} & \textbf{Count} & \texttt{tf} & \texttt{tf-idf} & $\texttt{tf-idf}/|q|$ & \textbf{Count} & \texttt{tf} & \texttt{tf-idf} & $\texttt{tf-idf}/|d_1|$ \\
                             \midrule
-                            \texttt{sweet}  & $1$ & $1.000$ & $0.383$ & $2$ & $1.301$ & $0.357$ \\
-                            \texttt{nurse}  & $0$ & $0$ & $0$ & $1$ & $1.000$ & $0.661$ \\
-                            \texttt{love}   & $1$ & $1.000$ & $0.924$ & $1$ & $1.000$ & $0.661$ \\
-                            \texttt{how}    & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
-                            \texttt{sorrow} & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
-                            \texttt{is}     & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+                            \texttt{sweet}  & $1$ & $1.000$ & $0.125$ & $0.383$ & $2$ & $1.301$ & $0.163$ & $0.357$ \\
+                            \texttt{nurse}  & $0$ & $0$     & $0$     & $0$     & $1$ & $1.000$ & $0.301$ & $0.661$ \\
+                            \texttt{love}   & $1$ & $1.000$ & $0.301$ & $0.924$ & $1$ & $1.000$ & $0.301$ & $0.661$ \\
+                            \texttt{how}    & $0$ & $0$     & $0$     & $0$     & $0$ & $0$     & $0$     & $0$ \\
+                            \texttt{sorrow} & $0$ & $0$     & $0$     & $0$     & $0$ & $0$     & $0$     & $0$ \\
+                            \texttt{is}     & $0$ & $0$     & $0$     & $0$     & $0$ & $0$     & $0$     & $0$ \\
                             \midrule
-                            & \multicolumn{3}{l|}{$|d_1| = \sqrt{0.163^2 + 0.301^2 + 0.301^2} = 0.456$} & \multicolumn{3}{l}{$|q| = \sqrt{0.125^2 + 0.301^2} = 0.326$} \\
+                            & \multicolumn{4}{l|}{$|q| = \sqrt{0.125^2 + 0.301^2} = 0.326$} & \multicolumn{4}{l}{$|d_1| = \sqrt{0.163^2 + 0.301^2 + 0.301^2} = 0.456$} \\
                             \bottomrule
                         \end{tabular}
                     \end{table}
@@ -117,7 +117,7 @@
 
         \begin{description}
             \item[Document scoring]
-                Use nearest neighbor using the dot product as distance. To speed-up search, approximate k-NN algorithms can be used.
+                Use nearest neighbor with the dot product as distance. To speed-up search, approximate k-NN algorithms can be used.
         \end{description}
 \end{description}
 
@@ -203,7 +203,7 @@
             22 & N & 0.36 & 0.88 \\
             23 & N & 0.35 & 0.88 \\
             24 & N & 0.33 & 0.88 \\
-            25 & Y & 0.36 & 01.0 \\
+            25 & Y & 0.36 & 1.00 \\
             \bottomrule
         \end{tabular}
     \end{table}
@@ -220,7 +220,7 @@
     \end{figure}
 
     Average precision computed over all the predictions (i.e., $t=25$) is:
-    \[ \texttt{AP} = 0.6 \]
+    \[ \texttt{AP} = \frac{1.0 + 0.66 + 0.60 + 0.66 + 0.63 + 0.55 + 0.47 + 0.44 + 0.36}{9} = 0.6 \]
 \end{example}
 
 
@@ -242,12 +242,12 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.4\linewidth]{./img/_qa_bert.pdf}
+            \includegraphics[width=0.35\linewidth]{./img/_qa_bert.pdf}
             \caption{Example of span labeling architecture}
         \end{figure}
 
         \begin{remark}
-            A sliding window can be used if the passage is too long for the context length of the model.
+            A sliding window over the whole passage can be used if it is too long for the context length of the model.
         \end{remark}
 
         \begin{remark}
@@ -266,7 +266,7 @@
         Macro F1 score computed by considering predictions and ground-truth as bag of tokens (i.e., average token overlap).
 
     \item[Mean reciprocal rank] \marginnote{Mean reciprocal rank}
-        Given a system that provides a ranked list of answers to a question $q$, the reciprocal rank for $q$ is:
+        Given a system that provides a ranked list of answers to a question $q_i$, the reciprocal rank for $q_i$ is:
         \[ \frac{1}{\texttt{rank}_i} \]
         where $\texttt{rank}_i$ is the index of the first correct answer in the provided ranked list.
         Mean reciprocal rank is computed over a set of queries $Q$:

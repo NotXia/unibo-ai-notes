@@ -21,9 +21,9 @@
     \begin{enumerate}
         \item Compute the embedding $\vec{e}^{(t)}$ of $w^{(t)}$.
         \item Compute the hidden state $\vec{h}^{(t)}$ considering the hidden state $\vec{h}^{(t-1)}$ of the previous step:
-        \[ \vec{h}^{(t)} = f(\matr{W}_e \vec{e}^{(t)} + \matr{W}_h \vec{h}^{(t-1)} + b_1) \]
+        \[ \vec{h}^{(t)} = f(\matr{W}_e \vec{e}^{(t)} + \matr{W}_h \vec{h}^{(t-1)} + \vec{b}_1) \]
         \item Compute the output vocabulary distribution $\hat{\vec{y}}^{(t)}$:
-        \[ \hat{\vec{y}}^{(t)} = \texttt{softmax}(\matr{U}\vec{h}^{(t)} + b_2) \]
+        \[ \hat{\vec{y}}^{(t)} = \texttt{softmax}(\matr{U}\vec{h}^{(t)} + \vec{b}_2) \]
         \item Repeat for the next token.
     \end{enumerate}
 
@@ -46,7 +46,7 @@
                     During training, as the ground-truth is known, the input at each step is the correct token even if the previous step outputted the wrong value.
 
                     \begin{remark}
-                        This allows to stay close to the ground-truth and avoid completely wrong training steps.
+                        This allows to stay closer to the ground-truth and avoid completely wrong training steps.
                     \end{remark}
             \end{description}
     \end{description}
@@ -60,7 +60,7 @@
 \subsection{Long short-term memory}
 
 \begin{remark}[Vanishing gradient]
-    In RNNS, the gradient of distant tokens vanishes through time. Therefore, long-term effects are hard to model.
+    In RNNs, the gradient of distant tokens vanishes through time. Therefore, long-term effects are hard to model.
 \end{remark}
 
 \begin{description}
@@ -112,7 +112,7 @@
 
 \begin{description}
     \item[Gated recurrent units (GRU)] \marginnote{Gated recurrent units (GRU)}
-        Architecture simpler than LSTM with fewer gates and without the cell state.
+        Architecture simpler than LSTMs with fewer gates and without the cell state.
 
         \begin{description}
             \item[Gates] \phantom{}
@@ -222,6 +222,6 @@
         \end{itemize}
     
         \begin{example}[Question answering]
-            The RNN encoder embeds the question that is used alongside the context (i.e., source from which the answer has to be extracted) to solve a labelling task (i.e., classify each token of the context as non-relevant or relevant).
+            The RNN encoder embeds the question that is used alongside the context (i.e., source from which the answer has to be extracted) to solve a labeling task (i.e., classify each token of the context as non-relevant or relevant).
         \end{example}
 \end{description}

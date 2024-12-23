@@ -9,7 +9,7 @@
         \begin{itemize}
             \item The holder of attitude (i.e., the source).
             \item The target of attitude (i.e., the aspect).
-            \item The type of attitude (e.g., positive and negative).
+            \item The type of attitude (e.g., positive or negative).
             \item The text containing the attitude. 
         \end{itemize}
 
@@ -43,12 +43,12 @@
                 \end{example}
 
             \item[Supervised machine learning] \marginnote{Supervised machine learning}
-                Use a training set of $N$ labeled data $\{ (d_i, c_i) \}$ to fit a classifier.
+                Use a training set of $N$ labeled document-class data points $\{ (d_i, c_i) \}$ to fit a classifier.
 
                 An ML model can be:
                 \begin{descriptionlist}
-                    \item[Generative] Informally, it learns the distribution of the data.
-                    \item[Discriminative] Informally, it learns to exploit the features to determine the class.
+                    \item[Generative] Informally, it learns the distribution of the data (i.e., $\prob{d_i | c_i}$).
+                    \item[Discriminative] Informally, it learns to exploit the features to determine the class (i.e., $\prob{c_i | d_i}$).
                 \end{descriptionlist}
         \end{descriptionlist}
 \end{description}
@@ -58,9 +58,9 @@
 
 \begin{description}
     \item[Bag-of-words (BoW)] \marginnote{Bag-of-words (BoW)}
-        Represents a document using the frequencies of its words.
+        Representation of a document using the frequency of its words.
 
-        Given a vocabulary $V$ and a document $d$, the bag-of-words embedding of $d$ is a vector in $\mathbb{N}^{\vert V \vert}$ where the $i$-th position contains the number of occurrences of the $i$-th token in $d$.
+        Given a vocabulary $V$ and a document $d$, the bag-of-words embedding of $d$ is a vector in $\mathbb{N}^{\vert V \vert}$ where the $i$-th position contains the number of occurrences of the $i$-th token of $V$ in $d$.
 
     \item[Multinomial naive Bayes classifier] \marginnote{Multinomial naive Bayes classifier}
         Generative probabilistic classifier based on the assumption that features are independent given the class.
@@ -76,13 +76,13 @@
             \end{split}
         \]
 
-        Given a training set $D$ with $N_c$ classes and a vocabulary $V$, $\prob{w_i | c}$ and $\prob{c}$ are determined during training by maximum likelihood estimation as follows:
+        Given a training set $D$ and a vocabulary $V$, $\prob{w_i | c}$ and $\prob{c}$ are determined during training by maximum likelihood estimation as follows:
         \[
             \prob{c} = \frac{N_c}{\vert D \vert}
             \qquad
             \prob{w_i | c} = \frac{\texttt{count}(w_i, c)}{\sum_{v \in V} \texttt{count}(v, c)}
         \]
-        where $\texttt{count}(w, c)$ counts the occurrences of the word $w$ in the training samples with class $c$.
+        where $N_c$ is the number of documents with class $c$ and $\texttt{count}(w, c)$ counts the occurrences of the word $w$ in the training samples with class $c$.
 
         \begin{remark}
             Laplace smoothing is used to avoid zero probabilities.
@@ -149,7 +149,7 @@ Possible optimizations for naive Bayes applied to sentiment analysis are the fol
                 \end{example}
 
             \item[Parse tree]
-                Build a tree to encode the sentiment and interactions of the words. By propagating the sentiments bottom-up it is possible to determine the overall sentiment of the sequence.
+                Build a tree to encode the sentiment and interactions of the words. By propagating the sentiments bottom-up, it is possible to determine the overall sentiment of the sequence.
 
                 \begin{example}
                     The parse tree for the sentence ``\texttt{This film doesn't care about cleverness, wit or any other kind of intelligent humor.}'' is the following:
@@ -208,11 +208,11 @@ Naive Bayes has the following properties:
 
 
     \item[Binary logistic regression] \marginnote{Binary logistic regression}
-        Discriminative probabilistic model that computes the joint distribution $\prob{c | d}$ of a class $c$ and a document $d$.
+        Discriminative probabilistic model that computes the joint distribution $\prob{c | d}$ of the class $c$ given the document $d$.
 
         Given the input features $\vec{x} = [x_1, \dots, x_n]$, logistic regression computes the following:
         \[ 
-            \sigma\left( \sum_{i=1}^{n} w_i x_i \right) + b = \sigma(\vec{w}\vec{x} + b)
+            \sigma\left( \sum_{i=1}^{n} w_i x_i + b \right) = \sigma(\vec{w}\vec{x} + b)
         \]
         where $\sigma$ is the sigmoid function.
 
@@ -233,8 +233,8 @@ Naive Bayes has the following properties:
                 \[ \arg\min_{\vec{\theta}} \sum_{i=1}^{m} \mathcal{L}_\text{BCE}(\hat{y}^{(i)}, f(x^{(i)}; \vec{\theta})) + \alpha \mathcal{R}(\vec{\theta}) \]
                 where $\alpha$ is the regularization factor and $\mathcal{R}(\vec{\theta})$ is the regularization term. Typical regularization approaches are:
                 \begin{descriptionlist}
-                    \item[Ridge regression (L1)] $\mathcal{R}(\vec{\theta}) = \Vert \vec{\theta} \Vert^2_2 = \sum_{j=1}^{n} \vec{\theta}_j^2$.
-                    \item[Lasso regression (L2)] $\mathcal{R}(\vec{\theta}) = \Vert \vec{\theta} \Vert_1 = \sum_{j=1}^{n} \vert \vec{\theta}_j \vert$.
+                    \item[Lasso regression (L1)] $\mathcal{R}(\vec{\theta}) = \Vert \vec{\theta} \Vert_1 = \sum_{j=1}^{n} \vert \vec{\theta}_j \vert$.
+                    \item[Ridge regression (L2)] $\mathcal{R}(\vec{\theta}) = \Vert \vec{\theta} \Vert^2_2 = \sum_{j=1}^{n} \vec{\theta}_j^2$.
                 \end{descriptionlist}
         \end{description}
 
@@ -242,7 +242,7 @@ Naive Bayes has the following properties:
         Extension of logistic regression to the multi-class case. The joint probability becomes $\prob{y = c | x}$ and softmax is used in place of the sigmoid.
 
         Cross-entropy is extended over the classes $C$:
-        \[ \mathcal{L}_\text{CE}(\hat{y}, y) = - \sum_{c \in C} \mathbbm{1}\{y = c\} \log \prob{y = c | x} \]
+        \[ \mathcal{L}_\text{CE}(\hat{y}, y) = - \sum_{c \in C} \mathbbm{1}\{y = c\} \log(\prob{y = c | x}) \]
 \end{description}
 
 

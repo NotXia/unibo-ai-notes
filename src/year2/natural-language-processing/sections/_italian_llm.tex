@@ -34,9 +34,9 @@
         \end{enumerate}
 
     \item[ALERT benchmark] \marginnote{ALERT benchmark}
-        Benchmark to test the safeness of an LLM based on 32 risk categories. The testing data are created as follows:
+        Benchmark to test the safeness of an LLM based on 32 risk categories. The testing data were created as follows:
         \begin{enumerate}
-            \item Filter the ``\textit{Helpfulness \& Harmlessness-RLHF}'' dataset of \textit{Anthropic} by considering for each example the first prompt and red team attacks only.
+            \item Filter the ``\textit{Helpfulness \& Harmlessness-RLHF}'' dataset of \textit{Anthropic} by considering for each example the first prompt and red team (i.e., malicious) attacks only.
             \item Use templates to automatically generate additional prompts.
             \item Augment the prompts by formatting them as adversarial attacks. Examples of attacks are:
             \begin{descriptionlist}

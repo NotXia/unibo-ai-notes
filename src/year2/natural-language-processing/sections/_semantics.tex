@@ -261,11 +261,11 @@
 
                     \item[Inverse document frequency (\texttt{idf})]
                         Inverse occurrence count of a word $t$ across all documents:
-                        \[ \texttt{idf}(t) = \log_{10}\left( \frac{N}{\texttt{df}_t} \right) \]
+                        \[ \texttt{idf}(t) = \log_{10}\left( \frac{\texttt{count}(t)}{\texttt{df}_t} \right) \]
                         where $\texttt{df}_t$ is the number of documents in which the term $t$ occurs.
 
                         \begin{remark}
-                            Words that occur in a few documents have a high \texttt{idf}. Therefore, stop words, which appear often, have a low \texttt{idf}.
+                            Words that occur in a few documents have a high \texttt{idf}. Therefore, stop words, which appear often, have a low \texttt{idf} and are down-weighted.
                         \end{remark}
                 \end{descriptionlist}
 
@@ -414,7 +414,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.6\linewidth]{./img/_neural_language_model_example.pdf}
+            \includegraphics[width=0.5\linewidth]{./img/_neural_language_model_example.pdf}
             \caption{Example of neural language model with a context of $3$ tokens}
         \end{figure}
 
@@ -445,7 +445,7 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.5\linewidth]{./img/word2vec_alternatives.png}
+            \includegraphics[width=0.45\linewidth]{./img/word2vec_alternatives.png}
         \end{figure}
 
         \begin{description}
@@ -509,13 +509,13 @@
         A word is represented both as itself and a bag of $n$-grams. Both whole words and $n$-grams have an embedding. The overall embedding of a word is represented through the sum of its constituent $n$-grams.
 
         \begin{example}
-            With $n=3$, the word \texttt{where} is represented both as \texttt{<where>} and \texttt{<wh, whe, her, ere, re>} (\texttt{<} and \texttt{>} are boundary characters).
+            With $n=3$, the word \texttt{where} is represented both as \texttt{<where>} and \texttt{<wh}, \texttt{whe}, \texttt{her}, \texttt{ere}, \texttt{re>} (\texttt{<} and \texttt{>} are boundary characters).
         \end{example}
 
     \item[GloVe] \marginnote{GloVe}
         Based on the term-term co-occurrence (within a window) probability matrix that indicates for each word its probability of co-occurring with the other words.
 
-        Similarly to Word2vec, the objective is to learn two sets of embeddings $\matr{\theta} = \langle\matr{W}, \matr{C}\rangle$ such that their similarity is close to their log-probability of co-occurring. Given the term-term matrix $\matr{X}$, the loss for a target word $w$ and a context word $c$ is defined as:
+        The objective is to learn two sets of embeddings $\matr{\theta} = \langle\matr{W}, \matr{C}\rangle$ such that their similarity is close to their log-probability of co-occurring. Given the term-term matrix $\matr{X}$, the loss for a target word $w$ and a context word $c$ is defined as:
         \[ \mathcal{L}(\matr{\theta}) = \left( \vec{c} \cdot \vec{w} - \log( \matr{X}[c, w] ) \right)^2 \]
 
         \begin{remark}
@@ -599,7 +599,7 @@
                 \centering
                 \includegraphics[width=0.7\linewidth]{./img/_embedding_history.png}
                 \caption{
-                    \parbox[t]{0.7\linewidth}{
+                    \parbox[t]{0.75\linewidth}{
                         Neighboring embeddings of the same words encoded using Word2vec trained on different corpora from different decades
                     }
                 }
@@ -629,7 +629,7 @@
                 \begin{example}
                     Using the parallelogram model to solve:
                     \[ \texttt{father} : \texttt{doctor} :: \texttt{mother} : x \]
-                    finds as the closest words $x =$ \texttt{homemaker}, \texttt{nurse}, \texttt{receptionist}, \dots
+                    The closest words for $x$ are \texttt{homemaker}, \texttt{nurse}, \texttt{receptionist}, \dots
                 \end{example}
 
                 \begin{example}
@@ -637,7 +637,7 @@
                 \end{example}
 
                 \begin{example}
-                    Using the Google News dataset as training corpus, there is a correlation between the women bias of the jobs embeddings and the percentage of women over men in those jobs.
+                    Using the Google News dataset as training corpus, there is a correlation between the women bias in job words embeddings and the percentage of women over men in those jobs.
 
                     Woman bias for a word $w$ is computed as:
                     \[ d_\text{women}(w) - d_\text{men}(w) \]

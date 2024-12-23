@@ -34,16 +34,16 @@
         The overall flow is the following:
         \begin{enumerate}
             \item The encoder computes its hidden states $\vec{h}^{(1)}, \dots, \vec{h}^{(N)} \in \mathbb{R}^{h}$.
-            \item The decoder processes the input tokens one at the time. Its hidden state is initialized with $\vec{h}^{(N)}$. Consider the token in position $t$, the output is determined as follows:
+            \item The decoder processes the input tokens one at the time beginning with a \texttt{<start>} token. Its hidden state is initialized with $\vec{h}^{(N)}$. Consider the token at position $t$, the output is determined as follows:
             \begin{enumerate}
                 \item The decoder outputs the hidden state $\vec{s}^{(t)}$.
                 \item Attention scores $\vec{e}^{(t)}$ are determined as the dot product between $\vec{s}^{(t)}$ and $\vec{h}^{(i)}$:
                 \[ 
                     \vec{e}^{(t)} = 
                         \begin{bmatrix}
-                            \vec{s}^{(t)} \odot \vec{h}^{(1)} & 
+                            \vec{s}^{(t)} \cdot \vec{h}^{(1)} & 
                             \cdots &
-                            \vec{s}^{(t)} \odot \vec{h}^{(N)} 
+                            \vec{s}^{(t)} \cdot \vec{h}^{(N)} 
                         \end{bmatrix} \in \mathbb{R}^{N} 
                 \]
                 $\vec{e}^{(t)}$ is used to determine the attention distribution $\vec{\alpha}^{(t)}$ that is required to obtain the attention output $\vec{a}^{(t)}$ as the weighted encoder hidden states :
@@ -104,7 +104,7 @@
 \begin{example}[Character-aware neural LM]
     \phantom{}\\
     \begin{minipage}{0.6\linewidth}
-        RNN-LM that works on a character level:
+        RNN-LM that works on the character level:
         \begin{itemize}
             \item Given a token, each character is embedded and concatenated.
             \item Convolutions are used to refine the representation.
@@ -147,8 +147,8 @@
         Then, the attention weights $\alpha_{i,j}$ between two embeddings $\vec{x}_i$ and $\vec{x}_j$ are computed as:
         \[
             \begin{gathered}
-                \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \\
-                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{scores}(\vec{x}_i, \vec{x}_1), \dots, \texttt{scores}(\vec{x}_i, \vec{x}_T)\right] \right) \\
+                \texttt{score}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \\
+                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{score}(\vec{x}_i, \vec{x}_1), \dots, \texttt{score}(\vec{x}_i, \vec{x}_T)\right] \right) \\
             \end{gathered}
         \]
         The output $\vec{a}_i \in \mathbb{R}^{1 \times d_v}$ is a weighted sum of the values of each token:
@@ -163,12 +163,12 @@
 
 
     \item[Causal attention] \marginnote{Causal attention}
-        Self-attention mechanism where only past tokens can be used to determine the representation of a token at a specific position. It is computed by modifying the standard self-attention as:
+        Self-attention mechanism where only past tokens can be used to determine the representation of a token at a specific position. It is computed by modifying the standard self-attention as follows:
         \[
             \begin{gathered}
-                \forall j \leq i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \qquad
-                \forall j > i: \texttt{scores}(\vec{x}_i, \vec{x}_j) = -\infty \\
-                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{scores}(\vec{x}_i, \vec{x}_1), \dots, \texttt{scores}(\vec{x}_i, \vec{x}_T)\right] \right) \\
+                \forall j \leq i: \texttt{score}(\vec{x}_i, \vec{x}_j) = \frac{\vec{q}_i \vec{k}_j}{\sqrt{d_k}} \qquad
+                \forall j > i: \texttt{score}(\vec{x}_i, \vec{x}_j) = -\infty \\
+                \alpha_{i,j} = \texttt{softmax}_j\left( \left[\texttt{score}(\vec{x}_i, \vec{x}_1), \dots, \texttt{score}(\vec{x}_i, \vec{x}_T)\right] \right) \\
                 \vec{a}_i = \sum_{t: t \leq i} \alpha_{i,t} \vec{v}_t
             \end{gathered}
         \]
@@ -181,11 +181,11 @@
 \end{description}
 
 
-\subsection{Components}
+\subsection{Embeddings}
 
 \begin{description}
     \item[Input embedding] \marginnote{Input embedding}
-        The input is tokenized using standard tokenizers (e.g., BPE, SentencePiece, \dots). Each token is encoded using a learned embedding matrix.
+        The input is tokenized using standard tokenizers (e.g., BPE, SentencePiece, \dots). Each token is then encoded using a learned embedding matrix.
 
         \begin{figure}[H]
             \centering
@@ -203,7 +203,12 @@
             \centering
             \includegraphics[width=0.45\linewidth]{./img/_positional_encoding.pdf}
         \end{figure}
+\end{description}
 
+
+\subsection{Transformer block}
+
+\begin{description}
     \item[Transformer block] \marginnote{Transformer block}
         Module with the same input and output dimensionality (i.e., allows stacking multiple blocks) composed of:
         \begin{descriptionlist}
@@ -221,13 +226,13 @@
                 Where the hidden dimension $d_\text{ff}$ is usually larger than $d_\text{model}$.
 
             \item[Normalization layer]
-                Applies token-wise normalization (i.e., layer norm) to help training stability.
+                Applies layer normalization (i.e., normalize each sequence of the batch independently) to help training stability.
 
             \item[Residual connection]
                 Helps to propagate information during training.
 
                 \begin{remark}[Residual stream]
-                    An interpretation of residual connections is the residual stream where the input token in enhanced by the output of multi-head attention and the feedforward network.
+                    An interpretation of residual connections is that of residual stream where the input token is enhanced by the output of multi-head attention and the feedforward network.
 
                     \begin{figure}[H]
                         \centering
@@ -242,7 +247,7 @@
             \caption{Overall attention block}
         \end{figure}
 
-    \item[Language modelling head] \marginnote{Language modelling head}
+    \item[Language modeling head] \marginnote{Language modeling head}
         Takes as input the output corresponding to a token of the transformer blocks stack and outputs a distribution over the vocabulary.
 
         \begin{figure}[H]

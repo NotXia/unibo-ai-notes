@@ -60,7 +60,7 @@
         \end{remark}
 
     \item[Beam search] \marginnote{Beam search}
-        Given a beam width $k$, perform a breadth-first search keeping at each branching level the top-$k$ tokens based on the probability of that sequence:
+        Given a beam width $k$, perform a breadth-first search keeping at each branching level the top-$k$ tokens based on the probability of that sequence computes as:
         \[ \log\left( \prob{y \mid x} \right) = \sum_{i=1}^{t} \log\left( \prob{ y_i \mid x, y_1, \dots, y_{i-1} } \right) \]
 
         \begin{example}
@@ -93,7 +93,7 @@
                 \end{remark}
 
             \item[Temperature sampling]
-                Skew the distribution to emphasize the most likely words and decrease the probability of less likely words. Given the logits $\vec{u}$ and the temperature $\tau$, the output distribution $\vec{y}$ is determined as:
+                Skew the distribution to emphasize the most likely words and decrease the probability of less likely ones. Given the logits $\vec{u}$ and the temperature $\tau$, the output distribution $\vec{y}$ is determined as:
                 \[ \vec{y} = \texttt{softmax}\left( \frac{\vec{u}}{\tau} \right) \]
                 where:
                 \begin{itemize}
@@ -171,11 +171,11 @@
                 Specialize a model by adding new learnable parameters.
 
                 \begin{description}
-                    \item[Parameter-efficient fine-tuning (PEFT)] \marginnote{Parameter-efficient fine-tuning (PEFT)}
-                        Continue training a selected subset of parameters (e.g., LoRA \Cref{sec:lora}).
-
                     \item[Task-specific fine-tuning] \marginnote{Task-specific fine-tuning}
                         Add a new trainable head on top of the model.
+
+                    \item[Parameter-efficient fine-tuning (PEFT)] \marginnote{Parameter-efficient fine-tuning (PEFT)}
+                        Continue training a selected subset of parameters (e.g., LoRA \Cref{sec:lora}).
                 \end{description}
 
             \item[Supervised fine-tuning] \marginnote{Supervised fine-tuning}
@@ -215,7 +215,7 @@
         \begin{example}[Word sense disambiguation]
             Task of determining the sense of each word of a sequence. Senses usually come from an existing ontology (e.g., WordNet). An approach to solve the problem is the following:
             \begin{enumerate}
-                \item Compute the embedding $\vec{v}_i$ of words using a pre-trained encoder (e.g., BERT).
+                \item Compute the embeddings $\vec{v}_i$ of the words using a pre-trained encoder (e.g., BERT).
                 \item Represent the embedding of a sense as the average of the tokens of that sense:
                 \[ \vec{v}_s = \frac{1}{n} \sum_i \vec{v}_i \]
                 \item Predict the sense of a word $\vec{t}$ as:
@@ -240,7 +240,7 @@
 \subsection{Pre-training}
 
 \begin{description}
-    \item[Masked language modelling] \marginnote{Masked language modelling}
+    \item[Masked language modeling] \marginnote{Masked language modeling}
         Task of predicting missing or corrupted tokens in a sequence.
 
         \begin{remark}
@@ -287,8 +287,7 @@
     \item[Fine-tuning for sequence labeling]
         Add a classification head on top of each token. A conditional random field (CRF) layers can also be added to produce globally more coherent tags.
 
-        \begin{description}
-            \item[Named entity recognition (NER)] \marginnote{Named entity recognition (NER)}
+        \begin{example}[Named entity recognition (NER)]
             Task of assigning to each word of a sequence its entity class. NER taggers usually also capture concepts spanning across multiple tokens. To achieve this, additional information is provided with the entity class:
             \begin{descriptionlist}
                 \item[Begin] Starting token of a concept.
@@ -308,7 +307,7 @@
                         The entity (so, also a span of text) is the atomic unit for NER metrics.
                     \end{remark}
             \end{description}
-        \end{description}
+        \end{example}
 \end{description}
 
 
@@ -356,8 +355,8 @@
             Given the sequence:
             \[ \texttt{<bos> thank you \underline{for inviting} me to your party \underline{last} week <eos>} \]
             Some spans of text are masked with placeholder tokens as follows:
-            \[ \texttt{<bos> thank you <X> me to your party <Y> week <eos>} \]
+            \[ \texttt{<bos> thank you \underline{<X>} me to your party \underline{<Y>} week <eos>} \]
             The masked sequence is passed through the encoder, while the decoder has to predict the masked tokens:
-            \[ \texttt{<bos> <X> for inviting <Y> last <Z> <eos>} \]
+            \[ \texttt{<bos> <X> \underline{for inviting} <Y> \underline{last} <Z> <eos>} \]
         \end{example}
 \end{description}

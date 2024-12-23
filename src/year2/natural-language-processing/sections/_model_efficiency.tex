@@ -44,7 +44,7 @@
 
 \begin{description}
     \item[Mixture of experts] \marginnote{Mixture of experts}
-        Specialize smaller models on subset of data and train a router to forward the input to the correct expert.
+        Specialize smaller models on subsets of data and train a router to forward the input to the correct expert.
 
         \begin{remark}
             This approach can be easily deployed on distributed systems.
@@ -79,7 +79,7 @@
                 \[ 
                     \forall t_i \in V_\text{dom}: \matr{E}_\text{dom}(t_i) = \frac{1}{|\mathcal{T}_\text{s}(t_i)|} \sum_{t_j \in \mathcal{T}_\text{s}(t_i)}\matr{E}_\text{s}(t_j)
                 \]
-                In other words, each token in $V_\text{dom}$ is encoded as the average of embeddings of the tokens that compose it in the starting embedding model (if the token appear in both vocabularies, the embedding is the same).
+                In other words, each token in $V_\text{dom}$ is encoded as the average of the embeddings of the tokens that compose it in the starting embedding model (if the token appear in both vocabularies, the embedding is the same).
         \end{description}
 \end{description}
 
@@ -125,7 +125,7 @@
 \begin{remark}
     Some studies show that an explanation for in-context learning is that causal attention has the same effect of gradient updates (i.e., the left part of the prompt influences the right part).
 
-    Another possible explanation is based on the concept of induction heads which are attention heads that specialize in predicting repeated sequences (i.e., in-context learning is seen as the capability of imitating past data). Ablation studies show that by identifying and removing induction heads, in-context learning performance of a model drastically drops.
+    Another possible explanation is based on the concept of induction heads which are attention heads that specialize in predicting repeated sequences (i.e., in-context learning is seen as the capability of imitating past data). Ablation studies show that by identifying and removing induction heads, the in-context learning performance of a model drastically drops.
 
     \begin{figure}[H]
         \centering
@@ -144,7 +144,7 @@
         \end{figure}
 
     \item[Chain-of-thought prompting] \marginnote{Chain-of-thought prompting}
-        Provide in the prompt examples of reasoning to make the model provide the output step-by-step.
+        Provide in the prompt examples of reasoning to make the model generate the output step-by-step\footnote{\includegraphics[width=1.2cm]{img/meme.jpg}}.
 
         \begin{remark}
             Empirical results show that the best prompt for chain-of-thought is to add to the prompt \texttt{think step by step}.
