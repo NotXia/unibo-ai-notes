@@ -80,13 +80,13 @@
     \]
 
     \begin{description}
-        \item[Language model] By considering a language model without context, the priors are computed as $\prob{w | \varepsilon} = \frac{\texttt{count}(w)}{\vert \texttt{COCA} \vert}$ (where $\vert \texttt{COCA} \vert = \num{404253213}$):
+        \item[Language model] By considering a language model without context, the priors are computed as $\prob{w | \varnothing} = \frac{\texttt{count}(w)}{\vert \texttt{COCA} \vert}$ (where $\vert \texttt{COCA} \vert = \num{404253213}$):
         \begin{table}[H]
             \centering
             \footnotesize
             \begin{tabular}{ccl}
                 \toprule
-                $w$ & $\texttt{count}(w)$ & $\prob{w | \varepsilon}$ \\
+                $w$ & $\texttt{count}(w)$ & $\prob{w | \varnothing}$ \\
                 \midrule
                 \texttt{actress}    & \num{9321}    & $0.0000231$   \\
                 \texttt{cress}      & \num{220}     & $0.000000544$ \\
@@ -125,7 +125,7 @@
         \footnotesize
         \begin{tabular}{cl}
             \toprule
-            $w$ & $\prob{x | w} \prob{w | \varepsilon}$ \\
+            $w$ & $\prob{x | w} \prob{w | \varnothing}$ \\
             \midrule
             \texttt{actress} & $2.7 \cdot 10^{-9}$ \\
             \texttt{cress}   & $0.00078 \cdot 10^{-9}$ \\
@@ -155,7 +155,7 @@
             \bottomrule
         \end{tabular}
     \end{table}
-    This allows to measure the likelihood of a sentence as:
+    This allows to measure the likelihood of a word within its context as:
     \[
         \begin{split}
             \prob{\texttt{versatile \underline{actress} whose}} &= \prob{\texttt{actress} | \texttt{versatile}} \prob{\texttt{whose} | \texttt{actress}} = 210 \cdot 10^{-10} \\
@@ -293,7 +293,7 @@
         \begin{remark}[Perplexity intuition]
             Perplexity can be seen as a measure of surprise of a language model when evaluating a sequence.
 
-            Alternatively, it can also be seen as a weighted average branching factor (i.e., average number of possible unique next words that follow any word, accounting for their probabilities). For instance, consider a vocabulary of digits and a training corpus where every digit appears with uniform probability $0.1$. The perplexity of any sequence using a 1-gram model is:
+            Alternatively, it can also be seen as a weighted average branching factor (i.e., average number of possible unique next words that follow any word accounting for their probabilities). For instance, consider a vocabulary of digits and a training corpus where every digit appears with uniform probability $0.1$. The perplexity of any sequence using a 1-gram model is:
             \[ \texttt{PP}(w_{1..N}) = \left( 0.1^{N} \right)^{-\frac{1}{N}} = 10 \]
             Now consider a training corpus where $0$ occurs $91\%$ of the time and the other digits $1\%$ of the time. The perplexity of the sequence \texttt{0 0 0 0 0 3 0 0 0 0} is:
             \[ \texttt{PP}(\texttt{0 0 0 0 0 3 0 0 0 0}) = \left( 0.91^9 \cdot 0.01 \right)^{-\frac{1}{10}} \approx 1.73 \]
