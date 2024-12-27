@@ -100,7 +100,7 @@
                     \item Higher temperatures (i.e., $\tau > 1$) allow for considering low-probability words.
                     \item Lower temperatures (i.e., $\tau \in (0, 1]$) focus on high-probability words.
                     \begin{remark}
-                        A temperature of $\tau = 0$ corresponds to greedy decoding.
+                        For $\tau \rightarrow 0$, generation becomes closer to greedy decoding.
                     \end{remark}
                 \end{itemize}
 
@@ -175,7 +175,7 @@
                         Add a new trainable head on top of the model.
 
                     \item[Parameter-efficient fine-tuning (PEFT)] \marginnote{Parameter-efficient fine-tuning (PEFT)}
-                        Continue training a selected subset of parameters (e.g., LoRA \Cref{sec:lora}).
+                        Continue training a selected subset of parameters (e.g., LoRA in \Cref{sec:lora}).
                 \end{description}
 
             \item[Supervised fine-tuning] \marginnote{Supervised fine-tuning}

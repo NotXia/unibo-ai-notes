@@ -12,7 +12,7 @@
 
 \begin{description}
     \item[Instruction tuning] \marginnote{Instruction tuning}
-        Fine-tune a model on a dataset containing various tasks expressed in natural language in the form $(\text{description}, \text{examples}, \text{solution})$, all possibly formatted using multiple templates.
+        Fine-tune a model on a dataset containing various tasks expressed in natural language in the form $(\text{description}, \text{examples}, \text{solution})$, all usually formatted using multiple templates.
 
         \begin{figure}[H]
             \centering
@@ -61,7 +61,7 @@
 
             \item Fine-tune the language model (i.e., train the policy) using an RL algorithm (e.g., PPO) and the learned reward model. 
 
-            Given a prompt $x$ and an answer $y$, the reward $r$ used for the RL update is computed as:
+            Given a prompt $x$ and an answer $y$, the reward $r$ used for RL update is computed as:
             \[ r = r_\theta(y \mid x) - \lambda_\text{KL} D_\text{KL}(\pi_{\text{PPO}}(y \mid x) \Vert \pi_{\text{base}}(y \mid x)) \]
             where:
             \begin{itemize}

@@ -159,7 +159,7 @@
         \begin{description}
             \item[Mean average precision] \marginnote{Mean average precision}
                 Average AP over different queries $Q$:
-                \[ \texttt{MAP}_t = \frac{1}{|Q|} \sum_{q \in Q} \texttt{AP}_t(q) \]
+                \[ \texttt{mAP}_t = \frac{1}{|Q|} \sum_{q \in Q} \texttt{AP}_t(q) \]
         \end{description}
 \end{description}
 
@@ -267,10 +267,10 @@
 
     \item[Mean reciprocal rank] \marginnote{Mean reciprocal rank}
         Given a system that provides a ranked list of answers to a question $q_i$, the reciprocal rank for $q_i$ is:
-        \[ \frac{1}{\texttt{rank}_i} \]
+        \[ \texttt{RR} = \frac{1}{\texttt{rank}_i} \]
         where $\texttt{rank}_i$ is the index of the first correct answer in the provided ranked list.
         Mean reciprocal rank is computed over a set of queries $Q$:
-        \[ \texttt{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{\texttt{rank}_i} \]
+        \[ \texttt{mRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{\texttt{rank}_i} \]
 
 \end{description}
 
@@ -312,7 +312,7 @@
 \end{description}
 
 \begin{remark}
-    The current trend is to evaluate RAG performances with another LLM.
+    The current trend is to evaluate RAG performance with another LLM.
 \end{remark}
 
 \begin{remark}
