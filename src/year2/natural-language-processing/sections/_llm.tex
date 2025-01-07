@@ -60,7 +60,7 @@
         \end{remark}
 
     \item[Beam search] \marginnote{Beam search}
-        Given a beam width $k$, perform a breadth-first search keeping at each branching level the top-$k$ tokens based on the probability of that sequence computes as:
+        Given a beam width $k$, perform a breadth-first search keeping at each branching level the top-$k$ tokens based on the probability of that sequence computed as:
         \[ \log\left( \prob{y \mid x} \right) = \sum_{i=1}^{t} \log\left( \prob{ y_i \mid x, y_1, \dots, y_{i-1} } \right) \]
 
         \begin{example}
@@ -192,7 +192,7 @@
         Architecture that produces contextual embeddings by considering both left-to-right and right-to-left context.
 
         \begin{remark}
-            This architecture does feature extraction and is more suited for classification tasks.
+            This architecture performs feature extraction and is more suited for classification tasks.
         \end{remark}
 
         \begin{description}
@@ -206,7 +206,7 @@
         \end{description}
 
     \item[Contextual embedding] \marginnote{Contextual embedding}
-        Represent the meaning of word instances (i.e., dynamically depending on the surroundings).
+        Represent the meaning of word instances (i.e., in a dynamic manner depending on the surroundings).
 
         \begin{remark}[Sequence embedding]
             Encoders usually have a classifier token (e.g., \texttt{[CLS]}) to model the whole sentence.

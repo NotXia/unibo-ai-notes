@@ -61,7 +61,7 @@
 
             \item Fine-tune the language model (i.e., train the policy) using an RL algorithm (e.g., PPO) and the learned reward model. 
 
-            Given a prompt $x$ and an answer $y$, the reward $r$ used for RL update is computed as:
+            Given a prompt $x$ and an answer $y$, the reward $r$ used for the RL update is computed as:
             \[ r = r_\theta(y \mid x) - \lambda_\text{KL} D_\text{KL}(\pi_{\text{PPO}}(y \mid x) \Vert \pi_{\text{base}}(y \mid x)) \]
             where:
             \begin{itemize}

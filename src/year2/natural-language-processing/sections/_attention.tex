@@ -46,7 +46,7 @@
                             \vec{s}^{(t)} \cdot \vec{h}^{(N)} 
                         \end{bmatrix} \in \mathbb{R}^{N} 
                 \]
-                $\vec{e}^{(t)}$ is used to determine the attention distribution $\vec{\alpha}^{(t)}$ that is required to obtain the attention output $\vec{a}^{(t)}$ as the weighted encoder hidden states :
+                $\vec{e}^{(t)}$ is used to determine the attention distribution $\vec{\alpha}^{(t)}$ that is required to obtain the attention output $\vec{a}^{(t)}$ as the weighted sum of the encoder hidden states:
                 \[
                     \begin{gathered}
                         \mathbb{R}^{N} \ni \vec{\alpha}^{(t)} = \texttt{softmax}(\vec{e}^{(t)}) \\

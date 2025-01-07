@@ -406,7 +406,7 @@
     \item[Neural language modeling] \marginnote{Neural language modeling}
         Use a neural network to predict the next word $w_{n+1}$ given an input sequence $w_{1..n}$. The general flow is the following:
         \begin{enumerate}
-            \item Encode the input words into one-hot vectors ($\mathbb{R}^{|V| \times n}$). 
+            \item Encode the input words into one-hot vectors ($\mathbb{N}^{|V| \times n}$). 
             \item Project the input vectors with an embedding matrix $\matr{E} \in \mathbb{R}^{d \times |V|}$ that encodes them into $d$-dimensional vectors.
             \item Pass the embedding into the hidden layers.
             \item The final layer is a probability distribution over the vocabulary ($\mathbb{R}^{|V| \times 1}$).
@@ -478,7 +478,7 @@
                         Use a binary logistic regressor as classifier. The two classes are:
                         \begin{itemize}
                             \item Context words within the context window (positive label).
-                            \item Words randomly sampled (negative label).
+                            \item Randomly sampled words (negative label).
                         \end{itemize} 
                         The probabilities can be computed as:
                         \[ 

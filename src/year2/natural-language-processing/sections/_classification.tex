@@ -71,7 +71,7 @@
                 \hat{c} &= \arg\max_{c \in C} \prob{c | d} \\
                 &= \arg\max_{c \in C} \underbrace{\prob{d | c}}_{\text{likelihood}} \underbrace{\prob{c}}_{\text{prior}} \\
                 &= \arg\max_{c \in C} \prob{w_1, \dots, w_n | c} \prob{c} \\
-                &= \arg\max_{c \in C} \prod_{i} \prob{w_i | c} \prob{c} \\
+                &\approx \arg\max_{c \in C} \prod_{i} \prob{w_i | c} \prob{c} \\
                 &= \arg\max_{c \in C} \sum_{i} \log\prob{w_i | c} \log\prob{c} \\
             \end{split}
         \]
@@ -82,7 +82,7 @@
             \qquad
             \prob{w_i | c} = \frac{\texttt{count}(w_i, c)}{\sum_{v \in V} \texttt{count}(v, c)}
         \]
-        where $N_c$ is the number of documents with class $c$ and $\texttt{count}(w, c)$ counts the occurrences of the word $w$ in the training samples with class $c$.
+        where $N_c$ is the number of documents of class $c$ and $\texttt{count}(w, c)$ counts the occurrences of the word $w$ in the training samples of class $c$.
 
         \begin{remark}
             Laplace smoothing is used to avoid zero probabilities.
@@ -226,7 +226,7 @@ Naive Bayes has the following properties:
                     \end{cases} 
                 \]
                 By applying a log-transformation and inverting the sign, this corresponds to the cross-entropy loss in the binary case:
-                \[ \mathcal{L}_{\text{BCE}}(\hat{y}, y) = -\log \prob{y | x} = -[y \log(\hat{y}) + (1-y)\log(1-\hat{y})] \]
+                \[ \mathcal{L}_{\text{BCE}}(\hat{y}, y) = -\log(\prob{y | x}) = -[y \log(\hat{y}) + (1-y)\log(1-\hat{y})] \]
 
             \item[Optimization]
                 As cross-entropy is convex, SGD is well suited to find the parameters $\vec{\theta}$ of a logistic regressor $f$ over batches of $m$ examples by solving:
@@ -255,8 +255,8 @@ Logistic regression has the following properties:
 \end{itemize}
 
 \begin{remark}
-    Logistic regression is also a good baseline when experimenting with text classifications.
-
+    Logistic regression is also a good baseline when experimenting with text classification. 
+    
     As they are lightweight to train, it is a good idea to test both naive Bayes and logistic regression to determine the best baseline for other experiments.
 \end{remark}
 
