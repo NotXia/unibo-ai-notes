@@ -101,7 +101,7 @@
         \end{itemize} 
         It is defined as follows:
         \[ 
-            \texttt{BM25}(t, d) = 
+            \texttt{BM25}(q, d) = 
                 \sum_{t \in q} \left( \texttt{idf}(t) \frac{\texttt{tf}(t, d) \cdot (k+1)}{k \cdot \left( 1 - b + b \frac{|d|}{|d_\text{avg}|} \right) + \texttt{tf}(t, d)} \right)
         \]
         where $|d_\text{avg}|$ is the average document length, and typically $k \in [1.2, 2]$ and $b = 0.75$.
@@ -260,7 +260,7 @@
 
 \begin{description}
     \item[Exact match] \marginnote{Exact match}
-        Ratio of matches between predicted answer and the ground-truth computed considering the characters at each position.
+        Ratio of match between predicted answer and the ground-truth computed considering the characters at each position.
 
     \item[F1 score] \marginnote{F1 score}
         Macro F1 score computed by considering predictions and ground-truth as bag of tokens (i.e., average token overlap).
