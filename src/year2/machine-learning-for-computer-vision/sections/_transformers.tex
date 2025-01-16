@@ -70,7 +70,7 @@
                 With the projection $\matr{W}_K \in \mathbb{R}^{d_Y \times d_K}$ such that $\mathbb{R}^{M \times d_K} \ni \matr{K} = \matr{Y} \matr{W}_K$, where $d_K$ is the dimension of the keys.
 
             \item[Query] 
-                With the projection $\matr{W}_Q \in \mathbb{R}^{d_X \times d_K}$ such that $\mathbb{R}^{d_K} \ni \vec{q}_1 = \matr{Y} \matr{W}_X$, where $d_X$ is the length of $\vec{x}_1$ that is no longer required to be $d_Y$ as there is a projection.
+                With the projection $\matr{W}_Q \in \mathbb{R}^{d_X \times d_K}$ such that $\mathbb{R}^{d_K} \ni \vec{q}_1 = \vec{x}_1 \matr{W}_X$, where $d_X$ is the length of $\vec{x}_1$ that is no longer required to be $d_Y$ as there is a projection.
 
             \item[Values]
                 With the projection $\matr{W}_V \in \mathbb{R}^{d_Y \times d_V}$ such that $\mathbb{R}^{M \times d_V} \ni \matr{V} = \matr{Y} \matr{W}_K$, where $d_V$ is the dimension of the values.
@@ -88,7 +88,7 @@
             % \caption{Steps of scaled dot-product attention}
         \end{figure}
 
-        Finally, due to the linear projections, instead of a single vector there can be an arbitrary number $N$ of inputs $\matr{X} \in \mathbb{R}^{N \times d_X}$ to compute the queries $\mathbb{R}^{N \times d_K} \ni \matr{Q} = \matr{X} \matr{W}_Q$. This change affects the similarity scores $\matr{Q}\matr{K}^T \in \mathbb{R}^{N \times M}$ and the output activations $\matr{A} \in \mathbb{R}^{N \times d_V}$. 
+        Finally, due to the linear projections, instead of a single vector, there can be an arbitrary number $N$ of inputs $\matr{X} \in \mathbb{R}^{N \times d_X}$ to compute the queries $\mathbb{R}^{N \times d_K} \ni \matr{Q} = \matr{X} \matr{W}_Q$. This change affects the similarity scores $\matr{Q}\matr{K}^T \in \mathbb{R}^{N \times M}$ and the output activations $\matr{A} \in \mathbb{R}^{N \times d_V}$. 
 
         The overall attention mechanism can be defined as:
         \[ \matr{A} = \texttt{softmax}_\texttt{row-wise}\left( \frac{\matr{Q}\matr{K}^T}{\sqrt{d_K}} \right) \matr{V} \]
@@ -166,7 +166,7 @@
                 \end{remark}
 
                 \begin{remark}
-                    Layer normalization is easier to distribute on multiple computation units and has the same behavior at both train and inference time.
+                    Layer normalization is easier to distribute on multiple computation units and has the same behavior at both training and inference time.
                 \end{remark}
 
                 \begin{figure}[H]
@@ -176,7 +176,7 @@
                 \end{figure}
 
             \item[Feed-forward network (\texttt{FFN})] \marginnote{Feed-forward network}
-                MLP with one hidden layer applied to each token independently. ReLU or one of its variants are used as activation function:
+                MLP with one hidden layer applied to each token independently. ReLU or one of its variant is used as activation function:
                 \[ \texttt{FFN}(\vec{x}) = \texttt{relu}(\vec{x}\matr{W}_1 + \vec{b}_1)\matr{W}_2 + \vec{b}_2 \]
 
                 \begin{remark}
@@ -301,7 +301,7 @@
 
         \begin{description}
             \item[Masked self-attention] \marginnote{Masked self-attention}
-                Modification to self-attention to prevent tokens to attend at future positions (i.e., at their right). This can be done by either setting the similarity scores with future tokens to $-\infty$ or directly setting the corresponding attention weights to $0$ (i.e., make the attention weights a triangular matrix).
+                Modification to self-attention to prevent tokens from attending at future positions (i.e., at their right). This can be done by either setting the similarity scores with future tokens to $-\infty$ or directly setting the corresponding attention weights to $0$ (i.e., make the attention weights a triangular matrix).
 
                 \begin{figure}[H]
                     \centering
@@ -318,7 +318,7 @@
 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.8\linewidth]{./img/_self_attention_permutation.jpg}
+        \includegraphics[width=0.7\linewidth]{./img/_self_attention_permutation.jpg}
     \end{figure}
 \end{remark}
 
@@ -372,7 +372,7 @@
 \end{remark}
 
 \begin{remark}
-    Compared to text, image pixels are more redundant and less semantically rich. Therefore, processing all of them together is not strictly necessary.
+    Compared to text, image pixels are more redundant and less semantically rich. Therefore, processing all of them individually is not strictly necessary.
 \end{remark}
 
 \begin{description}

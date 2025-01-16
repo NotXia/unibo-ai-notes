@@ -292,7 +292,7 @@ Network with bottleneck-block-inspired inception modules.
                 Global average pooling to obtain a channel-wise vector.
 
             \item[Excitation]
-                Feed-forward network that first compresses the input channels by a ratio $r$ (typically $16$) and then restores them.
+                Feed-forward network that first compresses the input channels by a ratio $r$ (typically $16$) and then restores them. A final sigmoid gives the channel weights.
         \end{descriptionlist}
 
 
@@ -341,7 +341,7 @@ Network with bottleneck-block-inspired inception modules.
 
 \begin{description}
     \item[Inverted residual block] \marginnote{Inverted residual block}
-        Modified bottleneck block defined as follows:
+        Modified bottleneck block composed by:
         \begin{enumerate}
             \item A $1 \times 1$ convolution to expand the input channels by a factor of $t$. 
             \item A $3 \times 3$ depth-wise convolution.
@@ -370,25 +370,25 @@ Network with bottleneck-block-inspired inception modules.
 
         \begin{table}[H]
             \centering
-            \caption{\parbox[t]{0.6\linewidth}{Architecture of MobileNetV2 with expansion factor ($t$), number of channels ($c$), number of times a block is repeated ($n$), and stride ($s$).}}
+            \caption{\parbox[t]{0.77\linewidth}{Architecture of MobileNetV2 with expansion factor ($t$), number of channels ($c$), number of times a block is repeated ($n$), and stride ($s$).}}
             \small
             \begin{tabular}{cccccc}
                 \toprule
                 \textbf{Input}                       & \textbf{Operator}                      & $t$ & $c$     & $n$ & $s$ \\
                 \midrule
-                $2242 \times 3$             & \texttt{conv2d}               & - & 32    & 1 & 2 \\
+                $224^2 \times 3$             & \texttt{conv2d}               & - & 32    & 1 & 2 \\
                 \midrule
-                $1122 \times 32$            & \texttt{bottleneck}           & 1 & 16    & 1 & 1 \\
-                $1122 \times 16$            & \texttt{bottleneck}           & 6 & 24    & 2 & 2 \\
-                $562 \times 24$             & \texttt{bottleneck}           & 6 & 32    & 3 & 2 \\
-                $282 \times 32$             & \texttt{bottleneck}           & 6 & 64    & 4 & 2 \\
-                $142 \times 64$             & \texttt{bottleneck}           & 6 & 96    & 3 & 1 \\
-                $142 \times 96$             & \texttt{bottleneck}           & 6 & 160   & 3 & 2 \\
-                $72 \times 160$             & \texttt{bottleneck}           & 6 & 320   & 1 & 1 \\
+                $112^2 \times 32$            & \texttt{bottleneck}           & 1 & 16    & 1 & 1 \\
+                $112^2 \times 16$            & \texttt{bottleneck}           & 6 & 24    & 2 & 2 \\
+                $56^2 \times 24$             & \texttt{bottleneck}           & 6 & 32    & 3 & 2 \\
+                $28^2 \times 32$             & \texttt{bottleneck}           & 6 & 64    & 4 & 2 \\
+                $14^2 \times 64$             & \texttt{bottleneck}           & 6 & 96    & 3 & 1 \\
+                $14^2 \times 96$             & \texttt{bottleneck}           & 6 & 160   & 3 & 2 \\
+                $7^2 \times 160$             & \texttt{bottleneck}           & 6 & 320   & 1 & 1 \\
                 \midrule
-                $72 \times 320$             & \texttt{conv2d $1\times1$}    & - & 1280  & 1 & 1 \\
+                $7^2 \times 320$             & \texttt{conv2d $1\times1$}    & - & 1280  & 1 & 1 \\
                 \midrule
-                $72 \times 1280$            & \texttt{avgpool $7\times7$}   & - & -     & 1 & - \\
+                $7^2 \times 1280$            & \texttt{avgpool $7\times7$}   & - & -     & 1 & - \\
                 $1 \times 1 \times 1280$    & \texttt{conv2d $1\times1$}    & - & k     & - & 1 \\
                 \bottomrule
             \end{tabular}
@@ -401,7 +401,7 @@ Network with bottleneck-block-inspired inception modules.
 
 \begin{description}
     \item[Single dimension scaling]
-        Scaling a baseline model by width, depth, or resolution. It generally always improve the accuracy.
+        Scaling a baseline model by width, depth, or resolution generally improves the accuracy.
 
         \begin{description}
             \item[Width scaling] \marginnote{Width scaling}
@@ -443,7 +443,7 @@ Network with bottleneck-block-inspired inception modules.
                 In practice, $\alpha$, $\beta$, and $\gamma$ are determined through grid search.
 
                 \begin{remark}
-                    The constraint is formulated in this way as FLOPS scales linearly with depth but quadratically with width and resolution.
+                    The constraint is formulated in this way as FLOPS scales linearly by depth but quadratically by width and resolution.
                 \end{remark}
         \end{description}
 \end{description}

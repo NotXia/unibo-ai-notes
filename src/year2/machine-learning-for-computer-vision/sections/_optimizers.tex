@@ -105,7 +105,7 @@ Methods that also consider the second-order derivatives when determining the ste
         \]
         where $\mu \in [0, 1[$ is the momentum coefficient.
 
-        In other words, $v^{(t+1)}$ represents a weighted average of the updates steps done up until time $t$.
+        In other words, $v^{(t+1)}$ represents a weighted average of the update steps done up until time $t$.
 
         \begin{remark}
             Momentum helps to counteract a poor conditioning of the Hessian matrix when working with canyons.
@@ -134,7 +134,7 @@ Methods that also consider the second-order derivatives when determining the ste
         \]
 
         \begin{remark}
-            The key idea is that, once $\mu v^{(t)}$ is summed to $\matr{\theta}^{(t)}$, the gradient computed at $\matr{\theta}^{(t)}$ is obsolete as $\matr{\theta}^{(t)}$ has been partially updated.
+            The key idea is that, once $\mu v^{(t)}$ is summed to $\matr{\theta}^{(t)}$, the gradient computed at $\matr{\theta}^{(t)}$ is obsolete as it has been partially updated.
         \end{remark}
 
         \begin{remark}
@@ -228,7 +228,7 @@ Methods that also consider the second-order derivatives when determining the ste
         where $\beta \in [0, 1]$ (typically $0.9$ or higher) makes $s^{(t)}$ an exponential moving average.
 
         \begin{remark}
-            RMSProp is faster than SGD at the beginning and slows down reaching similar performances as SGD.
+            RMSProp is faster than SGD at the beginning before slowing down and reaching similar performances as SGD.
         \end{remark}
 
         \begin{figure}[H]
@@ -254,11 +254,11 @@ Methods that also consider the second-order derivatives when determining the ste
 
         Moreover, as $\vec{g}^{(0)} = 0$, $\vec{s}^{(0)} = 0$, and $\beta_1$, $\beta_2$ are typically large (i.e., past history weighs more), Adam starts by taking small steps (e.g., $\vec{g}^{(1)} = (1-\beta_1) \nabla\mathcal{L}(\vec{\theta}^{(0)})$ is simply rescaling the gradient for no reason). To cope with this, a debiased formulation of $\vec{g}$ and $\vec{s}$ is used:
         \[
-            \vec{g}^{(t)}_{\text{debiased}} = \frac{g^{(t+1)}}{1-\beta_1^{t+1}} 
+            \vec{g}^{(t)}_{\text{debiased}} = \frac{\vec{g}^{(t+1)}}{1-\beta_1^{t+1}} 
             \qquad
-            \vec{s}^{(t)}_{\text{debiased}} = \frac{s^{(t+1)}}{1-\beta_2^{t+1}} 
+            \vec{s}^{(t)}_{\text{debiased}} = \frac{\vec{s}^{(t+1)}}{1-\beta_2^{t+1}} 
         \]
-        where the denominator $(1-\beta_i^{t+1}) \rightarrow 1$ for increasing values of $t$.
+        where the denominators $(1-\beta_i^{t+1}) \rightarrow 1$ for increasing values of $t$.
 
         Finally, the update is defined as:
         \[
@@ -296,7 +296,7 @@ Methods that also consider the second-order derivatives when determining the ste
 \end{remark}
 
 \begin{remark}
-    Momentum based approaches tend to prefer large basins. Intuitively, by accumulating momentum, it is possible to ``escape" small basins.
+    Momentum based approaches tend to prefer large basins. Intuitively, by accumulating momentum, it is possible to ``escape'' smaller ones.
 
     \begin{figure}[H]
         \centering
