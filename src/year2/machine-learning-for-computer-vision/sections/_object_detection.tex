@@ -160,7 +160,7 @@
 
         \begin{example}
             \small
-            Consider the problem of spam detection with two features $x_1$ and $x_2$ (number of URL and capitalized words, respectively).
+            Consider the problem of spam detection with two features $x_1$ and $x_2$ (number of URLs and capitalized words, respectively).
             The training samples and their initial weights are the following:
             \begin{figure}[H]
                 \centering
@@ -480,22 +480,22 @@
                 Given an input activation of shape $C_a \times H_a \times W_a$ and the desired output spatial dimension $H_o \times W_o$, RoIPool allows to obtain an output of shape $C_a \times H_o \times W_o$ as follows:
                 \begin{enumerate}
                     \item Project the proposed region from the original image to the feature extractor activations.
-                    \item Snap the projection to grid (i.e., apply rounding).
+                    \item Snap the projection to grid (i.e., apply rounding) to obtain a spatial dimension of $H_r \times W_r$.
                         \begin{remark}
                             As a single pixel in the activation encodes multiple pixels of the input image, snapping might lose some information.
                         \end{remark}
                         \begin{figure}[H]
                             \raggedleft
-                            \includegraphics[width=0.85\linewidth]{./img/_roipool_snap.jpg}
+                            \includegraphics[width=0.8\linewidth]{./img/_roipool_snap.jpg}
                             \caption{Project and snap operations}
                         \end{figure}
-                    \item Apply max pooling with kernel of approximately size $\left\lceil \frac{H_r}{H_O} \right\rceil \times \left\lceil \frac{W_r}{W_O} \right\rceil$ and stride approximately $\left\lfloor \frac{H_r}{H_O} \right\rfloor \times \left\lfloor \frac{W_r}{W_O} \right\rfloor$.
+                    \item Apply max pooling with kernel of approximately size $\left\lceil \frac{H_r}{H_o} \right\rceil \times \left\lceil \frac{W_r}{W_o} \right\rceil$ and stride approximately $\left\lfloor \frac{H_r}{H_o} \right\rfloor \times \left\lfloor \frac{W_r}{W_o} \right\rfloor$.
                         \begin{remark}
                             Approximations are needed as the spatial dimension of the crop might not be directly convertible to the desired output shape. So, some iterations might not use the precise kernel size or stride.
                         \end{remark}
                         \begin{figure}[H]
                             \raggedleft
-                            \includegraphics[width=0.85\linewidth]{./img/_roipool_maxpool.jpg}
+                            \includegraphics[width=0.8\linewidth]{./img/_roipool_maxpool.jpg}
                             \caption{Pooling operation with varying kernel size}
                         \end{figure}
                 \end{enumerate}
@@ -601,7 +601,7 @@
                 \item[Architecture]
                     An RPN is implemented as a two-layer CNN:
                     \begin{enumerate}
-                        \item A $3 \times 3$ convolution with padding $1$, stride $0$, $256$ output channels, and ReLU as activation.
+                        \item A $3 \times 3$ convolution with padding $1$, stride $1$, $256$ output channels, and ReLU as activation.
                         \item Two parallel $1 \times 1$ convolutions with no padding and stride $1$ with $2k$ and $4k$ output channels, respectively.
                     \end{enumerate}
                     \begin{figure}[H]
@@ -884,7 +884,7 @@
                     \end{subfigure}
                     \caption{
                         \parbox[t]{0.7\linewidth}{
-                            Cumulative loss contribution for varying $\sigma$ of the focal loss. Note that for the background examples, the contribution to the loss becomes more relevant only when the majority of the samples (i.e., the most difficult ones) has been considered.
+                            Cumulative loss contribution for varying $\gamma$ of the focal loss. Note that, for the background examples, the contribution to the loss becomes more relevant only when the majority of the samples (i.e., the most difficult ones) has been considered.
                         }
                     }
                 \end{figure}
@@ -1080,7 +1080,7 @@
                     \[ \sigma^* = \arg\min_\sigma \sum_{i=1}^{N} \mathcal{L}_\text{match}(\hat{y}_{\sigma(i)}, y_i) \]
 
                     \item Given the optimal permutation $\sigma^*$, compute the loss as:
-                    \[ \mathcal{L}_\text{hungarian}(\hat{y}, y) = \sum_{i=1}^{N} \left( - \ln\left( \hat{p}_{\sigma^*(i)}(c_i) \right) + \mathbbm{1}[c_i \neq \varnothing] \mathcal{L}_\text{box}(\hat{b}_{\sigma^*(i)}, b_i) \right) \]
+                    \[ \mathcal{L}_\text{hungarian}(\hat{y}, y) = \sum_{i=1}^{N} \left( - \ln\left( \hat{p}_{\sigma^*(i)}[c_i] \right) + \mathbbm{1}[c_i \neq \varnothing] \mathcal{L}_\text{box}(\hat{b}_{\sigma^*(i)}, b_i) \right) \]
                 \end{enumerate}
 
                 \begin{figure}[H]
