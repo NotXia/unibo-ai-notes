@@ -3,7 +3,7 @@
 
 \begin{description}
     \item[Generative task] \marginnote{Generative task}
-        Given the training data $\{ x^{(i)} \}$, learn the distribution of the data so that a model can sample new examples:
+        Given the training data $\{ x^{(i)} \}$, learn its distribution so that a model can sample new examples:
         \[ \hat{x}^{(i)} \sim p_\text{gen}(x; \matr{\theta}) \]
 
         \begin{figure}[H]
@@ -421,7 +421,7 @@
 \begin{remark}[Mode dropping/collapse]
     Only some modes of the distribution of the real data are represented by the mass of the generator.
 
-    Consider the training objective of the optimal generator. Its main terms model coverage and quality, respectively:
+    Consider the training objective of the optimal generator. The two terms model coverage and quality, respectively:
     \[ 
         \begin{gathered}
             -\frac{1}{I} \sum_{i=1}^I \log \left( D(x_i; \phi) \right) - \frac{1}{J} \sum_{j=1}^J \log \left( 1- D(G(z_j; \theta); \phi) \right) \\
@@ -592,7 +592,7 @@
         \[ 
             \begin{gathered}
                 \x_t = \sqrt{1-\beta_t} \x_{t-1} + \sqrt{\beta_t}\noise_t \\
-                \x_t \sim q(\x_t \mid \x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\x_{t-1}, \beta_t\matr{I})
+                \x_t \sim q(\x_t \mid \x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\x_{t-1}; \beta_t\matr{I})
             \end{gathered}
         \]
         where:
@@ -1020,7 +1020,7 @@
         \begin{description}
             \item[Forward process] 
                 Use a family of non-Markovian forward distributions conditioned on the real image $\x_0$ and parametrized by a positive standard deviation $\vec{\sigma}$ defined as:
-                \[ q_\vec{\sigma}(\x_1, \dots, \x_T \mid x_0) = q_{\sigma_T}(\x_T \mid \x_0) \prod_{t=2}^{T} q_{\sigma_t}(\x_{t-1} \mid \x_t, \x_0) \]
+                \[ q_\vec{\sigma}(\x_1, \dots, \x_T \mid \x_0) = q_{\sigma_T}(\x_T \mid \x_0) \prod_{t=2}^{T} q_{\sigma_t}(\x_{t-1} \mid \x_t, \x_0) \]
                 where:
                 \[
                     \begin{gathered}
@@ -1052,7 +1052,7 @@
             \item[Reverse process] 
                 Given a latent $\x_t$ and a DDPM model $\varepsilon_t(\cdot; \params)$, generation at time step $t$ is done as follows:
                 \begin{enumerate}
-                    \item Compute an estimate for the current time step $t$ of the real image:
+                    \item Compute an estimate of the real image for the current time step $t$:
                     \[ \hat{\x}_0 = \frac{\x_t - \sqrt{\alpha_{t-1}} \varepsilon_t(\x_t; \params)}{\sqrt{\alpha_t}} = f_\params(\x_t) \]
                     Note that the formula comes from the usual $\x_t = \sqrt{\alpha_t}\x_0 + \sqrt{1-\alpha_t}\noise_t$.
                     \item Sample the next image from:

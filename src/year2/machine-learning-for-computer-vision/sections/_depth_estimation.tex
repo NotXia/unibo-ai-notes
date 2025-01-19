@@ -120,7 +120,7 @@
                 \begin{description}
                     \item[Reconstruction loss] \marginnote{Reconstruction loss}
                         Mix between the structural similarity index (SSIM) (which measures a perceptual distance) and L1 norm:
-                        \[ \mathcal{L}_{\text{ap}}(x^{(i, L)}) = \frac{1}{N} \sum_{(u, v)} \alpha \frac{1-\texttt{SSIM}(x_{u, v}^{(i, L)}, \hat{x}_{u, v}^{(i, L)})}{2} + (1-\alpha) \left\Vert x_{u, v}^{(i, L)} - \hat{x}_{u, v}^{(i, L)} \right\Vert_1 \]
+                        \[ \mathcal{L}_{\text{ap}}(x^{(i, L)}) = \frac{1}{N} \sum_{(u, v)} \left( \alpha \frac{1-\texttt{SSIM}(x_{u, v}^{(i, L)}, \hat{x}_{u, v}^{(i, L)})}{2} + (1-\alpha) \left\Vert x_{u, v}^{(i, L)} - \hat{x}_{u, v}^{(i, L)} \right\Vert_1 \right) \]
                         where $x^{(i, L)}$ is the $i$-th input left image and $\hat{x}^{(i, L)}$ the reconstructed left image.
 
                     \item[Disparity smoothness] \marginnote{Disparity smoothness}
@@ -206,7 +206,7 @@
         \begin{descriptionlist}
             \item[Depth CNN] Takes as input the target image and estimates its depth map.
 
-            \item[Pose CNN] Takes as input the target and nearby images and estimates the camera poses to project from target to nearby image.
+            \item[Pose CNN] Takes as input the target and nearby images, and estimates the camera poses to project from target to nearby image.
         \end{descriptionlist}
         The outputs of both networks are used to reconstruct the target image and a reconstruction loss is used for training.
 

@@ -191,7 +191,7 @@
                 \end{remark}
 
                 \begin{remark}
-                    By considering an anchor, a face recognition dataset is composed of a few positive images and lots of negative images. If the embedding of a negative image is already far enough, the loss will be $0$ and does not affect training, making convergence slow.
+                    By considering an anchor, a face recognition dataset is composed of a few positive images and lots of negative images. However, if the embedding of a negative image is already far enough, the loss will be $0$ and does not affect training, making convergence slow.
                 \end{remark}
         \end{description}
 
@@ -282,7 +282,7 @@
             }
         \end{figure}
 
-        To enforce that the embedding must be closer to the correct template, the logit $\vec{s}_y$ of the true identity $y$ can be modified with a penalty $m$:
+        To enforce the embeddings closer to the correct template, the logit $\vec{s}_y$ of the true identity $y$ can be modified with a penalty $m$:
         \[ \vec{s}_y = \cos\left( \arccos(\langle \tilde{\matr{W}}_y, \tilde{f}(x) \rangle) + m \right) \]
         Intuitively, the penalty makes softmax ``think'' that the error is bigger than what it really is, making it push the embedding closer to the correct template.
 
@@ -423,7 +423,7 @@
                 \end{figure}
 
                 \begin{remark}
-                    It has been seen that as bag-of-words approach for the text encoder is better than using transformers.
+                    It has been seen that a bag-of-words approach for the text encoder is better than using transformers.
                 \end{remark}
 
                 \begin{remark}

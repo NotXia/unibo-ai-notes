@@ -812,17 +812,25 @@
                     \begin{gathered}
                         p_t = \begin{cases}
                             p & \text{if $y=1$} \\
-                            1-p & \text{otherwise}
+                            1-p & \text{if $y=0$}
                         \end{cases} 
                         \\
                         \texttt{BCE}(p, y) = \texttt{BCE}(p_t) = -\ln(p_t) = \begin{cases}
                             -\ln(p) & \text{if $y=1$} \\
-                            -\ln(1-p) & \text{otherwise}
+                            -\ln(1-p) & \text{if $y=0$}
                         \end{cases}
                     \end{gathered}
                 \]
                 Binary focal loss down-weighs the loss as follows:
-                \[ \texttt{BFL}_\gamma(p_t) = (1-p_t)^\gamma\texttt{BCE}(p_t) = -(1-p_t)^\gamma \ln(p_t) \]
+                \[ 
+                    \texttt{BFL}_\gamma(p_t) = 
+                    (1-p_t)^\gamma\texttt{BCE}(p_t) = 
+                    -(1-p_t)^\gamma \ln(p_t) =
+                    \begin{cases}
+                        -(1-p)^\gamma \ln(p) & \text{if $y=1$} \\
+                        -(p)^\gamma \ln(1-p) & \text{if $y=0$} \\
+                    \end{cases}
+                \]
                 where $\gamma$ is a hyperparameter ($\gamma=0$ is equivalent to the standard unweighted \texttt{BCE}).
 
                 \begin{figure}[H]
@@ -855,13 +863,29 @@
                 Consider the following notation:
                 \[ \alpha_t = \begin{cases}
                     \alpha & \text{if $y=1$} \\
-                    1-\alpha & \text{otherwise}
+                    1-\alpha & \text{if $y=0$}
                 \end{cases} \]
                 Binary cross-entropy with class weights can be defined as:
-                \[ \texttt{WBCE}(p_t) = \alpha_t \texttt{BCE}(p_t) = -\alpha_t \ln(p_t) \]
+                \[ 
+                    \texttt{WBCE}(p_t) = 
+                    \alpha_t \texttt{BCE}(p_t) = 
+                    -\alpha_t \ln(p_t) =
+                    \begin{cases}
+                        -\alpha \ln(p) & \text{if $y=1$} \\
+                        -(1-\alpha) \ln(1-p) & \text{if $y=0$} \\
+                    \end{cases}
+                \]
 
                 On the same note, $\alpha$-balanced binary focal loss can be defined as:
-                \[ \texttt{WBFL}_\gamma(p_t) = \alpha_t \texttt{BFL}_\gamma(p_t) = -\alpha_t (1-p_t)^\gamma \ln(p_t) \]
+                \[ 
+                    \texttt{WBFL}_\gamma(p_t) = 
+                    \alpha_t \texttt{BFL}_\gamma(p_t) = 
+                    -\alpha_t (1-p_t)^\gamma \ln(p_t) =
+                    \begin{cases}
+                        -\alpha (1-p)^\gamma \ln(p) & \text{if $y=1$} \\
+                        -(1-\alpha) (p)^\gamma \ln(1-p) & \text{if $y=0$} \\
+                    \end{cases}
+                \]
 
                 \begin{remark}
                     Class weights and focal loss are complementary: the former balances the importance of positive and negative classification errors, while the latter focuses on the hard examples of each class.
@@ -1012,7 +1036,7 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{./img/_object_detection_map_speed_plot.jpg}
+    \includegraphics[width=0.55\linewidth]{./img/_object_detection_map_speed_plot.jpg}
     \caption{
         mAP -- speed comparison of the various object detection approaches
     }

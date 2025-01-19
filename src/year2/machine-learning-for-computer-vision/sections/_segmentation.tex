@@ -71,7 +71,7 @@
             \item[Depth-invariant offsets]
                 The denominator ($D[x]$) applied to the offsets allows obtaining depth-invariant offsets.
 
-                Consider two objects at different depths. The focal length of the camera is $f$ and the world offset we want to apply is $o_w$. By changing depth $d$, the offset in the image plane $o_{di}$ changes due to the perspective projection rules. Therefore, to obtain the offset in the image place, we have that:
+                Consider two objects at different depths. The focal length of the camera is $f$ and the world offset we want to apply is $o_w$. By changing depth $d$, the offset in the image plane $o_{di}$ changes due to the perspective projection rules. Therefore, to obtain the offset in the image plane, we have that:
                 \[ o_{di} : f = o_w : d \,\Rightarrow\, o_{di} = \frac{o_w f}{d} = \frac{\Delta p}{d} \]
 
                 \begin{figure}[H]
@@ -118,7 +118,7 @@
                 \begin{remark}
                     Random forests are:
                     \begin{itemize}
-                        \item Fast and parallelizable in both training and inference.
+                        \item Fast and parallelizable at both training and inference.
                         \item Robust to hyperparameters change.
                         \item Interpretable.
                     \end{itemize}
@@ -134,7 +134,7 @@
         Slide a window across each pixel of the input image. Each slice is passed through an R-CNN to determine the class of the pixel at the center of the window.
 
         The loss for an example $i$ is the sum of the cross-entropy losses at each pixel $(u, v)$:
-        \[ \mathcal{L}^{(i)} = \sum_{(u, v)} \mathbbm{1}\left( c_{(u, v)}^{(i)} \right) \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}_{(u, v)}) \right) \]
+        \[ \mathcal{L}^{(i)} = \sum_{(u, v)} \mathcal{L}_\text{CE}\left( \texttt{softmax}(\texttt{scores}_{(u, v)}), \mathbbm{1}\left( c_{(u, v)}^{(i)} \right) \right) \]
 
         \begin{figure}[H]
             \centering
@@ -222,7 +222,7 @@
 
         Given a convolution with convolutional matrix $K$, a transposed convolution is obtained by applying $K^T$ to the image.
 
-        In practice, a transposed convolution can be obtained by sliding the kernel on the output activation (instead of input). The values at the output activation correspond to the product between the input pixel and the kernel. If multiple kernels overlap at the same output pixel, its value is obtained as the sum of all the values that end up in that position.
+        In practice, a transposed convolution can be obtained by sliding the kernel on the output activation (instead of input). The values at the output activation correspond to the product between the input pixels and the kernel. If multiple kernels overlap at the same output pixel, its value is obtained as the sum of all the values that end up in that position.
 
         \begin{example}
             Consider images with $1$ channel. Given a $3 \times 3$ input image and a $3 \times 3$ transposed convolution kernel with stride $2$, the output activation has spatial dimension $5 \times 5$ and is obtained as follows:
@@ -438,7 +438,7 @@
                         \centering
                         \includegraphics[width=0.7\linewidth]{./img/_roi_align1.jpg}
                     \end{figure}
-                    \item Sample some values following a regular grid within each subregion. Use bilinear interpolation to determine the values of the sampled points (as they are most likely not be pixel-perfect).
+                    \item Sample some values following a regular grid within each subregion. Use bilinear interpolation to determine the values of the sampled points (as they are most likely not pixel-perfect).
                     \begin{figure}[H]
                         \centering
                         \includegraphics[width=0.7\linewidth]{./img/_roi_align2.jpg}
@@ -477,7 +477,7 @@
 
             Given the ground-truth class $c$ and mask $m$, and the predicted mask $\hat{m}$, the mask head is trained using the following loss:
             \[ \mathcal{L}_\text{mask}(c, m) = \frac{1}{28 \times 28} \sum_{u=0}^{27} \sum_{v=0}^{27} \mathcal{L}_\text{BCE}\left( \hat{m}_{c}[u, v], m[u, v] \right) \]
-            In other words, the ground-truth mask is compared against the predicted mask for the correct class.
+            In other words, the ground-truth mask is compared against the predicted mask at the correct class.
 
         \item[Inference]
             The class prediction of R-CNN is used to select the correct channel of the mask head. The bounding box of R-CNN is used to decide how to warp the segmentation mask onto the image.
@@ -589,7 +589,7 @@
         \end{description}
 
     \begin{remark}
-        Although it is able to solve all types of segmentation, MaskFormer do not have state-of-the-art results and it is hard to train.
+        Although it is able to solve all types of segmentation, MaskFormer does not have state-of-the-art results and it is hard to train.
     \end{remark}
 \end{description}
 
