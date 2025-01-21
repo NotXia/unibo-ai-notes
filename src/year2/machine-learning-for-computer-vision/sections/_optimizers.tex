@@ -262,11 +262,11 @@ Methods that also consider the second-order derivatives when determining the ste
 
         Finally, the update is defined as:
         \[
-            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{s^{(t)}_{\text{debiased}}} + \varepsilon} \odot g^{(t)}_{\text{debiased}}
+            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{\vec{s}^{(t)}_{\text{debiased}}} + \varepsilon} \odot \vec{g}^{(t)}_{\text{debiased}}
         \]
 
         \begin{remark}
-            It can be shown that $\frac{g^{(t)}_{\text{debiased}}}{\sqrt{s^{(t)}_{\text{debiased}}}}$ has a bounded domain, making it more controlled than RMSProp.
+            It can be shown that $\frac{\vec{g}^{(t)}_{\text{debiased}}}{\sqrt{\vec{s}^{(t)}_{\text{debiased}}}}$ has a bounded domain, making it more controlled than RMSProp.
         \end{remark}
 
         \begin{figure}[H]
@@ -311,7 +311,7 @@ Methods that also consider the second-order derivatives when determining the ste
     \item[Adam with weight decay (AdamW)] \marginnote{Adam with weight decay (AdamW)} 
         Modification on the gradient update of Adam to include weight decay:
         \[ 
-            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{s^{(t)}_{\text{debiased}}} + \varepsilon} \odot g^{(t)}_{\text{debiased}} - \lambda\vec{\theta}^{(t)}
+            \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)} - \frac{\texttt{lr}}{\sqrt{\vec{s}^{(t)}_{\text{debiased}}} + \varepsilon} \odot \vec{g}^{(t)}_{\text{debiased}} - \lambda\vec{\theta}^{(t)}
         \]
 
         \begin{remark}
