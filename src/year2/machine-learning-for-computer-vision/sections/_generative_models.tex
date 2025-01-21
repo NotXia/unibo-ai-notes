@@ -96,7 +96,7 @@
 
     \item[Entropy] \marginnote{Entropy}
         Expected value of the self-information of a probability mass function:
-        \[ H(p(\cdot)) = \mathbb{E}_{x \sim p} \left[ - \log(p(\cdot)) \right] \approx -\sum_{x \in \mathbb{X}} p(x) \log(p(x)) \]
+        \[ H(p(\cdot)) = \mathbb{E}_{x \sim p} \left[ - \log(p(x)) \right] \approx -\sum_{x \in \mathbb{X}} p(x) \log(p(x)) \]
         Intuitively, it measures the average surprise of a distribution.
         
         \begin{example}
@@ -218,9 +218,10 @@
             \begin{split}
                 D_\text{EMD}(p || q) = \min_{\matr{P}}\left[ \sum_{i, j} \matr{P}_{i, j} |i-j| \right] \\
                 \begin{split}
-                    \text{subject to}& \sum_{i} \matr{P}_{i, j} = p(i) \,\land \\
-                        &\sum_j \matr{P}_{i,j} = q(j) \,\land \\
-                        &\matr{P}_{i,j} \geq 0
+                    \text{subject to}
+                        & \sum_{j} \matr{P}_{i, j} = p(i) \,\land \\
+                        & \sum_{i} \matr{P}_{i,j} = q(j) \,\land \\
+                        & \matr{P}_{i,j} \geq 0
                 \end{split}
             \end{split}
         \]
@@ -929,7 +930,7 @@
 
 \begin{description}
     \item[Generation architecture]
-        Standard U-Net or transformers to predict the noise.
+        Standard U-Net or transformer to predict the noise.
 
         \begin{description}
             \item[U-Net with self-attention]
@@ -1248,7 +1249,7 @@
             \begin{split}
                 \varepsilon_t^{\text{cls}}(\x_t, c; \params) 
                 &= \varepsilon_t(\x_t, c; \params) - w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \\
-                &= - \big( - \varepsilon_t(\x_t, c; \params) + w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \big)
+                % &= - \big( - \varepsilon_t(\x_t, c; \params) + w \nabla_{x_t}[ \log(p_\text{cls}(c \mid \x_t, t)) ] \big)
             \end{split}
         \]
         By applying Bayes' rule on the second term, we have that:
