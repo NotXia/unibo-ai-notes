@@ -134,7 +134,7 @@
         \begin{description}
             \item[Multi-head self-attention (\texttt{MHSA})] \marginnote{Multi-head self-attention}
                 Given an input $\matr{Y} \in \mathbb{R}^{M \times d_Y}$, a \texttt{MHSA} block parallelly passes it through $h$ different self-attention blocks to obtain the activations $\matr{A}^{(1)}, \dots, \matr{A}^{(h)}$. The output $\matr{A}$ of the block is obtained as a linear projection of the column-wise concatenation of the activations $\matr{A}^{(i)}$:
-                \[ \mathbb{R}^{M \times d_Y} \ni \matr{A} = \left[ A^{(1)} \vert \dots \vert A^{(h)} \right] \matr{W}_O \]
+                \[ \mathbb{R}^{M \times d_Y} \ni \matr{A} = \left[ \matr{A}^{(1)} \vert \dots \vert \matr{A}^{(h)} \right] \matr{W}_O \]
                 where $\matr{W}_O \in \mathbb{R}^{hd_V \times d_Y}$ is the projection matrix.
 
                 \begin{figure}[H]

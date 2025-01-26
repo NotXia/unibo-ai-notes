@@ -109,16 +109,16 @@
                         \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2^2 & \text{if $y^{(i, j)} = +1$} \\
                         \max\left\{0, m - \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2\right\}^2 & \text{if $y^{(i, j)} = 0$} \\
                     \end{cases} \\
-                    &= y^{(i, j)} \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2^2 + (1-y^{(i, j)}) \max\left\{0, m - \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2\right\}
+                    &= y^{(i, j)} \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2^2 + (1-y^{(i, j)}) \max\left\{0, m - \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2\right\}^2
                 \end{split}
             \]
 
             \begin{remark}
-                A margin $m^+$ can also be added to the positive branch to prevent collapsing all embeddings of the same class to the same point.
+                A margin $m^+$ can also be included to the positive branch to prevent collapsing all embeddings of the same class to the same point.
             \end{remark}
 
             \begin{remark}
-                The negative branch $\max\left\{0, m - \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2\right\}$ is the hinge loss, which is used in SVM.
+                The negative branch $\max\left\{0, m - \Vert f(x^{(i)}) - f(x^{(j)}) \Vert_2\right\}^2$ is the hinge loss, which is used in SVM.
             \end{remark}
 
             \begin{remark}

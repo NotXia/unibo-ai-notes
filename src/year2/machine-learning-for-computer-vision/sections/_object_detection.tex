@@ -202,7 +202,7 @@
     \item[Haar-like features] \marginnote{Haar-like features}
         For face detection, a $24 \times 24$ patch of the image is considered (for now) and the weak classifiers define rectangular filters composed of 2 to 4 subsections applied at fixed positions of the patch.
 
-        Given a patch $x$, a weak learned $\texttt{WL}_j$ classifies it as:
+        Given a patch $x$, a weak learner $\texttt{WL}_j$ classifies it as:
         \[
             \texttt{WL}_j(x) = \begin{cases}
                 1 & \text{if $s_j f_j \geq s_j \rho_j$} \\
@@ -594,7 +594,7 @@
                         Consider $k$ different anchors so that the RPN outputs $k$ objectness scores (overall shape of $2k \times H_L \times W_L$) and $k$ corrections (overall shape of $4k \times H_L \times W_L$) at each pixel.
 
                         \begin{remark}
-                            Virtually, this can be seen as putting together the outputs of $k$ different $1$-anchor RPN (with different anchors).
+                            Virtually, this can be seen as putting together the outputs of $k$ different $1$-anchor RPNs (with different anchors).
                         \end{remark}
                 \end{description}
 

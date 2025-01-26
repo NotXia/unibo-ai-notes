@@ -290,7 +290,7 @@
     \item[Generative adversarial network (GAN)] \marginnote{Generative adversarial network (GAN)}
         Given:
         \begin{itemize}
-            \item A generator $G(z; \theta)$ that takes an input latent vector $z_i \sim p_\text{lat}(z)$ and produces an image $\hat{x}_j \sim p_\text{gen}(x)$,
+            \item A generator $G(z; \theta)$ that takes as input a latent vector $z_i \sim p_\text{lat}(z)$ and produces an image $\hat{x}_j \sim p_\text{gen}(x)$,
             \item A discriminator $D(x; \phi)$ that determines whether $x_i$ is a real image from $p_\text{real}(x)$.
         \end{itemize}
         A generative adversarial network trains both $D$ and $G$ with the aim of making $p_\text{gen}$ converge to $p_\text{real}$.
