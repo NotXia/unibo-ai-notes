@@ -291,7 +291,7 @@
         Given:
         \begin{itemize}
             \item A generator $G(z; \theta)$ that takes as input a latent vector $z_i \sim p_\text{lat}(z)$ and produces an image $\hat{x}_j \sim p_\text{gen}(x)$,
-            \item A discriminator $D(x; \phi)$ that determines whether $x_i$ is a real image from $p_\text{real}(x)$.
+            \item A discriminator $D(x_i; \phi)$ that determines whether $x_i$ is a real image from $p_\text{real}(x)$.
         \end{itemize}
         A generative adversarial network trains both $D$ and $G$ with the aim of making $p_\text{gen}$ converge to $p_\text{real}$.
 
@@ -488,7 +488,7 @@
                     \item[Layer fade-in] 
                         When moving from an $n \times n$ to $2n \times 2n$ resolution, the following happens:
                         \begin{itemize}
-                            \item The generator outputs a linear combination between the $n \times n$ image up-sampled (with weight $1-\alpha$) and the $n \times n$ image passed through a transpose convolution (with weight $\alpha$).
+                            \item The generator outputs a linear combination between the $n \times n$ image up-sampled (with weight $1-\alpha$) and the $n \times n$ image passed through a transposed convolution (with weight $\alpha$).
                             \item The discriminator uses a linear combination between the $2n \times 2n$ image down-sampled (with weight $1-\alpha$) and the $2n \times 2n$ image passed through a convolution.
                         \end{itemize}
                         Where $\alpha$ grows linearly from 0 to 1 during training. This allows the network to use old information when the resolution changes and gradually adapt.
