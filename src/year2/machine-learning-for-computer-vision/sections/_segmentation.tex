@@ -53,7 +53,7 @@
         \end{figure}
 
     \item[Depth comparison features] \marginnote{Depth comparison features}
-        Given a depth image $D$ and the offsets $\theta = (\Delta p, \Delta n)$, each pixel $x$ of $D$ produces a feature as follows:
+        Given a depth image $D$ and the offsets $\theta = (\Delta p, \Delta n)$, each pixel $x$ of $D$ produces a set features of form:
         \[ f(x; D, (\Delta p, \Delta n)) = D\left[ x + \frac{\Delta p}{D[x]} \right] - D\left[ x + \frac{\Delta n}{D[x]} \right] \]
         In other words, each $x$ is described by the difference in depth between two points offset from $x$. The depth at background pixels is a large positive number.
 
