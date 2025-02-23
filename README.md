@@ -34,6 +34,10 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 - [**Artificial Intelligence in Industry**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/artificial-intelligence-in-industry/a3i.pdf)
 - [**Machine Learning for Computer Vision**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/machine-learning-for-computer-vision/ml4cv.pdf)
 - [**Natural Language Processing**](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/natural-language-processing/nlp.pdf)
+- **Ethics in Artificial Intelligence**
+   - [Ethics module 1](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module1/ethics1.pdf)
+   - [Ethics module 2](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module2/ethics2.pdf)
+   - [Ethics module 3](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module3/ethics3.pdf)
 
 
 ## Contributors
