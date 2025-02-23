@@ -1,0 +1,19 @@
+{
+    "name": "Ethics in Artificial Intelligence",
+    "year": 2,
+    "semester": 2,
+    "pdfs": [
+        {
+            "name": "Ethics module 1",
+            "path": "module1/ethics1.pdf"
+        },
+        {
+            "name": "Ethics module 2",
+            "path": "module2/ethics2.pdf"
+        },
+        {
+            "name": "Ethics module 3",
+            "path": "module3/ethics3.pdf"
+        }
+    ]
+}
