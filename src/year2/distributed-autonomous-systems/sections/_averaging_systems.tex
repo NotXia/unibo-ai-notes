@@ -1,0 +1,130 @@
+\chapter{Averaging systems}
+
+
+\section{Graphs}
+
+
+\subsection{Definitions}
+
+\begin{description}
+    \item[Directed graph (digraph)] \marginnote{Directed graph}
+        Pair $G = (I, E)$ where $I=\{1, \dots, N\}$ is the set of nodes and $E \subseteq I \times I$ is the set of edges.
+
+    \item[Undirected graph] \marginnote{Undirected graph}
+        Digraph where $\forall i,j: (i, j) \in E \Rightarrow (j, i) \in E$.
+
+    \item[Subgraph] \marginnote{Subgraph}
+        Given a graph $(I, E)$, $(I', E')$ is a subgraph of it if $I' \subseteq I$ and $E' \subset E$.
+        \begin{description}
+            \item[Spanning subgraph] Subgraph where $I' = I$.
+        \end{description}
+
+    \item[In-neighbor] \marginnote{In-neighbor}
+        A node $j \in I$ is an in-neighbor of $i \in I$ if $(j, i) \in E$.
+
+        \begin{description}
+            \item[Set of in-neighbors] \marginnote{Set of in-neighbors}
+                The set of in-neighbors of $i \in I$ is the set:
+                \[ \mathcal{N}_i^\text{IN} = \{ j \in I \mid (j, i) \in E \} \] 
+
+            \item[In-degree] \marginnote{In-degree}
+                Number of in-neighbors of a node $i \in I$:
+                \[ \indeg[i] = | \mathcal{N}_i^\text{IN} | \] 
+        \end{description}
+
+    \item[Out-neighbor] \marginnote{Out-neighbor}
+        A node $j \in I$ is an out-neighbor of $i \in I$ if $(i, j) \in E$.
+
+        \begin{description}
+            \item[Set of out-neighbors] \marginnote{Set of in-neighbors}
+                The set of out-neighbors of $i \in I$ is the set:
+                \[ \mathcal{N}_i^\text{OUT} = \{ j \in I \mid (i, j) \in E \} \] 
+
+            \item[Out-degree] \marginnote{Out-degree}
+                Number of out-neighbors of a node $i \in I$:
+                \[ \outdeg[i] = | \mathcal{N}_i^\text{OUT} | \] 
+        \end{description}
+
+
+    \item[Balanced digraph] \marginnote{Balanced digraph}
+        A digraph is balanced if $\forall i \in I: \indeg[i] = \outdeg[i]$.
+
+    \item[Periodic graph] \marginnote{Periodic graph}
+        Graph where there exists a period $k > 1$ that divides the length of any cycle.
+
+        \begin{remark}
+            A graph with self-loops is aperiodic.
+        \end{remark}
+
+    \item[Strongly connected digraph] \marginnote{Strongly connected digraph}
+        Digraph where each node is reachable from any node.
+
+    \item[Connected undirected graph] \marginnote{Connected undirected graph}
+        Undirected graph where each node is reachable from any node.    
+
+    \item[Weakly connected digraph] \marginnote{Weakly connected digraph}
+        Digraph where its undirected version is connected.
+\end{description}
+
+
+\subsection{Weighted digraphs}
+
+\begin{description}
+    \item[Weighted digraph] \marginnote{Weighted digraph}
+        Triplet $G=(I, E, \{a_{i, j}\}_{(i,j) \in E})$ where $(I, E)$ is a digraph and $a_{i,j} > 0$ is a weight for the edge $(i,j)$.
+
+        \begin{description}
+            \item[Weighted in-degree] \marginnote{Weighted in-degree}
+                Sum of the weights of the inward edges:
+                \[ \indeg[i] = \sum_{j=1}^N a_{j, i} \]
+            \item[Weighted out-degree] \marginnote{Weighted out-degree}
+                Sum of the weights of the outward edges:
+                \[ \outdeg[i] = \sum_{j=1}^N a_{i, j} \]
+        \end{description}
+
+
+    \item[Weighted adjacency matrix] \marginnote{Weighted adjacency matrix}
+        Non-negative matrix $\matr{A}$ such that $\matr{A}_{i,j} = a_{i,j}$:
+        \[
+            \begin{cases}
+                \matr{A}_{i,j} > 0 & \text{if $(i, j) \in E$} \\
+                \matr{A}_{i, j} = 0 & \text{otherwise}
+            \end{cases}
+        \]
+
+    \item[In/out-degree matrix] \marginnote{In/out-degree matrix}
+        Matrix where the diagonal contains the in/out-degrees:
+        \[
+            \matr{D}^\text{IN} = \begin{bmatrix}
+                \indeg[1] & 0 & \cdots & 0 \\
+                0 & \indeg[2] \\
+                \vdots & & \ddots \\
+                0 & \cdots & 0 & \indeg[N] \\
+            \end{bmatrix}
+            \qquad
+            \matr{D}^\text{OUT} = \begin{bmatrix}
+                \outdeg[1] & 0 & \cdots & 0 \\
+                0 & \outdeg[2] \\
+                \vdots & & \ddots \\
+                0 & \cdots & 0 & \outdeg[N] \\
+            \end{bmatrix}
+        \]
+
+        \begin{remark}
+            Given a digraph with adjacency matrix $\matr{A}$, its reverse digraph has adjacency matrix $\matr{A}^T$.
+        \end{remark}
+
+        \begin{remark}
+            It holds that:
+            \[ 
+                \matr{D}^\text{IN} = \text{diag}(\matr{A}^T \matr{1}) 
+                \quad
+                \matr{D}^\text{OUT} = \text{diag}(\matr{A} \matr{1})
+            \]
+            where $\matr{1}$ is a vector of ones.
+        \end{remark}
+
+        \begin{remark}
+            A digraph is balanced iff $\matr{A}^T \matr{1} = \matr{A} \matr{1}$.
+        \end{remark}
+\end{description}
