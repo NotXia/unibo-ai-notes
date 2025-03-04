@@ -117,14 +117,238 @@
         \begin{remark}
             It holds that:
             \[ 
-                \matr{D}^\text{IN} = \text{diag}(\matr{A}^T \matr{1}) 
+                \matr{D}^\text{IN} = \text{diag}(\matr{A}^T \vec{1}) 
                 \quad
-                \matr{D}^\text{OUT} = \text{diag}(\matr{A} \matr{1})
+                \matr{D}^\text{OUT} = \text{diag}(\matr{A} \vec{1})
             \]
-            where $\matr{1}$ is a vector of ones.
+            where $\vec{1}$ is a vector of ones.
         \end{remark}
 
         \begin{remark}
-            A digraph is balanced iff $\matr{A}^T \matr{1} = \matr{A} \matr{1}$.
+            A digraph is balanced iff $\matr{A}^T \vec{1} = \matr{A} \vec{1}$.
         \end{remark}
 \end{description}
+
+
+\subsection{Laplacian matrix}
+
+\begin{description}
+    \item[(Out-degree) Laplacian matrix] \marginnote{Laplacian matrix}
+        Matrix $\matr{L}$ defined as:
+        \[ \matr{L} = \matr{D}^\text{OUT} - \matr{A} \]
+
+        \begin{remark}
+            The vector $\vec{1}$ is always an eigenvector of $\matr{L}$ with eigenvalue $0$:
+            \[ \matr{L}\vec{1} = (\matr{D}^\text{OUT} - \matr{A})\vec{1} = \matr{D}^\text{OUT}\vec{1} - \matr{D}^\text{OUT}\vec{1} = 0 \]
+        \end{remark}
+
+    \item[In-degree Laplacian matrix] \marginnote{In-degree Laplacian matrix}
+        Matrix $\matr{L}^\text{IN}$ defined as:
+        \[ \matr{L}^\text{IN} = \matr{D}^\text{IN} - \matr{A}^T \]
+
+        \begin{remark}
+            $\matr{L}^\text{IN}$ is the out-degree Laplacian of the reverse graph.    
+        \end{remark}
+\end{description}
+
+
+
+\section{Distributed algorithm}
+
+\begin{description}
+    \item[Distributed algorithm] \marginnote{Distributed algorithm}
+        Given a network of $N$ agents that communicate according to a (fixed) digraph $G$ (each agent receives messages from its in-neighbors), a distributed algorithm computes:
+        \[ x_i^{k+1} = \stf_i(x_i^k, \{ x_j^k \}_{j \in \mathcal{N}_i^\text{IN}}) \quad i \in \{ 1, \dots, N \} \]
+        where $x_i^k$ is the state of agent $i$ at time $k$ and $\stf_i$ is a local state transition function that depends on the current input states.
+
+        \begin{remark}
+            Out-neighbors can also be used.
+        \end{remark}
+
+        \begin{remark}
+            If all nodes have a self-loop, the notation can be compacted as:
+            \[ 
+            x_i^{k+1} = \stf_i(\{ x_j \}_{j \in \mathcal{N}_i^\text{IN}}) 
+            \quad
+            \text{or}
+            \quad
+            x_i^{k+1} = \stf_i(\{ x_j \}_{j \in \mathcal{N}_i^\text{OUT}})
+            \]
+        \end{remark}
+\end{description}
+
+
+\subsection{Discrete-time averaging algorithm}
+
+\begin{description}
+    \item[Linear averaging distributed algorithm (in-neighbors)] \marginnote{Linear averaging distributed algorithm (in-neighbors)}
+        Given the communication digraph with self-loops $G^\text{comm} = (I, E)$ (i.e., $(j, i) \in E$ indicates that $j$ sends messages to $i$), a linear averaging distributed algorithm is defined as:
+        \[ x_i^{k+1} = \sum_{j \in \mathcal{N}_i^\text{IN}} a_{ij} x_j^k \quad i \in \{1, \dots, N\} \]
+        where $a_{ij} > 0$ is the weight of the edge $(j, i) \in E$.
+
+        \begin{description}
+            \item[Linear time-invariant (LTI) autonomous system] \marginnote{Linear time-invariant (LTI) autonomous system}
+                By defining $a_{ij} = 0$ for $(j, i) \notin E$, the formulation becomes:
+                \[ x_i^{k+1} = \sum_{j=1}^N a_{ij} x_j^k  \quad i \in \{ 1, \dots, N \} \]
+
+                In matrix form, it becomes:
+                \[ x^{k+1} = \matr{A}^T x^k \]
+                where $\matr{A}$ is the adjacency matrix of $G^\text{comm}$.
+
+                \begin{remark}
+                    This model is inconsistent with respect to graph theory as weights are inverted (i.e., $a_{ij}$ refers to the edge $(j, i)$).
+                \end{remark}
+        \end{description}
+
+    \item[Linear averaging distributed algorithm (out-neighbors)] \marginnote{Linear averaging distributed algorithm (out-neighbors)}
+        Given a fixed sensing digraph with self-loops $G^\text{sens} = (I, E)$ (i.e., $(i, j) \in E$ indicates that $j$ sends messages to $i$), the algorithm is defined as:
+        \[ x_i^{k+1} = \sum_{j \in \mathcal{N}_i^\text{OUT}} a_{ij} x_j^k = \sum_{j=1}^{N} a_{ij} x_j^k \]
+        In matrix form, it becomes:
+        \[ x^{k+1} = \matr{A} x^k \]
+        where $\matr{A}$ is the weighted adjacency matrix of $G^\text{sens}$.
+\end{description}
+
+
+\subsection{Stochastic matrices}
+
+\begin{description}
+    \item[Row stochastic] \marginnote{Row stochastic}
+        Given a square matrix $\matr{A}$, it is row stochastic if its rows sum to 1:
+        \[ \matr{A}\vec{1} = \vec{1} \]
+
+    \item[Column stochastic] \marginnote{Column stochastic}
+        Given a square matrix $\matr{A}$, it is column stochastic if its columns sum to 1:
+        \[ \matr{A}^T\vec{1} = \vec{1} \]
+
+    \item[Doubly stochastic] \marginnote{Doubly stochastic}
+        Given a square matrix $\matr{A}$, it is doubly stochastic if it is both row and column stochastic.
+\end{description}
+
+\begin{lemma}
+    Given a digraph $G$ with adjacency matrix $\matr{A}$, if $G$ is strongly connected and aperiodic, and $\matr{A}$ is row stochastic, its eigenvalues are such that:
+    \begin{itemize}
+        \item $\lambda = 1$ is a simple eigenvalue (i.e., algebraic multiplicity of 1),
+        \item All others $\mu$ are $|\mu| < 1$.
+    \end{itemize}
+
+    \begin{remark}
+        For the lemma to hold, it is necessary and sufficient that $G$ contains a globally reachable node and the subgraph of globally reachable nodes is aperiodic.
+    \end{remark}
+\end{lemma}
+
+\begin{theorem}[Consensus] \marginnote{Consensus}
+    Consider a discrete-time averaging system with digraph $G$ and weighted adjacency matrix $\matr{A}$. Assume $G$ strongly connected and aperiodic, and $\matr{A}$ row stochastic. 
+    
+    It holds that there exists a left eigenvector $\vec{w} \in \mathbb{R}^N$, $\vec{w} > 0$ such that the consensus converges to:
+        \[ 
+            \lim_{k \rightarrow \infty} x^k 
+            = \vec{1}\frac{\vec{w}^T x^0}{\vec{w}^T\vec{1}} 
+            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \frac{\sum_{i=1}^N w_i x_i^0}{\sum_{i=1}^N w_i}
+            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \sum_{i=1}^N \frac{w_i}{\sum_{j=1}^N w_j} x_i^0
+        \]
+        where $\tilde{w}_i = \frac{w_i}{\sum_{i=j}^N w_j}$ are all normalized and sum to 1 (i.e., they produce a convex combination).
+
+    Moreover, if $\matr{A}$ is doubly stochastic (e.g., $G$ weight balanced with positive weights), then it holds that the consensus is the average:
+    \[ 
+        \lim_{k \rightarrow \infty} x^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
+    \]
+
+    \begin{proof}[Sketch of proof]
+        Let $\matr{T} = \begin{bmatrix} \vec{1} & \vec{v}^2 & \cdots & \vec{v}^N \end{bmatrix}$ be a change in coordinates that transforms an adjacency matrix into its Jordan form $\matr{J}$:
+        \[ \matr{J} = \matr{T}^{-1} \matr{A} \matr{T} \]
+        As $\lambda=1$ is a simple eigenvalue, it holds that:
+        \[
+            \matr{J} = \begin{bmatrix}
+                1 & 0 & \cdots & 0 \\
+                0 & & &  \\
+                \vdots & & \matr{J}_2 &  \\
+                0 & & &  \\
+            \end{bmatrix}
+        \]
+        where the eigenvalues of $\matr{J}_2 \in \mathbb{R}^{(N-1) \times (N-1)}$ lie inside the open unit disk.
+
+        Let $x^k = \matr{T}\bar{x}^k$, then we have that:
+        \[
+            \begin{split}
+                x^{k+1} &= \matr{A} x^{k} \iff \\
+                \matr{T} \bar{x}^{k+1} &= \matr{A} (\matr{T} \bar{x}^k) \iff \\
+                \bar{x}^{k+1} &= \matr{T}^{-1} \matr{A} (\matr{T} \bar{x}^k) = \matr{J}\bar{x}^k 
+            \end{split}
+        \]
+        Therefore:
+        \[
+            \begin{gathered}
+                \lim_{k \rightarrow \infty} \bar{x}^k = \bar{x}_1^0 \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix} \\
+                \bar{x}_1^{k+1} = \bar{x}_1^k \quad \forall k \geq 0 \\
+                \lim_{k \rightarrow \infty} \bar{x}_i^{k} = 0 \quad \forall i = 2, \dots, N \\
+            \end{gathered}
+        \]
+    \end{proof}
+\end{theorem}
+
+\begin{example}[Metropolis-Hasting weights]
+    Given an undirected unweighted graph $G$ with edges of degrees $d_1, \dots, d_n$, Metropolis-Hasting weights are defined as:
+    \[
+        a_{ij} = \begin{cases}
+            \frac{1}{1+\max\{ d_i, d_j \}} & \text{if $(i, j) \in E$ and $i \neq j$} \\
+            1 - \sum_{h \in \mathcal{N}_i \smallsetminus \{i\}} a_{ih} & \text{if $i=j$} \\
+            0 & \text{otherwise}
+        \end{cases}
+    \]
+    The matrix $\matr{A}$ of Metropolis-Hasting weights is symmetric and doubly stochastic.
+\end{example}
+
+
+\subsection{Time-varying digraphs}
+
+\begin{description}
+    \item[Time-varying digraph] \marginnote{Time-varying digraph}
+        Graph $G=(I, E(k))$ that changes at each iteration $k$. It can be described by a sequence $\{ G(k) \}_{k \geq 0}$.
+
+    \item[Jointly strongly connected digraph] \marginnote{Jointly strongly connected digraph}
+        Time-varying digraph that is asymptotically strongly connected:
+        \[ \forall k \geq 0: \bigcup_{\tau=k}^{+\infty} G(\tau) \text{ is strongly connected} \]
+
+    \item[Uniformly jointly strongly/$B$-strongly connected digraph]   \marginnote{Uniformly jointly strongly/$B$-strongly connected digraph}
+        Time-varying digraph that is strongly connected in $B$ steps:
+        \[ \forall k \geq 0, \exists B \in \mathbb{N}: \bigcup_{\tau=k}^{k+B} G(\tau) \text{ is strongly connected} \]
+\end{description}
+
+\begin{remark}
+    (Uniformly) jointly strongly connected digraph can be disconnected at some time steps $k$.
+\end{remark}
+
+\begin{description}
+    \item[Averaging distributed algorithm] \marginnote{Averaging distributed algorithm over time-varying digraph}
+        Given a time-varying digraph $\{ G(k) \}_{k \geq 0}$ (always with self-loops), in- and out-neighbors distributed algorithms can be formulated as:
+        \[
+            x_i^{k+1} = \sum_{j \in \mathcal{N}_i^\text{IN}(k)} a_{ij}(k) x_j^k
+            \quad
+            x_i^{k+1} = \sum_{j \in \mathcal{N}_i^\text{OUT}(k)} a_{ij}(k) x_j^k
+        \]
+
+        \begin{description}
+            \item[Linear time-varying (LTV) discrete-time system] \marginnote{Linear time-varying (LTV) discrete-time system}
+                In matrix form, it can be formulated as:
+                \[ x^{k+1} = \matr{A}(k) x^k \]
+        \end{description}
+\end{description}
+
+\begin{theorem}[Discrete-time consensus over time-varying graphs] \marginnote{Discrete-time consensus over time-varying graphs}
+    Consider a time-varying discrete-time average system with digraphs $\{G(k)\}_{k \geq 0}$ (all with self-loops) and weighted adjacency matrices $\{\matr{A}(k)\}_{k \geq 0}$. Assume:
+    \begin{itemize}
+        \item Each non-zero edge weight $a_{ij}(k)$, self-loops included, are larger than a constant $\varepsilon > 0$,
+        \item There exists $B \in \mathbb{N}$ such that $\{G(k)\}_{k \geq 0}$ is $B$-strongly connected.
+    \end{itemize}
+    
+    It holds that there exists a vector $\vec{w} \in \mathbb{R}^N$, $\vec{w} > 0$ such that the consensus converges to:
+        \[ 
+            \lim_{k \rightarrow \infty} x^k 
+            = \vec{1}\frac{\vec{w}^T x^0}{\vec{w}^T\vec{1}} 
+        \]
+
+    Moreover, if each $\matr{A}(k)$ is doubly stochastic, it holds that the consensus is the average:
+    \[ 
+        \lim_{k \rightarrow \infty} x^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
+    \]
+\end{theorem}
