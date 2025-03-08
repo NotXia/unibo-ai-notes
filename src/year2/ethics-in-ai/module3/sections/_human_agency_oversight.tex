@@ -1,0 +1,141 @@
+\chapter{Human agency and oversight}
+
+
+\begin{description}
+    \item[AI act, article 14] \marginnote{AI act, article 14}
+        Article related to human oversight. It states that:
+        \begin{itemize}
+            \item Human centric AI is one of the key safeguarding principles to prevent risks.
+            \item AI systems must be designed and developed with appropriate interfaces to allow humans to oversee them.
+        \end{itemize}
+\end{description}
+
+
+\begin{description}
+    \item[Human agency] \marginnote{Human agency}
+        AI systems should empower human beings such that they can:
+        \begin{itemize}
+            \item Make informed decisions.
+            \item Foster their fundamental rights.
+        \end{itemize}
+
+        This can be achieved with methods like:
+        \begin{itemize}
+            \item Human-centric approaches,
+            \item AI for social good,
+            \item Human computation,
+            \item Interactive machine learning.
+        \end{itemize}
+
+    \item[Human oversight] \marginnote{Human oversight}
+        Oversight mechanisms to prevent manipulation, deception, conditioning from AI systems.
+        
+        Possible methods are:
+        \begin{itemize}
+            \item Human-in-the-loop,
+            \item Human-on-the-loop,
+            \item Human-in-command.
+        \end{itemize}
+
+    \item[Human-centered AI framework] \marginnote{Human-centered AI framework}
+        Approach centered on high autonomy while keeping human control.
+\end{description}
+
+\begin{remark}
+    Human agency and oversight happens at different levels:
+    \begin{descriptionlist}
+        \item[Development team] Responsible for the technical part.
+        \item[Organization] Decides who is in charge of accountability, validation, \dots
+        \item[External reviewers] (e.g., certification entities).
+    \end{descriptionlist}
+\end{remark}
+
+
+\section{Governance and methodology}
+
+\begin{description}
+    \item[Human-out-of-the-loop] \marginnote{Human-out-of-the-loop}
+        The environment is static and cannot integrate human knowledge. The AI system is a black-box that cannot be used in safety-critical settings.
+
+    \item[Human-in-the-loop (HITL)] \marginnote{Human-in-the-loop (HITL)}
+        The environment is dynamic and can use expert knowledge. The AI system is explainable or transparent and suitable for safety-critical settings.
+
+        In practice, the AI system stops and waits for human commands before making a decision.
+
+    \item[Society-in-the-loop] \marginnote{Society-in-the-loop}
+        The society, with its conflicting interests and values, is taken into account.
+
+    \item[Human-on-the-loop (HOTL)] \marginnote{Human-on-the-loop (HOTL)}
+        The AI system operates autonomously and the human can intervene if needed.
+\end{description}
+
+\begin{remark}
+    Limitations of human-centric AI are:
+    \begin{itemize}
+        \item It does not scale well as human intervention is involved.
+        \item It is hard to evaluate its effectiveness.
+        \item Performance of the AI system might degrade.
+    \end{itemize}
+\end{remark}
+
+
+
+\section{HITL state-of-the-art approaches}
+
+
+\subsection{Active learning}
+
+\begin{description}
+    \item[Active learning] \marginnote{Active learning}
+        The system is in control of the learning process and the human acts as an oracle for labeling data.
+
+        The learner can query, following some strategy, the human for the ground-truth of unlabeled data. A general algorithm works as follows:
+        \begin{enumerate}
+            \item Split the data into an initial (small) pool of labeled data and a pool with the remaining unlabeled ones.
+            \item The model selects an example(s) to be labeled by the oracle.
+            \item The model is trained on the available labeled data.
+            \item Repeat until a stop condition is met.
+        \end{enumerate}
+
+        The selection strategy can be:
+        \begin{descriptionlist}
+            \item[Random] 
+            \item[Uncertainty-based] Select examples classified with the least confidence according to some metric.
+            \item[Diversity-based] Select examples that are rare or representative according to some metric.
+        \end{descriptionlist}
+
+        \begin{remark}
+            This approach is effective in settings with lots of unlabeled data and annotating all of it is expensive.
+        \end{remark}
+
+        \begin{remark}
+            This approach is sensitive to the choice of the oracle.
+        \end{remark}
+\end{description}
+
+
+\subsection{Interactive machine learning}
+
+\begin{description}
+    \item[Interactive machine learning] \marginnote{Interactive machine learning}
+        Users interactively supply information that influences the learning process.
+
+        \begin{remark}
+            Compared to active learning, with interactive machine learning it is the human that selects the learning data.
+        \end{remark}
+\end{description}
+
+
+\subsection{Machine teaching}
+
+\begin{description}
+    \item[Machine teaching] \marginnote{Machine teaching}
+        Human experts are completely in control of the learning process. There can be different types of teachers:
+        \begin{descriptionlist}
+            \item[Omniscient teacher] Complete access to the components of the learner (i.e., feature space, parameters, loss, optimization algorithm, \dots).
+            \item[Surrogate teacher] Access to the loss. 
+            \item[Imitation teacher] The teacher uses a copy of the learner that it can query to create a surrogate model.
+            \item[Active teacher] The teacher queries the learner and evaluates it based on the output.
+            \item[Adaptive teacher] The teacher selects examples based on the current hypothesis of the learner.
+        \end{descriptionlist}
+\end{description}
