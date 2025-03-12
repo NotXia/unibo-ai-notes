@@ -1,164 +1,10 @@
 \chapter{Averaging systems}
 
 
-\section{Graphs}
-
-
-\subsection{Definitions}
-
-\begin{description}
-    \item[Directed graph (digraph)] \marginnote{Directed graph}
-        Pair $G = (I, E)$ where $I=\{1, \dots, N\}$ is the set of nodes and $E \subseteq I \times I$ is the set of edges.
-
-    \item[Undirected graph] \marginnote{Undirected graph}
-        Digraph where $\forall i,j: (i, j) \in E \Rightarrow (j, i) \in E$.
-
-    \item[Subgraph] \marginnote{Subgraph}
-        Given a graph $(I, E)$, $(I', E')$ is a subgraph of it if $I' \subseteq I$ and $E' \subset E$.
-        \begin{description}
-            \item[Spanning subgraph] Subgraph where $I' = I$.
-        \end{description}
-
-    \item[In-neighbor] \marginnote{In-neighbor}
-        A node $j \in I$ is an in-neighbor of $i \in I$ if $(j, i) \in E$.
-
-        \begin{description}
-            \item[Set of in-neighbors] \marginnote{Set of in-neighbors}
-                The set of in-neighbors of $i \in I$ is the set:
-                \[ \mathcal{N}_i^\text{IN} = \{ j \in I \mid (j, i) \in E \} \] 
-
-            \item[In-degree] \marginnote{In-degree}
-                Number of in-neighbors of a node $i \in I$:
-                \[ \indeg[i] = | \mathcal{N}_i^\text{IN} | \] 
-        \end{description}
-
-    \item[Out-neighbor] \marginnote{Out-neighbor}
-        A node $j \in I$ is an out-neighbor of $i \in I$ if $(i, j) \in E$.
-
-        \begin{description}
-            \item[Set of out-neighbors] \marginnote{Set of in-neighbors}
-                The set of out-neighbors of $i \in I$ is the set:
-                \[ \mathcal{N}_i^\text{OUT} = \{ j \in I \mid (i, j) \in E \} \] 
-
-            \item[Out-degree] \marginnote{Out-degree}
-                Number of out-neighbors of a node $i \in I$:
-                \[ \outdeg[i] = | \mathcal{N}_i^\text{OUT} | \] 
-        \end{description}
-
-
-    \item[Balanced digraph] \marginnote{Balanced digraph}
-        A digraph is balanced if $\forall i \in I: \indeg[i] = \outdeg[i]$.
-
-    \item[Periodic graph] \marginnote{Periodic graph}
-        Graph where there exists a period $k > 1$ that divides the length of any cycle.
-
-        \begin{remark}
-            A graph with self-loops is aperiodic.
-        \end{remark}
-
-    \item[Strongly connected digraph] \marginnote{Strongly connected digraph}
-        Digraph where each node is reachable from any node.
-
-    \item[Connected undirected graph] \marginnote{Connected undirected graph}
-        Undirected graph where each node is reachable from any node.    
-
-    \item[Weakly connected digraph] \marginnote{Weakly connected digraph}
-        Digraph where its undirected version is connected.
-\end{description}
-
-
-\subsection{Weighted digraphs}
-
-\begin{description}
-    \item[Weighted digraph] \marginnote{Weighted digraph}
-        Triplet $G=(I, E, \{a_{i, j}\}_{(i,j) \in E})$ where $(I, E)$ is a digraph and $a_{i,j} > 0$ is a weight for the edge $(i,j)$.
-
-        \begin{description}
-            \item[Weighted in-degree] \marginnote{Weighted in-degree}
-                Sum of the weights of the inward edges:
-                \[ \indeg[i] = \sum_{j=1}^N a_{j, i} \]
-            \item[Weighted out-degree] \marginnote{Weighted out-degree}
-                Sum of the weights of the outward edges:
-                \[ \outdeg[i] = \sum_{j=1}^N a_{i, j} \]
-        \end{description}
-
-
-    \item[Weighted adjacency matrix] \marginnote{Weighted adjacency matrix}
-        Non-negative matrix $\matr{A}$ such that $\matr{A}_{i,j} = a_{i,j}$:
-        \[
-            \begin{cases}
-                \matr{A}_{i,j} > 0 & \text{if $(i, j) \in E$} \\
-                \matr{A}_{i, j} = 0 & \text{otherwise}
-            \end{cases}
-        \]
-
-    \item[In/out-degree matrix] \marginnote{In/out-degree matrix}
-        Matrix where the diagonal contains the in/out-degrees:
-        \[
-            \matr{D}^\text{IN} = \begin{bmatrix}
-                \indeg[1] & 0 & \cdots & 0 \\
-                0 & \indeg[2] \\
-                \vdots & & \ddots \\
-                0 & \cdots & 0 & \indeg[N] \\
-            \end{bmatrix}
-            \qquad
-            \matr{D}^\text{OUT} = \begin{bmatrix}
-                \outdeg[1] & 0 & \cdots & 0 \\
-                0 & \outdeg[2] \\
-                \vdots & & \ddots \\
-                0 & \cdots & 0 & \outdeg[N] \\
-            \end{bmatrix}
-        \]
-
-        \begin{remark}
-            Given a digraph with adjacency matrix $\matr{A}$, its reverse digraph has adjacency matrix $\matr{A}^T$.
-        \end{remark}
-
-        \begin{remark}
-            It holds that:
-            \[ 
-                \matr{D}^\text{IN} = \text{diag}(\matr{A}^T \vec{1}) 
-                \quad
-                \matr{D}^\text{OUT} = \text{diag}(\matr{A} \vec{1})
-            \]
-            where $\vec{1}$ is a vector of ones.
-        \end{remark}
-
-        \begin{remark}
-            A digraph is balanced iff $\matr{A}^T \vec{1} = \matr{A} \vec{1}$.
-        \end{remark}
-\end{description}
-
-
-\subsection{Laplacian matrix}
-
-\begin{description}
-    \item[(Out-degree) Laplacian matrix] \marginnote{Laplacian matrix}
-        Matrix $\matr{L}$ defined as:
-        \[ \matr{L} = \matr{D}^\text{OUT} - \matr{A} \]
-
-        \begin{remark}
-            The vector $\vec{1}$ is always an eigenvector of $\matr{L}$ with eigenvalue $0$:
-            \[ \matr{L}\vec{1} = (\matr{D}^\text{OUT} - \matr{A})\vec{1} = \matr{D}^\text{OUT}\vec{1} - \matr{D}^\text{OUT}\vec{1} = 0 \]
-        \end{remark}
-
-    \item[In-degree Laplacian matrix] \marginnote{In-degree Laplacian matrix}
-        Matrix $\matr{L}^\text{IN}$ defined as:
-        \[ \matr{L}^\text{IN} = \matr{D}^\text{IN} - \matr{A}^T \]
-
-        \begin{remark}
-            $\matr{L}^\text{IN}$ is the out-degree Laplacian of the reverse graph.    
-        \end{remark}
-\end{description}
-
-
-
-\section{Distributed algorithm}
-
 \begin{description}
     \item[Distributed algorithm] \marginnote{Distributed algorithm}
         Given a network of $N$ agents that communicate according to a (fixed) digraph $G$ (each agent receives messages from its in-neighbors), a distributed algorithm computes:
-        \[ x_i^{k+1} = \stf_i(x_i^k, \{ x_j^k \}_{j \in \mathcal{N}_i^\text{IN}}) \quad i \in \{ 1, \dots, N \} \]
+        \[ x_i^{k+1} = \stf_i(x_i^k, \{ x_j^k \}_{j \in \mathcal{N}_i^\text{IN}}) \quad \forall i \in \{ 1, \dots, N \} \]
         where $x_i^k$ is the state of agent $i$ at time $k$ and $\stf_i$ is a local state transition function that depends on the current input states.
 
         \begin{remark}
@@ -178,7 +24,8 @@
 \end{description}
 
 
-\subsection{Discrete-time averaging algorithm}
+
+\section{Discrete-time averaging algorithm}
 
 \begin{description}
     \item[Linear averaging distributed algorithm (in-neighbors)] \marginnote{Linear averaging distributed algorithm (in-neighbors)}
@@ -192,7 +39,7 @@
                 \[ x_i^{k+1} = \sum_{j=1}^N a_{ij} x_j^k  \quad i \in \{ 1, \dots, N \} \]
 
                 In matrix form, it becomes:
-                \[ x^{k+1} = \matr{A}^T x^k \]
+                \[ \vec{x}^{k+1} = \matr{A}^T \vec{x}^k \]
                 where $\matr{A}$ is the adjacency matrix of $G^\text{comm}$.
 
                 \begin{remark}
@@ -204,7 +51,7 @@
         Given a fixed sensing digraph with self-loops $G^\text{sens} = (I, E)$ (i.e., $(i, j) \in E$ indicates that $j$ sends messages to $i$), the algorithm is defined as:
         \[ x_i^{k+1} = \sum_{j \in \mathcal{N}_i^\text{OUT}} a_{ij} x_j^k = \sum_{j=1}^{N} a_{ij} x_j^k \]
         In matrix form, it becomes:
-        \[ x^{k+1} = \matr{A} x^k \]
+        \[ \vec{x}^{k+1} = \matr{A} \vec{x}^k \]
         where $\matr{A}$ is the weighted adjacency matrix of $G^\text{sens}$.
 \end{description}
 
@@ -225,38 +72,46 @@
 \end{description}
 
 \begin{lemma}
+    An adjacency matrix $\matr{A}$ is doubly stochastic if it is row stochastic and the graph $G$ associated to it is weight balanced and has positive weights.
+\end{lemma}
+
+\begin{lemma} \phantomsection\label{th:strongly_connected_eigenvalues}
     Given a digraph $G$ with adjacency matrix $\matr{A}$, if $G$ is strongly connected and aperiodic, and $\matr{A}$ is row stochastic, its eigenvalues are such that:
     \begin{itemize}
         \item $\lambda = 1$ is a simple eigenvalue (i.e., algebraic multiplicity of 1),
         \item All others $\mu$ are $|\mu| < 1$.
     \end{itemize}
 
+    \indenttbox
     \begin{remark}
         For the lemma to hold, it is necessary and sufficient that $G$ contains a globally reachable node and the subgraph of globally reachable nodes is aperiodic.
     \end{remark}
 \end{lemma}
 
-\begin{theorem}[Consensus] \marginnote{Consensus}
+
+\subsection{Consensus}
+
+\begin{theorem}[Discrete-time consensus] \marginnote{Discrete-time consensus}
     Consider a discrete-time averaging system with digraph $G$ and weighted adjacency matrix $\matr{A}$. Assume $G$ strongly connected and aperiodic, and $\matr{A}$ row stochastic. 
     
     It holds that there exists a left eigenvector $\vec{w} \in \mathbb{R}^N$, $\vec{w} > 0$ such that the consensus converges to:
         \[ 
-            \lim_{k \rightarrow \infty} x^k 
-            = \vec{1}\frac{\vec{w}^T x^0}{\vec{w}^T\vec{1}} 
-            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \frac{\sum_{i=1}^N w_i x_i^0}{\sum_{i=1}^N w_i}
+            \lim_{k \rightarrow \infty} \vec{x}^k 
+            = \vec{1}\frac{\vec{w}^T \vec{x}^0}{\vec{w}^T\vec{1}} 
+            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \frac{\sum_{i=1}^N w_i x_i^0}{\sum_{j=1}^N w_j}
             = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \sum_{i=1}^N \frac{w_i}{\sum_{j=1}^N w_j} x_i^0
         \]
         where $\tilde{w}_i = \frac{w_i}{\sum_{i=j}^N w_j}$ are all normalized and sum to 1 (i.e., they produce a convex combination).
 
-    Moreover, if $\matr{A}$ is doubly stochastic (e.g., $G$ weight balanced with positive weights), then it holds that the consensus is the average:
+    Moreover, if $\matr{A}$ is doubly stochastic, then it holds that the consensus is the average:
     \[ 
-        \lim_{k \rightarrow \infty} x^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
+        \lim_{k \rightarrow \infty} \vec{x}^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
     \]
 
     \begin{proof}[Sketch of proof]
         Let $\matr{T} = \begin{bmatrix} \vec{1} & \vec{v}^2 & \cdots & \vec{v}^N \end{bmatrix}$ be a change in coordinates that transforms an adjacency matrix into its Jordan form $\matr{J}$:
         \[ \matr{J} = \matr{T}^{-1} \matr{A} \matr{T} \]
-        As $\lambda=1$ is a simple eigenvalue, it holds that:
+        As $\lambda=1$ is a simple eigenvalue (\Cref{th:strongly_connected_eigenvalues}), it holds that:
         \[
             \matr{J} = \begin{bmatrix}
                 1 & 0 & \cdots & 0 \\
@@ -267,18 +122,18 @@
         \]
         where the eigenvalues of $\matr{J}_2 \in \mathbb{R}^{(N-1) \times (N-1)}$ lie inside the open unit disk.
 
-        Let $x^k = \matr{T}\bar{x}^k$, then we have that:
+        Let $\vec{x}^k = \matr{T}\bar{\vec{x}}^k$, then we have that:
         \[
             \begin{split}
-                x^{k+1} &= \matr{A} x^{k} \iff \\
-                \matr{T} \bar{x}^{k+1} &= \matr{A} (\matr{T} \bar{x}^k) \iff \\
-                \bar{x}^{k+1} &= \matr{T}^{-1} \matr{A} (\matr{T} \bar{x}^k) = \matr{J}\bar{x}^k 
+                &\vec{x}^{k+1} = \matr{A} \vec{x}^{k} \\
+                &\iff \matr{T} \bar{\vec{x}}^{k+1} = \matr{A} (\matr{T} \bar{\vec{x}}^k) \\
+                &\iff \bar{\vec{x}}^{k+1} = \matr{T}^{-1} \matr{A} (\matr{T} \bar{\vec{x}}^k) = \matr{J}\bar{\vec{x}}^k 
             \end{split}
         \]
         Therefore:
         \[
             \begin{gathered}
-                \lim_{k \rightarrow \infty} \bar{x}^k = \bar{x}_1^0 \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix} \\
+                \lim_{k \rightarrow \infty} \bar{\vec{x}}^k = \bar{x}_1^0 \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix} \\
                 \bar{x}_1^{k+1} = \bar{x}_1^k \quad \forall k \geq 0 \\
                 \lim_{k \rightarrow \infty} \bar{x}_i^{k} = 0 \quad \forall i = 2, \dots, N \\
             \end{gathered}
@@ -297,6 +152,10 @@
     \]
     The matrix $\matr{A}$ of Metropolis-Hasting weights is symmetric and doubly stochastic.
 \end{example}
+
+
+
+\section{Discrete-time averaging algorithm over time-varying graphs}
 
 
 \subsection{Time-varying digraphs}
@@ -330,9 +189,12 @@
         \begin{description}
             \item[Linear time-varying (LTV) discrete-time system] \marginnote{Linear time-varying (LTV) discrete-time system}
                 In matrix form, it can be formulated as:
-                \[ x^{k+1} = \matr{A}(k) x^k \]
+                \[ \vec{x}^{k+1} = \matr{A}(k) \vec{x}^k \]
         \end{description}
 \end{description}
+
+
+\subsection{Consensus}
 
 \begin{theorem}[Discrete-time consensus over time-varying graphs] \marginnote{Discrete-time consensus over time-varying graphs}
     Consider a time-varying discrete-time average system with digraphs $\{G(k)\}_{k \geq 0}$ (all with self-loops) and weighted adjacency matrices $\{\matr{A}(k)\}_{k \geq 0}$. Assume:
@@ -343,12 +205,136 @@
     
     It holds that there exists a vector $\vec{w} \in \mathbb{R}^N$, $\vec{w} > 0$ such that the consensus converges to:
         \[ 
-            \lim_{k \rightarrow \infty} x^k 
-            = \vec{1}\frac{\vec{w}^T x^0}{\vec{w}^T\vec{1}} 
+            \lim_{k \rightarrow \infty} \vec{x}^k 
+            = \vec{1}\frac{\vec{w}^T \vec{x}^0}{\vec{w}^T\vec{1}} 
         \]
 
     Moreover, if each $\matr{A}(k)$ is doubly stochastic, it holds that the consensus is the average:
     \[ 
-        \lim_{k \rightarrow \infty} x^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
+        \lim_{k \rightarrow \infty} \vec{x}^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
     \]
 \end{theorem}
+
+
+
+\section{Continuous-time averaging algorithm}
+
+\subsection{Laplacian dynamics}
+
+\begin{description}
+    \item[Network of dynamic systems] \marginnote{Network of dynamic systems}
+        Network described by the ODEs:
+        \[ \dot{x}_i(t) = u_i(t) \quad \forall i \in \{ 1, \dots, N \} \]
+        with states $x_i \in \mathbb{R}$, inputs $u_i \in \mathbb{R}$, and communication following a digraph $G$.
+
+    \item[Laplacian dynamics system] \marginnote{Laplacian dynamics system}
+        Consider a network of dynamic systems where $u_i$ is defined as a proportional controller (i.e., only communicating $(i, j)$ have a non-zero weight $a_{ij}$):
+        \[ 
+            \begin{split}
+                u_i(t) 
+                    &= - \sum_{j \in \mathcal{N}_i^\text{OUT}} a_{ij} \Big( x_i(t) - x_j(t) \Big) \\
+                    &= - \sum_{j=1}^{N} a_{ij} \Big( x_i(t) - x_j(t) \Big) 
+            \end{split}
+        \]
+
+        \begin{remark}
+            With this formulation, consensus can be seen as the problem of minimizing the error defined as the difference between the states of two nodes.
+        \end{remark}
+
+        \begin{remark}
+            A definition with in-neighbors also exists.
+        \end{remark}
+
+        % \[
+        %     \dot{x}_i(t) = 
+        %     -\sum_{j \in \mathcal{N}_i^\text{OUT}} a_{ij} (x_i(t) - x_j(t))
+        %     -\sum_{j=1}^N a_{ij} (x_i(t) - x_j(t))
+        % \]
+        % $a_{ij} = 0$ if $(i, j) \notin E$.
+
+        \begin{theorem}[Linear time invariant (LTI) continuous-time system] \phantomsection\label{th:lti_continuous} \marginnote{Linear time invariant (LTI) continuous-time system}
+            With $\vec{x} = \begin{bmatrix} x_1 & \dots & x_N \end{bmatrix}^T$, the system can be written in matrix form as:
+            \[ \dot{\vec{x}}(t) = - \matr{L} \vec{x}(t) \]
+            where $\matr{L}$ is the Laplacian associated with the communication digraph $G$.
+
+            \begin{proof}
+                The system is defined as:
+                \[
+                    \dot{x}_i(t) = - \sum_{j=1}^{N} a_{ij} \Big( x_i(t) - x_j(t) \Big)  
+                \]
+                By rearranging, we have that:
+                \[
+                    \begin{split}
+                        \dot{x}_i(t) 
+                            &= - \left( \sum_{j=1}^{N} a_{ij} \right) x_i(t) + \sum_{j=1}^{N} a_{ij} x_j(t) \\
+                            &= -\outdeg[i] x_i(t) + (\matr{A}\vec{x}(t))_i
+                    \end{split}
+                \]
+                Which in matrix form is:
+                \[ 
+                    \begin{split}
+                        \dot{\vec{x}}(t) 
+                            &= - \matr{D}^\text{OUT} \vec{x}(t) + \matr{A} \vec{x}(t) \\
+                            &= - (\matr{D}^\text{OUT} - \matr{A}) \vec{x}(t) 
+                    \end{split}
+                \]
+                By definition, $\matr{L} = \matr{D}^\text{OUT} - \matr{A}$. Therefore, we have that:
+                \[ \dot{\vec{x}}(t) = - \matr{L} \vec{x}(t) \]  
+            \end{proof}
+        \end{theorem}
+
+        \begin{remark}
+            By \Cref{th:lti_continuous}, row/column stochasticity is not required for consensus. Instead, the requirement is for the matrix to be Laplacian.
+        \end{remark}
+\end{description}
+
+
+\subsection{Consensus}
+
+\begin{lemma}
+    It holds that:
+    \[
+        \matr{L}\vec{1} 
+        = \matr{D}^\text{OUT} \vec{1} - \matr{A}\vec{1}
+        = \begin{bmatrix} \outdeg[1] \\ \vdots \\ \outdeg[i] \end{bmatrix} - \begin{bmatrix} \outdeg[1] \\ \vdots \\ \outdeg[i] \end{bmatrix}
+        = 0
+    \]
+\end{lemma}
+
+\begin{lemma} \phantomsection\label{th:weighted_laplacian_eigenvalues}
+    The Laplacian $\matr{L}$ of a weighted digraph has an eigenvalue $\lambda=0$ and all the others have strictly positive real part.
+\end{lemma}
+
+\begin{lemma}
+    Given a weighted digraph $G$ with Laplacian $\matr{L}$, the following are equivalent:
+    \begin{itemize}
+        \item $G$ is weight balanced.
+        \item $\vec{1}$ is a left eigenvector of $\matr{L}$: $\vec{1}^T\matr{L} = 0$ with eigenvalue $0$.
+    \end{itemize}
+\end{lemma}
+
+\begin{lemma} \phantomsection\label{th:connected_simple_eigenvalue}
+    If a weighted digraph $G$ is strongly connected, then $\lambda = 0$ is a simple eigenvalue.
+\end{lemma}
+
+\begin{theorem}[Continuous-time consensus] \marginnote{Continuous-time consensus}
+    Consider a continuous-time average system with a strongly connected weighted digraph $G$ and Laplacian $\matr{L}$. Assume that the system follows the Laplacian dynamics $\dot{\vec{x}}(t) = - \matr{L}\vec{x}(t)$ for $t \geq 0$. 
+    
+    It holds that there exists a left eigenvector $\vec{w}$ of $\matr{L}$ with eigenvalue $\lambda=0$ such that the consensus converges to:
+    \[
+        \lim_{t \rightarrow \infty} \vec{x}(t) = \vec{1} \left( \frac{\vec{w}^T \vec{x}(0)}{\vec{w}^T \vec{1}} \right)
+    \]
+
+    Moreover, if $G$ is weight balanced, then it holds that the consensus is the average:
+    \[
+        \lim_{t \rightarrow \infty} \vec{x}(t) = \vec{1} \frac{\sum_{i=1}^N x_i(0)}{N}
+    \]
+
+    % \begin{proof}
+        
+    % \end{proof}
+\end{theorem}
+
+\begin{remark}
+    The result also holds for unweighted digraphs as $\vec{1}$ is both a left and right eigenvector of $\matr{L}$.
+\end{remark}

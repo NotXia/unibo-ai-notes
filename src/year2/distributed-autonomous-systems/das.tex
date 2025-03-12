@@ -5,14 +5,47 @@
 \def\lastupdate{{PLACEHOLDER-LAST-UPDATE}}
 \def\giturl{{PLACEHOLDER-GIT-URL}}
 
+\newtheorem{privatetheorem}{Theorem}[section]
+\newtheorem{privatecorollary}[theorem]{Corollary}
+\newtheorem{privatelemma}[theorem]{Lemma}
+
+\renewenvironment{theorem}{%
+    \begin{marginbar}{gray}{0}{thick}
+    \begin{privatetheorem}
+}{%
+    \end{privatetheorem}
+    \end{marginbar}
+}
+
+\renewenvironment{corollary}{%
+    \begin{marginbar}{gray}{0}{thick}
+    \begin{privatecorollary}
+}{%
+    \end{privatecorollary}
+    \end{marginbar}
+}
+
+\renewenvironment{lemma}{%
+    \begin{marginbar}{gray}{0}{thick}
+    \begin{privatelemma}
+}{%
+    \end{privatelemma}
+    \end{marginbar}
+}
+
+
 \newcommand{\indeg}[1][]{\ensuremath{\text{deg}_{#1}^\text{IN}}}
 \newcommand{\outdeg}[1][]{\ensuremath{\text{deg}_{#1}^\text{OUT}}}
 \def\stf{{\texttt{stf}}}
+\def\lap{{\matr{L}}}
+\def\x{{\vec{x}}}
 
 
 \begin{document}
 
     \makenotesfront
+    \include{./sections/_graphs.tex}
     \include{./sections/_averaging_systems.tex}
+    \include{./sections/_leader_follower.tex}
 
 \end{document}
