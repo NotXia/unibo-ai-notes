@@ -1,0 +1,229 @@
+\chapter{Technical robustness and safety}
+
+
+\begin{description}
+    \item[AI act, article 15] \marginnote{AI act, article 15}
+        Article related to accuracy, robustness, and cybersecurity. It states that high-risk AI systems should:
+        \begin{itemize}
+            \item Be benchmarked and evaluated adequately.
+            \item Be resilient to errors.
+            \item Have measures to prevent and respond to attacks.
+        \end{itemize}
+
+\end{description}
+
+\begin{description}
+    \item[Technical robustness and safety] \marginnote{Technical robustness and safety}
+        AI systems should be secured to prevent unintentional harm and minimize the consequences of intentional harm. These requirements can be achieved by:
+        \begin{itemize}
+            \item Improving resilience to attacks.
+            \item Introducing fallback plans.
+            \item Improving general safety.
+            \item Improving accuracy, reliability, and reproducibility.
+        \end{itemize}
+
+        \begin{remark}
+            Robustness is required as the real-world distribution is usually different from the training one.
+        \end{remark}
+\end{description}
+
+\begin{remark}[Reliability vs robustness vs resilience] \phantom{}
+    \begin{descriptionlist}
+        \item[Reliability] 
+            Perform similarly on any test set from the same distribution.
+
+            In practice, reliable design aims at obtaining a probability of failure below some threshold.
+
+        \item[Robustness] 
+            Perform reasonably well on test sets from a slightly different distribution.
+
+            In practice, robust design aims at obtaining a model insensitive to small changes.
+
+        \item[Resilience]
+            Adapt to unexpected inputs from unknown distributions.
+    \end{descriptionlist}
+\end{remark}
+
+
+\begin{description}
+    \item[Robustness levels] \marginnote{Robustness levels}
+        % Robustness can be achieved in terms of:
+        % \begin{itemize}
+        %     \item Generalization capabilities,
+        %     \item Resistance to adversarial attacks,
+        %     \item Resistance to data perturbation.
+        % \end{itemize}
+        Robustness can be ranked on different levels:
+        \begin{descriptionlist}
+            \item[Level 0] 
+                No robustness measures or mitigation functionalities.
+
+            \item[Level 1] 
+                Generalization under distribution shift. It aims at mitigating data shifts and out-of-distribution data.
+                
+            \item[Level 2] 
+                Robustness against a single risk.
+
+            \item[Level 3] 
+                Robustness against multiple risks.
+
+            \item[Level 4] 
+                Universal robustness against all known risks.
+
+            \item[Level 5] 
+                Level 4 system with human-aligned and augmented robustness.
+
+        \end{descriptionlist}
+\end{description}
+
+
+\begin{description}
+    \item[AI safety] \marginnote{AI safety}
+        Build a system less vulnerable to adversarial attacks. This can be achieved by:
+        \begin{itemize}
+            \item Identifying anomalies.
+            \item Defining safety objectives.
+        \end{itemize}
+
+    \item[Reproducibility] \marginnote{Reproducibility}
+        Build a system that exhibits the same behavior under the same conditions.
+
+        \begin{remark}[Repeatability vs replicability vs reproducibility]
+            \phantom{}
+            \begin{descriptionlist}
+                \item[Repeatability] 
+                    The same team can repeat the results under the same experimental setup.
+                \item[Replicability] 
+                    A different team can repeat the results under the same experimental setup.
+                \item[Reproducibility] 
+                    A different team can repeat the results with some tolerance under a different experimental setup.
+            \end{descriptionlist}
+        \end{remark}
+
+\end{description}
+
+
+\begin{description}
+    \item[Robustness requirements] \marginnote{Robustness requirements}
+        Two aspects have to be considered for robustness:
+        \begin{descriptionlist}
+            \item[Performance] 
+                Capability of a model to perform a task reasonably well (humans can be used as baseline).
+
+            \item[Vulnerability] 
+                Resistance of the model to attacks. Possible sources of attack are: data poisoning, adversarial examples, flaws in the model.
+        \end{descriptionlist}
+
+    \item[Robustness approaches] \marginnote{Robustness approaches}
+        Robustness can be imposed with different methods at different moments of the lifecycle of the system:
+        \begin{itemize}
+            \item Data sanitization,
+            \item Robust learning,
+            \item Extensive testing,
+            \item Formal verification.
+        \end{itemize}
+\end{description}
+
+
+\section{Robust learning}
+
+\begin{description}
+    \item[Robust learning]
+        Learn a model that is general enough to handle slightly out-of-distribution data.
+\end{description}
+
+\begin{remark}
+    It is impossible (and possibly unwanted) to have a system that models everything.
+
+    \begin{theorem}[Fundamental theorem of machine learning]
+        \[ \text{error rate} = \frac{\text{model complexity}}{\text{sample size}} \]
+    \end{theorem}
+    
+    \begin{corollary}
+        If the sample size is small, the model should be simple.
+    \end{corollary}
+\end{remark}
+
+\begin{remark}[Uncertainty in AI]
+    Knowledge in AI can be divided into:
+    \begin{descriptionlist}
+        \item[Known knowns] 
+            Well-established and understood areas of research:
+            \begin{itemize}
+                \item Theorem proving.
+                \item Planning in deterministic and fully-observed worlds.
+                \item Games of perfect information.
+            \end{itemize}
+
+        \item[Known unknowns] 
+            Areas whose understanding is incomplete:
+            \begin{itemize}
+                \item Probabilistic graphical models to represent and reason on uncertainty in complex systems.
+                \item Probabilistic machine learning that is able to quantify uncertainty.
+                \item Planning in Markov decision problems for decision-making under uncertainty.
+                \item Computational game theory to analyze and solve games.
+            \end{itemize}
+
+        \item[Unknown unknowns] 
+            Areas that we do not know are unknown. They are the natural step toward robust AI.
+    \end{descriptionlist}
+\end{remark}
+
+
+\begin{remark}
+    Robustness in biology is achieved by means of a diverse and redundant population of individuals.
+\end{remark}
+
+
+\subsection{Robustness to model errors}
+
+\begin{description}
+    \item[Robust optimization] \marginnote{Robust optimization}
+        Handle uncertainty and variability through optimization methods:
+        \begin{itemize}
+            \item Assign ranges to parameters to account for uncertainty.
+            \item Optimize in a max-min formulation aiming at maximizing the performance of the worst-case.
+        \end{itemize}
+
+        \begin{remark}
+            There is a trade-off between optimality and robustness.
+        \end{remark}
+
+    \item[Model regularization] \marginnote{Model regularization}
+        Add a penalty term to the training loss to encourage simple models.
+
+        \begin{theorem}
+            Regularization can be interpreted as robust optimization.
+        \end{theorem}
+
+    \item[Optimize risk-sensitive objectives] \marginnote{Optimize risk-sensitive objectives}
+        Consider, when optimizing a reward, the variability and uncertainty associated to it (e.g., minimize variance of rewards).
+    
+    \item[Robust inference] \marginnote{Robust inference}
+        Deal with uncertainty, noise, or variability at inference time.
+\end{description}
+
+
+\subsection{Robustness to unmodeled phenomena}
+
+\begin{description}
+    \item[Model expansion] \marginnote{Model expansion}
+        Expand the models with a knowledge base.
+
+        \begin{remark}
+            New knowledge might contain errors or not improve the model at all.
+        \end{remark}
+    
+    \item[Causal models] \marginnote{Causal models}
+        Define causal relations.
+    
+    \item[Portfolio of models] \marginnote{Portfolio of models}
+        Have multiple solvers available and use a selection method to choose the most suited in any situation.
+
+        \begin{remark}
+            Ideally, given an instance, there should be at least a solver that performs well on it.
+        \end{remark}
+    
+    \item[Anomaly detection] \marginnote{Anomaly detection}
+        Detect instances that deviate from the expected distribution.
+\end{description}
