@@ -194,3 +194,184 @@
 \begin{remark}[Leader-follower containment weakness]
     The final part of the proof of \Cref{th:containment_optimality} also shows that if there is an adversarial follower that does not change its state, all others will converge towards it.
 \end{remark}
+
+
+\section{Containment with non-static leaders}
+
+\begin{description}
+    \item[Containment with non-static leaders] \marginnote{Containment with non-static leaders}
+        Containment problem where leaders' dynamics is a non-zero constant (i.e., they also move):
+        \[
+            \begin{aligned}
+                \dot{\x}_f(t) &= -\lap_f \x_f(t) - \lap_{fl} \x_l(t) \quad & \x_f(0) &= \x_f^{(0)} \\
+                \dot{\x}_l(t) &= \vec{v}_0 \quad & \x_l(0) &= \x_l^{(0)} \\
+            \end{aligned}
+        \]
+        where $\vec{v}_0$ is the leaders' velocity.
+\end{description}
+
+\begin{theorem}[Containment with non-static leaders non-equilibrium]
+    Naive containment with non-static leaders do not have an equilibrium.
+
+    \begin{proof}
+        Ideally, the equilibria for followers' and leader's dynamics are:
+        \[
+            \begin{split}
+                0 &= -\lap_f \x_{f,E} - \lap_{fl} \x_{l,E} \\
+                0 &= \vec{v}_0
+            \end{split}
+        \]
+
+        Let's define the containment error (can also be seen as the error to reach the followers' equilibrium) as:
+        \[
+            \vec{e}(t) = \lap_f \x_f(t) + \lap_{fl} \x_l(t)
+        \]
+        Its dynamics depends on the ones of the followers' and leaders':
+        \[
+            \begin{split}
+                \dot{\vec{e}}(t) &= \lap_f \dot{\x}_f(t) + \lap_{fl} \dot{\x}_l(t) \\
+                &= \lap_f (- \lap_f \x_f(t) - \lap_{fl} \x_l(t)) + \lap_{fl} \vec{v}_0 \\
+                &= - \lap_f \vec{e}(t) + \lap_{fl} \vec{v}_0
+            \end{split}
+        \]
+        
+        By inspecting the value of the containment error $\vec{e}(t)$ when it reaches equilibrium we have that:
+        \[
+            \begin{split}
+                0 &= \dot{\vec{e}}(t) \\
+                \iff 0 &= - \lap_f \vec{e}(t) + \lap_{fl} \vec{v}_0 \\
+                \iff \vec{e}(t) &= \lap_f^{-1} \lap_{fl} \vec{v}_0 \\
+            \end{split}
+        \]
+        
+        There are two cases:
+        \[
+            \vec{e}(t) = \begin{cases}
+                0 & \text{if $\vec{v}_0 = 0$ (i.e., same case of \Cref{th:containment_optimality})} \\
+                \lap_f^{-1} \lap_{fl} \vec{v}_0 & \text{if $\vec{v}_0 \neq 0$} \\
+            \end{cases}
+        \]
+
+        Therefore, when leaders are non-static, the containment error converges to a non-zero constant. Thus, followers' equilibrium is never reached (i.e., they keep moving) and the containment problem cannot be solved.
+    \end{proof}
+\end{theorem}
+
+
+
+\section{Containment with non-static leaders and integral action}
+
+\begin{description}
+    \item[Containment with non-static leaders and integral action] \marginnote{Containment with non-static leaders and integral action}
+        Leader-follower dynamics defined as:
+        \[
+            \begin{aligned}
+                \dot{\x}_f(t) &= -\lap_f \x_f(t) - \lap_{fl} \x_l(t) + \vec{u}_f(t) \quad & \x_f(0) &= \x_f^{(0)} \\
+                \dot{\x}_l(t) &= \vec{v}_0 \quad & \x_l(0) &= \x_l^{(0)} \\
+            \end{aligned}
+        \]
+        where $\vec{u}_f(t)$ is a distributed control action (can be seen as a correction) that processes the containment error $\vec{e}(t)$. It is composed of a proportional controller (i.e., value proportional to the error) and an integral controller (i.e., value proportional to the integral to the error):
+        \[
+            \begin{split}
+                \vec{u}_f(t) &= \matr{K}_P \vec{e}(t) + \matr{K}_I \int_{0}^{t} \vec{e}(\tau) \,d\tau
+            \end{split}
+        \]
+        where $\matr{K}_P$ and $\matr{K}_I$ are coefficients for the proportional and integral controller, respectively.
+        
+        By defining a proxy $\xi$ for the integral of the error (i.e., sort of accumulator) as follows:
+        \[
+            \begin{split}
+                \dot{\xi}(t) &= \vec{e}(t) \\
+                    &= \lap_f \vec{x}(t) + \lap_{fl} \x_l(t) \qquad \xi(0) = \xi^{(0)}
+            \end{split}
+        \]
+        The control action can be defined as:
+        \[
+            \vec{u}_f(t) = \matr{K}_P \vec{e}(t) + \matr{K}_I \xi(t)
+        \]
+
+        In the simplest case, $\vec{u}_f(t)$ is a pure integral control where $\matr{K}_I = -\kappa_I \matr{I}, \kappa_I>0$ is a sparse matrix (e.g., diagonal) and $\matr{K}_P = 0$. The overall system can be defined in matrix form as:
+        \[
+            \begin{bmatrix}
+                \dot{\x}_f(t) \\ \dot{\x}_l(t) \\ \dot{\xi}(t)
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                -\lap_f & -\lap_{fl} & \matr{K}_I \\
+                0 & 0 & 0 \\
+                \lap_f & \lap_{fl} & 0 
+            \end{bmatrix}
+            \begin{bmatrix}
+                \x_f(t) \\ \x_l(t) \\ \xi(t)
+            \end{bmatrix}
+            +
+            \begin{bmatrix}
+                0 \\ \matr{I} \\ 0
+            \end{bmatrix}
+            \vec{v}_0
+        \]
+\end{description}
+
+\begin{remark}
+    The value of this formulation of the control action for an agent $i$ is:
+    \[
+        \begin{split}
+            u_{F_i}(t) = \kappa_I \xi_i(t) \\
+        \end{split}
+    \]
+    It can be seen that it is computable as a distributed system as $\kappa_I$ is constant and $\xi_i(t)$ is based on the Laplacian (i.e., it is sufficient to look up the neighbors' states).
+\end{remark}
+
+\begin{theorem}[Containment with non-static leaders and integral action optimality]
+    With the integral action, containment with non-static leaders converges to a valid solution.
+\end{theorem}
+
+
+
+\section{Containment with discrete-time}
+
+\begin{description}
+    \item[Containment with discrete-time] \marginnote{Containment with discrete-time}
+        Containment can be discretized using the forward-Eurler discretization. Its dynamics is defined as:
+        \[
+            \begin{aligned}
+                \dot{\x}_i(t) &= - \sum_{j \in \mathcal{N}_i} a_{ij} (x_i(t) - x_j(t)) & & \forall i \in \{1, \dots, N_f\} \\
+                \dot{\x}_i(t) &= 0 & & \forall i \in \{N_f+1, \dots, N\}
+            \end{aligned}
+        \]
+        And the followers' states are sampled with a time-step $\varepsilon > 0$ while the leaders' is constant:
+        \[
+            \begin{split}
+                x_i^{k+1} &= \left.x_i(t)\right|_{t=(k+1)\varepsilon} \\
+                &= x_i^k + \varepsilon \left.\dot{x}_i(t)\right|_{t=k\varepsilon} \\
+                &= \left( 1 - \varepsilon\sum_{j \in \mathcal{N}_i} a_{ij} \right) x_i^{k} + \varepsilon \sum_{j \in \mathcal{N}_i} a_{ij} x_j^k \qquad \forall i \in \{ 1, \dots, N_f \} \\
+                x_i^{k+1} &= x_i^k \qquad \forall i \in \{ N_f+1, \dots, N \}
+            \end{split}
+        \]
+        In matrix form, it can be defined as:
+        \[
+            \begin{bmatrix}
+                \x_f^{k+1} \\ \x_l^{k+1} 
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                \matr{I} - \varepsilon \lap_f & -\varepsilon \lap_{fl} \\
+                0 & \matr{I}
+            \end{bmatrix}
+            \begin{bmatrix}
+                \x_f^k \\ \x_l^k
+            \end{bmatrix}
+        \]
+\end{description}
+
+
+
+\section{Containment with multivariate states}
+
+\begin{description}
+    \item[Containment with multivariate states] \marginnote{Containment with multivariate states} 
+        With multivariate states, it can be shown that the dynamics is described as:
+        \[
+            \dot{\x}(t) = - \lap \otimes \matr{I}_d \x(t)
+        \]
+        where $\otimes$ is the Kronecker product.
+\end{description}
