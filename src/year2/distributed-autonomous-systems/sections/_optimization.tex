@@ -1,0 +1,459 @@
+\chapter{Optimization}
+
+
+\section{Definitions}
+
+
+\subsection{Unconstrained optimization}
+
+\begin{description}
+    \item[Unconstrained optimization] \marginnote{Unconstrained optimization}
+        Problem of form:
+        \[ \min_{\z \in \mathbb{R}^d} l(\z) \]
+        where $l: \mathbb{R}^d \rightarrow \mathbb{R}$ is the cost function and $\z$ the decision variables.
+\end{description}
+
+\begin{theorem}[First-order necessary condition of optimality] \marginnote{First-order necessary condition of optimality}
+    Given a point $\z^*$ and a cost function $l: \mathbb{R}^d \rightarrow \mathbb{R}$ such that $l \in C^1$ in $B(\z^*, \varepsilon)$ (i.e., neighbors of $\z^*$ within a radius $\varepsilon$), it holds that:
+    \[
+        \z^* \text{ is local minimum } \Rightarrow \nabla l(\z^*) = 0
+    \]
+\end{theorem}
+
+\begin{theorem}[Second-order necessary condition of optimality] \marginnote{Second-order necessary condition of optimality}
+    Given a point $\z^*$ and a cost function $l: \mathbb{R}^d \rightarrow \mathbb{R}$ such that $l \in C^2$ in $B(\z^*, \varepsilon)$, it holds that:
+    \[
+        \z^* \text{ is local minimum } \Rightarrow \nabla^2 l(\z^*) \geq 0 \text{ (i.e., positive semidefinite)}
+    \]
+\end{theorem}
+
+
+\subsection{Convexity}
+
+\begin{description}
+    \item[Convex set] \marginnote{Convex set}
+        A set $Z \subseteq \mathbb{R}^d$ is convex if it holds that:
+        \[
+            \forall \z_A, \z_B \in Z: \Big( \exists \alpha \in [0, 1]: (\alpha \z_A + (1-\alpha)\z_B) \in Z \Big)
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{img/_convex_set.pdf}
+        \end{figure}
+
+    \item[Convex function] \marginnote{Convex function}
+        Given a convex set $Z \subseteq \mathbb{R}^d$, a function $l: Z \rightarrow \mathbb{R}$ is convex if it holds that:
+        \[
+            \forall \z_A, \z_B \in Z: \Big( \exists \alpha \in [0, 1]: l(\alpha \z_A + (1-\alpha) \z_B) \leq \alpha l(\z_A) + (1-\alpha) l(\z_B) \Big)
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.25\linewidth]{img/_convex_function.pdf}
+        \end{figure}
+
+        \begin{remark}
+            Given a differentiable and convex function $l: Z \rightarrow \mathbb{R}$, it holds that any of its points lie above all its tangents:
+            \[ \forall \z_A, \z_B \in Z: l(\z_B) \geq l(\z_A) + \nabla l(\z_A)^T (\z_B - \z_A) \]
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.3\linewidth]{img/_convex_tangent.pdf}
+            \end{figure}
+        \end{remark}
+
+    \item[Strongly convex function] \marginnote{Strongly convex function}
+        Given a convex set $Z \subseteq \mathbb{R}^d$, a function $l: Z \rightarrow \mathbb{R}$ is strongly convex with parameter $\mu > 0$ if it holds that:
+        \[
+            \begin{split}
+                \forall \z_A, \z_B \in Z, \z_A \neq \z_B: \Big( \exists \alpha \in (0, 1)&: l(\alpha \z_A + (1-\alpha) \z_B) < \\
+                &\alpha l(\z_A) + (1-\alpha) l(\z_B) - \frac{1}{2} \mu \alpha (1-\alpha) \Vert \z_A-\z_B \Vert^2 \Big)
+            \end{split}
+        \]
+        Intuitively, it is strictly convex and grows as fast as a quadratic function.
+
+        \begin{remark}
+            Given a differentiable and $\mu$-strongly convex function $l: Z \rightarrow \mathbb{R}$, it holds that any of its points lie above all the paraboloids with curvature determined by $\mu$ and tangent to a point of the function:
+            \[ \forall \z_A, \z_B \in Z: l(\z_B) \geq l(\z_A) + \nabla l(\z_A)^T (\z_B - \z_A) + \frac{\mu}{2} \Vert \z_B - \z_A \Vert^2 \]
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.35\linewidth]{img/_strongly_convex.pdf}
+            \end{figure}
+
+            A geometric interpretation is that strong convexity imposes a quadratic lower-bound to the function.
+        \end{remark}
+\end{description}
+
+\begin{lemma}[Convexity and gradient monotonicity] \marginnote{Convexity and gradient monotonicity}
+    Given a differentiable and convex function $l$, its gradient $\nabla l$ is a monotone operator, which means that it satisfies:
+    \[
+        \forall \z_A, \z_B: \big( \nabla l(\z_A) - \nabla l(\z_B) \big)^T (\z_A - \z_B) \geq 0
+    \]
+\end{lemma}
+
+\begin{lemma}[Strict convexity and gradient monotonicity] \marginnote{Strict convexity and gradient monotonicity}
+    Given a differentiable and strictly convex function $l$, its gradient $\nabla l$ is a strictly monotone operator, which means that it satisfies:
+    \[
+        \forall \z_A, \z_B: \big( \nabla l(\z_A) - \nabla l(\z_B) \big)^T (\z_A - \z_B) > 0
+    \]
+\end{lemma}
+
+\begin{lemma}[Strong convexity and gradient monotonicity] \marginnote{Strong convexity and gradient monotonicity}
+    Given a differentiable and $\mu$-strongly convex function $l$, its gradient $\nabla l$ is a strongly monotone operator, which means that it satisfies:
+    \[
+        \forall \z_A, \z_B: \big( \nabla l(\z_A) - \nabla l(\z_B) \big)^T (\z_A - \z_B) \geq \mu \Vert \z_A - \z_B \Vert^2
+    \]
+\end{lemma}
+
+\begin{description}
+    \item[Lipschitz continuity] \marginnote{Lipschitz continuity}
+        Given a function $l$, it is Lipschitz continuous with parameter $L > 0$ if:
+        \[
+            \forall \z_A, \z_B: \Vert l(\z_A) - l(\z_B) \Vert \leq L \Vert \z_A - \z_B \Vert
+        \]
+
+        \begin{remark}
+            Given a differentiable function $l$ with $L$-Lipschitz continuous gradient $\nabla l$, it holds that any of its points lie below all the paraboloids with curvature determined by $L$ and tangent to a point of the function:
+            \[ \forall \z_A, \z_B \in Z: l(\z_B) \leq l(\z_A) + \nabla l(\z_A)^T (\z_B - \z_A) + \frac{L}{2} \Vert \z_B - \z_A \Vert^2 \]
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.35\linewidth]{img/_lipschitz_gradient.pdf}
+            \end{figure}
+
+            A geometric interpretation is that Lipschitz continuity of the gradient imposes a quadratic upper-bound to the function.
+        \end{remark}
+\end{description}
+
+\begin{lemma}[Convexity and Lipschitz continuity of gradient] \marginnote{Convexity and Lipschitz continuity of gradient}
+    Given a differentiable convex function $l$ with $L$-Lipschitz continuous gradient $\nabla l$, its gradient is a co-coercive operator, which means that it satisfies:
+    \[
+        \forall \z_A, \z_B: \Big( \nabla l(\z_A) - \nabla l(\z_B) \Big)^T (\z_A - \z_B) \geq \frac{1}{L} \Vert \nabla l(\z_A) - \nabla l(\z_B) \Vert^2
+    \]
+\end{lemma}
+
+\begin{lemma}[Strong convexity and Lipschitz continuity of gradient] \marginnote{Strong convexity and Lipschitz continuity of gradient} \phantomsection\label{th:strong_convex_lipschitz_gradient}
+    Given a differentiable $\mu$-strongly convex function $l$ with $L$-Lipschitz continuous gradient $\nabla l$, its gradient is a strongly co-coercive operator, which means that it satisfies:
+    \[
+        \forall \z_A, \z_B: \Big( \nabla l(\z_A) - \nabla l(\z_B) \Big)^T (\z_A - \z_B) \geq \underbrace{\frac{\mu L}{\mu+L}}_{\gamma_1} \Vert \z_A - \z_B \Vert^2 + \underbrace{\frac{1}{\mu+L}}_{\gamma_2} \Vert \nabla l(\z_A) - \nabla l(\z_B) \Vert^2
+    \]
+\end{lemma}
+
+
+
+\section{Iterative descent methods}
+
+\begin{theorem}
+    Given a convex function $l$, it holds that a local minimum of $l$ is also global.
+    
+    Moreover, in the unconstrained optimization case, the first-order necessary condition of optimality is sufficient for a global minimum.
+\end{theorem}
+
+\begin{theorem}
+    Given a convex function $l$, it holds that $\z^*$ is a global minimum if and only if $\nabla f(\z^*) = 0$.
+\end{theorem}
+
+
+\begin{description}
+    \item[Iterative descent] \marginnote{Iterative descent}
+        Given a function $l$ and an initial guess $\z^{0}$, an iterative descent algorithm iteratively moves to new points $\z^{k}$ such that:
+        \[
+            \forall k \in \mathbb{N}: l(\z^{k+1}) < l(\z^{k})
+        \]
+\end{description}
+
+
+\subsection{Gradient method}
+
+\begin{description}
+    \item[Gradient method] \marginnote{Gradient method}
+        Algorithm that given the function $l$ to minimize and the initial guess $\z^0$, computes the update as:
+        \[ \z^{k+1} = \z^k - \alpha^k \nabla l(\z^k) \]
+        where $\alpha^k > 0$ is the step size and $- \nabla l(\z^k)$ is the step direction.
+
+        \begin{theorem}
+            For a sufficiently small $\alpha^k > 0$, the gradient method is an iterative descent algorithm:
+            \[ l(\z^{k+1}) < l(\z^{k}) \]
+
+            \begin{proof}
+                Consider the first-order Taylor approximation of $l(\z^{k+1})$ about $\z^k$:
+                \[
+                    \begin{split}
+                        l(\z^{k+1}) &= l(\z^k) + \nabla l(\z^k)^T (\z^{k+1} - \z^k) + o(\Vert \z^{k+1} - \z^k \Vert) \\
+                        &= l(\z^k) - \alpha^k \Vert \nabla l(\z^k)\Vert^2 + o(\alpha^k)
+                    \end{split}
+                \]
+                Therefore, $l(\z^{k+1}) < l(\z^{k})$ for some $\alpha^k$.
+            \end{proof}
+        \end{theorem}
+
+        \begin{remark}[Step size choice] \marginnote{Step size choice}
+            Possible choices for the step size are:
+            \begin{descriptionlist}
+                \item[Constant] 
+                    $\forall k \in \mathbb{N}: \alpha^k = \alpha > 0$.
+                
+                \item[Diminishing] 
+                    $\alpha^k \overset{k \rightarrow \infty}{\longrightarrow} 0$. To avoid decreasing the step too much, a typical choice is an $\alpha^k$ such that:
+                    \[
+                        \sum_{k=0}^{\infty} \alpha^k = \infty
+                        \qquad
+                        \sum_{k=0}^{\infty} (\alpha^k)^2 < \infty
+                    \]
+
+                \item[Line search] 
+                    Algorithmic methods such as the Armijo rule.
+            \end{descriptionlist}
+        \end{remark}
+
+    \item[Generalized gradient method] \marginnote{Generalized gradient method}
+        Gradient method where the update rule is generalized as:
+        \[ \z^{k+1} = \z^k - \alpha^k \matr{D}^k \nabla l(\z^k) \]
+        where $\matr{D}^k \in \mathbb{R}^{d \times d}$ is uniformly positive definite (i.e., $\delta_1 \matr{I} \leq \matr{D}^k \leq \delta_2 \matr{I}$ for some $\delta_2 \geq \delta_1 > 0$).
+
+        Possible choices for $\matr{D}^k$ are:
+        \begin{itemize}
+            \item Steepest descent: $\matr{D}^k = \matr{I}$.
+            \item Newton's method: $\matr{D}^k = (\nabla^2 l(\z^k))^{-1}$.
+            \item Quasi-Newton method: $\matr{D}^k = (H(\z^k))^{-1}$, where $H(\z^k) \approx \nabla^2 l(\z^k)$.
+        \end{itemize}
+\end{description}
+
+\begin{description}
+    \item[Gradient method as discrete-time integrator with feedback] \marginnote{Gradient method as discrete-time integrator with feedback}
+        The gradient method can be interpreted as a discrete-time integrator with a feedback loop. This means that it is composed of:
+        \begin{descriptionlist}
+            \item[Integrator] A linear system that defines the update: $\z^{k+1} = \z^k - \alpha \vec{u}^k$.
+            \item[Plant] A non-linear (bounded) function whose output is re-injected into the integrator. In this case, it is the gradient: $\vec{u}^k = \nabla l(\z^k)$.
+        \end{descriptionlist}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.55\linewidth]{./img/_gradient_method_integrator.pdf}
+        \end{figure}
+\end{description} 
+
+\begin{theorem}[Gradient method convergence] \marginnote{Gradient method convergence}
+    Consider a function $l$ such that:
+    \begin{itemize}
+        \item $\nabla l$ is $L$-Lipschitz continuous,
+        \item The step size is constant or diminishing. 
+    \end{itemize}
+    Let $\{ \z^k \}_{k \in \mathbb{N}}$ be the (bounded) sequence generated by the gradient method. It holds that every limit point $\bar{\z}$ of the sequence $\{ \z^k \}_{k \in \mathbb{N}}$ is a stationary point (i.e., $\nabla l(\bar{z}) = 0$).
+
+    In addition, if $l$ is $\mu$-strongly convex and the step size is constant, then the convergence rate of the sequence $\{ \z^k \}_{k \in \mathbb{N}}$ is exponential (also said geometric or linear):
+    \[
+        \Vert \z^k - \z^* \Vert \leq M \rho^k
+    \]
+    where $\rho \in (0, 1)$ and $M > 0$ depends on $\mu$, $L$, and $\Vert \z^0 - \z^* \Vert$.
+
+    \begin{proof}
+        We need to prove the two parts of the theorem:
+        \begin{enumerate}
+            \item 
+                We want to prove that any limit point of the sequence generated by the gradient method is a stationary point.
+
+                In other words, by considering the gradient method as an integrator with feedback, we want to analyze the equilibrium of the system. Assume that the system converges to some equilibrium $\z_E$. To be an equilibrium, it must be that the feedback loop stopped updating the system (i.e., $\vec{u}^k = 0$ for $k$ after some threshold) so that:
+                \[
+                    \z_E = \z_E - \alpha \nabla l(\z_E)
+                \]
+                Therefore, an equilibrium point is necessarily a stationary point of $l$ as it must be that $\nabla l(\z_E) = 0$.
+            
+            \item 
+                We want to prove that if $l$ is $\mu$-strongly convex and the step size is constant, the sequence converges exponentially.
+
+                \begin{remark}
+                    As $l$ is convex, its equilibrium is also the global minimum $\z^*$.
+                \end{remark}
+
+                Consider the following change in coordinates (i.e., a translation):
+                \[ 
+                    \begin{gathered}
+                        \z^k \mapsto \tilde{\z}^k \\
+                        \text{with } \tilde{\z}^k = \z^k - \z_E = \z^k - \z^*
+                    \end{gathered}
+                \]
+                The system in the new coordinates becomes:
+                \[
+                    \begin{aligned}
+                        &\tilde{\z}^{k+1} = \tilde{\z}^k - \alpha \vec{u}^k \\
+                        &\begin{aligned}
+                            \vec{u}^k &= \nabla l(\z^k) \\
+                            &= \nabla l(\tilde{\z}^k + \z^*) \\
+                            &= \nabla l(\tilde{\z}^k + \z^*) - \nabla l(\z^*) & & & \text{\small $\nabla l(\z^*)=0$, but useful for \Cref{th:strong_convex_lipschitz_gradient}}
+                        \end{aligned}
+                    \end{aligned}
+                \]
+
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics[width=0.55\linewidth]{./img/_gradient_method_integrator_new_coords.pdf}
+                \end{figure}
+
+                \begin{remark}
+                    As $l$ is strongly convex and its gradient Lipschitz continuous, by \Cref{th:strong_convex_lipschitz_gradient} it holds that:
+                    \[
+                        -(\vec{u}^k)^T \tilde{\z}^k \leq - \gamma_1 \Vert \tilde{\z}^k \Vert^2 - \gamma_2 \Vert \tilde{\vec{u}}^k \Vert^2
+                    \]
+                \end{remark}
+
+                Consider a Lyapunov function $V: \mathbb{R}^d \rightarrow \mathbb{R}_{\geq 0}$ defined as:
+                \[
+                    V(\tilde{\z}) = \Vert \tilde{\z} \Vert^2
+                \]
+                It holds that:
+                \[
+                    \begin{aligned}
+                        V(\tilde{\z}^{k+1}) - V(\tilde{\z}^k) &= \Vert \tilde{\z}^{k+1} \Vert^2 - \Vert \tilde{\z}^k \Vert^2 \\
+                        &= \cancel{\Vert \tilde{\z}^k \Vert^2} - 2\alpha(\vec{u}^k)^T\tilde{\z}^k + \alpha^2 \Vert \vec{u}^k \Vert^2 - \cancel{\Vert \tilde{\z}^k \Vert^2} &&& \text{\Cref{th:strong_convex_lipschitz_gradient}} \\
+                        &\leq -2\alpha\gamma_1 \Vert\tilde{\z}^k\Vert^2 + \alpha(\alpha-2\gamma_2) \Vert\vec{u}^k\Vert^2
+                    \end{aligned}
+                \]
+
+                By choosing $\alpha \leq 2\gamma_2$, we have that:
+                \[
+                    \begin{split}
+                        V(\tilde{\z}^{k+1}) - V(\tilde{\z}^k) &\leq -2\alpha\gamma_1 \Vert \tilde{\z}^k \Vert^2 \\
+                        \iff \Vert \tilde{\z}^{k+1} \Vert^2 - \Vert \tilde{\z}^k \Vert^2 &\leq -2\alpha\gamma_1 \Vert \tilde{\z}^k \Vert^2 \\
+                        \iff \Vert \tilde{\z}^{k+1} \Vert^2 &\leq (1-2\alpha\gamma_1) \Vert \tilde{\z}^k \Vert^2 \\
+                    \end{split}
+                \]
+                Finally, as the gradient method is an iterative descent algorithm, it holds that:
+                \[
+                    \begin{split}
+                        \Vert \tilde{\z}^{k+1} \Vert^2 &\leq (1-2\alpha\gamma_1) \Vert \tilde{\z}^k \Vert^2 \\
+                        &\leq \dots \\
+                        &\leq (1-2\alpha\gamma_1)^k \Vert \tilde{\z}^0 \Vert^2 \\
+                    \end{split}
+                \]
+                Therefore, the sequence $\{ \tilde{\z}^k \}_{k \in \mathbb{R}}$ goes exponentially fast to zero and we have shown that:
+                \[
+                    \begin{split}
+                        \Vert \z^{k+1} - \z^* \Vert^2 &\leq (1-2\alpha\gamma_1)^k \Vert \z^0 - \z^* \Vert^2 \\
+                        &= \rho^k M
+                    \end{split}
+                \]
+        \end{enumerate}
+    \end{proof}
+\end{theorem}
+
+\begin{remark}[Gradient method for a quadratic function] \marginnote{Gradient method for a quadratic function}
+    Given the problem of minimizing a quadratic function:
+    \[
+        \min_{\z} \frac{1}{2}\z^T \matr{Q} \z + \vec{r}^T \z
+        \qquad
+        \nabla l = \matr{Q} \z^k + \vec{r}
+    \]
+    The gradient method can be reduced to an affine linear system:
+    \[
+        \begin{split}
+            \z^{k+1} &= \z^k - \alpha (\matr{Q} \z^k + \vec{r}) \\
+            &= (\matr{I} - \alpha \matr{Q}) \z^k - \alpha \vec{r}
+        \end{split}
+    \]
+    For a sufficiently small $\alpha$, the matrix $(\matr{I} - \alpha \matr{Q})$ is Schur (i.e., $\forall \matr{\rho}, |\matr{\rho}| < 1: \sum_{i=0}^{\infty} \matr{\rho}^i = (1-\matr{\rho})^{-1}$). Therefore, the solution can be computed in closed form as:
+    \[
+        \begin{split}
+            \z^k &= (\matr{I} - \alpha \matr{Q})^k \z^0 - \alpha \sum_{\tau=0}^{k-1} (\matr{I} - \alpha \matr{Q})^\tau \vec{r} \\
+            &\overset{k \rightarrow \infty}{\longrightarrow} - \alpha \left( \sum_{\tau=0}^{\infty} (\matr{I} - \alpha \matr{Q})^\tau \right) \vec{r} = -\matr{Q}^{-1} \vec{r}
+        \end{split}
+    \]
+\end{remark}
+
+\begin{remark}[Gradient flow] \marginnote{Gradient flow}
+    By inverting the integrator and plant of the discrete-time integrator of the gradient method, and considering the continuous-time case, the result is the gradient flow:
+    \[
+        \dot{\z}(t) = -\nabla l(\z(t))
+    \]
+    which has a solution if the vector field is Lipschitz continuous.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{./img/_gradient_flow.pdf}
+    \end{figure}
+\end{remark}
+
+
+\subsection{Accelerated gradient methods}
+
+\begin{description}
+    \item[Heavy-ball method] \marginnote{Heavy-ball method}
+        Given $\eta^0$ and $\eta^{-1}$, the algorithm is defined as:
+        \[
+            \eta^{k+1} = \eta^k + \alpha_1 (\eta^k - \eta^{k-1}) - \alpha_2 \nabla l(\eta^k)
+        \]
+        with $\alpha_1, \alpha_2 > 0$.
+
+        \begin{remark}
+            With $\alpha_1 = 0$, the algorithm is reduced to the gradient method with step size $\alpha_2$.
+        \end{remark}
+
+        \begin{remark}
+            The algorithm admits a state-space representation as a discrete-time integrator with a feedback loop:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.55\linewidth]{./img/_heavy_ball.pdf}
+            \end{figure}
+
+            Note that the matrix $\begin{bmatrix} 1+\alpha_1 & -\alpha_1 \\ 1 & 0 \end{bmatrix}$ is row stochastic.
+        \end{remark}
+
+    \item[Generalized heavy-ball method] \marginnote{Generalized heavy-ball method}
+        Given $\zeta^0$ and $\zeta^{-1}$, the algorithm is defined as:
+        \[
+            \zeta^{k+1} = \zeta^k + \alpha_1 (\zeta^k - \zeta^{k-1}) - \alpha_2 \nabla l(\zeta^k + \alpha_3(\zeta^k - \zeta^{k-1}))
+        \]
+        with $\alpha_1, \alpha_2, \alpha_3 > 0$.
+
+        \begin{remark}
+            The algorithm admits a state-space representation as a discrete-time integrator with a feedback loop:
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.55\linewidth]{./img/_generalized_heavy_ball.pdf}
+            \end{figure}
+        \end{remark}
+\end{description}
+
+
+
+\section{Parallel optimization}
+
+
+\begin{description}
+    \item[Cost-coupled optimization] \marginnote{Cost-coupled optimization}
+        Problem of minimizing $N$ cost functions $l_i: \mathbb{R}^d \rightarrow \mathbb{R}$, each local and private to an agent:
+        \[
+            \min_{\z \in \mathbb{R}^{d}} \sum_{i=1}^{N} l_i(\z)
+        \]
+    
+    \item[Batch gradient method] \marginnote{Batch gradient method}
+        Compute the gradient method direction by considering all the losses:
+        \[
+            \z^{k+1} = \z^k - \alpha \sum_{i=1}^{N} \nabla l_i(\z^k)
+        \]
+
+        \begin{remark}
+            Computation in this way can be expensive.
+        \end{remark}
+
+    \item[Incremental gradient method] \marginnote{Incremental gradient method}
+        At each iteration $k$, compute the direction by considering the loss of a single agent $i^k$:
+        \[
+            \z^{k+1} = \z^k - \alpha \nabla l_{i^k}(\z^k)
+        \]
+
+        \begin{remark}
+            Two possible rules to select the agent at each iteration are:
+            \begin{descriptionlist}
+                \item[Cyclic] 
+                    $i^k = 1, 2, \dots, N, 1, 2, \dots, N, \dots$
+                \item[Randomized] 
+                    Draw $i^k$ from a uniform distribution.
+            \end{descriptionlist}
+        \end{remark}
+        % \begin{remark}
+        %     The step size should decrease to reach convergence.
+        % \end{remark}
+\end{description}
