@@ -227,3 +227,173 @@
     \item[Anomaly detection] \marginnote{Anomaly detection}
         Detect instances that deviate from the expected distribution.
 \end{description}
+
+
+
+\section{Data sanitization}
+
+\begin{description}
+    \item[Data sanitization] \marginnote{Data sanitization}
+        Methods to ensure that data is deleted and unrecoverable.
+
+
+    \item[NIST guidelines] \marginnote{NIST guidelines}
+        Guidelines for media sanitization provided by the National Institute of Standards and Technology:
+        \begin{enumerate}
+            \item Determine the level of sanitization based on the sensitivity of the information.
+            \item Choose a sanitization method such as:
+            \begin{descriptionlist}
+                \item[Clearing] Remove data so that it is not recoverable from software.
+                \item[Purging] Physically remove the data on the media (e.g., degaussing a hard disk).
+                \item[Destroying] Physically destroy the media.
+            \end{descriptionlist}
+            \item Document the sanitization process.
+            \item Verify and validate the sanitization process.
+            \item Create training and awareness programs on the importance of media sanitization.
+        \end{enumerate}
+\end{description}
+
+
+
+\section{Extensive testing}
+
+\begin{description}
+    \item[Robustness testing] \marginnote{Robustness testing}
+        Software test to evaluate the capability of a system to maintain its functionalities under unexpected scenarios.
+
+        Key aspects to take into account are:
+        \begin{itemize}
+            \item Unexpected inputs,
+            \item Edge cases,
+            \item Stress testing and resource exhaustion,
+            \item Fault tolerance,
+            \item Error handling,
+            \item Regression testing.
+        \end{itemize}
+\end{description}
+
+
+\subsection{Model-based testing}
+
+\begin{description}
+    \item[Model-based testing] \marginnote{Model-based testing}
+        Test the system on test cases generated based on a reference behavior model (i.e., expected output from a given input).
+
+        \begin{remark}
+            To exhaustively test all possible cases, the solution space is very large.
+        \end{remark}
+
+    \item[Search-based testing] \marginnote{Search-based testing}
+        Use meta-heuristics to generate test cases.
+\end{description}
+
+
+\subsection{Results analysis testing}
+
+\begin{description}
+    \item[Passive testing] \marginnote{Passive testing}
+        Add observation mechanisms to a system under test to collect and analyze execution traces. A possible approach works as follows:
+        \begin{enumerate}
+            \item Collect traces in case of failure.
+            \item Define the properties the system should verify in case of failures.
+            \item Check whether the execution trace satisfies the property.
+        \end{enumerate}
+\end{description}
+
+
+
+\section{Formal verification}
+
+\begin{description}
+    \item[Formal specification] \marginnote{Formal specification}
+        Unambiguous description of the system and its required properties.
+
+    \item[Formal verification] \marginnote{Formal verification}
+        Exhaustive comparison between the formal specification and the system.
+\end{description}
+
+
+\subsection{Theorem proving}
+
+\begin{description}
+    \item[Theorem proving] \marginnote{Theorem proving}
+        Model the system as a set of logical formulae $\Gamma$ and the properties as theorems $\Psi$. Verification is done through logical reasoning:
+        \[ \models (\Gamma \Rightarrow \Psi) \]
+\end{description}
+
+\begin{remark}
+    Formalizing the system though logical formulae can be difficult.
+\end{remark}
+
+
+\subsection{Model checking}
+
+\begin{description}
+    \item[Model checking] \marginnote{Model checking}
+        Model the system as a finite state machine $M$ and the properties as formal representations $\Psi$. Verification is done through logical reasoning:
+        \[ M \models \Psi \]
+\end{description}
+
+\begin{remark}
+    In practice, formal verification methods are difficult to scale due to the large state space.
+\end{remark}
+
+
+
+\section{Adversarial attacks}
+
+\begin{description}
+    \item[Adversarial attack] \marginnote{Adversarial attack}
+        Techniques to intentionally manipulate the result of a machine learning model.
+
+    \item[White-box attack] \marginnote{White-box attack}
+        The adversary has complete knowledge of the attacked system.
+
+    \item[Black-box attack] \marginnote{Black-box attack}
+        The attacker can only interact with the system through input-output queries.
+\end{description}
+
+
+\subsection{Poisoning}
+
+\begin{description}
+    \item[Data poisoning] \marginnote{Data poisoning}
+        Manipulate the training data.
+
+    \item[Model poisoning] \marginnote{Model poisoning}
+        Attack the model at training time (e.g., inject malicious gradients, modify loss, manipulate hyperparameters, \dots).
+
+    \item[Algorithm poisoning] \marginnote{Algorithm poisoning}
+        Modify the underlying algorithm, introduce backdoors, \dots.
+\end{description}
+
+
+\subsection{Model-based}
+
+\begin{description}
+    \item[Inversion attack] \marginnote{Inversion attack}
+        Reconstruct information about the training data based on the model output.
+
+    \item[Extraction attack] \marginnote{Extraction attack}
+        Recover information of the underlying model (e.g., parameters, architecture, training data, \dots).
+\end{description}
+
+
+\subsection{Evasion}
+
+\begin{description}
+    \item[Score-based attack] \marginnote{Score-based attack}
+        Manipulate the output logits to induce a misclassification.
+
+    \item[Patch attack] \marginnote{Patch attack}
+        Add imperceptible perturbations to the input to induce a misclassification.
+
+    \item[Gradient attack] \marginnote{Gradient attack}
+        Compute or estimate the gradient of the training loss function to determine a perturbation of the input to induce a misclassification.
+
+    \item[Decision attack] \marginnote{Decision attack}
+        Perturb the input to move across decision boundaries and induce a misclassification.
+
+    \item[Adaptive attack] \marginnote{Adaptive attack}
+        Dynamically adjust the attack strategy based on the model.
+\end{description}
