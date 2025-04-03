@@ -586,12 +586,12 @@
         \end{figure}
 \end{description}
 
-
-\subsection{Optimization algorithms}
-
 \begin{remark}
     Using as direction the sum of the gradients of all agents is not possible as not everyone can communicate with everyone.
 \end{remark}
+
+
+\subsection{Distributed gradient algorithm}
 
 \begin{description}
     \item[Distributed gradient algorithm] \marginnote{Distributed gradient algorithm}
@@ -606,18 +606,21 @@
                 &= \left(\sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k\right) - \alpha^k \nabla l_i\left(\sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k\right)
             \end{split}
         \]
+\end{description}
 
-        \begin{theorem}[Distributed gradient algorithm convergence] \marginnote{Distributed gradient algorithm convergence}
-            Assume that:
-            \begin{itemize}
-                \item The matrix $\matr{A}$ associated to the undirected and connected communication graph $G$ is doubly stochastic and such that $a_{ij} > 0$,
-                \item The step size is diminishing,
-                \item Each $l_i$ is convex, has gradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
-            \end{itemize}
-            Then, the sequence of local solutions $\{ \z_i^k \}_{k \in \mathbb{N}}$ of each agent $i$ produced using the distributed gradient algorithm converges to a common optimal solution $\z^*$:
-            \[ \lim_{k \rightarrow \infty} \Vert \z_i^k - \z^* \Vert = 0 \]
-        \end{theorem}
+\begin{theorem}[Distributed gradient algorithm convergence] \marginnote{Distributed gradient algorithm convergence}
+    Assume that:
+    \begin{itemize}
+        \item The matrix $\matr{A}$ associated to the undirected and connected communication graph $G$ is doubly stochastic and such that $a_{ij} > 0$,
+        \item The step size is diminishing,
+        \item Each $l_i$ is convex, has gradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
+    \end{itemize}
+    Then, the sequence of local solutions $\{ \z_i^k \}_{k \in \mathbb{N}}$ of each agent $i$ produced using the distributed gradient algorithm converges to a common optimal solution $\z^*$:
+    \[ \lim_{k \rightarrow \infty} \Vert \z_i^k - \z^* \Vert = 0 \]
+\end{theorem}
 
+
+\begin{description}
     \item[Distributed projected subgradient algorithm] \marginnote{Distributed projected subgradient algorithm}
         Distributed gradient algorithm extended to the case where $l_i$ are non-smooth convex functions and $\z$ is constrained to a closed convex set $Z \subseteq \mathbb{R}^d$. The distributed step is the following:
         \[
@@ -627,18 +630,20 @@
             \end{split}
         \]
         where $P_Z(\cdot)$ is the Euclidean projection onto $Z$ and $\tilde{\nabla} l_i$ is a subgradient of $l_i$.
-
-        \begin{theorem}[Distributed projected subgradient algorithm convergence] \marginnote{Distributed projected subgradient algorithm convergence}
-            Assume that:
-            \begin{itemize}
-                \item The adjacency matrix $\matr{A}$ associated to $G$ is doubly stochastic and $a_{ij} > 0$,
-                \item The step size is diminishing,
-                \item Each $l_i$ is convex, has subgradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
-            \end{itemize}
-            Then, each agent converges to an optimal solution $\z^*$.
-        \end{theorem}
 \end{description}
 
+\begin{theorem}[Distributed projected subgradient algorithm convergence] \marginnote{Distributed projected subgradient algorithm convergence}
+    Assume that:
+    \begin{itemize}
+        \item The adjacency matrix $\matr{A}$ associated to $G$ is doubly stochastic and $a_{ij} > 0$,
+        \item The step size is diminishing,
+        \item Each $l_i$ is convex, has subgradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
+    \end{itemize}
+    Then, each agent converges to an optimal solution $\z^*$.
+\end{theorem}
+
+
+\subsection{Gradient tracking algorithm}
 
 \begin{theorem}
     The distributed gradient algorithm does not converge with a constant step size.
