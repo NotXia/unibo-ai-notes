@@ -418,7 +418,7 @@
 
 
 
-\section{Parallel optimization}
+\section{Cost-coupled optimization}
 
 
 \begin{description}
@@ -427,9 +427,14 @@
         \[
             \min_{\z \in \mathbb{R}^{d}} \sum_{i=1}^{N} l_i(\z)
         \]
-    
+\end{description}
+
+
+\subsection{Optimization methods}
+
+\begin{description}
     \item[Batch gradient method] \marginnote{Batch gradient method}
-        Compute the gradient method direction by considering all the losses:
+        Compute the direction for the gradient method by considering all the losses:
         \[
             \z^{k+1} = \z^k - \alpha \sum_{i=1}^{N} \nabla l_i(\z^k)
         \]
@@ -448,12 +453,263 @@
             Two possible rules to select the agent at each iteration are:
             \begin{descriptionlist}
                 \item[Cyclic] 
-                    $i^k = 1, 2, \dots, N, 1, 2, \dots, N, \dots$
+                    $i^k = 1, 2, \dots, N, 1, 2, \dots, N, \dots$, or cyclic in any order (essentially cyclic).
                 \item[Randomized] 
                     Draw $i^k$ from a uniform distribution.
             \end{descriptionlist}
         \end{remark}
-        % \begin{remark}
-        %     The step size should decrease to reach convergence.
-        % \end{remark}
+
+        \begin{remark}
+            A single gradient is not necessarily a descent direction.
+        \end{remark}
+
+        \begin{theorem}
+            If the step size is diminishing, the incremental gradient method converges.
+        \end{theorem}
+\end{description}
+
+
+\begin{description}
+    \item[Stochastic gradient descent (SGD)] \marginnote{Stochastic gradient descent (SGD)}
+        Instance of incremental gradient method where the selection rule follows an unknown distribution.
+
+        The problem can be formulated as:
+        \[ \min_{\z \in \mathbb{R}^d} \mathbb{E}_\mathcal{W}[l(\z, \mathcal{W})] \]
+        where $\mathcal{W}$ is a random variable with possibly an unknown distribution.
+
+        It is assumed that, given any realization $\bar{w}$ of $\mathcal{W}$ (e.g., the index of an agent or a single data point), it is possible to obtain the gradient $\nabla l(\bar{\z}, \bar{w})$ at any query point $\bar{\z}$. The optimization step at each iteration is then:
+        \[ \z^{k+1} = \z^k - \alpha \nabla l(\z^k, w^k) \]
+        
+        \begin{remark}
+            Monte Carlo approximation can be used to represent the expected value with a finite sequence of realizations:
+            \[ \mathbb{E}_\mathcal{W}[l(\z, \mathcal{W})] \approx \frac{1}{K} \sum_{k=1}^{K} l(\z, w^k) \]
+        \end{remark}
+
+        \begin{theorem}[SGD convergence with constant step size] \marginnote{SGD convergence with constant step size}
+            Given a function $l$ such that:
+            \begin{itemize}
+                \item $l$ is $\mu$-strongly convex with $L$-Lipschitz continuous gradient (i.e., bounded),
+                \item $\nabla l(\z, \mathcal{W})$ is an unbiased estimate of $\nabla_\z \mathbb{E}_\mathcal{W}[l(\z, \mathcal{W})]$,
+                \item $\Vert \nabla l(\z, \mathcal{W}) \Vert \leq M_\nabla$ almost surely (i.e., asymptotically with probability $1$) for some $M_\nabla > 0$.
+            \end{itemize}
+            With a constant step size $\alpha \leq \frac{1}{2}\mu$, it holds that at any time step $k$:
+            \[ 
+                \Vert \z^k - \z^* \Vert \leq 
+                \underbrace{(1-2\mu\alpha)^k \left( \Vert \z^0 - \z^* \Vert - \frac{\alpha M_\nabla^2}{2\mu} \right)}_{\text{Error term}} + 
+                \underbrace{\frac{\alpha M_\nabla^2}{2\mu}}_{\text{Residual term}} \]
+            where the error diminishes over time and the residual term is constant.
+        \end{theorem}
+
+        \begin{theorem}[SGD convergence with diminishing step size] \marginnote{SGD convergence with diminishing step size}
+            With a diminishing step size, both the error and the residual converge to $0$.
+        \end{theorem}
+
+    \item[Mini-batch SGD] \marginnote{Mini-batch SGD}
+        SGD where the update at each time step $k$ is based on a set $\mathcal{I}^k \subset \{ 1, \dots, N \}$ of realizations of $\mathcal{W}$:
+        \[ \z^{k+1} = \z^k - \alpha \sum_{i \in \mathcal{I}^k} \nabla l(\z^k, w^i) \]
+
+    \item[Adaptive momentum (ADAM)] \marginnote{Adaptive momentum (ADAM)}
+        Method based on the first and second momentum of the gradient:
+        \[
+            \begin{split}
+                \vec{m}^{k+1} &= \beta_1 \vec{m}^k + (1-\beta_1) \nabla l(\z^k, w^k) \\
+                \vec{v}^{k+1} &= \beta_2 \vec{v}^k + (1-\beta_2) \left( \nabla l(\z^k, w^k) \right)^2
+            \end{split}
+        \]
+        where $\beta_1, \beta_2 \in (0, 1)$ are hyperparameters.
+        
+        The descent direction is defined as:
+        \[
+            \begin{gathered}
+                \hat{\vec{m}} = \frac{1}{1 - \beta_1^{k+1}} \vec{m}^{k+1}
+                \quad
+                \hat{\vec{v}} = \frac{1}{1 - \beta_2^{k+1}} \vec{v}^{k+1} \\
+                \vec{d}^k = - \frac{\hat{\vec{m}}}{\sqrt{\hat{\vec{v}}} + \varepsilon} \\
+            \end{gathered}
+        \]
+        The update is performed as:
+        \[ \z^{k+1} = \z^{k} + \alpha \vec{d}^k \]
+\end{description}
+
+
+
+\subsection{Learning paradigms}
+
+\begin{description}
+    \item[Federated learning] \marginnote{Federated learning}
+        Problem where $N$ agents with their local and private data $\mathcal{D}^{i}$ want to learn a common set of parameters $\z^*$ based on the same loss function (evaluated on different data points):
+        \[
+            \min_\z \sum_{i=1}^{N} l(\z; \mathcal{D}^i)
+        \]
+        A centralized parameter server (master) is responsible for aggregating the estimates of the agents (e.g., pick some nodes and average them).
+        % \[
+        %     \z^{t+1} = \z^k - \alpha \sum_{i \in I_k} \nabla l(\z; \mathcal{D}^i, p^i)
+        % \]
+
+    \item[Distributed learning] \marginnote{Distributed learning}
+        Federated learning where there is no centralized entity and agents communicate with their neighbors only.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=0.55\linewidth]{./img/federated_learning.png}
+        \caption{Federated learning}
+    \end{subfigure}
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{./img/distributed_learning.png}
+        \caption{Distributed learning}
+    \end{subfigure}
+\end{figure}
+
+
+
+\section{Distributed cost-coupled/consensus optimization}
+
+\begin{description}
+    \item[Distributed cost-coupled optimization] \marginnote{Distributed cost-coupled optimization}
+        Optimization problem with $N$ agents that communicate according to a graph $G$ aiming at learning a common set of parameters $\z$ such that:
+        \[
+            \min_{\z \in Z} \sum_{i=1}^{N} l_i(\z)
+        \]
+        where:
+        \begin{itemize}
+            \item Each agent $i$ knows its loss $l_i$ (based on its available data) and the parameter space $Z$,
+            \item At each time step $k$, each agent $i$ estimates a set of parameters $\z_i^k$.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.45\linewidth]{./img/_distributed_cost_coupled.pdf}
+        \end{figure}
+\end{description}
+
+
+\subsection{Optimization algorithms}
+
+\begin{remark}
+    Using as direction the sum of the gradients of all agents is not possible as not everyone can communicate with everyone.
+\end{remark}
+
+\begin{description}
+    \item[Distributed gradient algorithm] \marginnote{Distributed gradient algorithm}
+        Method that estimates a (more precise) set of parameters as a weighted sum those of its neighbors' (self-loop included):
+        \[ 
+            \vec{v}_i^{k+1} = \sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k 
+        \]
+        Then, the update step is performed using $\vec{v}_i^{k+1}$ and the agent's own local loss $l_i$:
+        \[
+            \begin{split}
+                \z_i^{k+1} &= \vec{v}_i^{k+1} - \alpha^k \nabla l_i(\vec{v}_i^{k+1}) \\
+                &= \left(\sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k\right) - \alpha^k \nabla l_i\left(\sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k\right)
+            \end{split}
+        \]
+
+        \begin{theorem}[Distributed gradient algorithm convergence] \marginnote{Distributed gradient algorithm convergence}
+            Assume that:
+            \begin{itemize}
+                \item The matrix $\matr{A}$ associated to the undirected and connected communication graph $G$ is doubly stochastic and such that $a_{ij} > 0$,
+                \item The step size is diminishing,
+                \item Each $l_i$ is convex, has gradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
+            \end{itemize}
+            Then, the sequence of local solutions $\{ \z_i^k \}_{k \in \mathbb{N}}$ of each agent $i$ produced using the distributed gradient algorithm converges to a common optimal solution $\z^*$:
+            \[ \lim_{k \rightarrow \infty} \Vert \z_i^k - \z^* \Vert = 0 \]
+        \end{theorem}
+
+    \item[Distributed projected subgradient algorithm] \marginnote{Distributed projected subgradient algorithm}
+        Distributed gradient algorithm extended to the case where $l_i$ are non-smooth convex functions and $\z$ is constrained to a closed convex set $Z \subseteq \mathbb{R}^d$. The distributed step is the following:
+        \[
+            \begin{split}
+                \vec{v}_i^{k+1} &= \sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k \\
+                \z_i^{k+1} &= P_Z \big( \vec{v}_i^{k+1} - \alpha^k \tilde{\nabla} l_i(\vec{v}_i^{k+1}) \big)
+            \end{split}
+        \]
+        where $P_Z(\cdot)$ is the Euclidean projection onto $Z$ and $\tilde{\nabla} l_i$ is a subgradient of $l_i$.
+
+        \begin{theorem}[Distributed projected subgradient algorithm convergence] \marginnote{Distributed projected subgradient algorithm convergence}
+            Assume that:
+            \begin{itemize}
+                \item The adjacency matrix $\matr{A}$ associated to $G$ is doubly stochastic and $a_{ij} > 0$,
+                \item The step size is diminishing,
+                \item Each $l_i$ is convex, has subgradients bounded by a scalar $C_i > 0$, and there exists at least one optimal solution.
+            \end{itemize}
+            Then, each agent converges to an optimal solution $\z^*$.
+        \end{theorem}
+\end{description}
+
+
+\begin{theorem}
+    The distributed gradient algorithm does not converge with a constant step size.
+
+    \begin{proof}[Proof idea]
+        % Assume that the starting guess in standard gradient descent is is a local minimum:
+        % \[ \z^{0} = \z^* \]
+        % We have that:
+        % \[
+        %     \begin{split}
+        %         \z^* &= \z^* - \alpha \nabla l(\z^*) \\
+        %         \z^* &= \z^* \\
+        %     \end{split}
+        % \]
+        % $\z^*$ is an equilibrium.
+
+        We want to check whether the optimum $\z^*$ with a constant step size $\alpha$ is an equilibrium:
+        \[
+            \begin{aligned}
+                \z^* &= \sum_{j=1}^N a_{ij} \z^* - \alpha \nabla l_i \left( \sum_{j=1}^N a_{ij} \z^* \right) \\
+                &= \z^* - \alpha \nabla l_i (\z^*) &&& \parbox{0.20\linewidth}{\footnotesize $\matr{A}$ doubly stochastic and $\z^*$ constant} \\
+            \end{aligned}
+        \]
+        In general, $\nabla l_i(\z^*) \neq 0$ ($\z^*$ is the optimum for the whole problem, but $l_i$ depends on the subset of data available to the agent). Therefore, $\z^*$ is not an equilibrium.
+    \end{proof}
+\end{theorem}
+
+
+\begin{description}
+    \item[Dynamic average consensus] \marginnote{Dynamic average consensus}
+        Consensus algorithm where each agent measures a signal $r_i^k$ and wants to estimate the average signal of all agents:
+        \[ \bar{r}^k = \frac{1}{N} \sum_{i=1}^{N} r_i^k \]
+        The average signal estimated by an agent is represented by a state $s_i^k$ and we want that $\lim_{k \rightarrow \infty} \Vert s_i^k - \bar{r}^k \Vert = 0$. This can be achieved using a perturbed consensus algorithm:
+        \[ 
+            s_i^{k+1} = 
+            \underbrace{\sum_{j \in \mathcal{N}_i} a_{ij} s_j^k}_{\text{Consensus}} +
+            \underbrace{\vphantom{\sum_{j \in \mathcal{N}_i}}(r_i^{k+1} - r_i^k)}_{\text{Innovation}}
+        \]
+        where:
+        \begin{itemize}
+            \item The consensus term converges to the states average.
+            \item The local innovation allows converging to the common signal.
+        \end{itemize}
+
+        \begin{theorem}[Dynamic average consensus convergence]
+            If the first-order differences are bounded (i.e., $\Vert r_i^{k+1} - r_i^{k} \Vert \leq C_1$), then the tracking error is bounded by some $C_2 > 0$:
+            \[ \lim_{k \rightarrow \infty} \Vert s_i^k - \bar{r}^k \Vert \leq C_2 \]
+
+            Moreover, the error is zeroed if the signal becomes constant after some time $k$ (i.e., $\Vert r_i^{k+1} - r_i^{k} \Vert \rightarrow 0$).
+        \end{theorem}
+
+    \item[Gradient tracking algorithm] \marginnote{Gradient tracking algorithm}
+        Method that chooses the local descent direction attempting to asymptotically track the true gradient:
+        \[ d_i^k \underset{k \rightarrow \infty}{\longrightarrow} - \frac{1}{N} \sum_{h=1}^N \nabla l_h(\z_h^k) \] 
+
+        By using dynamic average consensus, we consider as signal the local gradient:
+        \[ \vec{r}_i^k = \nabla l_i(\z_i^k) \]
+        Then, the estimate of the average signal (i.e., gradient) is given by:
+        \[
+            \vec{s}_i^{k+1} = \sum_{j \in \mathcal{N}_i} a_{ij} \vec{s}_j^k + \left( \nabla l_i(\z_i^{k+1}) - \nabla l_i(\z_i^k) \right)
+        \]
+        The update step is then performed as:
+        \[ \z_i^{k+1} = \sum_{j \in \mathcal{N}_i} a_{ij} \z_j^k - \alpha \vec{s}_i^k \]
+
+        % Each agent accesses some $\nabla l_i(\z)$. It can be seen as a signal $r_i^k = \nabla l_i(\z_i^k)$ only available at agent $i$.
+
+        % We want that the direction:
+        % \[ d_i^k \underset{k \rightarrow \infty}{\longrightarrow} - \frac{1}{N} \sum_{h=1}^N r_h^k \] 
+
+        % Ideally, we want:
+        % \[
+        %     \z_i^{k+1} = \sum_{j=1}^N a_{ij} \z_j^k - (N\alpha) \frac{1}{N} \sum_{j=1}^N \nabla l_k(z_k^k)
+        % \]
 \end{description}

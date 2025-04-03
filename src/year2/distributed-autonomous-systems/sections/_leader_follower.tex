@@ -269,7 +269,7 @@
                 \dot{\x}_l(t) &= \vec{v}_0 \quad & \x_l(0) &= \x_l^{(0)} \\
             \end{aligned}
         \]
-        where $\vec{u}_f(t)$ is a distributed control action (can be seen as a correction) that processes the containment error $\vec{e}(t)$. It is composed of a proportional controller (i.e., value proportional to the error) and an integral controller (i.e., value proportional to the integral to the error):
+        where $\vec{u}_f(t)$ is a distributed control action (can be seen as a correction) that processes the containment error $\vec{e}(t)$. It is composed of a proportional controller (i.e., value proportional to the error) and an integral controller (i.e., value proportional to the integral of the error):
         \[
             \begin{split}
                 \vec{u}_f(t) &= \matr{K}_P \vec{e}(t) + \matr{K}_I \int_{0}^{t} \vec{e}(\tau) \,d\tau
