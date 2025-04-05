@@ -1,0 +1,390 @@
+\chapter{AI in the GDPR}
+
+\begin{remark}[AI risks] \phantom{}
+    \begin{itemize}
+        \item Eliminate or devalue jobs.
+        \item Lead to poverty and social exclusion, if no measures are taken.
+        \item Concentrate economic wealth in a few big companies.
+        \item Allow for illegal activities.
+        \item Surveillance, pervasive data collection, and manipulation.
+            \begin{example}
+                Many platforms operate in a two-sided market where users are on one side and advertisers, the real source of income, are on the other.
+            \end{example}
+        \item Public polarization and interference with democratic processes.
+        \item Unfairness, discrimination, and inequality.
+        \item Loss of creativity.
+            \begin{remark}
+                Creativity can be:
+                \begin{descriptionlist}
+                    \item[Combinatorial]
+                        Combination of existing creativity.
+            
+                    \item[Exploratorial]
+                        Explore new solutions in a given search space.
+                \end{descriptionlist} 
+            \end{remark}
+    \end{itemize}
+\end{remark}
+
+\begin{remark}
+    In the GDPR, there are no references to artificial intelligence.
+\end{remark}
+
+
+
+\section{Introduction}
+
+
+\subsection{Definitions (article 4)}
+
+\begin{description}
+    \item[Personal data] \marginnote{Personal data}
+        Any information relating to an identified or identifiable natural person (the data subject). It excludes information that are not related to humans (e.g., natural phenomena) or that do not refer to a particular individual (e.g., information on human physiology or pathologies).
+
+        \begin{description}
+            \item[Natural person]
+                Individual person (i.e., not companies, which are legal persons).
+
+            \item[Identifiable natural person]
+                Person that can be identified directly or indirectly using, for instance, name, username, identifier (e.g., in pseudonymization), physical features, economic status, \dots
+        \end{description}
+
+        \begin{remark}
+            The GDPR does not contain a positive definition of non-personal data. Anything that is not considered personal data is non-personal.
+        \end{remark}
+
+    \item[Processing] \marginnote{Processing}
+        Any operation performed on personal data either manually or using automated systems.
+
+    \item[Controller] \marginnote{Controller}
+        Natural or legal person, public authority, agency, or other bodies which determines the purposes and means for processing personal data.
+
+    \item[Processor] \marginnote{Processor}
+        Natural or legal person, public authority, agency, or other bodies that processes personal data on behalf of a controller.
+\end{description}
+
+
+\subsection{Territorial scope (article 3)}
+
+The GDPR applies to the processing of personal data whenever:
+\begin{itemize}
+    \item The controller or processor resides in the EU, regardless of where processing physically takes place.
+    \item The data subject (of any nationality) is in the EU, regardless of where the controller or processor resides, when the purpose is for:
+        \begin{itemize}
+            \item Offering goods or services, independently of whether a payment is required.
+            \item Monitoring of behavior.
+        \end{itemize}
+\end{itemize}
+
+
+\subsection{Principles relating to processing of personal data (article 5)}
+
+Processing personal data should be done respecting the following principles:
+\begin{itemize}
+    \item Lawfulness, fairness, and transparency.
+    \item Purpose limitation.
+    \item Data minimization.
+    \item Data accuracy.
+    \item Storage limitation.
+    \item Integrity and confidentiality.
+    \item Accountability.
+\end{itemize}
+
+
+\section{Lawfulness of processing (article 6)}
+
+Processing of personal data is lawful if at least one of the following conditions apply:
+\begin{itemize}
+    \item The data subject has given consent to process its personal data for given specific purposes.
+    
+    \item Processing is necessary prior to entering a contract or for the performance of the contract itself the data subject is part of.
+    \begin{example}
+        Before concluding the contract for an insurance, the insurer is allowed to process personal data to determine the premium.
+    \end{example}
+    \begin{example}
+        When using a delivery app, processing the address without asking anything is lawful.
+    \end{example}
+
+    \item Processing is necessary for compliance with legal obligations the controller is subject to.
+    \begin{example}
+        Companies have to keep track of users' purchases in case of tax inspection.
+    \end{example}
+
+    \item Processing is necessary to protect vital interests of the data subject or another natural person.
+    \begin{example}
+        The medical record of an unconscious patient can be accessed by the hospital staff.
+    \end{example}
+
+    \item Processing is necessary to perform a task carried out in the public interest.
+    \begin{example}
+        Processing personal data for public security is allowed.
+    \end{example}
+
+    \item Processing is necessary to pursue the controller's legitimate interests, unless overridden by the interests and fundamental rights of the data subject.
+    \begin{remark}
+        As a rule of thumb, legitimate interests of the controller can be pursued if only a reasonably limited amount of personal data is used.
+    \end{remark}
+    \begin{example}
+        The gym one is subscribed in can send (contextual) advertisements by email to pursue economic interests.
+    \end{example}
+    \begin{example}
+        Targeted advertising is in principle prohibited. However, companies commonly pair legitimate interest with the request for consent.
+    \end{example}
+\end{itemize}
+
+
+
+\section{Personal data (article 4.1)}
+
+
+\subsection{Identifiability}
+
+\begin{description}
+    \item[Identifiability] \marginnote{Identifiability}
+        Condition under which some data not explicitly linked to a person allows to still identify that person.
+
+        In this case, the data that allows re-identification is considered personal data.
+
+        \begin{remark}
+            The identifiability of some data depends on the current technological and sociotechnical state-of-the-art (i.e., if it takes a lot of time to re-identify, it does not count as personal data).
+        \end{remark}
+
+    \item[Pseudonymization] \marginnote{Pseudonymization}
+        Substitute data items identifying a person with pseudonyms. The link between pseudonym and real data can be traced back.
+
+    \item[Anonymization] \marginnote{Anonymization}
+        Substitute data items identifying a person with (in theory) non-linkable information.
+\end{description}
+
+\begin{remark}
+    Re-identification is usually performed using statistical correlation between anonymized data and other sources.
+    
+    With statistical methods, re-identified data is considered personal data as long as there is a sufficient degree of certainty.
+\end{remark}
+
+\begin{example}
+    There are many cases of anonymized datasets that have been re-identified, for instance:
+    \begin{itemize}
+        \item Journalists were able to re-identify politicians based on a browsing history dataset.
+        \item Researchers were able to re-identify anonymized medical records.
+        \item Anonymized ratings in the Netflix price database were traced back to their authors in IMDb.
+    \end{itemize}
+\end{example}
+
+
+\subsection{Inferred data}
+
+\begin{description}
+    \item[Inferred personal data] \marginnote{Inferred personal data}
+        New information about a data subject obtained using algorithmic models on its personal data.
+
+    \begin{remark}
+        There are two cases about inferred data presented to the European Court of Justice:
+        \begin{enumerate}
+            \item Related to the application for a residence permit, the Court stated that only the provided data and the final conclusion are personal data, while intermediate conclusions are not.
+            \item In a subsequent case, related to an exam script, the Court stated that the examiner's comments (i.e., data inferred from the data subject's exam) are to be considered personal data.
+        \end{enumerate}
+    \end{remark}
+    
+    \begin{remark}
+        According to the European Data Protection Board, inferred data are considered personal data. However, some rights do not apply.
+        
+        \indenttbox
+        \begin{example}
+            In an exam, the comments of an examiner are inferred data. However, the data subject does not have the right to rectification (unless there is a mistake from the examiner).
+        \end{example}
+    \end{remark}
+
+    \begin{remark}
+        When personal data are embedded into an AI system through training, they are not considered personal data anymore. Only when performing inference the output is again personal data.
+    \end{remark}
+\end{description}
+
+\begin{description}
+    \item[Right to access] \marginnote{Right to access}
+        Data subjects have the right to access both input and inferred personal data. 
+
+    \item[Right to rectification] \marginnote{Right to rectification}
+        Data subjects, depending on the case, have the right to rectify their personal data:
+        \begin{itemize}
+            \item In the public sector, there should be procedures when allowed.
+            \item In the private sector, right to rectification should be balanced with the respect for autonomy of private assessments and decisions.
+        \end{itemize}
+
+        Data can be rectified when:
+        \begin{itemize}
+            \item The correctness can be objectively determined.
+            \item The inferred data is probabilistic and there was either a mistake during inference or additional data can be provided. 
+        \end{itemize}
+
+    \item[Right to ``reasonable inference''] \marginnote{Right to ``reasonable inference''}
+        Right that is currently under discussion.
+
+        It is the right to have decisions affecting data subjects performed using reasonable inference systems that respect ethical and epistemic standards.
+
+        \begin{remark}
+            Data subjects should have the right to challenge the results of inference, and not only the final decision based on inferred data.
+        \end{remark}
+
+        \begin{remark}
+            Inference can be unreasonable if it does not affect data subjects (e.g., for research purposes).
+        \end{remark}
+
+        Reasonable inference has the following criteria:
+        \begin{descriptionlist}
+            \item[Acceptability] 
+                Input data for inference should be normatively acceptable for their final purpose (e.g., ethnicity cannot be used to infer whether an individual is a criminal).
+
+            \item[Relevance] 
+                The inferred information should be normatively acceptable for their final purpose (e.g., ethnicity cannot be inferred from the available data if the purpose is for approving a loan).
+
+            \item[Reliability] 
+                Input data, training data, and processing methods should be accurate and statistically reliable.
+        \end{descriptionlist}
+\end{description}
+
+
+
+\section{Profiling (article 4.2)}
+
+\begin{description}
+    \item[Profiling] \marginnote{Profiling}  
+        System that predicts the probability that an individual having a feature $F_1$ also has a feature $F_2$.
+
+        In the GDPR, it is defined as any form of processing of personal data of a natural person that produces legal effects (e.g., signing a contract) or significantly affects it. It includes analyses and predictions related to work, economic situation, health, interests, reliability, location, \dots
+
+        According to the European Data Protection Board, profiling is the process of classifying individuals or groups into categories based on their features.
+\end{description}
+
+\begin{example}[Cambridge Analytica scandal]
+    Case where data of US voters was used to identify undecided voters:
+    \begin{enumerate}
+        \item US voters were invited to take a personality/political test that was supposed to be for academic research. Participants were also required to provide access to their Facebook page in order to get a money reward for the survey.
+        \item Cambridge Analytica collected the participants' data on Facebook, but also accessed data of their friends.
+        \item The data of the participants was used to build a training set where Facebook content is used as features and questionnaire answers as the target. The model built upon this data was then used for predicting the profile of their friends.
+        \item The final model was used to identify voters that were more likely to change their voting behavior if targeted with personalized ads.
+    \end{enumerate}
+\end{example}
+
+
+\subsection{Surveillance}
+
+\begin{description}
+    \item[Industrial capitalism] \marginnote{Industrial capitalism}
+        Economic system where entities that are not originally meant for the market are also considered as products. This includes labor, real estate, and money.
+
+        \begin{description}
+            \item[Surveillance capitalism] \marginnote{Surveillance capitalism}
+                Considers human experience and behavior also as a marketable entity.
+        \end{description}
+
+        \begin{remark}
+            Labor, real estate, and money are mostly subject to law. However, exploitation of human experience is less regulated.
+        \end{remark}
+
+    \item[Surveillance state] \marginnote{Surveillance state}
+        System where the government uses surveillance, data collection, and analysis to identity problems, govern population, and deliver social services.
+
+        \begin{example}[Chinese social credit system]
+            System that collects data and assigns a score to citizens. The overall score governs the access to services and social opportunities.
+        \end{example}
+\end{description}
+
+
+\subsection{Differential inference}
+
+\begin{description}
+    \item[Differential inference] \marginnote{Differential inference}
+        Make different predictions based on the input features. 
+        
+        In the context of profiling, it leads individuals with different features to a different treatment.
+
+        \begin{example}[ML in healthcare]
+            Using machine learning to predict health issues provides benefits to all data subjects. Processing data in this way is legitimate as long as appropriate measures are taken to mitigate privacy and data violation, and the overall risks are proportionate to the benefits.
+        \end{example}
+        
+        \begin{example}[ML in insurance/recruiting]
+            Using machine learning with health data for recruiting or determining insurance policies would worsen the situation of who is already disadvantaged. Also, having the ability of distinguishing applicants creates a competitive advantage that leads to collect as much personal data as possible.
+        \end{example}
+\end{description}
+
+\begin{description}
+    \item[Distributive justice] \marginnote{Distributive justice}
+        Theory based on the allocation of resources aiming for social justice.
+
+        \begin{example}[Price differentiation]
+            Differentiate prices based on the economic availability of the buyer allows for a generally higher accessibility of goods.
+
+            However, if certain protected features are used to determine the price instead, it would result in unfairness and exclusion.
+        \end{example}
+\end{description}
+
+
+\subsection{Discrimination}
+
+There are two main opinions on AI systems:
+\begin{itemize}
+    \item AI can avoid fallacies of human psychology (e.g., overconfidence, loss aversion, anchoring, confirmation bias, \dots).
+    \item AI can make mistakes and discriminate.
+    \begin{description}
+        \item[Direct discrimination/Disparate treatment]
+            When the AI system bases its prediction on protected features.
+        \item[Indirect discrimination/Disparate impact] 
+            The AI system has a disproportional impact on a protected group without a reason.
+    \end{description}
+\end{itemize}
+
+\begin{remark}
+    AI systems trained on a supervised dataset might:
+    \begin{itemize}
+        \item Reproduce past human judgements.
+        \item Correlate input features to (not provided) protected features (e.g., ethnicity could be inferred based on the postal code).
+        \item Discriminate groups with common features (e.g., the number of working hours of women are usually lower than men).
+        \item Lead to unfairness if the data does not reflect the statistical composition of the population.
+    \end{itemize}
+\end{remark}
+
+
+
+\section{Consent (article 4.11)}
+
+\begin{description}
+    \item[Consent] \marginnote{Consent}
+        Agreement of the data subject that allows to process its personal data. Consent should be:
+        \begin{descriptionlist}
+            \item[Freely given] 
+                The data subject have the choice to give consent or use another alternative (e.g., pay the service).
+                \begin{remark}
+                    A common practice is the ``take-or-leave'' approach, which is illegal.
+                \end{remark}
+
+            \item[Specific]
+                A single consent should be related to personal data used for a specific purpose.
+
+                \begin{remark}
+                    A single checkbox for lots of purposes is illegal.
+                \end{remark}
+
+            \item[Informed] 
+                The data subject should be clearly informed of what it is consenting to.
+                \begin{remark}
+                    In practice, privacy policies are very vague.
+                \end{remark}
+
+            \item[Unambiguously provided] 
+                Consent should be explicitly provided by the data subject through a statement of affirmative action.
+                \begin{remark}
+                    An illegal practice in many privacy policies is to state that there can be changes and continuing using the service implies an implicit acceptance of the new terms.
+                \end{remark}
+        \end{descriptionlist}
+
+
+    \item[Conditions for consent (article 7)] \marginnote{Conditions for consent}
+        Some requirements for consent are:
+        \begin{itemize}
+            \item The controller must be able to demonstrate that the data subject has provided its consent.
+            \item If consent for data processing is provided in written form alongside other matters, it should be clearly distinguishable.
+            \item The data subject have the right to easily withdraw its consent at any time. The withdrawal does not affect previously processed data.
+            \item To consider consent freely given, it should be assessed whether the performance of a contract is conditional on consenting the processing of personal data (i.e., the ``take-or-leave'' approach is illegal).
+        \end{itemize}
+\end{description}
