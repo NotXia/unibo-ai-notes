@@ -430,7 +430,43 @@
 \end{description}
 
 
-\subsection{Optimization methods}
+\subsection{Learning paradigms}
+
+\begin{description}
+    \item[Federated learning] \marginnote{Federated learning}
+        Problem where $N$ agents with their local and private data $\mathcal{D}^{i}$ want to learn a common set of parameters $\z^*$ based on the same loss function (evaluated on different data points):
+        \[
+            \min_\z \sum_{i=1}^{N} l(\z; \mathcal{D}^i)
+        \]
+        A centralized parameter server (master) is responsible for aggregating the estimates of the agents (e.g., pick some nodes and average them).
+        % \[
+        %     \z^{t+1} = \z^k - \alpha \sum_{i \in I_k} \nabla l(\z; \mathcal{D}^i, p^i)
+        % \]
+
+    \item[Distributed learning] \marginnote{Distributed learning}
+        Federated learning where there is no centralized entity and agents communicate with their neighbors only.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \includegraphics[width=0.55\linewidth]{./img/federated_learning.png}
+        \caption{Federated learning}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{./img/distributed_learning.png}
+        \caption{Distributed learning}
+    \end{subfigure}
+\end{figure}
+
+
+
+\section{Federated learning}
+
+
+\subsection{Batch gradient method}
 
 \begin{description}
     \item[Batch gradient method] \marginnote{Batch gradient method}
@@ -442,7 +478,12 @@
         \begin{remark}
             Computation in this way can be expensive.
         \end{remark}
+\end{description}
 
+
+\subsection{Incremental gradient method}
+
+\begin{description}
     \item[Incremental gradient method] \marginnote{Incremental gradient method}
         At each iteration $k$, compute the direction by considering the loss of a single agent $i^k$:
         \[
@@ -468,6 +509,8 @@
         \end{theorem}
 \end{description}
 
+
+\subsection{Stochastic gradient descent}
 
 \begin{description}
     \item[Stochastic gradient descent (SGD)] \marginnote{Stochastic gradient descent (SGD)}
@@ -507,7 +550,12 @@
     \item[Mini-batch SGD] \marginnote{Mini-batch SGD}
         SGD where the update at each time step $k$ is based on a set $\mathcal{I}^k \subset \{ 1, \dots, N \}$ of realizations of $\mathcal{W}$:
         \[ \z^{k+1} = \z^k - \alpha \sum_{i \in \mathcal{I}^k} \nabla l(\z^k, w^i) \]
+\end{description}
 
+
+\subsection{Adaptive momentum}
+
+\begin{description}
     \item[Adaptive momentum (ADAM)] \marginnote{Adaptive momentum (ADAM)}
         Method based on the first and second momentum of the gradient:
         \[
@@ -530,39 +578,6 @@
         The update is performed as:
         \[ \z^{k+1} = \z^{k} + \alpha \vec{d}^k \]
 \end{description}
-
-
-
-\subsection{Learning paradigms}
-
-\begin{description}
-    \item[Federated learning] \marginnote{Federated learning}
-        Problem where $N$ agents with their local and private data $\mathcal{D}^{i}$ want to learn a common set of parameters $\z^*$ based on the same loss function (evaluated on different data points):
-        \[
-            \min_\z \sum_{i=1}^{N} l(\z; \mathcal{D}^i)
-        \]
-        A centralized parameter server (master) is responsible for aggregating the estimates of the agents (e.g., pick some nodes and average them).
-        % \[
-        %     \z^{t+1} = \z^k - \alpha \sum_{i \in I_k} \nabla l(\z; \mathcal{D}^i, p^i)
-        % \]
-
-    \item[Distributed learning] \marginnote{Distributed learning}
-        Federated learning where there is no centralized entity and agents communicate with their neighbors only.
-\end{description}
-
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}{0.45\linewidth}
-        \centering
-        \includegraphics[width=0.55\linewidth]{./img/federated_learning.png}
-        \caption{Federated learning}
-    \end{subfigure}
-    \begin{subfigure}{0.45\linewidth}
-        \centering
-        \includegraphics[width=0.7\linewidth]{./img/distributed_learning.png}
-        \caption{Distributed learning}
-    \end{subfigure}
-\end{figure}
 
 
 
@@ -642,9 +657,6 @@
     Then, each agent converges to an optimal solution $\z^*$.
 \end{theorem}
 
-
-\subsection{Gradient tracking algorithm}
-
 \begin{theorem}
     The distributed gradient algorithm does not converge with a constant step size.
 
@@ -671,6 +683,8 @@
     \end{proof}
 \end{theorem}
 
+
+\subsection{Gradient tracking algorithm}
 
 \begin{description}
     \item[Dynamic average consensus] \marginnote{Dynamic average consensus}
