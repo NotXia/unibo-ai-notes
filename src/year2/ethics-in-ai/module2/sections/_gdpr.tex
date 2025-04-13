@@ -77,60 +77,131 @@ The GDPR applies to the processing of personal data whenever:
 \end{itemize}
 
 
-\subsection{Principles relating to processing of personal data (article 5)}
+% \subsection{Principles relating to processing of personal data (article 5)}
 
-Processing personal data should be done respecting the following principles:
-\begin{itemize}
-    \item Lawfulness, fairness, and transparency.
-    \item Purpose limitation.
-    \item Data minimization.
-    \item Data accuracy.
-    \item Storage limitation.
-    \item Integrity and confidentiality.
-    \item Accountability.
-\end{itemize}
+% Processing personal data should be done respecting the following principles:
+% \begin{itemize}
+%     \item Lawfulness, fairness, and transparency.
+%     \item Purpose limitation.
+%     \item Data minimization.
+%     \item Data accuracy.
+%     \item Storage limitation.
+%     \item Integrity and confidentiality.
+%     \item Accountability.
+% \end{itemize}
 
 
-\section{Lawfulness of processing (article 6)}
 
-Processing of personal data is lawful if at least one of the following conditions apply:
-\begin{itemize}
-    \item The data subject has given consent to process its personal data for given specific purposes.
-    
-    \item Processing is necessary prior to entering a contract or for the performance of the contract itself the data subject is part of.
-    \begin{example}
-        Before concluding the contract for an insurance, the insurer is allowed to process personal data to determine the premium.
-    \end{example}
-    \begin{example}
-        When using a delivery app, processing the address without asking anything is lawful.
-    \end{example}
+\section{Data protection principles}
 
-    \item Processing is necessary for compliance with legal obligations the controller is subject to.
-    \begin{example}
-        Companies have to keep track of users' purchases in case of tax inspection.
-    \end{example}
 
-    \item Processing is necessary to protect vital interests of the data subject or another natural person.
-    \begin{example}
-        The medical record of an unconscious patient can be accessed by the hospital staff.
-    \end{example}
+\subsection{Lawfulness of processing (article 6)} \marginnote{Lawfulness of processing}
 
-    \item Processing is necessary to perform a task carried out in the public interest.
-    \begin{example}
-        Processing personal data for public security is allowed.
-    \end{example}
+Processing of personal data is lawful if at least one of the following conditions applies:
+\begin{descriptionlist}
+    \item[Consent] The data subject has given consent to process its personal data for some specific purposes.
+    % \begin{remark}
+    %     In the context of AI systems, this includes using the data in the training set and for profiling purposes.
+    % \end{remark}
 
-    \item Processing is necessary to pursue the controller's legitimate interests, unless overridden by the interests and fundamental rights of the data subject.
+    \item[Necessity]
+        Processing personal data is necessary for a certain aim. This applies when:
+        \begin{itemize}
+            \item Processing is necessary prior to entering a contract or for the performance of the contract itself the data subject is part of.
+            \begin{example}
+                Before concluding the contract for an insurance, the insurer is allowed to process personal data to determine the premium.
+            \end{example}
+            \begin{example}
+                When using a delivery app, processing the address without asking anything is lawful.
+            \end{example}
+            
+            \item Processing is necessary for compliance with legal obligations the controller is subject to.
+            \begin{example}
+                Companies have to keep track of users' purchases in case of tax inspection.
+            \end{example}
+            
+            \item Processing is necessary to protect the vital interests of the data subject or another natural person.
+            \begin{example}
+                The medical record of an unconscious patient can be accessed by the hospital staff.
+            \end{example}
+            
+            \item Processing is necessary to perform a task carried out in the public interest.
+            \begin{example}
+                Processing personal data for public security is allowed.
+            \end{example}
+        \end{itemize}
+
+    \item[Legitimate interest]
+        Processing is necessary to pursue the controller's legitimate interests, unless overridden by the interests and fundamental rights of the data subject.
     \begin{remark}
         As a rule of thumb, legitimate interests of the controller can be pursued if only a reasonably limited amount of personal data is used.
     \end{remark}
     \begin{example}
         The gym one is subscribed in can send (contextual) advertisements by email to pursue economic interests.
     \end{example}
-    \begin{example}
+    \begin{remark}
         Targeted advertising is in principle prohibited. However, companies commonly pair legitimate interest with the request for consent.
-    \end{example}
+    \end{remark}
+\end{descriptionlist}
+
+
+\subsection{Transparency (article 5)} \marginnote{Transparency}
+
+Any information regarding data processing (e.g., privacy policy) addressed to the public or to the data subject should be concise, accessible, and easily understandable.
+
+
+\subsection{Fairness (article 5)}
+
+\begin{description}
+    \item[Informational fairness] \marginnote{Informational fairness}
+        Data subjects should be informed of the existence of data processing and profiling, and its purposes. Controllers should provide the data subject with any further information needed to ensure fairness, transparency, and accountability.
+
+    \item[Substantive fairness] \marginnote{Substantive fairness}
+        Controllers should implement measures to correct inaccuracies, minimize risks, and secure sensitive personal data.
+\end{description}
+
+
+\subsection{Purpose limitation (article 5)} \marginnote{Purpose limitation}
+
+The personal data collected should be for a specified, explicit, and legitimate purpose. Further processing for incompatible purposes is not allowed, unless it is for archiving purposes in the public interest, scientific or historical research, and statistical purposes.
+
+Criteria to determine whether repurposing is compatible are:
+\begin{itemize}
+    \item The distance between the new and original purpose,
+    \item The alignment of the new purpose with the data subject's expectations, the nature of the data (e.g., if the data is related to protected categories), and their impact on the data subject's interests,
+    \item The measures adopted by the controller to guarantee fairness and prevent risks.
 \end{itemize}
+
+\begin{remark}
+    When the data is used for compatible purposes not foreseen when the data was collected, the data subject should be informed.
+\end{remark}
+
+\begin{remark}
+    Putting the data subject's anonymized data into the training set of a model is allowed as the trained model as-is does not directly affect them.
+\end{remark} 
+
+
+\subsection{Data minimization (article 5)} \marginnote{Data minimization}
+
+Data collected from the data subject should be adequate, relevant, and limited with respect to the purpose it is required for.
+
+\begin{remark}
+    Data minimization does not imply that additional data cannot be collected, as long as the benefits outweigh the risks.
+\end{remark}
+
+\begin{remark}
+    Minimization is less strict for statistical purposes as they do not target specific individuals.
+\end{remark} 
+
+
+\subsection{Accuracy (article 5)} \marginnote{Accuracy}
+
+Personal data related to an individual should be accurate and kept up to date. Inaccuracies for the purpose the data was collected for must be rectified or erased.
+
+
+\subsection{Storage limitation (article 5)} \marginnote{Storage limitation}
+
+Personal data should be kept only for the time needed for its purpose. Longer storage is allowed for archiving, research, and statistical purposes.
 
 
 
@@ -198,24 +269,7 @@ Processing of personal data is lawful if at least one of the following condition
     \begin{remark}
         When personal data are embedded into an AI system through training, they are not considered personal data anymore. Only when performing inference the output is again personal data.
     \end{remark}
-\end{description}
 
-\begin{description}
-    \item[Right to access] \marginnote{Right to access}
-        Data subjects have the right to access both input and inferred personal data. 
-
-    \item[Right to rectification] \marginnote{Right to rectification}
-        Data subjects, depending on the case, have the right to rectify their personal data:
-        \begin{itemize}
-            \item In the public sector, there should be procedures when allowed.
-            \item In the private sector, right to rectification should be balanced with the respect for autonomy of private assessments and decisions.
-        \end{itemize}
-
-        Data can be rectified when:
-        \begin{itemize}
-            \item The correctness can be objectively determined.
-            \item The inferred data is probabilistic and there was either a mistake during inference or additional data can be provided. 
-        \end{itemize}
 
     \item[Right to ``reasonable inference''] \marginnote{Right to ``reasonable inference''}
         Right that is currently under discussion.
@@ -295,7 +349,7 @@ Processing of personal data is lawful if at least one of the following condition
 
 \begin{description}
     \item[Differential inference] \marginnote{Differential inference}
-        Make different predictions based on the input features. 
+        Make different predictions depending on the input features. 
         
         In the context of profiling, it leads individuals with different features to a different treatment.
 
@@ -326,20 +380,20 @@ There are two main opinions on AI systems:
 \begin{itemize}
     \item AI can avoid fallacies of human psychology (e.g., overconfidence, loss aversion, anchoring, confirmation bias, \dots).
     \item AI can make mistakes and discriminate.
-    \begin{description}
+    \begin{descriptionlist}
         \item[Direct discrimination/Disparate treatment]
             When the AI system bases its prediction on protected features.
         \item[Indirect discrimination/Disparate impact] 
             The AI system has a disproportional impact on a protected group without a reason.
-    \end{description}
+    \end{descriptionlist}
 \end{itemize}
 
 \begin{remark}
     AI systems trained on a supervised dataset might:
     \begin{itemize}
-        \item Reproduce past human judgements.
+        \item Reproduce past human judgement.
         \item Correlate input features to (not provided) protected features (e.g., ethnicity could be inferred based on the postal code).
-        \item Discriminate groups with common features (e.g., the number of working hours of women are usually lower than men).
+        \item Discriminate groups with common features (e.g., the number of working hours of women are historically lower than men).
         \item Lead to unfairness if the data does not reflect the statistical composition of the population.
     \end{itemize}
 \end{remark}
@@ -353,13 +407,19 @@ There are two main opinions on AI systems:
         Agreement of the data subject that allows to process its personal data. Consent should be:
         \begin{descriptionlist}
             \item[Freely given] 
-                The data subject have the choice to give consent or use another alternative (e.g., pay the service).
+                The data subject have the choice to give consent for profiling
+                
                 \begin{remark}
                     A common practice is the ``take-or-leave'' approach, which is illegal.
                 \end{remark}
-
+                \begin{remark}
+                    Showing the deny button in a less noticeable style is also not considered freely given.
+                \end{remark}
+                \begin{remark}
+                    Making the user pay the service if it does not consent to profiling is lawful.
+                \end{remark}
             \item[Specific]
-                A single consent should be related to personal data used for a specific purpose.
+                A single consent should be related to personal data used for a specific purpose and compatible ones.
 
                 \begin{remark}
                     A single checkbox for lots of purposes is illegal.
@@ -377,14 +437,213 @@ There are two main opinions on AI systems:
                     An illegal practice in many privacy policies is to state that there can be changes and continuing using the service implies an implicit acceptance of the new terms.
                 \end{remark}
         \end{descriptionlist}
-
-
-    \item[Conditions for consent (article 7)] \marginnote{Conditions for consent}
-        Some requirements for consent are:
-        \begin{itemize}
-            \item The controller must be able to demonstrate that the data subject has provided its consent.
-            \item If consent for data processing is provided in written form alongside other matters, it should be clearly distinguishable.
-            \item The data subject have the right to easily withdraw its consent at any time. The withdrawal does not affect previously processed data.
-            \item To consider consent freely given, it should be assessed whether the performance of a contract is conditional on consenting the processing of personal data (i.e., the ``take-or-leave'' approach is illegal).
-        \end{itemize}
 \end{description}
+
+
+\subsection{Conditions for consent (article 7)} \marginnote{Conditions for consent}
+
+Some requirements for consent are:
+\begin{itemize}
+    \item The controller must be able to demonstrate that the data subject has provided its consent.
+    \item If consent for data processing is provided in written form alongside other matters, it should be clearly distinguishable.
+    \item The data subject have the right to easily withdraw its consent at any time. The withdrawal does not affect previously processed data.
+    \item To consider consent for profiling freely given, it should be assessed whether the performance of a contract is conditional on consenting the processing of personal data (i.e., the ``take-or-leave'' approach is illegal).
+    \item Consent is by default considered not freely given in case of imbalance between the data subject and the controller, unless it can be proved that there were no risks if the data subject refused to consent.
+    % \begin{example}
+        
+    % \end{example}
+\end{itemize}
+
+
+
+\section{Data subjects' rights}
+
+
+\subsection{Controllers' information duties (articles 13-14)} \marginnote{Controllers' information duties}
+
+When personal data is collected, the controller should provide the data subject with the following information:
+\begin{itemize}
+    \item The identity of the controller, its representative (when applicable), and its contact details should be available.
+    \item Contact details of the data officer (referee of the company that ensures that the GDPR is respected) should be available.
+    \item Purposes and legal basis of the processing.
+    \item Categories of data collected.
+    \item Recipients or categories of recipients.
+    \item Period of time or the criteria to determine how long the data is stored.
+    \item Existence of the rights to access, rectify, transfer, and erase data.
+    \item Possibility to lodge a complaint with supervisory authorities.
+    \item Source where the data originate (e.g., directly, from another account).
+    \item Existence of automated decision-making systems based on profiling.
+\end{itemize}
+
+Moreover, in case of automated decision-making, the following information should be ideally provided:
+\begin{itemize}
+    \item Input data that the system takes and how different data affects the outcome.
+    \item The target value the system is meant to compute.
+    \item The possible consequences of the automated decision.
+    \item The overall purpose of the system.
+\end{itemize} 
+
+
+\subsection{Right to access (article 15)} \marginnote{Right to access}
+
+Data subjects have the right to have confirmation from the controller on whether their data has been processed and access both input and inferred personal data.
+
+This right is limited if it affects the rights or freedoms of others.
+
+
+\subsection{Right to rectification} \marginnote{Right to rectification}
+
+Data subjects, depending on the case, have the right to rectify their personal data:
+\begin{itemize}
+    \item In the public sector, there should be procedures when allowed.
+    \item In the private sector, right to rectification should be balanced with the respect for autonomy of private assessments and decisions.
+\end{itemize}
+
+Generally, data can be rectified when:
+\begin{itemize}
+    \item The correctness can be objectively determined.
+    \item The inferred data is probabilistic and there was either a mistake during inference or additional data can be provided to change the outcome. 
+\end{itemize}
+
+
+\subsection{Right to erasure (article 17)} \marginnote{Right to erasure}
+
+Data subjects have the right to have their own personal data erased without delay from the controller when:
+\begin{itemize}
+    \item The data is no longer necessary for the purpose it was collected for.
+    \begin{example}
+        An e-shop cannot delete the address until the order is arrived.
+    \end{example}
+
+    \item The data subject has withdrawn its consent, unless there are other legal basis.
+    
+    \item The data subject objects to the processing and there are no overriding legitimate interests.
+    \begin{example}
+        After cancelling from a mailing list, the email stored by the processors should be deleted.
+    \end{example}
+
+    \item The data has been unlawfully processed.
+    
+    \item The data have to be erased for legal obligations.
+    \begin{example}
+        After a period of time, archived exams have to be erased.
+    \end{example}
+\end{itemize}
+
+\begin{remark}
+    When the controller has shared personal data with third parties and erasure of that data is requested, it has to inform the other parties.
+\end{remark}
+
+Also, the right to erasure does not apply if:
+\begin{itemize}
+    \item It is to exercise the right of freedom of expression and information.
+    \item Compliance with legal obligations.
+    \item For public interest in public healthcare, scientific or historical research, statistical purposes (if anonymized).
+    \item For legal and defense claims.
+\end{itemize}
+
+
+\subsection{Right to portability (article 19)} \marginnote{Right to portability}
+
+Data subjects, when personal data has been collected through consent, have the right to receive their data from the controller in a machine-readable format that can be transferred to another controller.
+
+
+\subsection{Right to object (article 21)} \marginnote{Right to object}
+
+Data subjects have the right to request the termination of the processing of their data when all the following conditions are met:
+\begin{itemize}
+    \item The data subject has reasons to withdraw.
+    \item The reason for processing is for public interest or legitimate interests.
+    \item The controller cannot demonstrate legitimate interests for processing the data.
+\end{itemize}
+
+\begin{remark}
+    If processing is based on consent, this right does not apply as the data subject can simply withdraw its consent.
+\end{remark}
+
+\begin{remark}
+    Right to object also applies to:
+    \begin{itemize}
+        \item Profiling,
+        \item Direct marketing (in any situation),
+        \item Research and statistical purposes, unless it is done in the public interest.
+    \end{itemize}
+\end{remark}
+
+
+\subsection{Rights with automated decision-making (article 22)} \marginnote{Rights with automated decision-making}
+
+The data subject has the right to not have decisions based only on automated profiling if it produces legal effects or significant effects. Moreover, it should at least have the rights to:
+\begin{itemize}
+    \item Obtain human intervention.
+    \item Express its own point of view.
+    \item Challenge the decision.
+\end{itemize}
+
+\begin{remark}
+    A negated right is an obligation.
+\end{remark}
+
+Exceptions are applied when:
+\begin{itemize}
+    \item Data is needed to enter or perform the contract.
+        \begin{example}
+            It is allowed to use automated systems to process a high number of job applications.
+        \end{example}
+    \item Authorization is given by the authorities.
+    \item Explicit consent is given.
+\end{itemize} 
+
+
+\subsection{Explainability in the GDPR (article 22, recital 71)} \marginnote{Explainability in the GDPR}
+
+It is not clear whether the GDPR considers the right to explanation an obligation of the controller. Due to the fact that recital 71 mentions the right to an explanation while article 22 does not, there are two possible interpretations:
+\begin{itemize}
+    \item Explanation is not legally enforceable, but it is recommended.
+    \item As article 22 contains the qualifier ``at least'', explanation is legally required when possible.
+\end{itemize} 
+
+\begin{remark}
+    Development of explanation techniques can be split into two main areas:
+    \begin{descriptionlist}
+        \item[Computer science] 
+            Provide understandable models from black-box systems. Techniques in this field are usually intended for other experts and assume full access to the model. Example of methods are:
+            \begin{descriptionlist}
+                \item[Model explanation] Model the black-box system using an interpretable model.
+                \item[Model inspection] Analyze properties of the black-box model on different inputs.
+                \item[Outcome explanation] Extract the reason that lead to a particular outcome.
+            \end{descriptionlist}
+
+        \item[Social science] 
+            Provide explanations understandable for the end-user. Example of approaches are:
+            \begin{descriptionlist}
+                \item[Contrastive explanation] Specify which input values made the difference (related to model inspection).
+                \item[Selective explanation] Focus on factors that are more relevant to human judgement.
+                \item[Causal explanation] Focus on the causes rather than statistical correlations.
+                \item[Social explanation] Tailor the explanation based on the individual's comprehension capability.
+            \end{descriptionlist}
+    \end{descriptionlist}
+\end{remark}
+
+
+\section{Risk-based data protection}
+
+\begin{description}
+    \item[Risk-based legislation] \marginnote{Risk-based legislation}
+        Measures with the goal of actively preventing risks.
+\end{description}
+
+
+\subsection{Data protection by design and by default (article 25)} \marginnote{Data protection by design and by default}
+
+The controller must, both while designing and deploying the processing system, implement technical and organizational measures to respect data protection principles. It must also ensure that only the necessary data is processed for each purpose.
+
+
+\subsection{Impact assessment (articles 35-36)} \marginnote{Data protection impact assessment}
+
+Controllers must preventively perform impact assessment to processing systems that are likely to have high risks in terms of rights and freedoms of the data subjects. If the risk is high, the controller must consult the supervisory authority (i.e., national data protection authority) which will provide its written advice.
+
+
+\subsection{Data protection officers (article 37)} \marginnote{Data protection officers}
+
+Controllers must appoint a data protection officer to ensure compliance with the GDPR if processing requires continuous monitoring on data subjects, involves large scale sensitive data, or concerns criminal convictions.
