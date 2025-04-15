@@ -1,0 +1,178 @@
+\chapter{Cooperative robotics}
+
+
+\begin{description}
+    \item[Cooperative robotics] \marginnote{Cooperative robotics}
+        Problem where $N$ agents want to optimize their positions $\z_i \in \mathbb{R}^2$ to perform multi-robot surveillance in an environment with:
+        \begin{itemize}
+            \item A static target to protect $\r_0 \in \mathbb{R}^2$.
+            \item Static intruders/opponents $\r_i \in \mathbb{R}^2$, each assigned to an agent $i$.
+        \end{itemize}
+
+        The average position of the agents define the barycenter:
+        \[ \sigma(\z) = \frac{1}{N} \sum_{i=1}^N \z_i \]
+
+        The local cost function of agent $i$ is:
+        \[
+            l_i(\z_i, \sigma(\z)) = 
+            \gamma_i \underbrace{\Vert \z_i - \r_i \Vert^2}_{\text{close to opponent}} + 
+            \underbrace{\Vert \sigma(\z) - \r_0 \Vert^2}_{\text{barycenter close to protectee}}
+        \]
+        Note that the opponent component only depends on local variables while the target component needs global information.
+
+        \begin{remark}
+            The barycenter $\sigma(\z): \mathbb{R}^{2N} \rightarrow \mathbb{R}^{2}$ can be seen as an aggregation function.
+        \end{remark}
+
+        \begin{remark}
+            A scenario that this formulation fails to handle is when the agents are placed symmetrically and moves symmetrically as the barycenter remains the same even if the agents move farther away.
+        \end{remark}
+\end{description}
+
+
+
+\section{Aggregative optimization}
+
+\begin{description}
+    \item[Aggregative optimization] \marginnote{Aggregative optimization}
+        Problem defined as:
+        \[
+            \min_{\z_1, \dots, \z_N} \sum_{i=1}^{N} l_i(\z_i, \sigma(\z))
+        \]
+        where:
+        \begin{itemize}
+            \item $\z = (\z_1, \dots, \z_N)$ with $\z_i \in \mathbb{R}^{n_i}$,
+            \item $l_i: \mathbb{R}^{n_i} \rightarrow \mathbb{R}^d$ is the loss function of the agent $i$,
+            \item $\sigma(\z)$ is an aggregation function generically defined as $\sigma(\z) = \frac{1}{N} \sum_{i=1}^{N} \phi_i(\z_i)$, for some $\phi_i: \mathbb{R}^{n_i} \rightarrow \mathbb{R}^d$
+        \end{itemize}
+
+    \item[Distributed aggregative optimization] \marginnote{Distributed aggregative optimization}
+        Distributed case of aggregative optimization where each agent has only access to the loss $l_i$, the operator of the aggregation function $\phi_i$, and the position $\z_i$ of itself and its neighbors.
+\end{description}
+
+\begin{remark}
+    The goal of the task is not to reach consensus among agents.
+\end{remark}
+
+
+\subsection{Centralized gradient method}
+
+\begin{description}
+    \item[Centralized gradient method (scalar)] \marginnote{Centralized gradient method (scalar)}
+        Consider $N$ agents with $z_i \in \mathbb{R}$ and $\sigma: \mathbb{R}^N \rightarrow \mathbb{R}$. The update step, assuming global access to the parameters, can be performed as:
+        \[
+            z_i^{k+1} = z_i^k - \alpha \frac{\partial}{\partial z_i} \left.\left( \sum_{j=1}^{N} l_j(z_j, \sigma(z_1, \dots, z_N)) \right) \right|_{z_j=z_j^k}
+        \]
+        By expanding the derivative, we have that:
+        \[
+            \begin{split}
+                &\frac{\partial}{\partial z_i} \left.\left( \sum_{j=1}^{N} l_j(z_j, \sigma(z_1, \dots, z_N)) \right) \right|_{z_j=z_j^k} \\
+                &= 
+                    \left.\frac{\partial}{\partial z_i} l_i(z_i, \sigma) \right|_{\substack{z_i = z_i^k,\\\sigma = \sigma(\z^k)}} + 
+                    \left.\left(\sum_{j=1}^{N} \frac{\partial}{\partial \sigma} l_j(z_j, \sigma) \right)\right|_{\substack{z_j = z_j^k,\\\sigma = \sigma(\z^k)}} \cdot
+                    \left.\frac{\partial}{\partial z_i} \sigma(z_1, \dots, z_N)\right|_{\substack{z_j=z_j^k}}
+            \end{split}
+        \]
+
+    \item[Centralized gradient method (vector)] \marginnote{Centralized gradient method (vector)}
+        Generalized to the vector case, the update step becomes:
+        \[
+            \z_i^{k+1} = \z_i^k - \alpha \left[ \nabla \left.\left( \sum_{j=1}^{N} l_j(\z_j, \sigma(\z_1, \dots, \z_N)) \right) \right|_{\z_j=\z_j^k} \right]_{(i)}
+        \]
+        And the gradient can be expanded as:
+        \[
+            \begin{split}
+                &\left[ \nabla \left.\left( \sum_{j=1}^{N} l_j(\z_j, \sigma(\z_1, \dots, \z_N)) \right) \right|_{\z_j=\z_j^k} \right]_{(i)} \\
+                &= 
+                    \left.\nabla_{[\z_i]} l_i(\z_i, \sigma)\right|_{\substack{\z_i=\z_i^k,\\\sigma=\sigma(\z^k)}} +
+                    \left.\sum_{j=1}^{N} \nabla_{[\sigma]} l_j(\z_j, \sigma)\right|_{\substack{\z_j=\z_j^k\\\sigma=\sigma(\z^k)}} \cdot
+                    \left.\frac{1}{N}\nabla \phi_i(\z_i)\right|_{\z_i=\z_i^k} 
+            \end{split}
+        \]
+        where $\nabla_{[\z_i]} l_i(\z_i, \sigma)$ is the gradient w.r.t. the first argument and $\nabla_{[\sigma]} l_i(\z_i, \sigma)$ is w.r.t. the second one.
+\end{description}
+
+
+\subsection{Aggregative tracking distributed optimization algorithm}
+
+\begin{description}
+    \item[Aggregative tracking distributed optimization algorithm] \marginnote{Aggregative tracking distributed optimization algorithm}
+    Algorithm where each agent $i$ has:
+    \begin{itemize}
+        \item An estimate $\z_i^k$ of its optimal position $\z_i^*$,
+        \item An estimate $\s_i^k$ of the aggregation function $\sigma(\z^k) = \frac{1}{N} \sum_{j=1}^{N} \phi_j(\z_j^k)$,
+        \item An estimate $\v_i^k$ of the gradient with respect to the second argument of the loss $\sum_{j=1}^{N} \nabla_{[\sigma(\z^k)]} l_j(\z_j^k, \sigma(\z^k))$.
+    \end{itemize}
+
+    The step is based on the centralized gradient method using the local estimates:
+    \[
+        \begin{aligned}
+            \z_i^{k+1} &= \z_i^k - \alpha \left( \nabla_{[\z_i]} l_i(\z_i^k, \s_i^k) + \v_i^k \nabla \phi_i(\z_i^k) \right) && \z_i^0 \in \mathbb{R}^{n_i} \\
+            \s_i^{k+1} &= \sum_{j \in \mathcal{N}_i} a_{ij} \s_j^k + \left( \phi_i(\z_i^{k+1}) - \phi_i(\z_i^k) \right) && \s_i^0 = \phi_i(\z_i^0) \\
+            \v_i^{k+1} &= \sum_{j \in \mathcal{N}_i} a_{ij} \v_j^k + \left( \nabla_{[\s_i^{k+1}]} l_i(\z_i^{k+1}, \s_i^{k+1}) - \nabla_{[\s_i^k]} l_i(\z_i^k, \s_i^k) \right) && \v_i^0 = \nabla_{[\s_i^0]} l_i(\z_i^0, \s_i^0) \\
+        \end{aligned}
+    \]
+    where the estimates $\s_i^k$ and $\v_i^k$ are obtained through dynamic average consensus (\Cref{sec:gradient_tracking_algorithm}).
+
+    \begin{remark}
+        $\v_i^k$ is a double approximation as it uses $\s_i^{k+1}$ and $\s_i^k$ instead of the real $\sigma$.
+    \end{remark}
+
+    \begin{theorem}[Aggregative tracking distributed optimization algorithm convergence]
+        If:
+        \begin{itemize}
+            \item The communication digraph $G$ is strongly connected and aperiodic, and $\matr{A}$ is doubly stochastic,
+            \item $\sum_{i=1}^{N} l_i(\cdot, \sigma(\cdot))$ strongly convex with $\phi_i(\cdot)$ differentiable and Lipschitz continuous.
+            \item $\nabla_{[\z]} l_i(\cdot, \cdot)$, $\nabla_{[\sigma]} l_i(\cdot, \cdot)$, and $\nabla \phi_i(\cdot) \nabla_{[\sigma]} l_i(\cdot, \cdot)$ are Lipschitz continuous.
+        \end{itemize}
+        Then, there exists an $\alpha^*$ such that, for any step size $\alpha \in (0, \alpha^*)$, the sequences of local estimates $\{ \z_i^k, \dots, \z_N^k \}_{k \in \mathbb{N}}$ generated using the aggregative tracking distributed optimization algorithm converge to the optimal solution at a linear rate:
+        \[
+            \lim_{k \rightarrow \infty} \Vert \z_i^k - \z_i^* \Vert = 0
+        \]
+    \end{theorem}
+
+    % \begin{remark}
+    %     LTI:
+    %     \[
+    %         \begin{aligned}
+    %             \z_i^{k+1} = \z_i^k - \alpha() \\
+    %             \begin{aligned}
+    %                 s_i^{k+1} &= \sum_{j=1}^{N} a_i s_j^k + ... \\
+    %                 v_i^{k+1} &=
+    %             \end{aligned}
+    %         \end{aligned}
+    %     \]  
+
+    %     Upper part is a ``slow'' system
+
+    %     Lower part is a ``fast'' system
+    % \end{remark}
+\end{description}
+
+
+\subsection{Online aggregative optimization}
+
+\begin{description}
+    \item[Online aggregative optimization] \marginnote{Online aggregative optimization}
+        Time-varying case of aggregative optimization where intruders also move. The problem can be defined as:
+        \[
+            \min_{\z=(\z_1, \dots, \z_N)} \sum_{i=1}^{N} l_i^k(\z_i, \sigma^k(\z)) \quad\text{subject to $\z_i \in Z_i^k$}
+        \]
+        where $Z_i^k$ is a closed convex set.
+
+        \begin{remark}
+            As intruders are dynamic, the optimum of each agent $\z_i^{k,*}$ changes over time.
+        \end{remark}
+
+    \item[Projected aggregative tracking] \marginnote{Projected aggregative tracking}
+        Algorithm for online aggregative optimization defined as:
+        \[
+            \begin{aligned}
+                \tilde{\z}_i^k &= P_{Z_i^k} \left[ \z_i^k - \alpha \big( \nabla_{[\z_i^k]} l_i^k(\z_i^k, \s_i^k) + \v_i^k \nabla\phi_i^k(\z_i^k) \big) \right] \\
+                \z_i^{k+1} &= \z_i^k + \delta(\tilde{\z}_i^k - \z_i^k) && \z_i^0 \in \mathbb{R}^{n_i} \\
+                \s_i^{k+1} &= \sum_{j \in \mathcal{N}_i} a_{ij} \s_j^k + \left( \phi^{k+1}_i(\z_i^{k+1}) - \phi^{k}_i(\z_i^k) \right) && \s_i^0 = \phi_i(\z_i^0) \\
+                \v_i^{k+1} &= \sum_{j \in \mathcal{N}_i} a_{ij} \v_j^k + \left( \nabla_{[\s_i^{k+1}]} l_i^{k+1}(\z_i^{k+1}, \s_i^{k+1}) - \nabla_{[\s_i^k]} l_i^k(\z_i^k, \s_i^k) \right) && \v_i^0 = \nabla_{[\s_i^0]} l_i(\z_i^0, \s_i^0) \\
+            \end{aligned}
+        \]
+        where $P_{Z_i^k}$ is the Euclidean projection and $\delta \in (0, 1)$ is a hyperparameter.
+\end{description}
