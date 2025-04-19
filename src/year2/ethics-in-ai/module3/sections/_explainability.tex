@@ -1,0 +1,202 @@
+\chapter{Explainability}
+
+
+\begin{description}
+    \item[Transparency] \marginnote{Transparency}
+        Ensure that appropriate information reaches the relevant stakeholders.
+
+    \item[Explanation] \marginnote{Explanation}
+        Evidence, support, or reasoning related to a system's output or process.
+
+        An explanation can be assessed by the following properties:
+        \begin{descriptionlist}
+            \item[Quality] Related to the accuracy of the explanation.
+            \item[Quantity] Related to the amount of information delivered.
+            \item[Relation] Whether it only contains relevant information.
+            \item[Manner] How the information is delivered.
+            \item[Context-oriented] Whether it accounts for the knowledge capabilities of the recipient of the explanation.
+            \item[Knowledge limit] Whether it is limited to the training data.
+        \end{descriptionlist}
+
+        An explanation can be:
+        \begin{descriptionlist}
+            \item[Attribute based] Describe the contribution of the input features.
+            \item[Rule based] If-then rules based on the input features.
+            \item[Counterfactual] Determine which input features would have made the prediction different.
+            \item[Argumentation based] Produce the explanation by extracting and processing arguments. 
+        \end{descriptionlist}
+\end{description}
+
+
+\section{Explanation taxonomy}
+
+
+\subsection{Global vs local}
+
+\begin{description}
+    \item[Global explanation] \marginnote{Global explanation}
+        Explain the model as a whole.
+
+    \item[Local explanation] \marginnote{Local explanation}
+        Explain the output of the model for a particular instance.
+\end{description}
+
+
+\subsection{Approaches}
+
+\begin{description}
+    \item[Model (global) explanation] \marginnote{Model (global) explanation}
+        Create an interpretable predictor that mimics the one to be explained on the entire input space.
+    
+    \item[Outcome (local) explanation] \marginnote{Outcome (local) explanation}
+        Create an interpretable predictor that mimics the one to be explained on a portion of the input space.
+
+    \item[Model inspection] \marginnote{Model inspection}
+        Create a representation that models the behavior of the system.
+
+    \item[Transparent box design] \marginnote{Transparent box design}
+        Use an interpretable predictor.
+\end{description}
+
+
+
+\section{XAI abstract framework}
+
+\begin{description}
+    \item[Interpretation] \marginnote{Interpretation}
+        Associate a (subjective) meaning to an object.
+    
+    \item[Explanation] \marginnote{Explanation}
+        Extract relevant aspects of an object to ease interpretation.
+\end{description}
+
+\begin{description}
+    \item[XAI abstract framework] \marginnote{XAI abstract framework}
+        System composed of:
+        \begin{itemize}
+            \item A model $M$ to explain with representation $R$,
+            \item An explanation function $E$.
+        \end{itemize}
+        The explanation function should produce another model $M' = E(M)$ such that its representation $R'$ is more interpretable and the performance difference between $M$ and $M'$ should be minimized.
+\end{description}
+
+
+
+\section{Explanation via feature importance}
+
+
+\begin{description}
+    \item[Feature importance explanation] \marginnote{Feature importance explanation}
+        Method that quantifies the importance score of each input feature for either local or global explanation.
+\end{description}
+
+
+\subsection{Local interpretable model-agnostic explanations (LIME)}
+
+\begin{description}
+    \item[LIME] \marginnote{LIME}
+        Model-agnostic method for post-hoc (after training) explanation. Given a model $f$ to explain and an input $\vec{x}$, LIME works as follows:
+        \begin{enumerate}
+            \item Sample $N$ points $\vec{z}_1, \dots, \vec{z}_N$ around $\vec{x}$ according to some proximity measure.
+            \item Form a dataset of the sampled points $\langle \vec{z}_i', y_i \rangle$ where $\vec{z}_i'$ is the one-hot encoding of $\vec{z}_i$ and $y_i = f(\vec{z}_i)$.
+            \item Train an interpretable local surrogate model $g$ on the sampled data.
+            \item Repeat with different hyperparameters of $g$ and pick the one that maximizes the fidelity with $f$ and minimizes the complexity of $g$.
+            \item Use the coefficients of $g$ to measure feature importance.
+        \end{enumerate}
+
+        \begin{remark}
+            Global explanation can be performed by aggregating over multiple points.
+        \end{remark}
+\end{description}
+
+
+
+\section{Explanation via symbolic knowledge extraction}
+
+\begin{description}
+    \item[Symbolic knowledge extraction explanation] \marginnote{Symbolic knowledge extraction explanation}
+        Method that given a sub-symbolic model produces a symbolic representation of it (e.g., rule list, decision tree, decision table).
+
+        The expressiveness of the extracted knowledge can be:
+        \begin{descriptionlist}
+            \item[Propositional] Boolean statements and logical connectives.
+            \item[Fuzzy] Hierarchical set of if-then-else statements with comparison between variables and constants.
+            \item[Oblique] Propositional logic with arithmetic comparison.
+            \item[M-of-N] Propositional, fuzzy, or oblique with the addition of statements in the form of $m \text{ of } \{ \phi_1, \dots, \phi_n \}$.
+        \end{descriptionlist}
+\end{description}
+
+
+
+\section{Symbolic knowledge injection}
+
+\begin{description}
+    \item[Symbolic knowledge injection] \marginnote{Symbolic knowledge injection}
+        Method to modify a predictor so that it is consistent with some symbolic knowledge provided by the user.
+
+        Symbolic knowledge can be injected through:
+        \begin{descriptionlist}
+            \item[Guided learning]
+                Encode input knowledge as a cost factor and include it in the training loss.
+
+            \item[Structuring]
+                Modify the architecture of the predictor to mimic the knowledge.
+
+            \item[Embedding]
+                Embed knowledge and inject it into the training set.
+        \end{descriptionlist}
+\end{description}
+
+
+\section{Argumentation}
+
+\begin{description}
+    \item[Argumentation] \marginnote{Argumentation}
+        Approach that, given some input, extracts the arguments and their semantics allowing to study their properties.
+\end{description}
+
+
+\subsection{Computational argumentation}
+
+\begin{description}
+    \item[Abstract argumentation] \marginnote{Abstract argumentation}
+        Directed graph where nodes are arguments and arcs are relationships between arguments (i.e., support or attack).
+
+        There are two common approaches to classify arguments:
+        \begin{descriptionlist}
+            \item[Extension-based] 
+                Determine extensions (i.e., set of arguments):
+                \begin{descriptionlist}
+                    \item[Complete] Set of arguments that is able to defend itself and includes all the arguments it defends. 
+                    \item[Grounded] Set of arguments whose defended by the initial arguments.
+                    \item[Stable] Set of arguments that attack all the arguments not included in it.
+                    \item[Preferred] Set of arguments that is as large as possible and able to defend itself.
+                \end{descriptionlist}
+            \item[Labeling-based] 
+                Determine labels (e.g., the states of an argument).
+        \end{descriptionlist}
+
+    \item[Structured argumentation] \marginnote{Structured argumentation}
+        Explicitly model the relationship between premises and conclusions of the arguments.
+\end{description}
+
+
+\subsection{Defeasible logic as argumentation}
+
+\begin{description}
+    \item[Conclusive reasoning] \marginnote{Conclusive reasoning}
+        A reasoning schema is conclusive if its conclusions are always true when the premises hold.
+
+    \item[Defeasible reasoning] \marginnote{Defeasible reasoning}
+        A reasoning schema is defeasible if, under certain conditions, its conclusions are not true when the premises hold.
+\end{description}
+
+\begin{description}
+    \item[Defeasible logic argumentation] \marginnote{Defeasible logic argumentation}
+        Arguments are defined as proof trees. Their relationships can be:
+        \begin{descriptionlist}
+            \item[Attack] An argument $A$ attacks a defeasible argument $B$ if the conclusion of $A$ is the complement of the conclusion of $B$ and the conclusion of $B$ is not part of a strict sub-argument of $B$.
+            \item[Support] A set of arguments $S$ supports a defeasible argument $A$ if every proper sub-argument of $A$ is in $S$.
+            \item[Undercut] A defeasible argument $A$ is undercut by a set of arguments $S$ if $S$ supports an argument $B$ that attacks $A$.
+        \end{descriptionlist}
+\end{description}
