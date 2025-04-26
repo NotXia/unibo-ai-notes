@@ -3,7 +3,7 @@
 
 \begin{description}
     \item[Leader-follower network] \marginnote{Leader-follower network}
-        Consider agents partitioned into $N_f$ followers and $N-N_f$ leaders.
+        Consider $N$ agents partitioned into $N_f$ followers and $N-N_f$ leaders.
         
         The state vector can be partitioned as:
         \[ \x = \begin{bmatrix} \x_f \\ \x_l \end{bmatrix} \]
@@ -15,7 +15,7 @@
         \]
         where $\lap_f$ is the followers' Laplacian, $\lap_l$ the leaders', and $\lap_{fl}$ is the part in common.
 
-        Assume that leaders and followers run the same Laplacian-based distributed control law (i.e., an normal averaging system), the system can be formulated as:
+        Assume that leaders and followers run the same Laplacian-based distributed control law (i.e., a normal averaging system), the system can be formulated as:
         \[
             \begin{bmatrix} \dot{\x}_f(t) \\ \dot{\x}_l(t) \end{bmatrix} =
             - \begin{bmatrix} \lap_f & \lap_{fl} \\ \lap_{fl}^T & \lap_l \end{bmatrix}
@@ -30,7 +30,7 @@
                 \begin{bmatrix}
                     \dot{x}_1(t) \\ \dot{x}_2(t) \\ \dot{x}_3(t) \\ \dot{x}_4(t)
                 \end{bmatrix} = 
-                \begin{bmatrix}
+                - \begin{bmatrix}
                     \begin{tabular}{ccc|c}
                         1   & -1    & 0     & 0     \\
                         -1  & 2     & -1    & 0     \\
@@ -122,7 +122,7 @@
                         \x_f^T \lap_f \x_f &\geq 0 & & \forall \x_f
                     \end{aligned}
                 \]
-            \item The only case when $\x^T \lap \x = 0$ for $\x \neq 0$ is with $\x = \alpha\vec{1}$ for $\alpha \neq 0$. As $\forall \x_f: \bar{\x} \neq \alpha\vec{1}$, it holds that $\forall \x_f: \x_f^T \lap_f \x_f \neq 0$.
+            \item The only case when $\x^T \lap \x = 0$ for $\x \neq 0$ is with $\x = \alpha\vec{1}$ for $\alpha \neq 0$. As $\forall \x_f: \bar{\x} \neq \alpha\vec{1}$, it holds that $\forall \x_f \neq 0: \x_f^T \lap_f \x_f \neq 0$.
         \end{enumerate}
         Therefore, $\lap_f$ is positive definite as $\forall \x_f \neq 0: \x_f^T \lap_f \x_f > 0$.
     \end{proof}
@@ -182,7 +182,7 @@
                 Therefore, we have that:
                 \[
                     \begin{aligned}
-                        \left( \sum_{j=1}^N a_{ij} \right) x_{E,i} &= \sum_{j=1}^N a_{ij} x_{E,j} & & \forall i \in \{ 1, \dots, N_f \} \\
+                        \left( \sum_{k=1}^N a_{ik} \right) x_{E,i} &= \sum_{j=1}^N a_{ij} x_{E,j} & & \forall i \in \{ 1, \dots, N_f \} \\
                         x_{E,i} &= \sum_{j=1}^N \frac{a_{ij}}{\sum_{k=1}^N a_{ik}} x_{E,j} & & \forall i \in \{ 1, \dots, N_f \} \\
                     \end{aligned}
                 \]
@@ -211,7 +211,7 @@
 \end{description}
 
 \begin{theorem}[Containment with non-static leaders non-equilibrium]
-    Naive containment with non-static leaders do not have an equilibrium.
+    Naive containment with non-static leaders does not have an equilibrium.
 
     \begin{proof}
         Ideally, the equilibria for followers' and leader's dynamics are:
@@ -235,7 +235,7 @@
             \end{split}
         \]
         
-        By inspecting the value of the containment error $\vec{e}(t)$ when it reaches equilibrium we have that:
+        By inspecting the value of the containment error $\vec{e}(t)$ when it reaches equilibrium, we have that:
         \[
             \begin{split}
                 0 &= \dot{\vec{e}}(t) \\
@@ -331,7 +331,7 @@
 
 \begin{description}
     \item[Containment with discrete-time] \marginnote{Containment with discrete-time}
-        Containment can be discretized using the forward-Eurler discretization. Its dynamics is defined as:
+        Containment can be discretized using the forward-Euler discretization. Its dynamics is defined as:
         \[
             \begin{aligned}
                 \dot{\x}_i(t) &= - \sum_{j \in \mathcal{N}_i} a_{ij} (x_i(t) - x_j(t)) & & \forall i \in \{1, \dots, N_f\} \\
@@ -373,5 +373,5 @@
         \[
             \dot{\x}(t) = - \lap \otimes \matr{I}_d \x(t)
         \]
-        where $\otimes$ is the Kronecker product.
+        where $\otimes$ is the Kronecker product (i.e., apply the same matrix across each dimension).
 \end{description}

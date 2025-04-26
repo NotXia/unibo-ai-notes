@@ -307,8 +307,9 @@
                 \[
                     \begin{aligned}
                         V(\tilde{\z}^{k+1}) - V(\tilde{\z}^k) &= \Vert \tilde{\z}^{k+1} \Vert^2 - \Vert \tilde{\z}^k \Vert^2 \\
-                        &= \cancel{\Vert \tilde{\z}^k \Vert^2} - 2\alpha(\vec{u}^k)^T\tilde{\z}^k + \alpha^2 \Vert \vec{u}^k \Vert^2 - \cancel{\Vert \tilde{\z}^k \Vert^2} &&& \text{\Cref{th:strong_convex_lipschitz_gradient}} \\
-                        &\leq -2\alpha\gamma_1 \Vert\tilde{\z}^k\Vert^2 + \alpha(\alpha-2\gamma_2) \Vert\vec{u}^k\Vert^2
+                        &= \Vert \tilde{\z}^{k} - \alpha \vec{u}^{k} \Vert^2 - \Vert \tilde{\z}^k \Vert^2 \\
+                        &= \cancel{\Vert \tilde{\z}^k \Vert^2} - 2\alpha(\vec{u}^k)^T\tilde{\z}^k + \alpha^2 \Vert \vec{u}^k \Vert^2 - \cancel{\Vert \tilde{\z}^k \Vert^2} \\
+                        &\leq -2\alpha\gamma_1 \Vert\tilde{\z}^k\Vert^2 + \alpha(\alpha-2\gamma_2) \Vert\vec{u}^k\Vert^2 &&& \text{\Cref{th:strong_convex_lipschitz_gradient}} 
                     \end{aligned}
                 \]
 
@@ -344,7 +345,7 @@
     \[
         \min_{\z} \frac{1}{2}\z^T \matr{Q} \z + \vec{r}^T \z
         \qquad
-        \nabla l = \matr{Q} \z^k + \vec{r}
+        \nabla l = \matr{Q} \z + \vec{r}
     \]
     The gradient method can be reduced to an affine linear system:
     \[

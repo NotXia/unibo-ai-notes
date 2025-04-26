@@ -6,7 +6,7 @@
         Problem where $N$ agents want to optimize their positions $\z_i \in \mathbb{R}^2$ to perform multi-robot surveillance in an environment with:
         \begin{itemize}
             \item A static target to protect $\r_0 \in \mathbb{R}^2$.
-            \item Static intruders/opponents $\r_i \in \mathbb{R}^2$, each assigned to an agent $i$.
+            \item Static intruders/opponents $\r_i \in \mathbb{R}^2$, each assigned to the respective agent $i$.
         \end{itemize}
 
         The average position of the agents define the barycenter:
@@ -16,7 +16,7 @@
         \[
             l_i(\z_i, \sigma(\z)) = 
             \gamma_i \underbrace{\Vert \z_i - \r_i \Vert^2}_{\text{close to opponent}} + 
-            \underbrace{\Vert \sigma(\z) - \r_0 \Vert^2}_{\text{barycenter close to protectee}}
+            \underbrace{\Vert \sigma(\z) - \r_0 \Vert^2}_{\text{barycenter close to target}}
         \]
         Note that the opponent component only depends on local variables while the target component needs global information.
 
@@ -69,8 +69,9 @@
                 &\frac{\partial}{\partial z_i} \left.\left( \sum_{j=1}^{N} l_j(z_j, \sigma(z_1, \dots, z_N)) \right) \right|_{z_j=z_j^k} \\
                 &= 
                     \left.\frac{\partial}{\partial z_i} l_i(z_i, \sigma) \right|_{\substack{z_i = z_i^k,\\\sigma = \sigma(\z^k)}} + 
-                    \left.\left(\sum_{j=1}^{N} \frac{\partial}{\partial \sigma} l_j(z_j, \sigma) \right)\right|_{\substack{z_j = z_j^k,\\\sigma = \sigma(\z^k)}} \cdot
-                    \left.\frac{\partial}{\partial z_i} \sigma(z_1, \dots, z_N)\right|_{\substack{z_j=z_j^k}}
+                    \sum_{j=1}^{N} \left( \left. \left( \frac{\partial}{\partial \sigma} l_j(z_j, \sigma) \right)\right|_{\substack{z_j = z_j^k,\\\sigma = \sigma(\z^k)}} 
+                    \cdot
+                    \left.\frac{\partial}{\partial z_i} \sigma(z_1, \dots, z_N)\right|_{\substack{z_j=z_j^k}} \right)
             \end{split}
         \]
 

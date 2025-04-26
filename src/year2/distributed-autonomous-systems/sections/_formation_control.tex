@@ -16,7 +16,7 @@
         \[
             F_{e,i}(x) = -a_{i,i-1}(x_i-x_{i-1}) - a_{i,i+1}(x_i - x_{i+1})
         \]
-        Equivalently, it is possible to express the elastic force as the negative gradient of the elastic energy:
+        Equivalently, it is possible to express the elastic force as the negative gradient of the elastic potential energy:
         \[
             F_{e,i}(x) = -\frac{\partial}{\partial x_i}\left( \frac{1}{2} a_{i,i-1} \Vert x_i - x_{i-1} \Vert^2 + \frac{1}{2} a_{i,i+1} \Vert x_i - x_{i+1} \Vert^2 \right)
         \]
@@ -86,7 +86,7 @@
             \end{figure}
         \end{remark}
         
-        By adding a damping coefficient (i.e., dispersion of velocity) $c=1$, the overall system dynamics can be defined as:
+        By adding a constant damping coefficient (i.e., dispersion of velocity) $c=1$, the overall system dynamics can be defined as:
         \[
             \begin{split}
                 \dot{x}_i &= v_i \\
@@ -148,7 +148,7 @@
 
 \begin{description}
     \item[Formation control] \marginnote{Formation control}
-        Consider $N$ agents with states $\x_i(t) \in \mathbb{R}^d$ and communicating according to a fixed undirected graph $G$, and a set of distances $d_{ij} = d_{ji}$. The goal is to position each agent respecting the desired distances between them:
+        Consider $N$ agents with states $\x_i(t) \in \mathbb{R}^d$ and communicating according to a fixed undirected graph $G$. The goal is to position each agent respecting the desired distances $d_{ij} = d_{ji}$ between them:
         \[
             \forall (i,j) \in E: \Vert \x_i^\text{form} - \x_j^\text{form} \Vert = d_{ij}
         \]
