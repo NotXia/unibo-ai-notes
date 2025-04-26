@@ -87,4 +87,237 @@
 \begin{description}
     \item[Training data]
         Manually annotated terms of service.
+
+    \item[Tasks] Two tasks are solved:
+        \begin{description}
+            \item[Detection] Binary classification problem aimed at determining whether a sentence contains a potentially unfair clause.
+            \item[Sentence classification] Classification problem of determining the category of the unfair clause.
+        \end{description}
+
+    \item[Experimental setup]
+        Leave-one-out where one document is used as test set and the remaining as train ($\frac{4}{5}$) and validation ($\frac{1}{5}$) set.
+
+    \item[Metrics] Precision, recall, F1.
+\end{description}
+
+
+\subsection{Base clause classifier}
+
+Experimented methods were:
+\begin{itemize}
+    \item Bag-of-words,
+    \item Tree kernels,
+    \item CNN,
+    \item SVM,
+    \item \dots
+\end{itemize}
+
+
+\subsection{Background knowledge injection}
+
+\begin{description}
+    \item[Memory-augmented neural network] \marginnote{Memory-augmented neural network}
+        Model that, given a query, retrieves some knowledge from the memory and combines them to produce the prediction.
+
+        In CLAUDETTE, the knowledge base is composed of all the possible rationales for which a clause can be unfair. The workflow is the following:
+        \begin{enumerate}
+            \item The clause is used to query the knowledge base using a similarity score and the most relevant rationale is extracted.
+            \item The rationale is combined with the query.
+            \item Repeat the extraction step until the similarity score is too low.
+            \item Make the prediction and provide the rationales used as explanation.
+        \end{enumerate}
+\end{description}
+
+\begin{example}[Knowledge base for liability exclusion]
+    Rationales are divided into six class of clauses:
+    \begin{itemize}
+        \item Kind of damage,
+        \item Standard of care,
+        \item Cause,
+        \item Causal link,
+        \item Liability theory,
+        \item Compensation amount.
+    \end{itemize}
+\end{example}
+
+
+\subsection{Multilingualism}
+
+\begin{description}
+    \item[Training data]
+        Same terms of service of the original CLAUDETTE corpus selected according to the following criteria:
+        \begin{itemize}
+            \item The ToS is available in the target language,
+            \item There is a correspondence in terms of version or publication date between the documents in the two languages,
+            \item There are structure similarities between the documents in the two languages.
+        \end{itemize}
+\end{description}
+
+
+\begin{description}
+    \item[Approaches] Different strategies have been experimented with:
+    \begin{description}
+        \item[Novel corpus for target language] \marginnote{Novel corpus for target language}
+            Retrain CLAUDETTE from scratch with newly annotated data in the target language.
+
+        \item[Semi-automated creation of corpus through projection] \marginnote{Semi-automated creation of corpus through projection}
+            Method that works as follows:
+            \begin{enumerate}
+                \item Use machine translation to translate the annotated English document in the target language while projecting the unfair clauses.
+                \item Match the machine translated document with the original document in the target language and project the unfair clauses (through human annotation).
+                \item Train CLAUDETTE from scratch.
+            \end{enumerate}
+
+        \item[Training set translation] \marginnote{Training set translation}
+            Translate the original document to the target language and train CLAUDETTE from scratch.
+
+            \begin{remark}
+                This method does not require human annotation.
+            \end{remark}
+
+        \item[Machine translation of queries] \marginnote{Machine translation of queries}
+            Method that works as follows:
+            \begin{enumerate}
+                \item Translate the document from the target language to English.
+                \item Feed the translated document to CLAUDETTE.
+                \item Translate the English document back to the target language.
+            \end{enumerate}
+            
+            \begin{remark}
+                This method does not require retraining.
+            \end{remark}
+    \end{description}
+\end{description}
+
+
+
+\section{CLAUDETTE and GDPR}
+
+
+\begin{description}
+    \item[CLAUDETTE for GDPR compliance] 
+        To integrate CLAUDETTE as a tool to check GDPR compliance, three dimensions, each containing different categories (ranked with three levels of achievement), are checked:
+        \begin{descriptionlist}
+            \item[Comprehensiveness of information] \marginnote{Comprehensiveness of information}
+                Whether the policy contains all the information required by articles 13 and 14 of the GDPR.
+
+                Categories of this dimension comprises:
+                \begin{itemize}
+                    \item Contact information of the controller,
+                    \item Contact information of the data protection officer,
+                    \item Purpose and legal bases for processing,
+                    \item Category of personal data processed,
+                    \item \dots
+                \end{itemize}
+        
+            \item[Substantive compliance] \marginnote{Substantive compliance}
+                Whether the policy processes personal data complying with the GDPR.
+
+                Categories of this dimension comprises:
+                \begin{itemize}
+                    \item Processing of sensitive data,
+                    \item Processing of children's data,
+                    \item Consent by using, take-or-leave,
+                    \item Transfer to third parties or countries,
+                    \item Policy change (e.g., if the data subject is notified),
+                    \item Licensing data,
+                    \item Advertising.
+                \end{itemize}
+        
+            \item[Clarity of expression] \marginnote{Clarity of expression}
+                Whether the policy is precise and understandable (i.e., transparent).
+
+                Categories of this dimension comprises:
+                \begin{itemize}
+                    \item Conditional terms: the performance of an action is dependent on a variable trigger.
+                    \begin{remark}
+                        Typical language qualifiers to identify this category are: depending, as necessary, as appropriate, as needed, otherwise reasonably, sometimes, from time to time, \dots
+                    \end{remark}
+                    \begin{example}
+                        ``\textit{We also may share your information if we believe, in our sole discretion, that such disclosure is \underline{necessary} \textnormal{\dots}}''
+                    \end{example}
+                    
+                    \item Generalization: terms to abstract practices with an unclear context.
+                    \begin{remark}
+                        Typical language qualifiers to identify this category are: generally, mostly, widely, general, commonly, usually, normally, typically, largely, often, primarily, among other things, \dots
+                    \end{remark}
+                    \begin{example}
+                        ``\textit{We \underline{typically} or \underline{generally} collect information \dots When you use an Application on a Device, we will collect and use information about you in \underline{generally} similar ways and for similar purposes as when you use the TripAdvisor website.}''
+                    \end{example}
+
+                    \item Modality: terms that ambiguously refer to the possibility of actions or events.
+                    \begin{remark}
+                        Typical language qualifiers to identify this category are: may, might, could, would, possible, possibly, \dots
+
+                        Note that these qualifiers have two possible meanings: possibility and permission. This category only deals with possibility.
+                    \end{remark}
+                    \begin{example}
+                        ``\textit{We \underline{may} use your personal data to develop new services.}''
+                    \end{example}
+
+                    \item Non-specific numeric quantifiers: terms that are ambiguous in terms of actual measure.
+                    \begin{remark}
+                        Typical language qualifiers to identify this category are: certain, numerous, some, most, many, various, including (but not limited to), variety, \dots
+                    \end{remark}
+                    \begin{example}
+                        ``\textit{\textnormal{\dots}we may collect a \underline{variety} of information, \underline{including} your name, mailing address, phone number, email address, \dots}''
+                    \end{example}
+                \end{itemize}
+        \end{descriptionlist}
+\end{description}
+
+
+
+\section{LLMs and privacy policies}
+
+\begin{remark}
+    The GDPR requires two competing properties for privacy policies:
+    \begin{descriptionlist}
+        \item[Comprehensiveness] The policy should contain all the relevant information.
+        \item[Comprehensibility] The policy should be easily understandable.
+    \end{descriptionlist}
+\end{remark}
+
+
+\begin{description}
+    \item[Comprehensive policy from LLMs] 
+        Formulate privacy policies for comprehensiveness and let LLMs extract the relevant information.
+
+        A template for a comprehensive policy could include:
+        \begin{itemize}
+            \item Categories of personal data collected,
+            \item Purpose each category of data is processed for,
+            \item Legal basis for processing each category,
+            \item Storage period or deletion criteria,
+            \item Recipients or categories of recipients the data is shared with, their role, the purpose of sharing, and the legal basis.
+        \end{itemize}
+\end{description}
+
+\begin{description}
+    \item[Experimental setup]
+        The following questions were defined to assess a privacy policy:
+        \begin{enumerate}
+            \item What data does the company process about me?
+            \item For what purposes does the company use my email address?
+            \item Who does the company share my geolocation with?
+            \item What types of data are processed on the basis of consent, and for what purposes?
+            \item What data does the company share with Facebook?
+            \item Does the company share my data with insurers?
+            \item What categories of data does the company collect about me automatically?
+            \item How can I contact the company if I want to exercise my rights?
+            \item How long does the company keep my delivery address?
+        \end{enumerate}
+
+        Three scenarios were considered:
+        \begin{itemize}
+            \item Human evaluation of the questions on existing privacy policies,
+            \item LLMs to answer the questions on ideal mock policies (with human evaluation).
+            \item LLMs to answer the questions on real policies (with human evaluation).
+        \end{itemize}
+
+        Results show that:
+        \begin{itemize}
+            \item LLMs have high performance on the mock policies.
+            \item LLMs and humans struggle to answer the questions on real privacy policies.
+        \end{itemize}
 \end{description}
