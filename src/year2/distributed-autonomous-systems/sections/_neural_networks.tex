@@ -1,0 +1,303 @@
+\chapter{Neural networks}
+
+\begin{description}
+    \item[Supervised learning] \marginnote{Supervised learning}
+        Given $M$ data-label samples $\{ (\D^1, p^1), \dots, (\D^M, p^M) \}$, the goal is to approximate the mapping through a non-linear function $\phi(\cdot; \u)$ parametrized on $\u$.
+\end{description}
+
+
+\begin{description}
+    \item[Neuron model] \marginnote{Neuron model}
+        Computational unit composed of a set of weights $\u \in \mathbb{R}^d$ ($\mathbb{R}^{d+1}$ if with bias) that, given an input $\x \in \mathbb{R}^d$, computes:
+        \[
+            x^{+} = \sigma(\x^T \u + u_{b})
+        \]
+        where $\sigma: \mathbb{R} \rightarrow \mathbb{R}$ is an activation function.
+
+        \begin{remark}
+            The bias can be easily added by considering as weights $\begin{bmatrix} u_b & \u \end{bmatrix}^T$ and as input $\begin{bmatrix} 1 & \x \end{bmatrix}^T$.
+        \end{remark}
+
+
+    \item[Multi-layer perceptron] \marginnote{Multi-layer perceptron}
+        Network with $T$ layers each (for simplicity) with $d$ neurons where the $h$-th unit at layer $t$ has weights $\u_{h,t} \in \mathbb{R}^d$. The update at each neuron is defined as:
+        \[
+            x_{h,t+1} = \sigma(\x_t^T \u_{h,t})
+            \quad
+            x_{h,0} = \D^i_h
+        \]
+        In matrix form, it becomes:
+        \[
+            \begin{split}
+                \begin{bmatrix}
+                    x_{1, t+1} \\ \vdots \\ x_{d, t+1}
+                \end{bmatrix}
+                &=
+                \begin{bmatrix}
+                    \sigma(\x_t^T \u_{1,t}) \\
+                    \vdots \\
+                    \sigma(\x_t^T \u_{d,t})
+                \end{bmatrix} \\
+                \x_{t+1} &= f(\x_t, \u_t) \quad \u_t = \begin{bmatrix}
+                    \u_{1,t} \\ \vdots \\ \u_{d,t}
+                \end{bmatrix} \in \mathbb{R}^{d^2}
+            \end{split}
+        \]
+\end{description}
+
+
+
+\section{Training problem definition}
+
+\begin{description}
+    \item[Single sample training] \marginnote{Single sample training}
+        Task of finding $\u = (\u_0, \dots, \u_{T-1})$ such that at the last layer $t=T$ the prediction is as accurate as possible:
+        \[ \Vert \x_T - p \Vert < \varepsilon \]
+
+        By using forward simulation of the dynamics $\x_{t+1} = f(\x_t, \u_t)$, we can obtain the output of the last layer as:
+        \[
+            \x_T = \phi(\x_0; \u) = \phi(\D; \u)
+        \]
+        where $\phi$ is called shooting map and it passes the data sample through the layers (from a deep learning point-of-view, it represents the composition of function).
+
+        The best weights $\u^*$ can be obtained by solving:
+        \[
+            \min_{\u} l(\x_T; p) = \min_{\u} l(\phi(\D; \u); p)
+        \]
+        where $l$ is the loss.
+
+        \begin{remark}
+            In optimal control, the learning problem is a reduced/condensed problem and the algorithm to solve it is a direct single shooting.
+        \end{remark}
+
+        By defining:
+        \[
+            J(\u) = l(\phi(\D; \u); p)
+        \]
+        The reduced optimization problem is:
+        \[
+            \min_{\u} J(\u)
+        \]
+        And can be solved using the gradient method:
+        \[
+            \u^{k+1} = \u^k - \alpha^k \nabla J(\u^k)
+        \]
+
+
+    \item[Multiple samples training] \marginnote{Multiple samples training}
+        With multiple samples, the shooting function is applied at each data point:    
+        \[
+            \x_T^m = \phi(\x_0^m; \u)
+        \]
+
+        \begin{remark}
+            $\u$ is independent of $m$ (it is called ensemble control).
+        \end{remark}
+
+        The optimization problem becomes:
+        \[
+            \min_{\u} \sum_{m=1}^{M} J_m(\u)
+            \qquad 
+            J_m(\u) = l(\phi(\x_0^m; \u); p^m)
+        \]
+        And its solution with the gradient method is:
+        \[
+            \u^{k+1} = \u^k - \alpha^k \sum_{m=1}^{M} \nabla J_m(\u^k)
+        \]
+\end{description}
+
+
+\section{Backpropagation}
+
+
+\subsection{Preliminaries}
+
+\begin{description}
+    \item[Finite-horizon optimal control problem] \marginnote{Finite-horizon optimal control problem}
+        Optimization problem defined as:
+        \[
+            \begin{aligned}
+                &\min_{\x, \u} \sum_{t=0}^{T-1} l_t(\x_t, \u_t) + l_T(\x_T) 
+                && \x_0 = \x_\text{init} \\
+                &\,\text{subject to } \x_{t+1} = f_t(\x_t, \u_t) 
+            \end{aligned}
+        \]
+        where:
+        \begin{itemize}
+            \item $\x = (\x_1, \dots, \x_T)$ are the state trajectories,
+            \item $\u = (\u_1, \dots, \u_{T-1})$ are the input trajectories,
+            \item $f_t: \mathbb{R}^n \times \mathbb{R}^m \rightarrow \mathbb{R}^n$ for $t=0, \dots, T-1$ are the dynamics,
+            \item $l_t: \mathbb{R}^n \times \mathbb{R}^m \rightarrow \mathbb{R}$ for $t=0, \dots, T-1$ are the stage costs,
+            \item $l_T: \mathbb{R}^n \rightarrow \mathbb{R}$ is the terminal cost.
+        \end{itemize}
+
+    \item[Adjoint method (general case)] \marginnote{Adjoint method (general case)}
+        Algorithm to compute the gradient of the cost function of a finite-horizon optimal control problem.
+
+        Given the initial trajectory $(\x^0, \u^0)$, the method works as follows:
+        \begin{enumerate}
+            \item Repeat for the number of iterations $k = 0, 1, \dots$:
+            \begin{enumerate}
+                \item Perform backward simulation of the co-state $\lambda$  for $t = T-1, \dots, 0$:
+                \[
+                    \begin{split}
+                        \lambda_t &= \nabla_{[\x_t^k]} l_t(\x_t^k, \u_t^k) + \nabla_{[\x_t^k]} f_t(\x_t^k, \u_t^k) \lambda_{t+1} 
+                        \qquad 
+                        \lambda_T = \nabla l_T(\x_T^k) \\
+                        \Delta \u_t^k &= \nabla_{[\u_t^k]} l_t(\x_t^k, \u_t^k) + \nabla_{[\u_t^k]} f_t(\x_t^k, \u_t^k) \lambda_{t+1} 
+                    \end{split}
+                \]
+
+                \begin{remark}
+                    Intuitively, $\lambda_t$ is the derivative of the cost function w.r.t. the first argument and $\Delta \u_t^k$ is w.r.t. the second.
+                \end{remark}
+
+                \item Apply descent step on the control input for $t = 0, \dots, T-1$:
+                \[
+                    \u_{t}^{k+1} = \u_{t}^{k} - \alpha^k \Delta \u_t^k
+                \]
+                \item Apply forward simulation of the dynamics for $t = 0, \dots, T-1$:
+                \[
+                    \x_{t+1}^{k+1} = f_t(\x_t^{k+1}, \u_t^{k+1})
+                    \qquad
+                    \x_0^{k+1} = \x_\text{init}
+                \]
+            \end{enumerate}
+        \end{enumerate}
+
+    \item[Adjoint method (simplified)] \marginnote{Adjoint method (simplified)}
+        Without stage cost and with a time-invariant dynamics, the problem becomes:
+        \[
+            \begin{aligned}
+                &\min_{\x, \u} l_T(\x_T) && \x_0 = \x_\text{init} \\
+                &\,\text{subject to } \x_{t+1} = f(\x_t, \u_t)
+            \end{aligned}
+        \]
+
+        The backward simulation of the co-state becomes:
+        \[
+            \begin{split}
+                \lambda_t &= \nabla_{[\x_t^k]} f(\x_t^k, \u_t^k) \lambda_{t+1}
+                \qquad 
+                \lambda_T = \nabla l_T(\x_T^k) \\
+                \Delta \u_t^k &= \nabla_{[\u_t^k]} f(\x_t^k, \u_t^k) \lambda_{t+1}
+            \end{split}
+        \]
+
+        \begin{remark}
+            The co-states $\lambda_t$ represent the partial derivatives necessary to apply the chain rule and $\Delta\u_t = \frac{\partial J(\u)}{\partial \u_t}$.
+        \end{remark}
+\end{description}
+
+
+\subsection{Adjoint method for neural networks}
+
+\begin{description}
+    \item[Backpropagation (one-sample)] \marginnote{Backpropagation (one-sample)}
+        The simplified adjoint method is equivalent to the backpropagation algorithm for neural networks with:
+        \[
+            f(\x_t, \u_t) = 
+            \begin{bmatrix}
+                f_1(\x_t^k, \u_t^k) \\ \vdots \\ f_d(\x_t^k, \u_t^k)
+            \end{bmatrix} = 
+            \begin{bmatrix}
+                \sigma(\x_t^T \u_{1,t}) \\ \vdots \\ \sigma(\x_t^T \u_{d,t})
+            \end{bmatrix}
+            \qquad
+            t = 0, 1, \dots, T-1
+        \]
+
+        The gradient w.r.t. the first argument is:
+        \[
+            \begin{split}
+                \nabla_{[\x_t^k]} f(\x_t^k, \u_t^k) 
+                &= \begin{bmatrix}
+                    \nabla_{[\x_t^k]} f_1(\x_t^k, \u_t^k) & \dots & \nabla_{[\x_t^k]} f_d(\x_t^k, \u_t^k)
+                \end{bmatrix} \\
+                &= \begin{bmatrix}
+                    \u_{1,t}^k \sigma'((\x_t^k)^T \u_{1,t}^k) & \dots & \u_{d,t}^k \sigma'((\x_t^k)^T \u_{d,t}^k)
+                \end{bmatrix} \in \mathbb{R}^{d \times d}
+            \end{split}
+        \]
+            
+        The gradient w.r.t. the second argument is:
+        \[
+            \begin{split}
+                \nabla_{[\u_t^k]} f(\x_t^k, \u_t^k) 
+                &= \begin{bmatrix}
+                    \nabla_{[\u_t^k]} f_1(\x_t^k, \u_t^k) & \dots & \nabla_{[\u_t^k]} f_d(\x_t^k, \u_t^k)
+                \end{bmatrix} \\
+                &= \begin{bmatrix}
+                    \x_t^k \sigma'((\x_t^k)^T \u_{1,t}^k) & \dots & 0_d \\
+                    0_d & \ddots & 0_d \\
+                    \vdots & &  \vdots \\
+                    0_d & \dots & \x_t^k \sigma'((\x_t^k)^T \u_{d,t}^k)
+                \end{bmatrix} \in \mathbb{R}^{d^2 \times d}
+            \end{split}
+        \]
+
+        \begin{remark}
+            When computing $\nabla_{[\u_t^k]} f(\x_t^k, \u_t^k) \lambda_{t+1}$, a summation is sufficient instead of performing the complete matrix multiplication:
+            \[
+                \begin{bmatrix}
+                    \x_t^k \sigma'((\x_t^k)^T \u_{1,t}^k) & \dots & 0_d \\
+                    0_d & \ddots & 0_d \\
+                    \vdots & &  \vdots \\
+                    0_d & \dots & \x_t^k \sigma'((\x_t^k)^T \u_{d,t}^k)
+                \end{bmatrix}
+                \begin{bmatrix}
+                    \lambda_{1,t+1} \\ \vdots \\ \lambda_{d,t+1}
+                \end{bmatrix}
+            \]
+        \end{remark}
+
+    \item[Backpropagation (multiple samples)] \marginnote{Backpropagation (multiple samples)}
+        With $M$ data points, $\Delta \u_t^{m,k}$ is computed individually for each example and the update step is performed as:
+        \[
+            \u_t^{k+1} = \u_t^k - \alpha^k \sum_{m=1}^{M} \Delta \u_t^{m,k}
+        \]
+\end{description}
+
+
+\subsection{Federated machine learning}
+
+\begin{description}
+    \item[Federated machine learning] \marginnote{Federated machine learning}
+        Given a parameter server and $N$ agents each with $M_i$ data points, the problem is defined as:
+        \[ \min_\u \sum_{i=1}^{N} \sum_{m=1}^{M_i} l(\phi(\mathcal{D}^m; \u); p^m) = \min_\u \sum_{i=1}^{N} J_i(\u) \]
+        Communication is only between the parameter server and the agents.
+
+    \item[Federated backpropagation] \marginnote{Federated backpropagation}
+        Algorithm that works as follows:
+        \begin{enumerate}
+            \item Repeat for the number of iterations $k = 0, 1, \dots$:
+            \begin{enumerate}
+                \item The parameter server sends the current weights $\u_k$ to the agents.
+                \item Each agent computes the step direction $\vec{d}_i^k = -\nabla J_i(\u^k)$ and sends it to the parameter server.
+                \item The parameter server performs the update step:
+                \[ \u^{k+1} = \u^k + \alpha^k \sum_{i=1}^{N} \vec{d}_i^k \]
+            \end{enumerate}
+        \end{enumerate}
+\end{description}
+
+
+\subsection{Distributed machine learning}
+
+\begin{description}
+    \item[Distributed machine learning] \marginnote{Distributed machine learning}
+        Given $N$ agents each with $M_i$ data points, the problem is defined as:
+        \[ \min_\u \sum_{i=1}^{N} \sum_{m=1}^{M_i} l(\phi(\mathcal{D}^m; \u); p^m) = \min_\u \sum_{i=1}^{N} J_i(\u) \]
+        Communication is only between neighboring agents.
+
+    \item[Distributed backpropagation] \marginnote{Distributed backpropagation}
+        Algorithm that works as follows:
+        \begin{enumerate}
+            \item Repeat for the number of iterations $k = 0, 1, \dots$:
+            \begin{enumerate}
+                \item Each agent sends its local weights $\u_i^k$ to its neighbors.
+                \item Each agent computes the local step direction $\vec{d}_i^k = -\nabla J_i\left( \sum_{j \in \mathcal{N}_i} a_{ij}\u_j^k \right)$.
+                \item Each agent performs the local update step:
+                \[ \u_i^{k+1} = \sum_{j \in \mathcal{N}_i} \left( a_{ij} \u_j^k + \alpha^k \vec{d}_i^k \right) \]
+            \end{enumerate}
+        \end{enumerate}
+\end{description}
