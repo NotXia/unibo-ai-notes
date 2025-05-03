@@ -25,6 +25,11 @@
 
         The goal is to design a feedback control law $\kappa^s: X \rightarrow \mathbb{R}^m$ for a control-affine non-linear dynamical system such that the set $X^s$ is forward invariant (i.e., any trajectory starting in $X^s$ remains in $X^s$).
 
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.25\linewidth]{./img/safety_control.png}
+        \end{figure}
+
         \begin{remark}
             The time derivative of $V^s(\x(t))$ along the system trajectories is given by:
             \[
@@ -116,6 +121,11 @@
     \item[Single-robot obstacle avoidance] \marginnote{Single-robot obstacle avoidance} 
         Task where the goal is to keep an agent to a safety distance $\Delta > 0$ from an obstacle.
 
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/safety_control_single.png}
+        \end{figure}
+
         A control barrier function to solve the task can be:
         \[
             V^s(\x) = \Vert \x - \x_\text{obs} \Vert^2 - \Delta^2
@@ -151,6 +161,11 @@
 \begin{description}
     \item[Multi-robot collision avoidance] \marginnote{Multi-robot collision avoidance}
         Task with $N$ single integrator agents that want to keep a safety distance $\Delta > 0$ among them.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\linewidth]{./img/safety_control_multi.png}
+        \end{figure}
 
         The local control barrier function to solve the task can be defined as:
         \[
