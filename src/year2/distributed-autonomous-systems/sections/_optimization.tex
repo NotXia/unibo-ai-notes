@@ -34,7 +34,7 @@
     \item[Convex set] \marginnote{Convex set}
         A set $Z \subseteq \mathbb{R}^d$ is convex if it holds that:
         \[
-            \forall \z_A, \z_B \in Z: \Big( \exists \alpha \in [0, 1]: (\alpha \z_A + (1-\alpha)\z_B) \in Z \Big)
+            \forall \z_A, \z_B \in Z: \Big( \forall \alpha \in [0, 1]: (\alpha \z_A + (1-\alpha)\z_B) \in Z \Big)
         \]
 
         \begin{figure}[H]
@@ -45,7 +45,7 @@
     \item[Convex function] \marginnote{Convex function}
         Given a convex set $Z \subseteq \mathbb{R}^d$, a function $l: Z \rightarrow \mathbb{R}$ is convex if it holds that:
         \[
-            \forall \z_A, \z_B \in Z: \Big( \exists \alpha \in [0, 1]: l(\alpha \z_A + (1-\alpha) \z_B) \leq \alpha l(\z_A) + (1-\alpha) l(\z_B) \Big)
+            \forall \z_A, \z_B \in Z: \Big( \forall \alpha \in [0, 1]: l(\alpha \z_A + (1-\alpha) \z_B) \leq \alpha l(\z_A) + (1-\alpha) l(\z_B) \Big)
         \]
 
         \begin{figure}[H]
@@ -67,7 +67,7 @@
         Given a convex set $Z \subseteq \mathbb{R}^d$, a function $l: Z \rightarrow \mathbb{R}$ is strongly convex with parameter $\mu > 0$ if it holds that:
         \[
             \begin{split}
-                \forall \z_A, \z_B \in Z, \z_A \neq \z_B: \Big( \exists \alpha \in (0, 1)&: l(\alpha \z_A + (1-\alpha) \z_B) < \\
+                \forall \z_A, \z_B \in Z, \z_A \neq \z_B: \Big( \forall \alpha \in (0, 1)&: l(\alpha \z_A + (1-\alpha) \z_B) < \\
                 &\alpha l(\z_A) + (1-\alpha) l(\z_B) - \frac{1}{2} \mu \alpha (1-\alpha) \Vert \z_A-\z_B \Vert^2 \Big)
             \end{split}
         \]
