@@ -1,4 +1,4 @@
-\chapter{Multi-robot safety controllers}
+\chapter{Safety controllers}
 
 
 \begin{description}
@@ -126,7 +126,7 @@
             \includegraphics[width=0.35\linewidth]{./img/safety_control_single.png}
         \end{figure}
 
-        A control barrier function to solve the task can be:
+        A control barrier function to solve the task (i.e., rectify the trajectory of the high level controller) can be:
         \[
             V^s(\x) = \Vert \x - \x_\text{obs} \Vert^2 - \Delta^2
             \qquad
@@ -180,4 +180,151 @@
         \[
             X_i = \{ \x \in \mathbb{R}^d \mid \forall j \in \mathcal{N}_i: V_{i,j}^s(\x) \geq 0 \}
         \]
+
+        The set of admissible controllers is:
+        \[
+            \begin{aligned}
+                \begin{aligned}
+                    U^s(\x) = \Big\{ \u \in \mathbb{R}^{dN} \mid 
+                    -\nabla_{[\x_i]} V_{ij}^s(\x_i, \x_j)^T \u_i 
+                    - \nabla_{[\x_i]} V_{ji}^s(\x_j, \x_i)^T \u_j 
+                    - &\gamma(V_{ij}^{s}(\x_i, \x_j)) \leq 0 \\
+                    &\forall j \in \mathcal{N}_i, \forall i \in \{1, \dots, N\} \Big\}
+                \end{aligned} \\
+                = \Big\{ \u \in \mathbb{R}^{dN} \mid -2(\x_i, \x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \,\,\forall j \in \mathcal{N}_i, \forall i \in \{1, \dots, N\} \Big\}
+            \end{aligned}
+        \]
+
+        % \[
+        %     L_g V_{ij}^s(\x) = \nabla_{[\x_i]} V^s(\x_i, \x_j)^T \u_i + \nabla_{[\x_j]} V^s(\x_i, \x_j)^T \u_j
+        % \]
+\end{description}
+
+\begin{description}
+    \item[Centralized safety controller] \marginnote{Centralized safety controller}
+        The CBF-based policy can be obtained by solving:
+        \[
+            \begin{gathered}
+                \arg\min_{\u \in \mathbb{R}^N} \sum_{i=1}^{N} \Vert \u_i - \u_i^\text{ref} \Vert^2 \\
+                \begin{aligned}
+                    \text{subject to } 
+                    &-2(\x_i, \x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \\
+                    & \Vert \u_i \Vert \leq \u_i^\text{max} \\
+                    & \forall j \in \mathcal{N}_i, \forall i \in \{ 1, \dots, N \}
+                \end{aligned}
+            \end{gathered}
+        \]
+        where $\u_i^\text{ref}$ is the reference input of the high level controller and $\u_i^\text{max}$ is the bound.
+
+        \begin{remark}
+            The policy should be computed continuously for each $x_i(t)$.
+        \end{remark}
+
+    \item[Decentralized safety controller] \marginnote{Decentralized safety controller}
+        The CBF-based policy can be obtained by solving a more constrained problem compared to the centralized formulation:
+        \[
+            \begin{gathered}
+                \arg\min_{\u_i \mathbb{R}^d} \Vert \u_i - \u_i^\text{ref} \Vert^2 \\
+                \begin{aligned}
+                    \text{subject to } &- \nabla_{[\x_i]} V_{ij}^s(\x_i, \x_j)^T \u_i - \frac{1}{2} \gamma (V_{ij}^s(\x_i, \x_j)) \leq 0 \\
+                    & \Vert \u_i \Vert \leq \u_i^\text{max} \\
+                    & \forall j \in \mathcal{N}_i
+                \end{aligned}
+            \end{gathered}
+        \]
+
+        \begin{remark}
+            If $\forall i \in \{1, \dots, N\}: \nabla_{[\x_i]} V_{ij}^s(\x_i, \x_j)^T \u_i \geq \frac{1}{2} \gamma (V_{ij}^s(\x_i, \x_j))$, then it holds that:
+            \[
+                \begin{split}
+                    \nabla_{[\x_i]} V_{ij}^s(\x_i, \x_j)^T \u_i + \nabla_{[\x_i]} V_{ji}^s(\x_j, \x_i)^T \u_j 
+                    &\geq -\frac{1}{2} \gamma\left( V_{ij}^s(\x_i, \x_j) \right) - \frac{1}{2} \gamma\left( V_{ji}^s(\x_j, \x_i) \right) \\
+                    &\geq - \gamma\left( V_{ij}^s(\x_i, \x_j) \right)
+                \end{split}
+            \]
+        \end{remark}
+\end{description}
+
+
+\subsection{Multi-robot collision avoidance with unicycle control}
+
+\begin{description}
+    \item[Unicycle model with non-holonomic constraints] 
+        Model that captures the constraints given by wheels. Its dynamics is:
+        \[
+            \begin{split}
+                \dot{\vec{p}}_x &= v \cos(\theta) \\
+                \dot{\vec{p}}_y &= v \sin(\theta) \\
+                \theta &= \omega \\
+            \end{split}
+        \]
+        where:
+        \begin{itemize}
+            \item $(\vec{p}_x, \vec{p}_y)$ is the position of the center of mass,
+            \item $\theta$ is the orientation,
+            \item $v$ is the linear velocity,
+            \item $\omega$ is the angular velocity.
+        \end{itemize}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.25\linewidth]{./img/unicycle_model.png}
+        \end{figure}
+
+        \begin{remark}
+            It is assumed that the robot does not drift sideways ($v_{\bot} = 0$).
+        \end{remark}
+
+    \item[Single integrator to unicycle control mapping] \marginnote{Single integrator to unicycle control mapping}
+        Consider a point $\x^\text{int}$ longitudinal to $v$ that is not the barycenter:
+        \[
+            \x^\text{int} = \begin{bmatrix}
+                \vec{p}_x \\ \vec{p}_y
+            \end{bmatrix}
+            +
+            \rho \begin{bmatrix}
+                \cos(\theta) \\ \sin(\theta)
+            \end{bmatrix}
+        \]
+        where $\rho > 0$ is the distance to the barycenter.
+
+        By differentiating w.r.t. time, the dynamics is:
+        \[
+            \dot{\x}^\text{int} = \begin{bmatrix}
+                \dot{\vec{p}}_x \\ \dot{\vec{p}}_y
+            \end{bmatrix}
+            +
+            \rho \dot{\theta} \begin{bmatrix}
+                - \sin(\theta) \\ \cos(\theta)
+            \end{bmatrix}
+        \]
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.2\linewidth]{./img/single_unicycle_map.png}
+        \end{figure}
+
+        By using the unicycle model dynamics, it becomes:
+        \[
+            \dot{\x}^\text{int} = \begin{bmatrix}
+                \cos(\theta) & -\rho\sin(\theta) \\
+                \sin(\theta) & \rho\cos(\theta) \\
+            \end{bmatrix}
+            \begin{bmatrix}
+                v \\ \omega
+            \end{bmatrix}
+        \]
+
+        By formulating $v$ and $\omega$ as a state-feedback control with input $\u^\text{int} \in \mathbb{R}^2$ as:
+        \[
+            \begin{bmatrix}
+                v \\ \omega
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                \cos(\theta) & \sin(\theta) \\
+                -\frac{1}{\rho} \sin(\theta) & \frac{1}{\rho} \cos(\theta)
+            \end{bmatrix} \u^\text{int}
+        \]
+        The result is a single-integrator $\dot{\x}^\text{int} = \u^\text{int}$.
 \end{description}
