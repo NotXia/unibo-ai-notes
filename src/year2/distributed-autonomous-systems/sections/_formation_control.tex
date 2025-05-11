@@ -9,40 +9,45 @@
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.5\linewidth]{./img/mass_spring_system.png}
+            \includegraphics[width=0.35\linewidth]{./img/mass_spring_system.png}
         \end{figure}
 
-        The elastic force $F_{e,i}(x)$ at mass $i$ is given by:
+        The elastic force $F_{e,i}(\x)$ at mass $i$ is given by:
         \[
-            F_{e,i}(x) = -a_{i,i-1}(x_i-x_{i-1}) - a_{i,i+1}(x_i - x_{i+1})
+            F_{e,i}(\x) = -a_{i,i-1}(x_i-x_{i-1}) - a_{i,i+1}(x_i - x_{i+1})
         \]
         Equivalently, it is possible to express the elastic force as the negative gradient of the elastic potential energy:
         \[
-            F_{e,i}(x) = -\frac{\partial}{\partial x_i}\left( \frac{1}{2} a_{i,i-1} \Vert x_i - x_{i-1} \Vert^2 + \frac{1}{2} a_{i,i+1} \Vert x_i - x_{i+1} \Vert^2 \right)
+            F_{e,i}(\x) = -\frac{\partial}{\partial x_i}\left( \frac{1}{2} a_{i,i-1} \Vert x_i - x_{i-1} \Vert^2 + \frac{1}{2} a_{i,i+1} \Vert x_i - x_{i+1} \Vert^2 \right)
         \]
 
     \item[Mass-spring system with two springs] \marginnote{Mass-spring system with two springs}
         Assume that the springs of a mass-spring system can be split with halved elastic constants.
         \begin{figure}[H]
             \centering
-            \includegraphics[width=0.5\linewidth]{./img/mass_spring_system2.png}
+            \includegraphics[width=0.35\linewidth]{./img/mass_spring_system2.png}
         \end{figure}
 
         Accordingly, the elastic force can be defined as:
         \[
             \small
             \begin{split}
-                F_{e,i}(x) 
+                F_{e,i}(\x) 
                 &= 
                     - \frac{1}{2} a_{i,i-1}(x_i - x_{i-1}) 
                     - \frac{1}{2} a_{i-1,i}(x_i - x_{i-1}) 
                     - \frac{1}{2} a_{i,i+1}(x_i - x_{i+1}) 
                     - \frac{1}{2} a_{i+1,i}(x_i - x_{i+1}) \\
-                &= 
-                    - \frac{1}{2} a_{i,i-1}(x_i - x_{i-1}) 
-                    + \frac{1}{2} a_{i-1,i}(x_{i-1} - x_i) 
-                    - \frac{1}{2} a_{i,i+1}(x_i - x_{i+1}) 
-                    + \frac{1}{2} a_{i+1,i}(x_{i+1} - x_i) \\
+                &= -\frac{\partial}{\partial x_i} \left( 
+                        \frac{1}{2} \frac{a_{i,i-1}}{2} \Vert x_i - x_{i-1} \Vert^2 + 
+                        \frac{1}{2} \frac{a_{i-1,i}}{2} \Vert x_{i} - x_{i-1} \Vert^2 + 
+                        \frac{1}{2} \frac{a_{i,i+1}}{2} \Vert x_i - x_{i+1} \Vert^2 + 
+                        \frac{1}{2} \frac{a_{i+1,i}}{2} \Vert x_{i} - x_{i+1} \Vert^2 \right) \\
+                % &= 
+                %     - \frac{1}{2} a_{i,i-1}(x_i - x_{i-1}) 
+                %     + \frac{1}{2} a_{i-1,i}(x_{i-1} - x_i) 
+                %     - \frac{1}{2} a_{i,i+1}(x_i - x_{i+1}) 
+                %     + \frac{1}{2} a_{i+1,i}(x_{i+1} - x_i) \\
                 &= -\frac{\partial}{\partial x_i} \left( 
                     \frac{1}{2} \frac{a_{i,i-1}}{2} \Vert x_i - x_{i-1} \Vert^2 + 
                     \frac{1}{2} \frac{a_{i-1,i}}{2} \Vert x_{i-1} - x_{i} \Vert^2 + 
@@ -53,7 +58,7 @@
         The total potential energy (i.e., sum of the function in the derivative over all masses) can be compactly defined as:
         \[
             \begin{split}
-                V(x) &= \sum_{i=1}^{N} \sum_{j \in \mathcal{N}_i} \frac{1}{2} \frac{a_{i,j}}{2} \Vert x_i - x_j \Vert^2 \\
+                V(\x) &= \sum_{i=1}^{N} \sum_{j \in \mathcal{N}_i} \frac{1}{2} \frac{a_{i,j}}{2} \Vert x_i - x_j \Vert^2 \\
                 &= \sum_{i=1}^{N} \sum_{j \in \mathcal{N}_i} V_{ij}(x_i, x_j)
             \end{split}
             \quad
@@ -63,17 +68,17 @@
 
         Then, the potential energy at mass $i$ can be written as:
         \[
-            V_i(x) = \sum_{j \in \mathcal{N}_i} ( V_{i,j}(x_i, x_j) + V_{j,i}(x_j, x_i) )
+            V_i(\x) = \sum_{j \in \mathcal{N}_i} ( V_{i,j}(x_i, x_j) + V_{j,i}(x_j, x_i) )
         \]
             
         Finally, the elastic force at mass $i$ can be reformulated as:
         \[
             \begin{split}
-                F_{e,i}(x) 
+                F_{e,i}(\x) 
                 &= - \frac{\partial}{\partial x_i} \Big( V_{i,i-1}(x_i, x_{i-1}) + V_{i-1,i}(x_{i-1}, x_i) + V_{i,i+1}(x_i, x_{i+1}) + V_{i+1,i}(x_{i+1}, x_i) \Big) \\
                 &= - \frac{\partial}{\partial x_i} \left( \sum_{j \in \mathcal{N}_i} ( V_{i,j}(x_i, x_j) + V_{j,i}(x_j, x_i) ) \right) \\
-                &= - \frac{\partial}{\partial x_i} V_i(x) \\
-                &= - \frac{\partial}{\partial x_i} V(x)
+                &= - \frac{\partial}{\partial x_i} V_i(\x) \\
+                &= - \frac{\partial}{\partial x_i} V(\x)
             \end{split}
         \]
 
@@ -90,7 +95,7 @@
         \[
             \begin{split}
                 \dot{x}_i &= v_i \\
-                m_i \dot{v}_i &= - v_i - c\frac{\partial}{\partial x_i} V(x) = - v_i - \frac{\partial}{\partial x_i} V(x)
+                m_i \dot{v}_i &= - v_i - c\frac{\partial}{\partial x_i} V(\x) = - v_i - \frac{\partial}{\partial x_i} V(\x)
             \end{split}
         \]
         where $m_i$ is the mass of the $i$-th mass.
@@ -98,8 +103,8 @@
         By assuming small masses $m_i$, the following approximation can be made:
         \[
             \begin{gathered}
-                \cancel{m_i \dot{v}_i} = - v_i - \frac{\partial}{\partial x_i} V(x) \Rightarrow v_i \approx -\frac{\partial}{\partial x_i} V(x) \\
-                \dot{x_i} = -\frac{\partial}{\partial x_i} V(x) = F_{e,i}(x)
+                \cancel{m_i \dot{v}_i} = - v_i - \frac{\partial}{\partial x_i} V(\x) \Rightarrow v_i \approx -\frac{\partial}{\partial x_i} V(\x) \\
+                \dot{x_i} = -\frac{\partial}{\partial x_i} V(\x) = F_{e,i}(\x)
             \end{gathered}
         \]
 
@@ -117,20 +122,20 @@
         Therefore, the overall system follows a Laplacian dynamics and can be equivalently formulated as the gradient flow of $V$:
         \[
             \begin{split}
-                \dot{\x} &= -\matr{L}\x = - \nabla V(x) \\
+                \dot{\x} &= -\matr{L}\x = - \nabla V(\x) \\
                 \begin{bmatrix}
                     \dot{x}_1 \\ \vdots \\ \dot{x}_N
                 \end{bmatrix}
                 &=
                 - \begin{bmatrix}
-                    \frac{\partial}{\partial x_1} V(x) \\
+                    \frac{\partial}{\partial x_1} V(\x) \\
                     \vdots
                     \\
-                    \frac{\partial}{\partial x_N} V(x)
+                    \frac{\partial}{\partial x_N} V(\x)
                 \end{bmatrix}
             \end{split}
         \]
-        And consensus is reached at a stationary point of $V(x)$.
+        And consensus is reached at a stationary point of $V(\x)$.
 \end{description}
 
 
@@ -160,7 +165,7 @@
                 V_{ij}^\text{form}(\x_i, \x_j) = \frac{1}{8} \left( \Vert \x_i - \x_j \Vert^2 - d_{ij}^2 \right)^2
             \end{gathered}
         \]
-        where $\frac{1}{8}$ is used to cancel out the fraction when deriving.
+        where $\frac{1}{8}$ is used to cancel out the coefficients when deriving.
 
         The gradient flow dynamics is then:
         \[
