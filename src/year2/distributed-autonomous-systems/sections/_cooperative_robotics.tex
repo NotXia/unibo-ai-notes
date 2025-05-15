@@ -42,7 +42,7 @@
         where:
         \begin{itemize}
             \item $\z = (\z_1, \dots, \z_N)$ with $\z_i \in \mathbb{R}^{n_i}$,
-            \item $l_i: \mathbb{R}^{n_i} \rightarrow \mathbb{R}^d$ is the loss function of the agent $i$,
+            \item $l_i: \mathbb{R}^{n_i} \times \mathbb{R}^d \rightarrow \mathbb{R}$ is the loss function of the agent $i$,
             \item $\sigma(\z)$ is an aggregation function generically defined as $\sigma(\z) = \frac{1}{N} \sum_{i=1}^{N} \phi_i(\z_i)$, for some $\phi_i: \mathbb{R}^{n_i} \rightarrow \mathbb{R}^d$
         \end{itemize}
 
