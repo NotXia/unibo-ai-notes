@@ -306,13 +306,16 @@
 
         By using the unicycle model dynamics, it becomes:
         \[
-            \dot{\x}^\text{int} = \begin{bmatrix}
-                \cos(\theta) & -\rho\sin(\theta) \\
-                \sin(\theta) & \rho\cos(\theta) \\
-            \end{bmatrix}
-            \begin{bmatrix}
-                v \\ \omega
-            \end{bmatrix}
+            \begin{split}
+                \dot{\x}^\text{int} &= \begin{bmatrix}
+                    \cos(\theta) & -\rho\sin(\theta) \\
+                    \sin(\theta) & \rho\cos(\theta) \\
+                \end{bmatrix}
+                \begin{bmatrix}
+                    v \\ \omega
+                \end{bmatrix} \\
+                \dot{\theta} &= \omega
+            \end{split}
         \]
 
         By formulating $v$ and $\omega$ as a state-feedback control with input $\u^\text{int} \in \mathbb{R}^2$ as:
@@ -326,5 +329,10 @@
                 -\frac{1}{\rho} \sin(\theta) & \frac{1}{\rho} \cos(\theta)
             \end{bmatrix} \u^\text{int}
         \]
-        The result is a single-integrator $\dot{\x}^\text{int} = \u^\text{int}$.
+        The result is a single-integrator $\dot{\x}^\text{int} = g(\x)\u^\text{int}$.
+
+        A choice of $\u$ can be:
+        \[
+            \u^\text{int} = k (\x^\text{int} - \x^\text{dest}) + \dot{\x}^\text{dest}
+        \]
 \end{description}
