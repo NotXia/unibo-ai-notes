@@ -1,0 +1,343 @@
+\chapter{AI Act}
+
+
+\section{Introduction}
+
+
+\subsection{General principles}
+\marginnote{General principles}
+
+Regulate the development of AI systems based on the principles of:
+\begin{itemize}
+    \item Human agency and oversight,
+    \item Technical robustness and safety,
+    \item Privacy and data governance,
+    \item Transparency,
+    \item Diversity, non-discrimination, and fairness,
+    \item Social and environmental well-being.
+\end{itemize}
+
+
+\subsection{Definitions}
+
+\begin{description}
+    \item[AI system] \marginnote{AI system}
+        Machine-based system that is designed to operate with varying levels of autonomy and adaptability. Moreover, its output is inferred from the input data.
+
+        \begin{remark}
+            Rule-based systems are excluded.
+        \end{remark}
+
+    \item[General purpose AI] \marginnote{General purpose AI}
+        AI system that exhibits significant generality and is able to perform a wide range of tasks.
+\end{description}
+
+
+\subsection{Scope}
+
+The AI Act applies to:
+\begin{itemize}
+    \item Providers who put an AI system on the EU's market, independently of their location.
+    \item Deployers of AI systems located within the EU.
+    \item Providers and deployers in third countries if the output produced is used in the EU.
+    \item Importers and distributors of AI systems.
+    \item Product manufacturers who use AI systems in their products.
+    \item Authorized representatives of providers.
+    \item People affected by AI systems in the EU.
+\end{itemize}
+
+\begin{remark}
+    The AI Act is excluded for the following areas:
+    \begin{itemize}
+        \item Military, defense, and national security,
+        \item Scientific research and development activities,
+        \item Pre-market development and testing, if done in protected environments,
+        \item International law enforcement cooperation, if fundamental rights safeguards are in place.
+    \end{itemize}
+\end{remark}
+
+\begin{remark}
+    The AI Act is a compromise between a product safety approach (e.g., minimum safety requirements, standards, \dots) and a fundamental rights approach.
+\end{remark}
+
+\begin{remark}
+    The AI Act does not introduce new individual rights.
+\end{remark}
+
+
+
+\section{Risk regulation}
+
+\begin{description}
+    \item[Risk]
+        Combination of the probability of harm and the severity of that harm.
+\end{description}
+
+
+\subsection{Risk levels}
+
+\begin{description}
+    \item[Unacceptable-risk (article 5)] \marginnote{Unacceptable-risk}
+        Includes AI systems that are used for:
+        \begin{itemize}
+            \item Deploying harmful and manipulative subliminal techniques (i.e., beyond individual cognition),
+            \item Exploiting vulnerable groups,
+            \item Social scoring,
+            \item Real-time remote biometric identification in public spaces for law enforcement purposes (with some exceptions),
+            \item Biometric categorization of protected features,
+            \item Predicting criminal offenses solely based on profiling or personality traits,
+            \item Creating facial recognition databases by scraping the Internet or CCTV footage,
+            \item Inferring emotions in workplaces or educational institutions, unless for medical or safety reasons.
+        \end{itemize}
+
+    \item[High-risk (article 6)] \marginnote{High-risk}
+        Includes the following groups of AI systems:
+        \begin{itemize}
+            \item Those used as safety components of a product or falling under the EU health and safety legislation (e.g., toys, aviation, cars, medical devices, \dots)
+            \item Those used in the following specific areas: biometric identification, critical infrastructures, education, employment, access to essential services, law enforcement, migration, and juridical and democratic processes.
+            \item Those that performs profiling of natural persons.
+        \end{itemize}
+
+        Requirements to assess the impact of a these systems are:
+        \begin{itemize}
+            \item Determining the categories of natural persons and groups affected by the system,
+            \item Checking compliance with European and national laws,
+            \item Fundamental rights risk assessment (FRIA),
+                \begin{example}[FRAIA]
+                    Questionnaire created by the Dutch government to assess the impact of AI systems on fundamental rights.
+                \end{example}
+            \item Determining the risk of harm towards vulnerable groups and the environmental impact,
+            \item Determining a plan for risk mitigation,
+            \item Creating a governance system for human oversight, complaint handling, and redress.
+        \end{itemize}
+
+        \begin{remark}
+            These requirements are still under research.
+        \end{remark}
+
+    \item[Limited-risk (article 52)] \marginnote{Limited-risk}
+        Involves AI systems that interact with users with limited effects. It includes chatbots, emotion recognition, deep fakes, \dots
+
+        Requirements are:
+        \begin{itemize}
+            \item The user must be informed that it is interacting with an AI system,
+            \item Artificial content must be labeled as generated and contain detectable watermarks,
+            \item Employers must inform workers on whether AI is used in the workplace and the reasons.
+        \end{itemize}
+    
+    \item[Minimal-risk (article 69)] \marginnote{Minimal-risk}
+        Involves AI systems with low to no effects on the user. It includes spam filters, video games, purchase recommendation systems, \dots.
+        
+        They are required to comply with the existing regulation but are not further regulated by the AI Act.
+
+        \begin{remark}
+            Providers of these systems are nonetheless encouraged to voluntarily respect high-risk requirements.
+        \end{remark}
+
+    \item[General purpose AI requirements] \marginnote{General purpose AI requirements}
+        Specific requirements for general purpose AI are:
+        \begin{itemize}
+            \item Technical documentation must be kept for training, testing, and performance,
+            \item Key information must be shared with downstream AI system providers,
+            \item A summary of the training data must be published,
+            \item Copyright compliance must be declared,
+            \item Collaboration with regulators,
+            \item Codes of practice should be provided.
+        \end{itemize}
+
+        \begin{remark}
+            There is a subgroup of general purpose AI systems that includes those that pose a systemic risk. Additional requirements for these systems are:
+            \begin{itemize}
+                \item Additional risk mitigation,
+                \item Independent system evaluation and model registration.
+            \end{itemize}
+        \end{remark}
+
+        \begin{remark}
+            If the computing power to train a model exceeds a certain threshold, that system is presumed to be a general purpose AI that poses systemic risks.
+        \end{remark}
+\end{description}
+
+
+\subsection{Enforcement}
+
+\begin{description}
+    \item[Enforcement] \marginnote{Enforcement} 
+        National supervisory authority enforces the AI Act in each member state with the support of the European Artificial Intelligence Office.
+\end{description}
+
+
+\subsection{AI regulatory sandboxes}
+
+\begin{description}
+    \item[AI sandbox] \marginnote{AI sandbox}
+        Voluntary framework organized by member states for small to medium companies to test AI systems in controlled environments.
+\end{description}
+
+
+
+\section{AI liability}
+
+\begin{remark}
+    In the case of AI systems, liability has to account for:
+    \begin{itemize}
+        \item Black-box models,
+        \item Autonomous and unpredictable models,
+        \item Multiple actors and diffused responsibility,
+        \item Lack of a clear legal framework,
+        \item Difficulty in finding the causal chain.
+    \end{itemize}
+\end{remark}
+
+
+\subsection{Liability theories}
+
+\begin{description}
+    \item[Strict liability] \marginnote{Strict liability}
+        The producer is always responsible for their product both if it is their fault or due to negligence. The injured party only has to prove that damage occurred.
+
+    \item[Fault liability] \marginnote{Fault liability}
+        The defender has to show that someone is responsible for causing damage intentionally or negligently.
+
+    \item[Mandatory insurance] \marginnote{Mandatory insurance}
+        Enforce that the product (e.g., AI system) is covered by an insurance.
+
+    \item[Compensation funds] \marginnote{Compensation funds}
+        Economic relief for the users in case of damage or bankruptcy of the company.
+\end{description}
+
+
+\subsection{Revised Product Liability Directive}
+
+\begin{description}
+    \item[Revised Product Liability Directive] \marginnote{Revised Product Liability Directive}
+        Product Liability Directive extended to software and AI systems. It is applied in all member states (i.e., maximum harmonization) and is based on the strict liability theory.
+
+        The requirements to prove for compensation are that:
+        \begin{itemize}
+            \item The product is defective,
+            \item Damage was caused,
+            \item There is a causal link between defect and damage.
+        \end{itemize}
+
+    \item[Product] \marginnote{Product}
+        The revised Product Liability Directive extends the definition of product with:
+        \begin{itemize}
+            \item Software and its updates,
+            \item Digital manufacturing files (e.g., model for 3D printers),
+            \item Digital services.
+        \end{itemize}
+
+        \begin{remark}
+            Free and non-commercial open-source software are excluded
+        \end{remark}
+
+    \item[Liable parties (article 8)] \marginnote{Liable parties}
+        The revised Product Liability Directive extends liable entities with:
+        \begin{itemize}
+            \item Any economic operator that has substantially modified the product outside the control of the manufacturer,
+            \item Distributors of defective products,
+            \item Online platforms.
+        \end{itemize}
+    
+        \begin{remark}
+            In the case of AI systems, the producer is the provider defined in the AI Act.
+        \end{remark}
+
+    \item[Types of damage (article 6)] \marginnote{Types of damage}
+        Compensation can be provided for:
+        \begin{itemize}
+            \item Death or personal injury, including psychological health.
+            \item Damage or destruction of properties, with the exception of the product itself, other components the defective product is integrated with, and products used for professional purposes only.
+            \item Destruction or corruption of data that is not used for professional purposes.
+        \end{itemize}
+
+    \item[Defectiveness (article 7)] \marginnote{Defectiveness}
+        In the case of software, liability is applied also for defects that come out after the product has been put in the market. This includes:
+        \begin{itemize}
+            \item Software updates under the manufacturer's control,
+            \item Failure to address cybersecurity vulnerabilities,
+            \item Machine learning.
+        \end{itemize}
+
+    \item[Presumption of defectiveness and causality (article 10)] \marginnote{Presumption of defectiveness and causality}
+        Defectiveness is presumed when:
+        \begin{itemize}
+            \item The manufacturer fails to comply with the obligation to disclose information,
+            \item A product does not comply with mandatory safety requirements,
+            \item Damage is caused by an obvious product malfunction.
+        \end{itemize}
+
+        A causal link is presumed when:
+        \begin{itemize}
+            \item The damage is consistent with the type of defect,
+            \item The technical or scientific complexity makes it difficult to prove liability (e.g., as with black-box models).
+        \end{itemize}
+\end{description}
+
+\begin{remark}
+    The revised Product Liability Directive does not cover:
+    \begin{itemize}
+        \item Discrimination,
+        \item Violation of privacy (that are not already covered in the GDPR),
+        \item Use of AI for professional purposes,
+        \item Sustainability effects.
+    \end{itemize}
+\end{remark}
+
+
+\subsection{AI Liability Directive}
+
+\begin{description}
+    \item[AI Liability Directive] \marginnote{AI Liability Directive}
+        Additional protection for cases not covered in the revised Product Liability Directive. It is based on the fault liability theory.
+
+        The directive has been cancelled by the EU Commission.
+\end{description}
+
+
+\begin{example}[Case study: delivery robot accident]
+    An autonomous delivery robot that is able to navigate the pavement of pedestrian areas falls on the edge and hits a bicycle courier on the cycle lane. Both the biker and the robot sustained injuries/damage.
+    
+    \begin{descriptionlist}
+        \item[AI Act] The system falls under the high-risk level (autonomous vehicle).
+        \item[Revised Product Liability Directive] \phantom{}
+            \begin{itemize}
+                \item Liability can be sought after the company deploying the robots or the one renting them.
+                \item The defect is related to the sensors/decision-making of the robot.
+                \item Injuries are both physical and possibly psychological.
+            \end{itemize}
+    \end{descriptionlist}
+\end{example}
+
+\begin{example}[Case study: smart bank]
+    A bank stores its data in the storage service provided by another company. An update released by the bank causes the corruption and loss of financial data.
+
+    An affected customer failed to make payments leading to penalties and decrease in credit score.    
+
+    \begin{descriptionlist}
+        \item[AI Act] The system does not involve AI.
+        \item[Revised Product Liability Directive] \phantom{}
+            \begin{itemize}
+                \item Liability can be sought after the bank. 
+                \item The defect is the loss of records due to the update. 
+                \item Damages are psychological and economical.
+            \end{itemize}
+    \end{descriptionlist}
+\end{example}
+
+\begin{example}[Case study: AI friend]
+    A mental health chatbot is developed to support young users. However, a flaw in the system causes the generation of inappropriate and harmful messages.
+
+    In an affected user, this lead to depression, self-harm, declining school performance, and withdrawal from social activities.
+
+    \begin{descriptionlist}
+        \item[AI Act] The system might fall under the unacceptable-risk level (manipulation) or under the high-risk level (medical diagnosis).
+        \item[Revised Product Liability Directive] \phantom{}
+            \begin{itemize}
+                \item Liability can be sought after the company deploying the system.
+                \item The defect is the flaw of the chatbot.
+                \item Damage is psychological and physical. It also involves the loss of opportunities.
+            \end{itemize}
+    \end{descriptionlist}
+\end{example}
