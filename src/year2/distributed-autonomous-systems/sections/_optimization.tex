@@ -749,160 +749,206 @@
                 \rho \Vert \z_i^{k+1} - \z^* \Vert \leq \rho^k \Vert \z_i^0 - \z^* \Vert
             \]
 
-            {
-                \indenttbox
-                \begin{remark}
-                    It can be shown that gradient tracking also works with non-convex optimization and, under the correct assumptions, converges to a stationary point. 
-                \end{remark}
-            }
-
-            \begin{proof}
-                Consider the gradient tracking algorithm written in matrix form:
-                \[
-                    \begin{aligned}
-                        \z^{k+1} &= \A \z^k - \alpha \s^k \\
-                        \s^{k+1} &= \A \s^k + (\nabla \vec{l}(\z^{k+1}) - \nabla \vec{l}(\z^k))
-                    \end{aligned}
-                \]
-                where $\nabla \vec{l}(\z^k) = \begin{bmatrix} l_1(\z^k_1) & \dots & l_N(\z^k_N) \end{bmatrix}$.
-
-                % \begin{remark}
-                %     In the vector case, the Kronecker product should be applied on $\A$.
-                % \end{remark}
-
-                \begin{description}
-                    \item[Equilibrium]
-                        We want to find the equilibrium points $(\z_\text{eq}, \s_\text{eq})$ that satisfies:
-                        \[
-                            \begin{aligned}
-                                \s_\text{eq} &= \A \s_\text{eq} + \nabla \vec{l}(\z_\text{eq}) - \nabla \vec{l}(\z_\text{eq}) &\iff& (\matr{I} - \A) \s_\text{eq} = 0 \\
-                                \z_\text{eq} &= \A\z_\text{eq} - \alpha \s_\text{eq} &\iff& (\matr{I} - \A) \z_\text{eq} = -\alpha \s_\text{eq} \\
-                            \end{aligned}
-                        \]
-                        It must be that:
-                        \begin{itemize}
-                            \item $\s_\text{eq} \in \text{ker}(\matr{I} - \A) = \{ \vec{1}\beta_1 \mid \beta_1 \in \R \}$ (as $\A$ is doubly stochastic).
-                            \item $(\matr{I} - \A) \z_\text{eq} = - \alpha \vec{1} \beta_1$. As $\vec{1} (-\alpha \beta_1) \in \text{ker}(\matr{I} - \A)$, it must be that $\beta_1 = 0$ (as the image cannot be mapped into the kernel).
-                        \end{itemize}
-                        Therefore, we end up with:
-                        \[
-                            \begin{split}
-                                \s_\text{eq} &= \vec{1}\beta_1 = 0 \\
-                                \z_\text{eq} &= \A\z_\text{eq} - \alpha 0 = \matr{1} \beta_2 \quad \text{ i.e., eigenvector of $\A$} \\
-                            \end{split}
-                        \]
-
-                        In addition, by pre-multiplying the equation of $\s$ by $\vec{1}^T$, we obtain:
-                        \[
-                            \begin{split}
-                                \vec{1}^T \s^{k+1} &= \vec{1}^T \A \s^k + \vec{1}^T \nabla \vec{l}(\z^{k+1}) - \vec{1}^T \nabla \vec{l}(\z^{k}) \\
-                                &= \vec{1}^T \s^k + \vec{1}^T \nabla \vec{l}(\z^{k+1}) - \vec{1}^T \nabla \vec{l}(\z^{k}) 
-                            \end{split}
-                        \]
-                        Which shows the following invariance condition:
-                        \[ 
-                            \begin{aligned}
-                                \vec{1}^T \s^{k+1} - \vec{1}^T \nabla \vec{l}(\z^{k+1})
-                                &= \vec{1}^T \s^k - \vec{1}^T \nabla \vec{l}(\z^{k}) \\
-                                &= \vec{1}^T \s_\text{eq} - \vec{1}^T \nabla \vec{l}(\z_\text{eq}) \\
-                                &= \vec{1}^T \s^0 - \vec{1}^T \nabla \vec{l}(\z^{0}) \\
-                            \end{aligned}
-                        \]
-                        Thus, we have that:
-                        \[
-                            \begin{split}
-                                \vec{1}^T \s_\text{eq} - \vec{1}^T \nabla \vec{l}(\z_\text{eq})
-                                &= \vec{1}^T \s^0 - \vec{1}^T \nabla \vec{l}(\z^{0}) \\
-                                \iff 0 - \vec{1}^T \nabla \vec{l}(\vec{1}\beta_2) &= 0 \\
-                            \end{split}
-                        \]
-                        Then, it must be that $\z_\text{eq} = \vec{1}\beta_2$ is an optimum with $\beta_2 = z^*$.
-                
-                    \item[Stability]
-                        % Change in coordinates to avoid having $\z^{k+1}$ in $\s^{k}$. The (non-linear) transformation is:
-                        % \[
-                        %     \begin{bmatrix}
-                        %         \z^k \\ \s^k
-                        %     \end{bmatrix}
-                        %     \mapsto
-                        %     \begin{bmatrix}
-                        %         \z^k \\ \vec{\xi}^k
-                        %     \end{bmatrix}
-                        %     =
-                        %     \begin{bmatrix}
-                        %         \z^k \\ \alpha (\nabla \vec{l}(\z^k) - \s^k)
-                        %     \end{bmatrix}
-                        % \]
-
-                        % \[
-                        %     \begin{split}
-                        %         \z^{k+1} 
-                        %         &= \A\z^k - \alpha ( \frac{1}{\alpha} \vec{\xi}^k + \nabla \vec{l}(\z^k) ) \\
-                        %         \vec{\xi}^k 
-                        %         &= \alpha \nabla \vec{l}(\z^{k+1}) - \alpha (\A \s^k + \nabla \vec{l}(\z^{k+1}) - \nabla \vec{l} (\z^k)) \\
-                        %         &= - \alpha \A (-\frac{1}{\alpha} \xi^k + \nabla \vec{l}(\z^k)) + \alpha \nabla \vec{l}(\z^k) \\
-                        %         &= \A \vec{\xi}^k - \alpha(\A - \vec{I}) \nabla \vec{l}(\z^k)
-                        %     \end{split}
-                        % \]
-
-                        % In matrix form:
-                        % \[
-                        %     \begin{bmatrix}
-                        %         \z^{k+1} \\ \vec{\xi}^{k+1} = \begin{bmatrix}
-                        %             \A & \matr{I} \\ 0 & \A
-                        %         \end{bmatrix}
-                        %         \begin{bmatrix}
-                        %             \z^k \\ \vec{\xi}^k
-                        %         \end{bmatrix}
-                        %         - alpha \begin{bmatrix}
-                        %             \matr{I} \\ \A \matr{I}
-                        %         \end{bmatrix}
-                        %         \nabla \vec{l}(\z^k)
-                        %     \end{bmatrix}
-                        % \]
-                        % The initialization is:
-                        % \[
-                        %     \begin{split}
-                        %         \z^0 \in \R^N \\
-                        %         \vec{\xi}^{0} = \alpha (\nabla \vec{l}(\z^0) - \s^0) = 0
-                        %     \end{split}
-                        % \]
-                        % The equilibrium has been shifted to:
-                        % \[
-                        %     \begin{split}
-                        %         \z_\text{eq} = \vec{1} \z^* \\
-                        %         \vec{\xi}_\text{eq} = \alpha \nabla l(\vec{1} \z^*) = \alpha \begin{bmatrix}
-                        %             \nabla l_1(\z^*) \\ \vdots \\ \nabla l_N(\z^*)
-                        %         \end{bmatrix}
-                        %     \end{split}
-                        % \]
-
-
-                        % \[
-                        %     \begin{gathered}
-                        %         \begin{bmatrix}
-                        %             \z^{k+1} \\ \vec{\xi}^{k+1} = \begin{bmatrix}
-                        %                 \A & \matr{I} \\ 0 & \A
-                        %             \end{bmatrix}
-                        %             \begin{bmatrix}
-                        %                 \z^k \\ \vec{\xi}^k
-                        %             \end{bmatrix}
-                        %             \begin{bmatrix}
-                        %                 \matr{I} \\ \A \matr{I}
-                        %             \end{bmatrix}
-                        %             \u^k
-                        %         \end{bmatrix} \\
-                        %         \vec{y}^k = \begin{bmatrix}
-                        %             \matr{I} & 0
-                        %         \end{bmatrix}
-                        %         \begin{bmatrix}
-                        %             \z^k \\ \vec{\xi}^{k}
-                        %         \end{bmatrix} \\
-                        %         -- \\
-                        %         \u^k = \nabla \vec{l}(\vec{y}^k)
-                        %     \end{gathered}
-                        % \]
-                \end{description}
-            \end{proof}
+            \indenttbox
+            \begin{remark}
+                It can be shown that gradient tracking also works with non-convex optimization and, under the correct assumptions, converges to a stationary point. 
+            \end{remark}
         \end{theorem}
 \end{description}
+
+
+\begin{subappendices}
+
+\section{Appendix: Gradient tracking optimality and stability proof}
+
+\begin{theorem}[Gradient tracking algorithm optimality] \marginnote{Gradient tracking algorithm optimality}
+    If:
+    \begin{itemize}
+        \item $\matr{A}$ is the adjacency matrix of an undirected and connected communication graph $G$ such that it is doubly stochastic and $a_{ij} > 0$.
+        \item Each cost function $l_i$ is $\mu$-strongly convex and its gradient $L$-Lipschitz continuous.
+    \end{itemize}
+    Then, there exists $\alpha^* > 0$ such that, for any choice of the step size $\alpha \in (0, \alpha^*)$, the sequence of local solutions $\{ \z_i^k \}_{k \in \mathbb{N}}$ of each agent generated by the gradient tracking algorithm asymptotically converges to a consensual optimal solution $\z^*$:
+    \[ \lim_{k \rightarrow \infty} \Vert \z_i^k - \z^* \Vert = 0 \]
+    
+    Moreover, the convergence rate is linear and stability is exponential:
+    \[ 
+        \exists \rho \in (0,1): \Vert \z_i^k - \z^* \Vert \leq \rho \Vert \z_i^{k+1} - \z^* \Vert
+        \,\,\land\,\,
+        \rho \Vert \z_i^{k+1} - \z^* \Vert \leq \rho^k \Vert \z_i^0 - \z^* \Vert
+    \]
+
+    \begin{proof}
+        Consider the gradient tracking algorithm written in matrix form:
+        \[
+            \begin{aligned}
+                \z^{k+1} &= \A \z^k - \alpha \s^k \\
+                \s^{k+1} &= \A \s^k + (\nabla \vec{l}(\z^{k+1}) - \nabla \vec{l}(\z^k))
+            \end{aligned}
+        \]
+        where $\nabla \vec{l}(\z^k) = \begin{bmatrix} l_1(\z^k_1) & \dots & l_N(\z^k_N) \end{bmatrix}$.
+
+        % \begin{remark}
+        %     In the vector case, the Kronecker product should be applied on $\A$.
+        % \end{remark}
+
+        \begin{description}
+            \item[Equilibrium]
+                We want to find the equilibrium points $(\z_\text{eq}, \s_\text{eq})$ that satisfies:
+                \[
+                    \begin{aligned}
+                        \s_\text{eq} &= \A \s_\text{eq} + \nabla \vec{l}(\z_\text{eq}) - \nabla \vec{l}(\z_\text{eq}) &\iff& (\matr{I} - \A) \s_\text{eq} = 0 \\
+                        \z_\text{eq} &= \A\z_\text{eq} - \alpha \s_\text{eq} &\iff& (\matr{I} - \A) \z_\text{eq} = -\alpha \s_\text{eq} \\
+                    \end{aligned}
+                \]
+                It must be that:
+                \begin{itemize}
+                    \item $\s_\text{eq} \in \text{ker}(\matr{I} - \A) = \{ \vec{1}\beta_1 \mid \beta_1 \in \R \}$ (as $\A$ is doubly stochastic).
+                    \item $(\matr{I} - \A) \z_\text{eq} = - \alpha \vec{1} \beta_1$. As $\vec{1} (-\alpha \beta_1) \in \text{ker}(\matr{I} - \A)$, it must be that $\beta_1 = 0$ (as the image cannot be mapped into the kernel).
+                \end{itemize}
+                Therefore, we end up with:
+                \[
+                    \begin{split}
+                        \s_\text{eq} &= \vec{1}\beta_1 = 0 \\
+                        \z_\text{eq} &= \A\z_\text{eq} - \alpha 0 = \matr{1} \beta_2 \quad \text{ i.e., eigenvector of $\A$} \\
+                    \end{split}
+                \]
+
+                In addition, by pre-multiplying the equation of $\s$ by $\vec{1}^T$, we obtain:
+                \[
+                    \begin{split}
+                        \vec{1}^T \s^{k+1} &= \vec{1}^T \A \s^k + \vec{1}^T \nabla \vec{l}(\z^{k+1}) - \vec{1}^T \nabla \vec{l}(\z^{k}) \\
+                        &= \vec{1}^T \s^k + \vec{1}^T \nabla \vec{l}(\z^{k+1}) - \vec{1}^T \nabla \vec{l}(\z^{k}) 
+                    \end{split}
+                \]
+                Which shows the following invariance condition:
+                \[ 
+                    \begin{aligned}
+                        \vec{1}^T \s^{k+1} - \vec{1}^T \nabla \vec{l}(\z^{k+1})
+                        &= \vec{1}^T \s^k - \vec{1}^T \nabla \vec{l}(\z^{k}) \\
+                        &= \vec{1}^T \s_\text{eq} - \vec{1}^T \nabla \vec{l}(\z_\text{eq}) \\
+                        &= \vec{1}^T \s^0 - \vec{1}^T \nabla \vec{l}(\z^{0}) \\
+                    \end{aligned}
+                \]
+                Thus, we have that:
+                \[
+                    \begin{split}
+                        \vec{1}^T \s_\text{eq} - \vec{1}^T \nabla \vec{l}(\z_\text{eq})
+                        &= \vec{1}^T \s^0 - \vec{1}^T \nabla \vec{l}(\z^{0}) \\
+                        \iff 0 - \vec{1}^T \nabla \vec{l}(\vec{1}\beta_2) &= 0 \\
+                    \end{split}
+                \]
+                Then, it must be that $\z_\text{eq} = \vec{1}\beta_2$ is an optimum with $\beta_2 = z^*$.
+        
+            \item[Stability]
+                Apply the following change in coordinates:
+                \[
+                    \begin{bmatrix}
+                        \z^k \\ \xi^k
+                    \end{bmatrix}
+                    \mapsto
+                    \begin{bmatrix}
+                        \tilde{\z}^k \\ \tilde{\xi}^k
+                    \end{bmatrix}
+                    =
+                    \begin{bmatrix}
+                        \z^k - \vec{1}z^* \\
+                        \xi^k - \alpha \nabla \vec{l}(\vec{1}z^*)
+                    \end{bmatrix}
+                \]
+                So that the equilibrium of the system is shifted to $0$.
+
+                Then, exploit strong convexity to re-formulate the overall system in such a way that the Lyapunov theorem can be applied to prove exponential stability.
+            %     Change in coordinates to avoid having $\z^{k+1}$ in $\s^{k}$. The (non-linear) transformation is:
+            %     \[
+            %         \begin{bmatrix}
+            %             \z^k \\ \s^k
+            %         \end{bmatrix}
+            %         \mapsto
+            %         \begin{bmatrix}
+            %             \z^k \\ \vec{\xi}^k
+            %         \end{bmatrix}
+            %         =
+            %         \begin{bmatrix}
+            %             \z^k \\ \alpha (\nabla \vec{l}(\z^k) - \s^k)
+            %         \end{bmatrix}
+            %     \]
+
+            %     \[
+            %         \begin{split}
+            %             \z^{k+1} 
+            %             &= \A\z^k - \alpha ( \frac{1}{\alpha} \vec{\xi}^k + \nabla \vec{l}(\z^k) ) \\
+            %             \vec{\xi}^k 
+            %             &= \alpha \nabla \vec{l}(\z^{k+1}) - \alpha (\A \s^k + \nabla \vec{l}(\z^{k+1}) - \nabla \vec{l} (\z^k)) \\
+            %             &= - \alpha \A (-\frac{1}{\alpha} \xi^k + \nabla \vec{l}(\z^k)) + \alpha \nabla \vec{l}(\z^k) \\
+            %             &= \A \vec{\xi}^k - \alpha(\A - \vec{I}) \nabla \vec{l}(\z^k)
+            %         \end{split}
+            %     \]
+
+            %     In matrix form:
+            %     \[
+            %         \begin{bmatrix}
+            %             \z^{k+1} \\ \vec{\xi}^{k+1} = \begin{bmatrix}
+            %                 \A & \matr{I} \\ 0 & \A
+            %             \end{bmatrix}
+            %             \begin{bmatrix}
+            %                 \z^k \\ \vec{\xi}^k
+            %             \end{bmatrix}
+            %             - \alpha \begin{bmatrix}
+            %                 \matr{I} \\ \A \matr{I}
+            %             \end{bmatrix}
+            %             \nabla \vec{l}(\z^k)
+            %         \end{bmatrix}
+            %     \]
+            %     The initialization is:
+            %     \[
+            %         \begin{split}
+            %             \z^0 \in \R^N \\
+            %             \vec{\xi}^{0} = \alpha (\nabla \vec{l}(\z^0) - \s^0) = 0
+            %         \end{split}
+            %     \]
+            %     The equilibrium has been shifted to:
+            %     \[
+            %         \begin{split}
+            %             \z_\text{eq} = \vec{1} \z^* \\
+            %             \vec{\xi}_\text{eq} = \alpha \nabla l(\vec{1} \z^*) = \alpha \begin{bmatrix}
+            %                 \nabla l_1(\z^*) \\ \vdots \\ \nabla l_N(\z^*)
+            %             \end{bmatrix}
+            %         \end{split}
+            %     \]
+
+
+            %     \[
+            %         \begin{gathered}
+            %             \begin{bmatrix}
+            %                 \z^{k+1} \\ \vec{\xi}^{k+1} = \begin{bmatrix}
+            %                     \A & \matr{I} \\ 0 & \A
+            %                 \end{bmatrix}
+            %                 \begin{bmatrix}
+            %                     \z^k \\ \vec{\xi}^k
+            %                 \end{bmatrix}
+            %                 \begin{bmatrix}
+            %                     \matr{I} \\ \A \matr{I}
+            %                 \end{bmatrix}
+            %                 \u^k
+            %             \end{bmatrix} \\
+            %             \vec{y}^k = \begin{bmatrix}
+            %                 \matr{I} & 0
+            %             \end{bmatrix}
+            %             \begin{bmatrix}
+            %                 \z^k \\ \vec{\xi}^{k}
+            %             \end{bmatrix} \\
+            %             -- \\
+            %             \u^k = \nabla \vec{l}(\vec{y}^k)
+            %         \end{gathered}
+            %     \]
+
+
+            % Take Lyapunov function $V(\tilde{\z}, \xi^k)$ and check whether:
+            % \[
+            %     V(\tilde{\z}^{k+1}, \tilde{\xi}^{k+1}) - V(\tilde{\z}^{k}, \tilde{\xi}^{k}) \leq 0
+            % \]
+        \end{description}
+    \end{proof}
+\end{theorem}
+
+\end{subappendices}

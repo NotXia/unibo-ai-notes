@@ -1,4 +1,5 @@
 \documentclass[11pt]{ainotes}
+\usepackage{appendix}
 
 \title{Distributed Autonomous Systems}
 \date{2024 -- 2025}
@@ -53,14 +54,15 @@
 \begin{document}
 
     \makenotesfront
-    \include{./sections/_graphs.tex}
-    \include{./sections/_averaging_systems.tex}
-    \include{./sections/_containment.tex}
-    \include{./sections/_optimization.tex}
-    \include{./sections/_formation_control.tex}
-    \include{./sections/_cooperative_robotics.tex}
-    \include{./sections/_safety_controllers.tex}
-    \include{./sections/_feedback_optimization.tex}
-    \include{./sections/_neural_networks.tex}
+    \input{./sections/_graphs.tex}
+    \input{./sections/_averaging_systems.tex}
+    \input{./sections/_containment.tex}
+    \input{./sections/_optimization.tex}
+    \input{./sections/_formation_control.tex}
+    \input{./sections/_cooperative_robotics.tex}
+    \input{./sections/_safety_controllers.tex}
+    \input{./sections/_feedback_optimization.tex}
+    \input{./sections/_neural_networks.tex}
+    \eoc
 
 \end{document}

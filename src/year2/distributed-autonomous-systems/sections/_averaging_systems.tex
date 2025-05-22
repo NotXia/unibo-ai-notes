@@ -91,171 +91,6 @@
 
 \subsection{Consensus}
 
-% \begin{remark}
-%     The distributed consensus algorithm is a positive system (i.e., $\matr{A}$ is positive).
-% \end{remark}
-
-\begin{description}
-    \item[Positive matrix characterization]
-        Given $\A \in \mathbb{R}^{N \times N}$, it can be:
-        \begin{description}
-            \item[Non-negative] \marginnote{Non-negative matrix}
-                $\A \geq 0$.
-            \item[Irreducible] \marginnote{Irreducible matrix}
-                $\sum_{h=0}^{N-1} \A^h > 0$.
-            \item[Primitive] \marginnote{Primitive matrix}
-                $\exists h \in \{ 1, \dots, N \}: A^h > 0$.
-            % \begin{remark}
-            %     A graph with a primitive adjacency matrix is connected.
-            % \end{remark}
-            \item[Positive] \marginnote{Positive matrix}
-                $\A > 0$.
-        \end{description}
-\end{description}
-
-
-% Equilibrium:
-% \[
-%     \x^{k+1} = \matr{A}\x^k
-% \]
-% \[
-%     \begin{split}
-%         \x_\text{eq} = \matr{A} \x_\text{eq} \\
-%         \iff (\matr{I} - \matr{A}) \x_\text{eq} = 0
-%     \end{split}
-% \]
-% We are interested in the null space of $(\matr{I} - \matr{A})$ (at least one eigenvector).
-
-
-
-\begin{theorem} \label{th:positive_matrix_digraph_connected}
-    Given a weighted digraph $G$ with $N \geq 2$ nodes and adjacency matrix $\A$, it holds that:
-    \begin{itemize}
-        \item $\A$ is irreducible $\iff$ $G$ is strongly connected.
-        \item $\A$ is primitive $\iff$ $G$ is strongly connected and aperiodic.
-    \end{itemize}
-\end{theorem}
-
-
-
-\begin{theorem}[Gershgorin] \label{th:gershgorin} \marginnote{Gershgorin theorem}
-    For any square matrix $\A \in \mathbb{C}^{N \times N}$, it holds that the spectrum of $\A$ (i.e., set of eigenvalues) is contained in the Gershgorin disks:
-    \[
-        \text{spec}(\A) \subset \bigcup_{i=1}^{N} \left\{ s \in \mathbb{C} \,\,\bigg|\,\, |s - a_{ii}| \leq \sum_{j=1, j \neq i}^{N} |a_{ij}| \right\}
-    \]
-    In other words, it is the union of the disks with center $a_{ii}$ and radius $\sum_{j=1, j \neq i}^{N} |a_{ij}|$.
-
-    \indenttbox
-    \begin{remark}
-        This theorem provides an approximate location of the eigenvalues.
-    \end{remark}
-
-    \indenttbox
-    \begin{example}
-        Consider the matrix:
-        \[
-            \begin{bmatrix}
-                10 & 1 & 0 & 1 \\
-                0.2 & 8 & 0.2 & 0.2 \\
-                1 & 1 & 2 & 1 \\
-                -1 & -1 & -1 & -11
-            \end{bmatrix}
-        \]
-
-        Its eigenvalues are $\{ -10.870, 1.906, 7.918, 10.046 \}$.
-
-        The Gershgorin disks are:
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.4\linewidth]{./img/gershgorin.png}
-        \end{figure}
-    \end{example}
-\end{theorem}
-
-% \begin{lemma}
-%     If all the disks are within the unit disk, the eigenvalues are stable.
-%     \[
-%         \begin{bmatrix}
-%             \frac{1}{2} & \frac{1}{2} & 0 \\
-%             \frac{1}{3} & \frac{1}{3} & \frac{1}{3} \\
-%             0 & \frac{3}{4} & \frac{1}{4}
-%         \end{bmatrix}
-%     \]
-% \end{lemma}
-
-
-\begin{theorem}[Perron-Frobenius] \label{th:perron_frobenius} \marginnote{Perron-Frobenius theorem}
-    Let $\A \in \R^{N \times N}$ with $N \geq 2$ be a non-negative matrix. It holds that:
-    \begin{itemize}
-        \item There exists a real eigenvalue $\lambda \geq 0$ that is dominant for all the other eigenvalues $\mu \in \text{spec}(\A) \smallsetminus \{\lambda\}$ (i.e., $\lambda \geq |\mu|$),
-        \item The right eigenvector $\v \in \R^N$ and left eigenvector $\w \in \R^N$ associated to $\lambda$ can be chosen to be non-negative.
-    \end{itemize}
-    If $\A \in \R^{N \times N}$ is irreducible, then:
-    \begin{itemize}
-        \item The eigenvalue $\lambda$ is strictly positive ($\lambda > 0$) and simple.
-        \item The right and left eigenvalues $\v$ and $\w$ associated to $\lambda$ are unique and positive.
-    \end{itemize}
-    If $\A \in \R^{N \times N}$ is primitive, then:
-    \begin{itemize}
-        \item The eigenvalue $\lambda$ is strictly dominant for all $\mu \in \text{spec}(\A) \smallsetminus \{\lambda\}$ (i.e., $\lambda > |\mu|$).
-    \end{itemize}
-\end{theorem}
-
-\begin{lemma} \label{th:row_stochastic_unit_disk}
-    Given a row stochastic matrix $\A$, it holds that:
-    \begin{itemize}
-        \item $\lambda=1$ is an eigenvalue,
-        \item By \hyperref[th:gershgorin]{Gershgorin Theorem}, $\text{spec}(\A)$ is a subset of the unit disk (i.e., all Gershgorin disks lie inside the unit disk).
-    \end{itemize}
-
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.2\linewidth]{./img/gershgorin_unit.png}
-    \end{figure}
-
-    \indenttbox
-    \begin{corollary}
-        The eigenvalue $\lambda=1 \geq |\mu|$ is dominant.
-    \end{corollary}
-\end{lemma}
-
-\begin{lemma}
-    Given a row stochastic and primitive matrix $\A$, by \Cref{th:row_stochastic_unit_disk} and \hyperref[th:perron_frobenius]{Perron-Frobenius Theorem} it holds that $\lambda = 1$ is simple and strictly dominant.
-
-    \indenttbox
-    \begin{corollary}
-        The consensus averaging system is marginally stable (i.e., converges but not necessarily to the origin) as the largest distinct eigenvalue is $\lambda = 1$.
-    \end{corollary}
-\end{lemma}
-
-
-% \begin{lemma}
-%     \[
-%         \x_\text{eq} = ker(\matr{I} - \A) = \{ \vec{1}\beta \mid \beta \in \R \}
-%     \]
-
-%     \[
-%         \w^T \x^{k+1} = \w^T(\A \x^{k}) = \w^T \x^k
-%     \]
-%     i.e., $\w$ is left eigenvector of $\A$ with $\lambda = 1$.
-
-%     Therefore, the above must be true for:
-%     \[
-%         \begin{split}
-%             \w^T \x_\text{eq} \\
-%             \w^T \x^{0} \\
-%         \end{split}
-%     \]
-%     \[
-%         \w^T \vec{1}\beta \Rightarrow \beta = \frac{\w^T\x^{0}}{\w^T\vec{1}}
-%     \]
-% \end{lemma}
-
-
-
-
-
-
 \begin{theorem}[Discrete-time consensus] \marginnote{Discrete-time consensus}
     Consider a discrete-time averaging system with digraph $G$ and weighted adjacency matrix $\matr{A}$. Assume $G$ strongly connected and aperiodic, and $\matr{A}$ row stochastic. 
     
@@ -304,122 +139,6 @@
     %         \end{gathered}
     %     \]
     % \end{proof}
-
-    \begin{proof}[Proof (Jordan-form approach)]
-        As is $G$ strongly connected and aperiodic, and $\A$ is row stochastic, it holds that:
-        \begin{itemize}
-            \item By \Cref{th:positive_matrix_digraph_connected}, $\A$ is primitive.
-            \item By \hyperref[th:perron_frobenius]{Perron-Frobenius Theorem} and \Cref{th:row_stochastic_unit_disk}, the eigenvalue $\lambda=1$ is strictly dominant and it is associated to the right eigenvector $\vec{1}$ (row stochasticity) and left eigenvector $\w$.
-        \end{itemize}
-    
-        Consider the non-singular matrix $\matr{T} \in \R^{N \times N}$ defined as:
-        \[
-            \matr{T} = \begin{bmatrix}
-                \vert & \vert & & \vert \\
-                \vec{1} & \v^2 & \dots & \v^N \\
-                \vert & \vert & & \vert \\
-            \end{bmatrix} = \begin{bmatrix}
-                \vec{1} & \matr{W}_R
-            \end{bmatrix}
-            \qquad
-            \matr{T}^{-1} = \begin{bmatrix}
-                - & (\w)^T & - \\
-                - & (\w^2)^T & - \\
-                - & \vdots & - \\
-                - & (\w^N)^T & - \\
-            \end{bmatrix} = \begin{bmatrix}
-                \w^T \\ \matr{W}_L
-            \end{bmatrix}
-        \]
-    
-        A change in coordinates defined as:
-        \[
-            \x \mapsto \tilde{\x} = \matr{T}^{-1} \x
-        \]
-        allows to obtain the Jordan form $\matr{T}^{-1}\A\matr{T}$:
-        \[
-            \matr{T}^{-1}\A\matr{T} = \begin{bmatrix}
-                1 & 0 & \dots \\
-                0 & & \\
-                \vdots & & \matr{J}_2 \\
-            \end{bmatrix}
-        \]
-        with $\matr{J}_2 \in \mathbb{R}^{(N-1) \times (N-1)}$ Schur (i.e., $\text{spec}(\matr{J}_2)$ inside the open unit disk).
-    
-        The dynamics $\x^{k+1} = \A \x^k$ in the new coordinate system is:
-        \[
-            \begin{split}
-                \tilde{\x}^{k+1} &= \matr{T}^{-1} \x^{k+1} = \matr{T}^{-1} \A \matr{T} \tilde{\x}^k \\
-                &= \begin{bmatrix}
-                    1 & 0 & \dots \\
-                    0 & & \\
-                    \vdots & & \matr{J}_2 \\
-                \end{bmatrix} \tilde{\x}^k
-                = \begin{bmatrix}
-                    1 & 0 & \dots \\
-                    0 & & \\
-                    \vdots & & \matr{J}_2 \\
-                \end{bmatrix}^{k+1} \tilde{\x}^0
-            \end{split}
-        \]
-        Let's denote:
-        \[
-            \tilde{\x}^k = \matr{T}^{-1}\x^k = \begin{bmatrix}
-                \w^T\x^k \\ \matr{W}_L\x^k
-            \end{bmatrix}
-            = \begin{bmatrix}
-                \tilde{\x}^k_{m} \\ \tilde{\x}^k_{\bot}
-            \end{bmatrix}
-        \]
-        We have that:
-        \[
-            \begin{split}
-                \lim_{k \rightarrow \infty} \tilde{\x}^k
-                &= \lim_{k \rightarrow \infty} \begin{bmatrix}
-                    1 & 0 & \dots \\
-                    0 & & \\
-                    \vdots & & \matr{J}_2 \\
-                \end{bmatrix}^k \tilde{\x}^0 \\
-                &= \lim_{k \rightarrow \infty} \begin{bmatrix}
-                    1 & 0 & \dots \\
-                    0 & & \\
-                    \vdots & & (\matr{J}_2)^k \\
-                \end{bmatrix} \begin{bmatrix}
-                    \tilde{\x}^0_{m} \\ \tilde{\x}^0_{\bot}
-                \end{bmatrix} \\
-                &= \begin{bmatrix}
-                    1 \cdot \tilde{\x}^0_{m} \\ 
-                    \lim_{k \rightarrow \infty} (\matr{J}_2)^k \tilde{\x}^0_{\bot}
-                \end{bmatrix} \\
-                &= \begin{bmatrix}
-                    \w^T \x^0 \\ 
-                    0
-                \end{bmatrix} \\
-            \end{split}
-        \]
-        Note that $\lim_{k \rightarrow \infty} \matr{J}_2^k = 0$ as it is stable (i.e., all eigenvalues are in the open unit disk $|\mu| < 1$).
-    
-        In the original coordinate system, the limit is:
-        \[
-            \begin{split}
-                \lim_{k \rightarrow \infty} \x^k 
-                &= \lim_{k \rightarrow \infty} \matr{T} \tilde{\x}^k \\
-                &= \matr{T} \lim_{k \rightarrow \infty} \tilde{\x}^k \\
-                &= \begin{bmatrix}
-                    \vec{1} & \matr{W}_R
-                \end{bmatrix} \begin{bmatrix}
-                    \w^T \x^0 \\ 
-                    0
-                \end{bmatrix} 
-                = \vec{1} (\w^T \x^0)
-            \end{split}
-        \]
-        
-        \indenttbox
-        \begin{remark}
-            It is assumed that $\Vert \w \Vert = 1$ (i.e., no normalization term).
-        \end{remark}
-    \end{proof}
 \end{theorem}
 
 \begin{example}[Metropolis-Hasting weights]
@@ -433,45 +152,6 @@
     \]
     The matrix $\matr{A}$ of Metropolis-Hasting weights is symmetric and doubly stochastic.
 \end{example}
-
-
-% \begin{proof}[Lyapunov approach]
-%     $\A - \vec{1}\w^T$ is rank-1. This is to change one specific eigenvalue (move 1 to 0).
-
-%     Dissensus vector represents error:
-%     \[
-%         \begin{split}
-%             delta^{k+1} 
-%             = \x^{k+1} - \vec{1}\w^T \x^0 \\
-%             = \x^{k+1} - \vec{1}\w^T \x^{k+1} \\
-%             = (\matr{I} - \vec{1}\w^T) \x^{k+1} \\
-%             = (\matr{I} - \vec{1}\w^T) \A\x^{k} \\
-%             = (\A - \vec{1}\w^T) \x^{k} \\
-%             = (\A - \vec{1}\w^T) \delta^{k} \\
-%         \end{split}
-%     \]
-
-%     Study:
-%     \[
-%         \delta^{k+1} = (\A - \vec{1}\w^T) \delta{k}
-%     \]
-%     If $\delta^k \rightarrow 0$, then $\x^k \rightarrow\vec{1}\w^T\x^0$.
-%     Note $(\A - \vec{1}\w^T)$ is Schur.
-
-%     Lyapunov equation for discrete time systems:
-%     \[
-%         \bar{\A}^T \matr{P} \bar{\A} = - \matr{P} = - \matr{Q}
-%     \]
-%     where $\bar{\A}$ is the Jordan-form of $(\A - \vec{1}\w^T)$
-
-%     Select $Q_2$ to be block-diagonal and $p_1$
-
-
-%     \[
-%         V(\delta) = \delta^T (\matr{T}^{-1})^T \matr{P} \matr{T}^{-1} \delta
-%     \]
-% \end{proof}
-
 
 
 
@@ -658,3 +338,376 @@
 \begin{remark}
     The result also holds for unweighted digraphs as $\vec{1}$ is both a left and right eigenvector of $\matr{L}$.
 \end{remark}
+
+
+
+
+
+\begin{subappendices}
+
+\section{Appendix: Discrete time averaging system consensus proof}
+
+% \begin{remark}
+%     The distributed consensus algorithm is a positive system (i.e., $\matr{A}$ is positive).
+% \end{remark}
+
+\begin{description}
+    \item[Positive matrix characterization]
+        Given $\A \in \mathbb{R}^{N \times N}$, it can be:
+        \begin{description}
+            \item[Non-negative] \marginnote{Non-negative matrix}
+                $\A \geq 0$.
+            \item[Irreducible] \marginnote{Irreducible matrix}
+                $\sum_{h=0}^{N-1} \A^h > 0$.
+            \item[Primitive] \marginnote{Primitive matrix}
+                $\exists h \in \{ 1, \dots, N \}: A^h > 0$.
+            % \begin{remark}
+            %     A graph with a primitive adjacency matrix is connected.
+            % \end{remark}
+            \item[Positive] \marginnote{Positive matrix}
+                $\A > 0$.
+        \end{description}
+\end{description}
+
+
+% Equilibrium:
+% \[
+%     \x^{k+1} = \matr{A}\x^k
+% \]
+% \[
+%     \begin{split}
+%         \x_\text{eq} = \matr{A} \x_\text{eq} \\
+%         \iff (\matr{I} - \matr{A}) \x_\text{eq} = 0
+%     \end{split}
+% \]
+% We are interested in the null space of $(\matr{I} - \matr{A})$ (at least one eigenvector).
+
+
+
+\begin{theorem} \label{th:positive_matrix_digraph_connected}
+    Given a weighted digraph $G$ with $N \geq 2$ nodes and adjacency matrix $\A$, it holds that:
+    \begin{itemize}
+        \item $\A$ is irreducible $\iff$ $G$ is strongly connected.
+        \item $\A$ is primitive $\iff$ $G$ is strongly connected and aperiodic.
+    \end{itemize}
+\end{theorem}
+
+
+
+\begin{theorem}[Gershgorin] \label{th:gershgorin} \marginnote{Gershgorin theorem}
+    For any square matrix $\A \in \mathbb{C}^{N \times N}$, it holds that the spectrum of $\A$ (i.e., set of eigenvalues) is contained in the Gershgorin disks:
+    \[
+        \text{spec}(\A) \subset \bigcup_{i=1}^{N} \left\{ s \in \mathbb{C} \,\,\bigg|\,\, |s - a_{ii}| \leq \sum_{j=1, j \neq i}^{N} |a_{ij}| \right\}
+    \]
+    In other words, it is the union of the disks with center $a_{ii}$ and radius $\sum_{j=1, j \neq i}^{N} |a_{ij}|$.
+
+    \indenttbox
+    \begin{remark}
+        This theorem provides an approximate location of the eigenvalues.
+    \end{remark}
+
+    \indenttbox
+    \begin{example}
+        Consider the matrix:
+        \[
+            \begin{bmatrix}
+                10 & 1 & 0 & 1 \\
+                0.2 & 8 & 0.2 & 0.2 \\
+                1 & 1 & 2 & 1 \\
+                -1 & -1 & -1 & -11
+            \end{bmatrix}
+        \]
+
+        Its eigenvalues are $\{ -10.870, 1.906, 7.918, 10.046 \}$.
+
+        The Gershgorin disks are:
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.4\linewidth]{./img/gershgorin.png}
+        \end{figure}
+    \end{example}
+\end{theorem}
+
+% \begin{lemma}
+%     If all the disks are within the unit disk, the eigenvalues are stable.
+%     \[
+%         \begin{bmatrix}
+%             \frac{1}{2} & \frac{1}{2} & 0 \\
+%             \frac{1}{3} & \frac{1}{3} & \frac{1}{3} \\
+%             0 & \frac{3}{4} & \frac{1}{4}
+%         \end{bmatrix}
+%     \]
+% \end{lemma}
+
+
+\begin{theorem}[Perron-Frobenius] \label{th:perron_frobenius} \marginnote{Perron-Frobenius theorem}
+    Let $\A \in \R^{N \times N}$ with $N \geq 2$ be a non-negative matrix. It holds that:
+    \begin{itemize}
+        \item There exists a real eigenvalue $\lambda \geq 0$ that is dominant for all the other eigenvalues $\mu \in \text{spec}(\A) \smallsetminus \{\lambda\}$ (i.e., $\lambda \geq |\mu|$),
+        \item The right eigenvector $\v \in \R^N$ and left eigenvector $\w \in \R^N$ associated to $\lambda$ can be chosen to be non-negative.
+    \end{itemize}
+    If $\A \in \R^{N \times N}$ is irreducible, then:
+    \begin{itemize}
+        \item The eigenvalue $\lambda$ is strictly positive ($\lambda > 0$) and simple.
+        \item The right and left eigenvalues $\v$ and $\w$ associated to $\lambda$ are unique and positive.
+    \end{itemize}
+    If $\A \in \R^{N \times N}$ is primitive, then:
+    \begin{itemize}
+        \item The eigenvalue $\lambda$ is strictly dominant for all $\mu \in \text{spec}(\A) \smallsetminus \{\lambda\}$ (i.e., $\lambda > |\mu|$).
+    \end{itemize}
+\end{theorem}
+
+\begin{lemma} \label{th:row_stochastic_unit_disk}
+    Given a row stochastic matrix $\A$, it holds that:
+    \begin{itemize}
+        \item $\lambda=1$ is an eigenvalue,
+        \item By \hyperref[th:gershgorin]{Gershgorin Theorem}, $\text{spec}(\A)$ is a subset of the unit disk (i.e., all Gershgorin disks lie inside the unit disk).
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.2\linewidth]{./img/gershgorin_unit.png}
+    \end{figure}
+
+    \indenttbox
+    \begin{corollary}
+        The eigenvalue $\lambda=1 \geq |\mu|$ is dominant.
+    \end{corollary}
+\end{lemma}
+
+\begin{lemma}
+    Given a row stochastic and primitive matrix $\A$, by \Cref{th:row_stochastic_unit_disk} and \hyperref[th:perron_frobenius]{Perron-Frobenius Theorem} it holds that $\lambda = 1$ is simple and strictly dominant.
+
+    \indenttbox
+    \begin{corollary}
+        The consensus averaging system is marginally stable (i.e., converges but not necessarily to the origin) as the largest distinct eigenvalue is $\lambda = 1$.
+    \end{corollary}
+\end{lemma}
+
+
+% \begin{lemma}
+%     \[
+%         \x_\text{eq} = ker(\matr{I} - \A) = \{ \vec{1}\beta \mid \beta \in \R \}
+%     \]
+
+%     \[
+%         \w^T \x^{k+1} = \w^T(\A \x^{k}) = \w^T \x^k
+%     \]
+%     i.e., $\w$ is left eigenvector of $\A$ with $\lambda = 1$.
+
+%     Therefore, the above must be true for:
+%     \[
+%         \begin{split}
+%             \w^T \x_\text{eq} \\
+%             \w^T \x^{0} \\
+%         \end{split}
+%     \]
+%     \[
+%         \w^T \vec{1}\beta \Rightarrow \beta = \frac{\w^T\x^{0}}{\w^T\vec{1}}
+%     \]
+% \end{lemma}
+
+\begin{theorem}[Discrete-time consensus] \marginnote{Discrete-time consensus}
+    Consider a discrete-time averaging system with digraph $G$ and weighted adjacency matrix $\matr{A}$. Assume $G$ strongly connected and aperiodic, and $\matr{A}$ row stochastic. 
+    
+    It holds that there exists a left eigenvector $\vec{w} \in \mathbb{R}^N$, $\vec{w} > 0$ such that the consensus converges to:
+        \[ 
+            \lim_{k \rightarrow \infty} \vec{x}^k 
+            = \vec{1}\frac{\vec{w}^T \vec{x}^0}{\vec{w}^T\vec{1}} 
+            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \frac{\sum_{i=1}^N w_i x_i^0}{\sum_{j=1}^N w_j}
+            = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \sum_{i=1}^N \frac{w_i}{\sum_{j=1}^N w_j} x_i^0
+        \]
+        where $\tilde{w}_i = \frac{w_i}{\sum_{i=j}^N w_j}$ are all normalized and sum to 1 (i.e., they produce a convex combination).
+
+    Moreover, if $\matr{A}$ is doubly stochastic, then it holds that the consensus is the average as $\vec{w} = 1$:
+    \[ 
+        \lim_{k \rightarrow \infty} \vec{x}^k = \vec{1} \frac{1}{N} \sum_{i=1}^N x_i^0
+    \]
+
+    % \begin{proof}[Sketch of proof]
+    %     Let $\matr{T} = \begin{bmatrix} \vec{1} & \vec{v}^2 & \cdots & \vec{v}^N \end{bmatrix}$ be a change in coordinates that transforms an adjacency matrix into its Jordan form $\matr{J}$:
+    %     \[ \matr{J} = \matr{T}^{-1} \matr{A} \matr{T} \]
+    %     As $\lambda=1$ is a simple eigenvalue (\Cref{th:strongly_connected_eigenvalues}), it holds that:
+    %     \[
+    %         \matr{J} = \begin{bmatrix}
+    %             1 & 0 & \cdots & 0 \\
+    %             0 & & &  \\
+    %             \vdots & & \matr{J}_2 &  \\
+    %             0 & & &  \\
+    %         \end{bmatrix}
+    %     \]
+    %     where the eigenvalues of $\matr{J}_2 \in \mathbb{R}^{(N-1) \times (N-1)}$ lie inside the open unit disk.
+
+    %     Let $\vec{x}^k = \matr{T}\bar{\vec{x}}^k$, then we have that:
+    %     \[
+    %         \begin{split}
+    %             &\vec{x}^{k+1} = \matr{A} \vec{x}^{k} \\
+    %             &\iff \matr{T} \bar{\vec{x}}^{k+1} = \matr{A} (\matr{T} \bar{\vec{x}}^k) \\
+    %             &\iff \bar{\vec{x}}^{k+1} = \matr{T}^{-1} \matr{A} (\matr{T} \bar{\vec{x}}^k) = \matr{J}\bar{\vec{x}}^k 
+    %         \end{split}
+    %     \]
+    %     Therefore:
+    %     \[
+    %         \begin{gathered}
+    %             \lim_{k \rightarrow \infty} \bar{\vec{x}}^k = \bar{x}_1^0 \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix} \\
+    %             \bar{x}_1^{k+1} = \bar{x}_1^k \quad \forall k \geq 0 \\
+    %             \lim_{k \rightarrow \infty} \bar{x}_i^{k} = 0 \quad \forall i = 2, \dots, N \\
+    %         \end{gathered}
+    %     \]
+    % \end{proof}
+
+    \begin{proof}[Proof (Jordan-form approach)]
+        As is $G$ strongly connected and aperiodic, and $\A$ is row stochastic, it holds that:
+        \begin{itemize}
+            \item By \Cref{th:positive_matrix_digraph_connected}, $\A$ is primitive.
+            \item By \hyperref[th:perron_frobenius]{Perron-Frobenius Theorem} and \Cref{th:row_stochastic_unit_disk}, the eigenvalue $\lambda=1$ is strictly dominant and it is associated to the right eigenvector $\vec{1}$ (row stochasticity) and left eigenvector $\w$.
+        \end{itemize}
+    
+        Consider the non-singular matrix $\matr{T} \in \R^{N \times N}$ defined as:
+        \[
+            \matr{T} = \begin{bmatrix}
+                \vert & \vert & & \vert \\
+                \vec{1} & \v^2 & \dots & \v^N \\
+                \vert & \vert & & \vert \\
+            \end{bmatrix} = \begin{bmatrix}
+                \vec{1} & \matr{W}_R
+            \end{bmatrix}
+            \qquad
+            \matr{T}^{-1} = \begin{bmatrix}
+                - & (\w)^T & - \\
+                - & (\w^2)^T & - \\
+                - & \vdots & - \\
+                - & (\w^N)^T & - \\
+            \end{bmatrix} = \begin{bmatrix}
+                \w^T \\ \matr{W}_L
+            \end{bmatrix}
+        \]
+    
+        A change in coordinates defined as:
+        \[
+            \x \mapsto \tilde{\x} = \matr{T}^{-1} \x
+        \]
+        allows to obtain the Jordan form $\matr{T}^{-1}\A\matr{T}$:
+        \[
+            \matr{T}^{-1}\A\matr{T} = \begin{bmatrix}
+                1 & 0 & \dots \\
+                0 & & \\
+                \vdots & & \matr{J}_2 \\
+            \end{bmatrix}
+        \]
+        with $\matr{J}_2 \in \mathbb{R}^{(N-1) \times (N-1)}$ Schur (i.e., $\text{spec}(\matr{J}_2)$ inside the open unit disk).
+    
+        The dynamics $\x^{k+1} = \A \x^k$ in the new coordinate system is:
+        \[
+            \begin{split}
+                \tilde{\x}^{k+1} &= \matr{T}^{-1} \x^{k+1} = \matr{T}^{-1} \A \matr{T} \tilde{\x}^k \\
+                &= \begin{bmatrix}
+                    1 & 0 & \dots \\
+                    0 & & \\
+                    \vdots & & \matr{J}_2 \\
+                \end{bmatrix} \tilde{\x}^k
+                = \begin{bmatrix}
+                    1 & 0 & \dots \\
+                    0 & & \\
+                    \vdots & & \matr{J}_2 \\
+                \end{bmatrix}^{k+1} \tilde{\x}^0
+            \end{split}
+        \]
+        Let's denote:
+        \[
+            \tilde{\x}^k = \matr{T}^{-1}\x^k = \begin{bmatrix}
+                \w^T\x^k \\ \matr{W}_L\x^k
+            \end{bmatrix}
+            = \begin{bmatrix}
+                \tilde{\x}^k_{m} \\ \tilde{\x}^k_{\bot}
+            \end{bmatrix}
+        \]
+        We have that:
+        \[
+            \begin{split}
+                \lim_{k \rightarrow \infty} \tilde{\x}^k
+                &= \lim_{k \rightarrow \infty} \begin{bmatrix}
+                    1 & 0 & \dots \\
+                    0 & & \\
+                    \vdots & & \matr{J}_2 \\
+                \end{bmatrix}^k \tilde{\x}^0 \\
+                &= \lim_{k \rightarrow \infty} \begin{bmatrix}
+                    1 & 0 & \dots \\
+                    0 & & \\
+                    \vdots & & (\matr{J}_2)^k \\
+                \end{bmatrix} \begin{bmatrix}
+                    \tilde{\x}^0_{m} \\ \tilde{\x}^0_{\bot}
+                \end{bmatrix} \\
+                &= \begin{bmatrix}
+                    1 \cdot \tilde{\x}^0_{m} \\ 
+                    \lim_{k \rightarrow \infty} (\matr{J}_2)^k \tilde{\x}^0_{\bot}
+                \end{bmatrix} \\
+                &= \begin{bmatrix}
+                    \w^T \x^0 \\ 
+                    0
+                \end{bmatrix} \\
+            \end{split}
+        \]
+        Note that $\lim_{k \rightarrow \infty} \matr{J}_2^k = 0$ as it is stable (i.e., all eigenvalues are in the open unit disk $|\mu| < 1$).
+    
+        In the original coordinate system, the limit is:
+        \[
+            \begin{split}
+                \lim_{k \rightarrow \infty} \x^k 
+                &= \lim_{k \rightarrow \infty} \matr{T} \tilde{\x}^k \\
+                &= \matr{T} \lim_{k \rightarrow \infty} \tilde{\x}^k \\
+                &= \begin{bmatrix}
+                    \vec{1} & \matr{W}_R
+                \end{bmatrix} \begin{bmatrix}
+                    \w^T \x^0 \\ 
+                    0
+                \end{bmatrix} 
+                = \vec{1} (\w^T \x^0)
+            \end{split}
+        \]
+        
+        \indenttbox
+        \begin{remark}
+            It is assumed that $\Vert \w \Vert = 1$ (i.e., no normalization term).
+        \end{remark}
+    \end{proof}
+
+    % \begin{proof}[Lyapunov approach]
+    %     $\A - \vec{1}\w^T$ is rank-1. This is to change one specific eigenvalue (move 1 to 0).
+
+    %     Dissensus vector represents error:
+    %     \[
+    %         \begin{split}
+    %             delta^{k+1} 
+    %             = \x^{k+1} - \vec{1}\w^T \x^0 \\
+    %             = \x^{k+1} - \vec{1}\w^T \x^{k+1} \\
+    %             = (\matr{I} - \vec{1}\w^T) \x^{k+1} \\
+    %             = (\matr{I} - \vec{1}\w^T) \A\x^{k} \\
+    %             = (\A - \vec{1}\w^T) \x^{k} \\
+    %             = (\A - \vec{1}\w^T) \delta^{k} \\
+    %         \end{split}
+    %     \]
+
+    %     Study:
+    %     \[
+    %         \delta^{k+1} = (\A - \vec{1}\w^T) \delta{k}
+    %     \]
+    %     If $\delta^k \rightarrow 0$, then $\x^k \rightarrow\vec{1}\w^T\x^0$.
+    %     Note $(\A - \vec{1}\w^T)$ is Schur.
+
+    %     Lyapunov equation for discrete time systems:
+    %     \[
+    %         \bar{\A}^T \matr{P} \bar{\A} = - \matr{P} = - \matr{Q}
+    %     \]
+    %     where $\bar{\A}$ is the Jordan-form of $(\A - \vec{1}\w^T)$
+
+    %     Select $Q_2$ to be block-diagonal and $p_1$
+
+
+    %     \[
+    %         V(\delta) = \delta^T (\matr{T}^{-1})^T \matr{P} \matr{T}^{-1} \delta
+    %     \]
+    % \end{proof}
+\end{theorem}
+
+\end{subappendices}
