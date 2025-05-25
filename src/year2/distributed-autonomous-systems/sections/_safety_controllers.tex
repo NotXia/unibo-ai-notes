@@ -217,7 +217,7 @@
         where $\u_i^\text{ref}$ is the reference input of the high level controller and $\u_i^\text{max}$ is the bound.
 
         \begin{remark}
-            The policy should be computed continuously for each $x_i(t)$.
+            The policy should be computed continuously for each $\x_i(t)$.
         \end{remark}
 
     \item[Decentralized safety controller] \marginnote{Decentralized safety controller}
@@ -255,13 +255,13 @@
             \begin{split}
                 \dot{\vec{p}}_x &= v \cos(\theta) \\
                 \dot{\vec{p}}_y &= v \sin(\theta) \\
-                \theta &= \omega \\
+                \dot{\theta} &= \omega \\
             \end{split}
         \]
         where:
         \begin{itemize}
             \item $(\vec{p}_x, \vec{p}_y)$ is the position of the center of mass,
-            \item $\theta$ is the orientation,
+            \item $\dot{\theta}$ is the orientation,
             \item $v$ is the linear velocity,
             \item $\omega$ is the angular velocity.
         \end{itemize}

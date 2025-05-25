@@ -173,7 +173,7 @@
         Use $\x_i$ to approximate $h_i(\u_i)$ and dynamic average consensus for the aggregation function. The dynamics is:
         \[
             \begin{split}
-                \dot{\u}_i &= -\delta_1 \nabla h_i(\u_i) \left( \nabla_{[\x_i]} l_i(\x_i, \phi_i(\x_i)+\w_i) + \left( \nabla_{[\phi_i(\x_i)+\w_i]} l_i(\x_i, \phi_i(\x_i)+\w_i) + \v_i \right) \nabla \phi_i(\x_i) \right) \\
+                \dot{\u}_i &= -\delta_1 \nabla h_i(\u_i) \Big( \nabla_{[\x_i]} l_i(\x_i, \phi_i(\x_i)+\w_i) + \left( \nabla_{[\phi_i(\x_i)+\w_i]} l_i(\x_i, \phi_i(\x_i)+\w_i) + \v_i \right) \nabla \phi_i(\x_i) \Big) \\
                 \delta_2 \dot{\w}_i &= - \sum_{j \in \mathcal{N}_i} a_{ij} (\w_i - \w_j) - \sum_{j \in \mathcal{N}_i} a_{ij} (\phi_i(\x_i) - \phi_i(\x_j)) \\
                 \delta_2 \dot{\v}_i &= - \sum_{j \in \mathcal{N}_i} a_{ij} (\v_i - \v_j) - \sum_{j \in \mathcal{N}_i} a_{ij} (\nabla_{[\phi_i(\x_i)+\w_i]} l_i(\x_i, \phi_i(\x_i)+\w_i) - \nabla_{[\phi_j(\x_j)+\w_j]} l_j(\x_j, \phi_j(\x_j)+\w_j)) \\
             \end{split}
