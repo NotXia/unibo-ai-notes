@@ -102,7 +102,7 @@
     \begin{itemize}
         \item An estimate $\z_i^k$ of its optimal position $\z_i^*$,
         \item An estimate $\s_i^k$ of the aggregation function $\sigma(\z^k) = \frac{1}{N} \sum_{j=1}^{N} \phi_j(\z_j^k)$,
-        \item An estimate $\v_i^k$ of the gradient with respect to the second argument of the loss $\sum_{j=1}^{N} \nabla_{[\sigma(\z^k)]} l_j(\z_j^k, \sigma(\z^k))$.
+        \item An estimate $\v_i^k$ of the gradient with respect to the second argument of the loss $\frac{1}{N} \sum_{j=1}^{N} \nabla_{[\sigma(\z^k)]} l_j(\z_j^k, \sigma(\z^k))$.
     \end{itemize}
 
     The step is based on the centralized gradient method using the local estimates:
