@@ -191,7 +191,7 @@
                     - &\gamma(V_{ij}^{s}(\x_i, \x_j)) \leq 0 \\
                     &\forall j \in \mathcal{N}_i, \forall i \in \{1, \dots, N\} \Big\}
                 \end{aligned} \\
-                = \Big\{ \u \in \mathbb{R}^{dN} \mid -2(\x_i, \x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \,\,\forall j \in \mathcal{N}_i, \forall i \in \{1, \dots, N\} \Big\}
+                = \Big\{ \u \in \mathbb{R}^{dN} \mid -2(\x_i-\x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \,\,\forall j \in \mathcal{N}_i, \forall i \in \{1, \dots, N\} \Big\}
             \end{aligned}
         \]
 
@@ -208,7 +208,7 @@
                 \arg\min_{\u \in \mathbb{R}^N} \sum_{i=1}^{N} \Vert \u_i - \u_i^\text{ref} \Vert^2 \\
                 \begin{aligned}
                     \text{subject to } 
-                    &-2(\x_i, \x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \\
+                    &-2(\x_i-\x_j)^T \u_i - 2(\x_j-\x_i)^T \u_j - \gamma(V_{ij}^s(\x_i, \x_j)) \leq 0 \\
                     & \Vert \u_i \Vert \leq \u_i^\text{max} \\
                     & \forall j \in \mathcal{N}_i, \forall i \in \{ 1, \dots, N \}
                 \end{aligned}
