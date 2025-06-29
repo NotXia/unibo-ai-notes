@@ -19,12 +19,12 @@
         System trained on intrinsically biased data will reproduce the same biased behavior.
 
         \begin{remark}
-            Data can be biased because it comes from past human judgement or by the hierarchies of the society (e.g., systems working on marginalized languages will most likely have lower performance compared to a widespread language).
+            Data can be biased because it comes from past human judgement or by the hierarchies of society (e.g., systems working on marginalized languages will most likely have lower performance compared to a widespread language).
         \end{remark}
 \end{description}
 
 \begin{example}[Amazon AI recruiting tool]
-    Tool that Amazon used in the past to review job applications. It was heavily biased towards male applicants and, even with the gender removed, it was able to infer it from the other features.
+    Tool that Amazon was using in the past to review job applications. It was heavily biased towards male applicants and, even with the gender removed, it was able to infer it from the other features.
 
     \begin{figure}[H]
         \centering
@@ -66,7 +66,7 @@
 
     In the context of language models, some systems implement a refusal mechanism to prevent a biased response. However:
     \begin{itemize}
-        \item Using a different prompt on the same topic might bypass the filter.
+        \item Using a different prompt of the same topic might bypass the filter.
         \item Refusal might be applied unequally depending on demographics or domain.
     \end{itemize}
 \end{example}
@@ -168,10 +168,10 @@
             \begin{itemize}
                 \item The overall accuracy is moderate-low ($61.2\%$),
                 \item Black defendants were more likely labeled with a high level of risk, leading to a higher probability of high risk misclassification ($45\%$ blacks vs $23\%$ whites).
-                \item White defendants were more likely labeled with a low level of risk, leading to a higher probability of low risk misclassification ($48\%$ blacks vs $28\%$ whites).
+                \item White defendants were more likely labeled with a low level of risk, leading to a higher probability of low risk misclassification ($48\%$ whites vs $28\%$ blacks).
             \end{itemize}
 
-            Northpointe, the software house of COMPAS, stated that ProPublic made several statistical and technical errors as:
+            Northpointe, the software house of COMPAS, stated that ProPublica made several statistical and technical errors as:
             \begin{itemize}
                 \item The accuracy of COMPAS is higher that human judgement.
                 \item The general recidivism risk scale is equally accurate for blacks and whites,
@@ -202,7 +202,7 @@
                 \item The training data is composed of 3000 defendants divided into 1500 blues (1000 previous offenders) and 1500 greens (500 previous offenders).
             \end{itemize}
 
-            Therefore, the real aggregated outcomes are:
+            Therefore, the ground-truth aggregated outcomes are:
             \begin{center}
                 \footnotesize
                 \begin{tabular}{c|cc}
@@ -336,7 +336,7 @@
             \item[Conditional use error/false rate] \marginnote{Conditional use error/false rate}
                 The proportion of incorrect predictions should be equal for each class within each group.
                 \begin{example}[SAPMOC]
-                    SAPMOC satisfies conditional use error/:
+                    SAPMOC satisfies conditional use error:
                     \begin{center}
                         \footnotesize
                         \begin{tabular}{c|cc}
