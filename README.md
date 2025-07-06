@@ -38,7 +38,6 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 - **Ethics in Artificial Intelligence**
    - [Ethics module 1](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module1/ethics1.pdf)
    - [Ethics module 2](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module2/ethics2.pdf)
-   - [Ethics module 3](https://raw.githubusercontent.com/NotXia/unibo-ai-notes/pdfs/year2/ethics-in-ai/module3/ethics3.pdf)
 
 
 ## Contributors
