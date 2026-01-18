@@ -190,7 +190,7 @@
         This is equivalent to computing the probability of the whole sentence, which expanded using the chain rule becomes:
         \[
             \begin{split}
-                \prob{w_1, \dots, w_{i-1} w_i} &= \prob{w_1} \prob{w_2 | w_1} \prob{w_3 | w_{1..2}} \dots \prob{w_n | w_{1..n-1}} \\
+                \prob{w_1, \dots, w_{i-1}, w_i} &= \prob{w_1} \prob{w_2 | w_1} \prob{w_3 | w_{1..2}} \dots \prob{w_n | w_{1..n-1}} \\
                 &= \prod_{i=1}^{n} \prob{w_i | w_{1..i-1}}
             \end{split}
         \]
@@ -224,7 +224,7 @@
                 \begin{description}
                     \item[Estimating $\mathbf{N}$-gram probabilities]
                         Consider the bigram case, the probability that a token $w_i$ follows $w_{i-1}$ can be determined through counting:
-                        \[ \prob{w_i | w_{i-1}} = \frac{\texttt{count}(w_{i-1} w_i)}{\texttt{count}(w_{i-1})} \]
+                        \[ \prob{w_i | w_{i-1}} = \frac{\texttt{count}(w_{i-1}, w_i)}{\texttt{count}(w_{i-1})} \]
                 \end{description}
 
                 \begin{remark}
