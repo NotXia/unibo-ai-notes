@@ -43,4 +43,4 @@ Compiled PDF files are in the [`pdfs` branch](https://github.com/NotXia/unibo-ai
 ## Contributors
 Special thanks for the help to:
 
-[![liuktc](https://images.weserv.nl/?url=https://github.com/liuktc.png&h=50&w&50&mask=circle&fit=cover&maxage=1d)](https://github.com/liuktc)
+[![liuktc](https://images.weserv.nl/?url=https://github.com/liuktc.png&h=50&w&50&mask=circle&fit=cover&maxage=1d)](https://github.com/liuktc)$\hspace{1em}$[![fraktc](https://images.weserv.nl/?url=https://github.com/fraktc.png&h=50&w&50&mask=circle&fit=cover&maxage=1d)](https://github.com/fraktc)
