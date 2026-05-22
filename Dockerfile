@@ -4,7 +4,7 @@ WORKDIR /notes
 
 RUN pacman --noconfirm -Sy
 RUN pacman --noconfirm -S git
-RUN pacman --noconfirm -S texlive-basic texlive-latex texlive-binextra texlive-mathscience texlive-latexextra texlive-fontsextra texlive-bibtexextra biber libxcrypt-compat 
+RUN pacman --noconfirm -S texlive-basic texlive-latex texlive-binextra texlive-mathscience texlive-latexextra texlive-fontsextra texlive-bibtexextra biber perl perl-mozilla-ca
 
 RUN git config --global --add safe.directory /notes
 
